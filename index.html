@@ -1351,6 +1351,16 @@ body.is-dragging .sday .slot:not(.drop-target):not(.drag-src)>*:not(.tm){filter:
 .pl-slot small{font-size:11px;font-weight:700;color:var(--muted)}
 .pl-slot select{border:0;background:transparent;font-weight:600}
 @media (max-width:600px){.pl-row{grid-template-columns:repeat(4,minmax(0,1fr))}.pl-n{grid-column:1/-1}.prow{grid-template-columns:1fr}}
+
+.pl-filter{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 0 14px}
+.pl-filter .seg{max-width:100%;overflow-x:auto}
+.pl-cust{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.pl-cust input{border:1px solid var(--line);border-radius:10px;padding:6px 8px;background:#fff}
+.pl-days{display:grid;gap:6px;margin-top:12px}
+.pl-day{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:8px 12px;border-radius:12px;background:rgba(255,255,255,.7);border:1px solid var(--line)}
+.pl-day .ptag{margin-left:0}
+.pl-dd{min-width:110px;font-weight:700;font-size:13.5px}
+.pl-ok{font-size:12.5px;font-weight:700;color:#2E7D0F}
 </style>
 </head>
 <body>
@@ -2085,27 +2095,47 @@ function todayPosts(){
   return `<section class="panel"><div class="phead"><h2>Today’s posts</h2><span class="stat">${posted} of ${L.length} posted${open?`, ${open} empty slot${open>1?"s":""}`:""}</span></div>
     ${rows||`<p class="sub">Nothing scheduled for today yet.</p>`}</section>`;
 }
-function pillarStats(H){
-  const t=today(),hm=nowHM();const P=pillars();const by={};P.forEach(p=>by[p]={p,need:0,filled:0,hand:0,free:0});
+function pillarRange(){
+  const R=S.plRange||{mode:"7d"},t=today(),dow=new Date(t+"T00:00:00").getDay(),mon=addDays(t,-((dow+6)%7));
+  const d0=new Date(t+"T00:00:00"),eom=(y,m)=>iso(new Date(y,m+1,0));
+  if(R.mode==="week")return {from:t,to:addDays(mon,6)};
+  if(R.mode==="nextweek")return {from:addDays(mon,7),to:addDays(mon,13)};
+  if(R.mode==="month")return {from:t,to:eom(d0.getFullYear(),d0.getMonth())};
+  if(R.mode==="nextmonth"){const f=iso(new Date(d0.getFullYear(),d0.getMonth()+1,1));return {from:f,to:eom(d0.getFullYear(),d0.getMonth()+1)}}
+  if(R.mode==="custom"&&R.from&&R.to)return {from:R.from<=R.to?R.from:R.to,to:R.from<=R.to?R.to:R.from};
+  return {from:t,to:addDays(t,6)};
+}
+function pillarStats(){
+  const {from,to}=pillarRange();const t=today(),hm=nowHM();const P=pillars();const by={};P.forEach(p=>by[p]={p,need:0,filled:0,hand:0,free:0});const days=[];
   const reels=vids().filter(isReel),live=v=>v.status!=="Posted"&&v.status!=="Not started";
-  for(let i=0;i<H;i++){const d=addDays(t,i);if(!pillarOn(d))continue;
-    slotsFor(d).forEach(tm=>{if(d===t&&tm<=hm)return;const p=slotPillar(d,tm),r=by[p];if(!r)return;r.need++;
-      if(reels.some(x=>x.postDate===d&&x.postTime===tm&&x.pillar===p))r.filled++})}
+  for(let d=from>t?from:t,g=0;d<=to&&g<400;d=addDays(d,1),g++){if(!pillarOn(d))continue;const day={d,open:{},need:0};
+    slotsFor(d).forEach(tm=>{if(d===t&&tm<=hm)return;const p=slotPillar(d,tm),r=by[p];if(!r)return;r.need++;day.need++;
+      if(reels.some(x=>x.postDate===d&&x.postTime===tm&&x.pillar===p))r.filled++;else day.open[p]=(day.open[p]||0)+1});
+    if(day.need)days.push(day)}
   reels.filter(live).forEach(v=>{const r=by[v.pillar];if(!r)return;r.hand++;if(!v.postDate)r.free++});
   const rows=P.map(p=>{const r=by[p];return {...r,shoot:Math.max(0,r.need-r.filled-r.free)}});
   const cars=vids().filter(isCar);let cNeed=0,cFilled=0;
-  for(let i=0;i<H;i++){const d=addDays(t,i);cslotsFor(d).forEach(tm=>{if(d===t&&tm<=hm)return;cNeed++;if(cars.some(x=>x.postDate===d&&x.postTime===tm))cFilled++})}
+  for(let d=from>t?from:t,g=0;d<=to&&g<400;d=addDays(d,1),g++){cslotsFor(d).forEach(tm=>{if(d===t&&tm<=hm)return;cNeed++;
+    if(cars.some(x=>x.postDate===d&&x.postTime===tm))cFilled++;else{let day=days.find(x=>x.d===d);if(!day){day={d,open:{},need:0};days.push(day)}day.open.Carousel=(day.open.Carousel||0)+1}})}
+  days.sort((a,b)=>a.d.localeCompare(b.d));
   const cHand=cars.filter(live).length,cFree=cars.filter(v=>live(v)&&!v.postDate).length;
   const untagged=reels.filter(v=>live(v)&&!v.pillar).length;
-  return {rows,car:{need:cNeed,filled:cFilled,hand:cHand,free:cFree,shoot:Math.max(0,cNeed-cFilled-cFree)},untagged};
+  return {rows,car:{need:cNeed,filled:cFilled,hand:cHand,free:cFree,shoot:Math.max(0,cNeed-cFilled-cFree)},untagged,days,from,to};
 }
-function pillarPanel(H){
+function pillarPanel(){
   if(!pillars().length)return "";
-  const st=pillarStats(H);const next=[...st.rows.filter(r=>r.shoot).map(r=>`<b style="--pc:${pillarColor(r.p)}">${r.shoot} ${esc(r.p)}</b>`),st.car.shoot?`<b style="--pc:#6FAE00">${st.car.shoot} carousel${st.car.shoot>1?"s":""}</b>`:""].filter(Boolean);
+  const st=pillarStats(),R=S.plRange||{mode:"7d"};
+  const modes=[["7d","7 days"],["week","This week"],["nextweek","Next week"],["month","This month"],["nextmonth","Next month"],["custom","Custom"]];
+  const rangeTxt=st.from===st.to?niceW(st.from):`${nice(st.from)} – ${nice(st.to)}`;
+  const byDay=st.days.length?`<div class="pl-days">${st.days.map(d=>{const items=Object.entries(d.open);return `<div class="pl-day"><span class="pl-dd">${esc(d.d===today()?"Today":d.d===addDays(today(),1)?"Tomorrow":niceW(d.d))}</span>${items.length?items.map(([p,n])=>`<span class="ptag" style="--pc:${p==="Carousel"?"#6FAE00":pillarColor(p)}">${n} ${esc(p)}</span>`).join(""):`<span class="pl-ok">✓ All filled</span>`}</div>`}).join("")}</div>`:`<p class="sub">No pillar slots in this range.</p>`;const next=[...st.rows.filter(r=>r.shoot).map(r=>`<b style="--pc:${pillarColor(r.p)}">${r.shoot} ${esc(r.p)}</b>`),st.car.shoot?`<b style="--pc:#6FAE00">${st.car.shoot} carousel${st.car.shoot>1?"s":""}</b>`:""].filter(Boolean);
   const row=(name,col,r)=>`<div class="pl-row"><span class="pl-n"><i style="background:${col}"></i>${esc(name)}</span><span><b>${r.hand}</b><small>in hand</small></span><span><b>${r.need}</b><small>needed</small></span><span><b>${r.need-r.filled}</b><small>still open</small></span><span class="pl-s${r.shoot?" on":""}"><b>${r.shoot}</b><small>to shoot</small></span></div>`;
-  return `<section class="panel"><div class="phead"><h2>Pillars</h2><span class="stat">Next ${H} days, from ${esc(nice(S.settings.pillarFrom||today()))}</span></div>
+  return `<section class="panel"><div class="phead"><h2>Pillars</h2><span class="stat">${esc(rangeTxt)}${st.from<(S.settings.pillarFrom||"")?` · order starts ${esc(nice(S.settings.pillarFrom))}`:""}</span></div>
+    <div class="pl-filter"><div class="seg" role="group" aria-label="Pillar range">${modes.map(([k,l])=>`<button data-act="plMode" data-m="${k}" aria-pressed="${(R.mode||"7d")===k}">${l}</button>`).join("")}</div>
+      ${R.mode==="custom"?`<span class="pl-cust"><input type="date" value="${esc(R.from||today())}" data-plr="from" aria-label="From"><span>to</span><input type="date" value="${esc(R.to||addDays(today(),6))}" data-plr="to" aria-label="To"></span>`:""}
+      <button class="btn small ghost" data-act="plByDay" aria-pressed="${!!S.plByDay}">${S.plByDay?"Hide days":"Show by day"}</button></div>
     <p class="pl-next">${next.length?`Shoot next: ${next.join(" ")}`:"You have enough footage for every pillar. ✓"}</p>
     <div class="pl-grid">${st.rows.map(r=>row(r.p,pillarColor(r.p),r)).join("")}${row("Carousels","#6FAE00",st.car)}</div>
+    ${S.plByDay?byDay:""}
     ${st.untagged?`<p class="ovnote"><b>${st.untagged}</b> reel${st.untagged>1?"s":""} in hand ha${st.untagged>1?"ve":"s"} no pillar yet. Set it in All videos so they can be scheduled.</p>`:""}</section>`;
 }
 function vOverview(){
@@ -2157,7 +2187,7 @@ function vOverview(){
       <p class="ovnote">${upcomingShoots().length} shoot${upcomingShoots().length===1?"":"s"} coming up${noScript?`, <b>${noScript}</b> without a script`:""}.</p>
     </section>
   </div>
-  ${pillarPanel(S.ovH||7)}
+  ${pillarPanel()}
   ${todayPosts()}
   <section class="panel">
     <div class="phead"><h2>Status</h2><span class="stat">${all.length} videos in total</span></div>
@@ -3341,6 +3371,8 @@ document.addEventListener("click",async e=>{
     if(!nw||nw.value.length<4){toast("Use at least 4 characters");return}
     b.disabled=true;call("changePassword",token,u,od?od.value:"",nw.value).then(()=>{toast(self?"Password changed":`Password reset for ${dispName(u)}`);nw.value="";if(od)od.value=""}).catch(err=>toast(String(err&&err.message||"Couldn’t change it").replace(/^Error: /,""))).finally(()=>{b.disabled=false})}
   else if(act==="addRaw"){askRaw(b.dataset.d)}
+  else if(act==="plMode"){const m=b.dataset.m;S.plRange={...(S.plRange||{}),mode:m};if(m==="custom"&&!S.plRange.from){S.plRange.from=today();S.plRange.to=addDays(today(),6)}render()}
+  else if(act==="plByDay"){S.plByDay=!S.plByDay;render()}
   else if(act==="addPillar"){const P=[...pillars()];let n="New pillar",k=2;while(P.includes(n))n="New pillar "+(k++);P.push(n);S.settings.pillars=P;putSettings();render()}
   else if(act==="rmPillar"){const P=[...pillars()],gone=P.splice(+b.dataset.i,1)[0];if(!await ask(`Remove “${gone}”?`,"It comes out of the daily order. Videos tagged with it keep the tag until you change it.","Remove"))return;
     S.settings.pillars=P;S.settings.pillarOrder=(S.settings.pillarOrder||[]).filter(x=>x!==gone);putSettings();render()}
@@ -3406,6 +3438,7 @@ document.addEventListener("change",e=>{
     P[i]=nw;S.settings.pillars=P;S.settings.pillarOrder=(S.settings.pillarOrder||[]).map(x=>x===old?nw:x);
     vids().filter(v=>v.pillar===old).forEach(v=>putVideo({...v,pillar:nw},true));putSettings();render();toast(`Renamed to ${nw}`);return}
   if(t.dataset.porder!=null){const O=[...(S.settings.pillarOrder||[])];O[+t.dataset.porder]=t.value;S.settings.pillarOrder=O;putSettings();render();return}
+  if(t.dataset.plr){S.plRange={...(S.plRange||{mode:"custom"}),mode:"custom",[t.dataset.plr]:t.value};render();return}
   if(t.dataset.sset){S.settings[t.dataset.sset]=t.checked;putSettings();render();return}
   if(t.dataset.cplan!=null){
     const P=cplans();const p={...P[+t.dataset.cplan]};
