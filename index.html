@@ -1517,6 +1517,72 @@ body.is-dragging .sday .slot:not(.drop-target):not(.drag-src)>*:not(.tm){filter:
 .wr-nav{position:absolute;inset:0;z-index:3;display:grid;grid-template-columns:1fr 2fr;top:60px}
 .wr-nav span{cursor:pointer}
 @media (prefers-reduced-motion:reduce){.stamp,.clap,.cal3d,.sl-text,.wr-blob{animation:none!important}}
+
+/* ===== iPhone clean-up pass ===== */
+.mob-more{display:none}
+@media (max-width:600px){
+  /* posting schedule: time on the left, video on the right, one tidy row of controls */
+  .sday .slot.slot{grid-template-columns:58px minmax(0,1fr) auto auto auto!important;column-gap:8px!important;row-gap:8px!important;padding:12px 12px!important;align-items:center}
+  .sday .slot.slot>.grip{display:none!important}
+  .sday .slot.slot>.tm{grid-column:1!important;grid-row:1/span 2!important;align-self:start;font-size:14px;line-height:1.25;padding-top:2px}
+  .sday .slot.slot>.tm .kind{font-size:9.5px}
+  .sday .slot.slot>.ttl{grid-column:2/-1!important;grid-row:1!important;min-width:0}
+  .sday .slot.slot>:nth-child(4){grid-column:2!important;grid-row:2!important;min-width:0}
+  .sday .slot.slot>:nth-child(5){grid-column:3!important;grid-row:2!important}
+  .sday .slot.slot>:nth-child(6){grid-column:4!important;grid-row:2!important}
+  .sday .slot.slot>:nth-child(7){grid-column:5!important;grid-row:2!important}
+  .sday .slot.empty.slot>:nth-child(3){grid-column:2/-1!important;grid-row:1/span 2!important;align-self:center}
+  .sday .slot.empty.slot>:nth-child(n+4){display:none}
+  .sday .slot .ttl b{font-size:15px;line-height:1.3}
+  .sday .slot .ttl small{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center;margin-top:4px}
+  .sday .slot .ttl small .tag{margin-left:0}
+  .sday .slot .openlink{font-size:10.5px;padding:1px 7px;vertical-align:1px}
+  .sday .slot .status{min-height:36px!important;height:36px;padding:0 8px 0 24px;font-size:14px!important;width:100%}
+  .sday .slot .lockd{display:none}
+  .sday .slot .lockbtn{padding:6px 10px;font-size:12px}
+  .sday .slot .mv2 button{width:32px;height:32px}
+  .sday .slot .xbtn{width:30px;height:30px;font-size:18px}
+  .sday .slot select.assign{min-height:40px;font-size:15px!important}
+  .sday header{padding:12px 14px}
+  .sday header .addslot{margin-left:auto}
+  /* edit order: title on top, status and arrows underneath; folder buttons are a PC thing */
+  .erow{grid-template-columns:26px minmax(0,1fr) auto!important;row-gap:8px!important;padding:12px!important}
+  .erow>.num{grid-row:1/span 2}
+  .erow>.etitle{grid-column:2/-1!important;grid-row:1!important}
+  .erow>.eacts,.erow>span:not(.num){display:none!important}
+  .erow>div:nth-child(4){grid-column:2!important;grid-row:2!important}
+  .erow>.mv2{grid-column:3!important;grid-row:2!important}
+  .erow .status{height:36px;min-height:36px!important;font-size:14px!important;width:100%}
+  .erow .etitle b{font-size:15px}
+  .ep-days{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+  .ep-day{padding:8px 9px}.ep-day b{font-size:22px}.ep-day i{font-size:10.5px}
+  /* all videos: short cards, details on demand */
+  .mob-more{display:inline-block;position:absolute;top:14px;right:44px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:700;color:var(--muted)}
+  td.title{padding-right:120px!important;position:static}
+  tbody tr:not(.open) td.c-fmt,tbody tr:not(.open) td.c-shot,tbody tr:not(.open) td.c-fold,tbody tr:not(.open) td.c-link,tbody tr:not(.open) td.c-note,tbody tr:not(.open) td.c-del{display:none!important}
+  tbody tr{gap:8px 10px!important;padding:12px!important}
+  td.title input{font-size:16px!important}
+  /* pillars and summary filters scroll sideways instead of squashing */
+  .pl-filter .seg{flex-wrap:nowrap;overflow-x:auto;max-width:100%;scrollbar-width:none}
+  .pl-filter .seg button{white-space:nowrap;flex:none}
+  .pl-row{padding:10px 12px}
+  .pl-row b{font-size:19px}
+  /* history: no pop-out window on a phone */
+  [data-act="newWin"]{display:none!important}
+  /* team: compact rows */
+  .tcard{flex-direction:row!important;align-items:flex-start!important;text-align:left!important;gap:14px;padding:14px}
+  .tcard .ava.big{--s:64px!important}
+  .tphoto{flex:none}
+  .tchange{font-size:11px;padding:4px 9px}
+  /* today's posts and overview */
+  .tp{grid-template-columns:62px minmax(0,1fr)!important;padding:12px 10px}
+  .tp-a{grid-column:2;flex-wrap:wrap}
+  .tp-a .slide{flex:1;min-width:0}
+  .ovk b{font-size:28px}
+  .phead h2{font-size:20px}
+  section.panel .sub{font-size:13.5px}
+}
+@media (max-width:600px){.sday .slot .status,.erow .status,tbody td .status{min-width:0!important}.sday .slot .ttl .openlink{margin-left:6px}}
 </style>
 </head>
 <body>
@@ -2404,9 +2470,9 @@ function vVideos(){
       <select id="bulkStatus" aria-label="Status for selected"><option value="">Set status to…</option>${STATUSES.map(s=>`<option>${s.k}</option>`).join("")}</select>
       <button class="btn danger" data-act="bulkDel">Delete ${n}</button>
       <button class="btn" data-act="clearSel">Clear selection</button></div>`:"";
-  const rows=L.map(v=>`<tr class="${S.sel.has(v.id)?"sel":""}" data-k="v-${v.id}">
+  const rows=L.map(v=>`<tr class="${S.sel.has(v.id)?"sel":""}${(S.moreRows||{})[v.id]?" open":""}" data-k="v-${v.id}">
     <td class="ck"><input type="checkbox" data-act-ck="${v.id}"${S.sel.has(v.id)?" checked":""} aria-label="Select ${esc(v.title)}"></td>
-    <td class="title"><input type="text" value="${esc(v.title)}" data-f="title" data-id="${v.id}" aria-label="Title">${v.status==="Re-edit"&&v.reviewNote?`<small class="rnote">Changes: ${esc(v.reviewNote)}</small>`:""}${v.status==="In review"?`<small class="rnote rv">With ${esc(reviewerName())} for review${v.round>1?`, round ${v.round}`:""}</small>`:""}</td>
+    <td class="title"><input type="text" value="${esc(v.title)}" data-f="title" data-id="${v.id}" aria-label="Title"><button class="mob-more" data-act="rowMore" data-id="${v.id}">${(S.moreRows||{})[v.id]?"Less":"Details"}</button>${v.status==="Re-edit"&&v.reviewNote?`<small class="rnote">Changes: ${esc(v.reviewNote)}</small>`:""}${v.status==="In review"?`<small class="rnote rv">With ${esc(reviewerName())} for review${v.round>1?`, round ${v.round}`:""}</small>`:""}</td>
     <td class="c-fmt" data-l="Format"><select data-f="format" data-id="${v.id}" aria-label="Format"><option${v.format!=="Carousel"?" selected":""}>Reel</option><option${v.format==="Carousel"?" selected":""}>Carousel</option></select></td>
     <td class="c-pil" data-l="Pillar">${isCar(v)?`<span class="stat">Carousel</span>`:pillarSelect(`data-f="pillar" data-id="${v.id}" aria-label="Pillar" class="psel" style="--pc:${pillarColor(v.pillar)}"`,v.pillar||"")}</td>
     <td class="c-shot" data-l="Shot on"><input type="date" value="${esc(v.shotDate||"")}" data-f="shotDate" data-id="${v.id}" aria-label="Shot date" style="border-left:4px solid ${hue(v.shotDate)}"></td>
@@ -3916,6 +3982,7 @@ document.addEventListener("click",async e=>{
     if(!nw||nw.value.length<4){toast("Use at least 4 characters");return}
     b.disabled=true;call("changePassword",token,u,od?od.value:"",nw.value).then(()=>{toast(self?"Password changed":`Password reset for ${dispName(u)}`);nw.value="";if(od)od.value=""}).catch(err=>toast(String(err&&err.message||"Couldn’t change it").replace(/^Error: /,""))).finally(()=>{b.disabled=false})}
   else if(act==="addRaw"){askRaw(b.dataset.d)}
+  else if(act==="rowMore"){S.moreRows=S.moreRows||{};S.moreRows[b.dataset.id]=!S.moreRows[b.dataset.id];render()}
   else if(act==="dialBack"){DIAL.code=DIAL.code.slice(0,-1);const el=document.getElementById("dialDots");if(el)el.innerHTML=dialDotsHTML();sfx("tick")}
   else if(act==="dialTry"){if(!DIAL.code){toast("Dial the code first");return}dialAutoTry(true)}
   else if(act==="dialType"){S.dialType=!S.dialType;render()}
