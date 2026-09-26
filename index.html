@@ -1258,6 +1258,37 @@ a.btn{color:var(--ink);text-decoration:none;display:inline-flex;align-items:cent
 #noteDlg textarea{width:100%;border:1px solid var(--line);border-radius:14px;padding:12px;background:#fff}
 @media (max-width:600px){#revDlg,#noteDlg{width:100%!important}}
 @media (display-mode:standalone){.wrap{padding-top:calc(14px + env(safe-area-inset-top,0px))}}
+
+/* posting reminders and today's checklist */
+.al-pill.pulse{animation:alPulse 1.6s ease-in-out infinite}
+@keyframes alPulse{0%,100%{box-shadow:0 0 0 0 rgba(170,255,0,.7)}50%{box-shadow:0 0 0 8px rgba(170,255,0,0)}}
+.al-now{box-shadow:0 24px 60px rgba(20,30,8,.22),0 0 0 2px rgba(123,209,0,.95),inset 0 1px 0 #fff}
+.al-late,.al-notready{box-shadow:0 24px 60px rgba(20,30,8,.20),0 0 0 1.5px rgba(228,87,46,.7),inset 0 1px 0 #fff}
+.tp{display:grid;grid-template-columns:96px minmax(0,1fr) auto;gap:14px;align-items:center;padding:12px 14px;border-top:1px solid var(--line);border-radius:14px;transition:background .25s}
+.tp:first-of-type{border-top:0}
+.tp:hover{background:rgba(255,255,255,.8)}
+.tp-t{font-weight:800;font-size:15px}
+.tp-n b{display:block;font-size:15px;font-weight:600}
+.tp-n small{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);margin-top:2px}
+.tp-n small i{width:8px;height:8px;border-radius:50%}
+.tp-a{display:flex;gap:6px}
+.tp-mark{background:var(--lime)!important;border-color:transparent!important}
+.tp-ok{font-size:13px;font-weight:800;color:#2E7D0F}
+.tp.done b{color:var(--muted);text-decoration:line-through;text-decoration-color:rgba(12,14,8,.25)}
+.tp.late{background:rgba(255,240,227,.7)}
+@media (max-width:600px){.tp{grid-template-columns:64px minmax(0,1fr)}.tp-a{grid-column:2}}
+a.iconbtn{text-decoration:none;display:inline-flex;align-items:center}
+
+/* plan date ranges and extra slots */
+.plan{grid-template-columns:150px 150px minmax(160px,1fr) auto auto!important;max-width:900px}
+.cplan{grid-template-columns:150px 150px auto minmax(120px,1fr) auto auto!important;max-width:1000px}
+.plan.head,.cplan.head{margin-bottom:0;padding-top:0;padding-bottom:0;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.plan.head:hover,.cplan.head:hover{transform:none;background:transparent;box-shadow:none}
+.tag.tmp{background:#FFF4D6;color:#8A6A00}
+.sday header .addslot{margin-left:8px;font-size:12px;padding:4px 10px;color:var(--muted)}
+.sday header .addslot:hover{color:#0B0B0C}
+#slotDlg{width:min(460px,calc(100vw - 24px))}
+@media (max-width:600px){.plan,.cplan{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}.plan.head,.cplan.head{display:none}#slotDlg{width:100%!important}}
 </style>
 </head>
 <body>
@@ -1376,6 +1407,18 @@ a.btn{color:var(--ink);text-decoration:none;display:inline-flex;align-items:cent
     <div class="foot"><button class="btn" value="cancel" formnovalidate>Cancel</button><button class="btn primary" value="ok">Send back</button></div>
   </form>
 </dialog>
+<dialog id="slotDlg">
+  <form method="dialog">
+    <span class="al-pill">Extra slot</span>
+    <h2 style="margin-top:10px">Add a post to this day</h2>
+    <p class="sub" id="slotFor"></p>
+    <div class="row3" style="grid-template-columns:1fr 1fr">
+      <label>Time<input type="time" id="slotTime" value="21:00" required></label>
+      <label>Type<select id="slotKind"><option value="R">Reel</option><option value="C">Carousel</option></select></label>
+    </div>
+    <div class="foot"><button class="btn" value="cancel" formnovalidate>Cancel</button><button class="btn primary" value="ok">Add slot</button></div>
+  </form>
+</dialog>
 <dialog id="rawDlg">
   <form method="dialog">
     <span class="al-pill">Raw footage</span>
@@ -1479,12 +1522,14 @@ function fmtT(t){if(!t)return "";const [h,m]=t.split(":").map(Number);const ap=h
 function parseT(s){const m=String(s).trim().match(/^(\d{1,2})(?:[:.](\d{2}))?\s*([ap])?\.?m?\.?$/i);if(!m)return null;let h=+m[1],mi=+(m[2]||0);const ap=(m[3]||"").toLowerCase();if(ap==="p"&&h<12)h+=12;if(ap==="a"&&h===12)h=0;if(h>23||mi>59)return null;return pad(h)+":"+pad(mi)}
 function parseTimes(str){const out=[];String(str).split(/[,;\n]+/).forEach(p=>{const t=parseT(p);if(t&&!out.includes(t))out.push(t)});return out.sort()}
 function plans(){return [...(S.settings.plans||[])].filter(p=>p.from).sort((a,b)=>a.from.localeCompare(b.from))}
-function planFor(d){const P=plans();let cur=P[0]||{times:[]};P.forEach(p=>{if(p.from<=d)cur=p});return cur}
+function planFor(d){const P=plans();const act=P.filter(p=>p.from<=d&&(!p.to||d<=p.to));const temp=act.filter(p=>p.to);const pool=temp.length?temp:act;
+  let cur=null;pool.forEach(p=>{if(!cur||p.from>=cur.from)cur=p});return cur||P[0]||{times:[]}}
 function slotsFor(d){return planFor(d).times||[]}
 function cplans(){return [...(S.settings.cplans||[])].filter(p=>p.from).sort((a,b)=>a.from.localeCompare(b.from))}
 // rows sharing the latest start date on or before d are all active together
-function cActiveFrom(d){let f=null;cplans().forEach(p=>{if(p.from<=d&&(!f||p.from>f))f=p.from});return f}
-function cplanFor(d){const f=cActiveFrom(d);return f?cplans().filter(p=>p.from===f):[]}
+// carousel rows that share a start date run together; rows with an end date override the regular rows between their dates
+function cplanFor(d){const act=cplans().filter(p=>p.from<=d&&(!p.to||d<=p.to));const temp=act.filter(p=>p.to);const pool=temp.length?temp:act;
+  let f=null;pool.forEach(p=>{if(!f||p.from>f)f=p.from});return f?pool.filter(p=>p.from===f):[]}
 function cslotsFor(d){const wd=new Date(d+"T00:00:00").getDay();const s=new Set();cplanFor(d).forEach(p=>{if((p.days||[]).includes(wd))(p.times||[]).forEach(t=>s.add(t))});return [...s].sort()}
 function isCar(v){return v.format==="Carousel"}
 function kindOf(v){return isCar(v)?"C":"R"}
@@ -1597,7 +1642,7 @@ function applyDoc(row){
   else if(row.collection==="profiles"){if(row.deleted)delete S.profiles[row.id];else S.profiles[row.id]=row.data}
   else if(row.collection==="scripts"){if(row.deleted)delete S.scripts[row.id];else S.scripts[row.id]=row.data}
   else if(row.deleted)return;
-  else if(row.collection==="meta"&&row.id==="settings"){const d=row.data||{};Object.assign(S.settings,d);if(Array.isArray(d.plans))S.settings.plans=d.plans.map(p=>({from:p.from,times:[...(p.times||[])]}));if(Array.isArray(d.cplans))S.settings.cplans=d.cplans.map(p=>({from:p.from,days:[...(p.days||[])],times:[...(p.times||[])]}))}
+  else if(row.collection==="meta"&&row.id==="settings"){const d=row.data||{};Object.assign(S.settings,d);if(Array.isArray(d.plans))S.settings.plans=d.plans.map(p=>({from:p.from,to:p.to||"",times:[...(p.times||[])]}));if(Array.isArray(d.cplans))S.settings.cplans=d.cplans.map(p=>({from:p.from,to:p.to||"",days:[...(p.days||[])],times:[...(p.times||[])]}))}
   else if(row.collection==="meta"&&row.id==="queue"){const d=row.data||{};S.queue={ids:[...(d.ids||[])],at:d.at||null,pins:{...(d.pins||{})}}}
 }
 let polling=false;
@@ -1896,6 +1941,21 @@ function needBar(n,label){
     <div class="need-l"><span><i class="nb-r"></i>${n.ready} ready</span><span><i class="nb-p"></i>${n.prog} scheduled, not ready</span><span><i class="nb-e"></i>${n.empty} empty</span></div>
   </div>`;
 }
+function todayPosts(){
+  const t=today(),now=Date.now();
+  const L=vids().filter(v=>v.postDate===t).sort((a,b)=>(a.postTime||"99").localeCompare(b.postTime||"99"));
+  const slots=[...slotsFor(t).map(tm=>({tm,k:"R"})),...cslotsFor(t).map(tm=>({tm,k:"C"}))];
+  if(!L.length&&!slots.length)return "";
+  const posted=L.filter(v=>v.status==="Posted").length;
+  const rows=L.map(v=>{const due=dueMs(v),late=v.status!=="Posted"&&due&&now>due+30*60000,soon=v.status!=="Posted"&&due&&now>due-15*60000&&!late;
+    const lnk=safeUrl(v.finalLink);
+    return `<div class="tp${v.status==="Posted"?" done":""}${late?" late":""}"><span class="tp-t">${v.postTime?fmtT(v.postTime):"No time"}</span>
+      <span class="tp-n"><b>${esc(v.title||"Untitled")}</b><small><i style="background:${SC[v.status]}"></i>${esc(v.status)}${isCar(v)?", carousel":""}${late?` <span class="tag warn">Overdue</span>`:soon?` <span class="tag new">${now>=due?"Now":"Soon"}</span>`:""}</small></span>
+      <span class="tp-a">${v.status==="Posted"?`<span class="tp-ok">✓ Posted</span>`:`${lnk?`<a class="iconbtn" href="${esc(lnk)}" target="_blank" rel="noopener noreferrer">Open</a>`:""}${v.status==="Ready"?`<button class="iconbtn tp-mark" data-act="markPosted" data-id="${v.id}">Mark posted</button>`:""}`}</span></div>`}).join("");
+  const open=slots.filter(s=>!L.some(v=>v.postTime===s.tm&&kindOf(v)===s.k)).length;
+  return `<section class="panel"><div class="phead"><h2>Today’s posts</h2><span class="stat">${posted} of ${L.length} posted${open?`, ${open} empty slot${open>1?"s":""}`:""}</span></div>
+    ${rows||`<p class="sub">Nothing scheduled for today yet.</p>`}</section>`;
+}
 function vOverview(){
   const all=vids(),t=today(),H=S.ovH||7;
   const inHand=all.filter(v=>v.status in TIER).length;
@@ -1945,6 +2005,7 @@ function vOverview(){
       <p class="ovnote">${upcomingShoots().length} shoot${upcomingShoots().length===1?"":"s"} coming up${noScript?`, <b>${noScript}</b> without a script`:""}.</p>
     </section>
   </div>
+  ${todayPosts()}
   <section class="panel">
     <div class="phead"><h2>Status</h2><span class="stat">${all.length} videos in total</span></div>
     ${all.length?`<div class="pipe">${counts.map(c=>`<div style="flex:${c.n};background:${c.c}" title="${c.k}: ${c.n}"></div>`).join("")}</div>
@@ -2079,7 +2140,7 @@ function vSchedule(){
     const fR=TR.filter(tm=>reels.some(v=>v.postTime===tm)).length,fC=TC.filter(tm=>cars.some(v=>v.postTime===tm)).length;
     html+=`<div class="card sday${d<t?" past":""}" id="day-${d}"><header><h3>${d===t?"Today":d===addDays(t,1)?"Tomorrow":d===addDays(t,-1)?"Yesterday":esc(niceW(d))}</h3>
       ${TR.length?`<span class="count${fR<TR.length&&d>=t?" low":""}" title="Reels">${fR}/${TR.length}</span>`:""}
-      ${TC.length?`<span class="count car${fC<TC.length&&d>=t?" low":""}" title="Carousels">${fC}/${TC.length} carousel</span>`:""}</header>${slots||(d<t?`<div class="carou">Nothing posted</div>`:"")}${extra}</div>`;
+      ${TC.length?`<span class="count car${fC<TC.length&&d>=t?" low":""}" title="Carousels">${fC}/${TC.length} carousel</span>`:""}${d>=t?`<button class="btn small ghost addslot" data-act="addSlot" data-d="${d}">+ Extra slot</button>`:""}</header>${slots||(d<t?`<div class="carou">Nothing posted</div>`:"")}${extra}</div>`;
   }
   return schedShell(free,(from!==t?`<div class="backbar"><span>From ${esc(niceW(from))}</span><button class="btn small" data-act="schedToday">Back to today</button></div>`:"")+html);
 }
@@ -2165,33 +2226,47 @@ function cplanRows(){
   const P=cplans(),cur=cplanFor(today()),WDS=[1,2,3,4,5,6,0];
   const total=cur.reduce((n,p)=>n+(p.days||[]).length*(p.times||[]).length,0);
   if(!P.length)return `<p class="sub">No carousel plan yet.</p>`;
-  return P.map((p,i)=>`<div class="cplan">
-    <input type="date" value="${p.from}" data-cplan="${i}" data-pf="from" aria-label="Starts on">
+  return `<div class="cplan head"><span>Starts</span><span>Ends (optional)</span><span>Days</span><span>Times</span><span></span><span></span></div>`+P.map((p,i)=>`<div class="cplan">
+    <input type="date" value="${p.from}" data-cplan="${i}" data-pf="from" aria-label="Starts on" title="Starts on">
+    <input type="date" value="${p.to||""}" data-cplan="${i}" data-pf="to" aria-label="Ends on" title="Ends on (leave empty for no end)">
     <div class="wds" role="group" aria-label="Days">${WDS.map(w=>`<button class="wd" data-act="cday" data-i="${i}" data-w="${w}" aria-pressed="${(p.days||[]).includes(w)}">${WD[w].slice(0,2)}</button>`).join("")}</div>
     <input type="text" value="${esc((p.times||[]).map(fmtT).join(", "))}" data-cplan="${i}" data-pf="times" aria-label="Carousel times" placeholder="9:00 PM">
-    <span class="cnt">${(p.days||[]).length*(p.times||[]).length} a week${cur.includes(p)?` <span class="tag">now</span>`:""}</span>
+    <span class="cnt">${p.to&&p.from===p.to?`${(p.times||[]).length} that day`:`${(p.days||[]).length*(p.times||[]).length} a week`}${cur.includes(p)?` <span class="tag">now</span>`:""}${p.to?` <span class="tag${p.to<today()?"":" tmp"}">${p.to<today()?"Ended":p.from===p.to?"One day":"Until "+esc(nice(p.to))}</span>`:""}</span>
     <button class="btn small ghost" data-act="rmCPlan" data-i="${i}">Remove</button>
   </div>`).join("")+(cur.length?`<p class="sub" style="margin-top:4px">Now: <b>${total}</b> carousel${total===1?"":"s"} a week. Rows with the same start date run together, so add a row for each different time.</p>`:"");
+}
+function addExtraSlot(d,kind,tm){
+  if(kind==="C"){const P=cplans();let ex=P.find(p=>p.from===d&&p.to===d);const times=[...new Set([...cslotsFor(d),tm])].sort();
+    if(ex){ex.days=[0,1,2,3,4,5,6];ex.times=times}else P.push({from:d,to:d,days:[0,1,2,3,4,5,6],times});S.settings.cplans=P}
+  else{const P=plans();let ex=P.find(p=>p.from===d&&p.to===d);const times=[...new Set([...slotsFor(d),tm])].sort();
+    if(ex)ex.times=times;else P.push({from:d,to:d,times});S.settings.plans=P}
+  putSettings();render();toast(`Extra ${kind==="C"?"carousel":"reel"} slot added: ${niceW(d)}, ${fmtT(tm)}`);
+}
+function askSlot(d){
+  const dl=$("#slotDlg");$("#slotFor").textContent=`${niceW(d)}. This adds one more slot on this day only. Your regular plan doesn’t change.`;dl.returnValue="";
+  dl.addEventListener("close",()=>{if(dl.returnValue!=="ok")return;const tm=$("#slotTime").value;if(!tm)return;addExtraSlot(d,$("#slotKind").value,tm)},{once:true});
+  openDlg(dl);
 }
 function vSettings(){
   const P=plans(),t=today(),cur=planFor(t);
   const maxPer=Math.max(...P.map(p=>p.times.length),0);
-  const rows=P.map((p,i)=>`<div class="plan">
-      <input type="date" value="${p.from}" data-plan="${i}" data-pf="from" aria-label="Starts on">
+  const rows=`<div class="plan head"><span>Starts</span><span>Ends (optional)</span><span>Times</span><span></span><span></span></div>`+P.map((p,i)=>`<div class="plan">
+      <input type="date" value="${p.from}" data-plan="${i}" data-pf="from" aria-label="Starts on" title="Starts on">
+      <input type="date" value="${p.to||""}" data-plan="${i}" data-pf="to" aria-label="Ends on" title="Ends on (leave empty for no end)">
       <input type="text" value="${esc(p.times.map(fmtT).join(", "))}" data-plan="${i}" data-pf="times" aria-label="Posting times" placeholder="3:00 PM, 6:00 PM">
-      <span class="cnt">${p.times.length} a day${p===cur?` <span class="tag">now</span>`:""}</span>
+      <span class="cnt">${p.times.length} a day${p===cur?` <span class="tag">now</span>`:""}${p.to?` <span class="tag${p.to<t?"":" tmp"}">${p.to<t?"Ended":p.from===p.to?"One day":"Until "+esc(nice(p.to))}</span>`:""}</span>
       ${P.length>1?`<button class="btn small ghost" data-act="rmPlan" data-i="${i}">Remove</button>`:"<span></span>"}
     </div>`).join("");
   return teamPanel()+`<section class="panel">
     <h2>Reel plan</h2>
-    <p class="sub">Reel times per day, separated by commas.</p>
+    <p class="sub">Reel times per day, separated by commas. Add an end date for a one-off change, such as an extra post on a single day. It replaces the regular plan only between those dates.</p>
     ${rows}
     <button class="btn" data-act="addPlan">Add a plan change</button>
     ${maxPer>S.settings.editTarget?`<p class="sub" style="margin-top:12px;color:var(--warn)">At ${maxPer} reels a day you’ll need at least ${maxPer} edits a day to keep up. Your edit target is ${S.settings.editTarget}.</p>`:""}
   </section>
   <section class="panel">
     <h2>Carousel plan</h2>
-    <p class="sub">Pick the days and times carousels go out each week.</p>
+    <p class="sub">Pick the days and times carousels go out each week. Rows with an end date replace the regular plan only between their dates.</p>
     ${cplanRows()}
     <button class="btn" data-act="addCPlan">Add a carousel time</button>
   </section>
@@ -2218,6 +2293,8 @@ function vSettings(){
     </div>
     <div class="switches">${`<label class="sw"><input type="checkbox" data-snd="1"${lsGet("seb-sound")==="off"?"":" checked"}><span class="knob" aria-hidden="true"></span>Play a sound on this computer</label>`}
       <button class="btn small" data-act="testAlert">Preview a pop-up</button></div>
+    <h3 class="subh">Windows notifications</h3>
+    ${osPanel()}
   </section>
   <section class="panel">
     <h2>Raw footage folders</h2>
@@ -2625,8 +2702,18 @@ function alertKind(v){
   if(isReadyPost(v)&&isPoster())return "ready";
   return null;
 }
-function alertKey(v,k){return v.id+"|"+k+"|"+(k==="ready"?safeUrl(v.finalLink):(v.round||1))}
-function myAlerts(){return vids().map(v=>({v,k:alertKind(v)})).filter(x=>x.k).sort((a,b)=>postKey(a.v).localeCompare(postKey(b.v)))}
+function posterName(){const u=userList(S.settings.alertUsers)[0]||reviewers()[0];const n=dispName(u)||u;return n.charAt(0).toUpperCase()+n.slice(1)}
+function dueMs(v){if(!v||!v.postDate||!v.postTime)return null;return new Date(v.postDate+"T"+v.postTime+":00").getTime()}
+// reminders around posting time: 15 minutes before, at posting time, and if it still isn't marked posted 30 minutes later
+function timeKind(v){
+  if(!v||v.status==="Posted")return null;const due=dueMs(v);if(due==null)return null;const mins=(due-Date.now())/60000;
+  if(isPoster()&&v.status==="Ready"){if(mins>0&&mins<=15)return "soon";if(mins<=0&&mins>-30)return "now";if(mins<=-30&&mins>-2880)return "late"}
+  if(!isPoster()){if(mins<=-30&&mins>-2880)return "late";if(mins>0&&mins<=120&&v.status!=="Ready"&&v.status!=="Approved")return "notready"}
+  return null;
+}
+function alertKey(v,k){return v.id+"|"+k+"|"+(k==="ready"?safeUrl(v.finalLink):["soon","now","late","notready"].includes(k)?(v.postDate+" "+v.postTime):(v.round||1))}
+function myAlerts(){const out=[];vids().forEach(v=>{const a=alertKind(v),b=timeKind(v);if(a&&!(a==="ready"&&b))out.push({v,k:a});if(b)out.push({v,k:b})});return out.sort((a,b)=>postKey(a.v).localeCompare(postKey(b.v)))}
+function alId(v,k){return "al-"+v.id+"-"+k}
 function seenKey(){return "seb-seen2-"+(S.me||"me")}
 let SEEN=null;
 function loadSeen(){if(SEEN)return;try{const r=JSON.parse(lsGet(seenKey())||"null");SEEN=r?new Set(r):null}catch(e){SEEN=null}}
@@ -2636,21 +2723,21 @@ function markSeen(v){const k=alertKind(v);if(k)seeKey(alertKey(v,k))}
 function alertsForMe(){return true}
 function readyList(){return myAlerts().map(x=>x.v)}
 function updateBell(){const L=myAlerts(),n=L.length,e=$("#bellN");if(!e)return;e.hidden=!n;e.textContent=n;const b=$("#bellBtn");b.classList.toggle("has",!!n);
-  const kinds=[...new Set(L.map(x=>x.k))];b.title=n?({review:"Waiting for your review",approved:"Approved, add final link",reedit:"Re-edit requested",ready:"Ready to post"}[kinds[0]]+(kinds.length>1?" and more":"")):"Nothing waiting"}
+  const kinds=[...new Set(L.map(x=>x.k))];b.title=n?({review:"Waiting for your review",approved:"Approved, add final link",reedit:"Re-edit requested",ready:"Ready to post",soon:"Posting soon",now:"Post now",late:"Not posted yet",notready:"Due soon, not ready"}[kinds[0]]+(kinds.length>1?" and more":"")):"Nothing waiting"}
 function checkAlerts(){
   updateBell();
   if(!loaded)return;
   loadSeen();const L=myAlerts();
   if(!SEEN){SEEN=new Set(L.map(x=>alertKey(x.v,x.k)));saveSeen();return} // first visit: no flood
-  const fresh=L.filter(x=>!SEEN.has(alertKey(x.v,x.k))&&!document.getElementById("al-"+x.v.id));
+  const fresh=L.filter(x=>!SEEN.has(alertKey(x.v,x.k))&&!document.getElementById(alId(x.v,x.k)));
   if(!fresh.length)return;
-  fresh.forEach((x,i)=>setTimeout(()=>showAlert(x.v,x.k),i*180));
+  fresh.forEach((x,i)=>setTimeout(()=>{showAlert(x.v,x.k);osNotify(x.v,x.k)},i*180));
   chime();
 }
 function showAlert(v,kind){
   kind=kind||alertKind(v)||"ready";
-  const box=$("#alerts");if(!box)return;const old=document.getElementById("al-"+v.id);if(old)old.remove();
-  const el=document.createElement("div");el.className="alert al-"+kind;el.id="al-"+v.id;el.setAttribute("role","alert");
+  const box=$("#alerts");if(!box)return;const old=document.getElementById(alId(v,kind));if(old)old.remove();
+  const el=document.createElement("div");el.className="alert al-"+kind;el.id=alId(v,kind);el.setAttribute("role","alert");
   const when=v.postDate?`${v.postDate===today()?"Today":esc(niceW(v.postDate))}${v.postTime?", "+fmtT(v.postTime):""}`:"Not scheduled yet";
   const title=`<b class="al-t">${esc(v.title||"Untitled")}</b>`;
   const x=`<button class="al-x" data-al="x" aria-label="Dismiss">×</button>`;
@@ -2662,6 +2749,13 @@ function showAlert(v,kind){
     <div class="al-link"><input class="al-in" type="text" placeholder="Paste the final video link" autocomplete="off"><button class="al-open" data-al="savelink">Save</button></div>`;
   else if(kind==="reedit")body=`<div class="al-top"><span class="al-pill warn">Re-edit</span>${x}</div>${title}<small>${esc(reviewerName())} asked for changes${v.round>1?`, round ${v.round}`:""}:</small>
     <p class="al-note">${esc(v.reviewNote||"No notes added.")}</p><div class="al-btns"><button class="al-done" data-al="x">Later</button><button class="al-open" data-al="startedit">Start re-edit</button></div>`;
+  else if(kind==="soon"||kind==="now"||(kind==="late"&&isPoster())){const lnk=safeUrl(v.finalLink);
+    body=`<div class="al-top"><span class="al-pill${kind==="late"?" warn":kind==="now"?" pulse":""}">${kind==="soon"?"Posting in 15 min":kind==="now"?"Post now":"Not posted yet"}</span>${x}</div>${title}<small>${isCar(v)?"Carousel":"Reel"}, ${kind==="late"?"was due ":""}${when}</small>
+    <div class="al-btns">${lnk?`<a class="al-done" href="${esc(lnk)}" target="_blank" rel="noopener noreferrer">Open video</a>`:""}<button class="al-open" data-al="posted">Mark posted</button></div>`}
+  else if(kind==="late")body=`<div class="al-top"><span class="al-pill warn">Not posted yet</span>${x}</div>${title}<small>Was due ${when}. ${esc(posterName())} hasn’t marked it posted.</small>
+    <div class="al-btns"><button class="al-done" data-al="x">OK</button><button class="al-open" data-al="posted">It’s posted</button></div>`;
+  else if(kind==="notready")body=`<div class="al-top"><span class="al-pill warn">Due soon, not ready</span>${x}</div>${title}<small>Posts ${when}, still ${esc(v.status)}.</small>
+    <div class="al-btns"><button class="al-done" data-al="x">OK</button></div>`;
   else body=`<div class="al-top"><span class="al-pill">Ready to post</span>${x}</div>${title}<small>${isCar(v)?"Carousel":"Reel"}, ${when}</small>
     <div class="al-btns"><a class="al-open" href="${esc(safeUrl(v.finalLink))}" target="_blank" rel="noopener noreferrer" data-al="open">Open final video</a><button class="al-done" data-al="posted">Mark posted</button></div>`;
   el.innerHTML=body;el.dataset.id=v.id;el.dataset.key=alertKey(v,kind);box.prepend(el);
@@ -2743,6 +2837,52 @@ function chime(){
       g.gain.setValueAtTime(0,t+d);g.gain.linearRampToValueAtTime(.22,t+d+.02);g.gain.exponentialRampToValueAtTime(.0001,t+d+.9);o.connect(g).connect(actx.destination);o.start(t+d);o.stop(t+d+1)});
   }catch(e){}
 }
+/* ---------- Windows notifications (bottom-right), shown when the app isn't in front ---------- */
+const OSN=("Notification" in window);
+function osOn(){return OSN&&Notification.permission==="granted"&&lsGet("seb-osnotif")!=="off"}
+function osText(v,k){
+  const t=v.title||"Untitled",when=v.postDate?`${v.postDate===today()?"today":niceW(v.postDate)}${v.postTime?" at "+fmtT(v.postTime):""}`:"not scheduled yet";
+  return ({review:["Review needed",`${t}. Approve it or ask for a re-edit.`],approved:["Approved, add the final link",`${reviewerName()} approved ${t}.`],
+    reedit:["Re-edit requested",`${t}: ${v.reviewNote||"see the notes"}`],ready:["Ready to post",`${t}, posts ${when}`],
+    soon:["Posting in 15 minutes",`${t}, posts ${when}`],now:["Post now",`${t}, due ${when}`],late:["Not posted yet",`${t} was due ${when}`],
+    notready:["Due soon, not ready",`${t} posts ${when}, still ${v.status}`]})[k]||["Shoot Board",t];
+}
+function osNotify(v,k,force){
+  if(!osOn())return;
+  if(!force&&document.hasFocus()&&!document.hidden)return;
+  const [title,body]=osText(v,k);
+  const opts={body,icon:"icon-192.png",badge:"icon-192.png",tag:alertKey(v,k),renotify:true,requireInteraction:["now","late","review"].includes(k),
+    data:{id:v.id,k},actions:(["ready","soon","now","late"].includes(k)&&isPoster())?[{action:"posted",title:"Mark posted"}]:k==="review"?[{action:"approve",title:"Approve"}]:[]};
+  const plain=()=>{try{const n=new Notification(title,{body,icon:"icon-192.png",tag:opts.tag});n.onclick=()=>{window.focus();showAlert(v,k);n.close()}}catch(e){}};
+  if(navigator.serviceWorker&&navigator.serviceWorker.controller)navigator.serviceWorker.ready.then(r=>r.showNotification(title,opts)).catch(plain);else plain();
+}
+function askNotif(){
+  if(!OSN){toast("This browser can’t show notifications");return}
+  Notification.requestPermission().then(p=>{
+    if(p==="granted"){lsSet("seb-osnotif",null);toast("Windows notifications are on");osTest()}
+    else toast("Notifications are blocked. Click the lock icon next to the address, then allow Notifications.");
+    if(S.tab==="settings")render();
+  });
+}
+function osTest(){if(!osOn()){toast("Turn notifications on first");return}const opts={body:"Notifications are working. You’ll see reviews and posting reminders here.",icon:"icon-192.png",tag:"seb-test"};
+  if(navigator.serviceWorker&&navigator.serviceWorker.controller)navigator.serviceWorker.ready.then(r=>r.showNotification("Shoot Board",opts));else try{new Notification("Shoot Board",opts)}catch(e){}}
+function osPanel(){
+  if(!OSN)return `<p class="sub">This browser can’t show Windows notifications.</p>`;
+  const p=Notification.permission;
+  if(p==="denied")return `<p class="sub">Notifications are blocked for this app. Click the lock icon next to the address, set Notifications to Allow, then reload.</p>`;
+  if(p!=="granted")return `<div class="switches"><button class="btn primary small" data-act="osnOn">Turn on Windows notifications</button><span class="stat">Pop-ups at the bottom right of your screen, even when the app is minimized</span></div>`;
+  return `<div class="switches"><label class="sw"><input type="checkbox" data-osn="1"${lsGet("seb-osnotif")==="off"?"":" checked"}><span class="knob" aria-hidden="true"></span>Windows notifications on this computer</label><button class="btn small" data-act="osnTest">Send a test</button></div>`;
+}
+// actions pressed on a Windows notification come back here
+if(navigator.serviceWorker)navigator.serviceWorker.addEventListener("message",e=>{
+  const d=e.data||{};const v=S.videos[d.id];if(!v)return;
+  if(d.action==="posted"){putVideo(withStatus(v,"Posted"));toast(`“${v.title||"Untitled"}” marked as posted`)}
+  else if(d.action==="approve"){approveVideo(v)}
+  else showAlert(v,d.k);
+});
+
+// check the clock every minute so posting reminders arrive on time, and show a count in the window title
+setInterval(()=>{if(loaded)checkAlerts();const n=myAlerts().filter(x=>["now","late"].includes(x.k)).length;document.title=(n?`(${n}) Post now · `:"")+"Shoot & edit board"},60000);
 $("#bellBtn").addEventListener("click",()=>{const L=myAlerts();if(!L.length){toast("Nothing waiting for you");return}L.forEach((x,i)=>setTimeout(()=>showAlert(x.v,x.k),i*120))});
 
 /* ---------- final link prompt ---------- */
@@ -3008,6 +3148,9 @@ document.addEventListener("click",async e=>{
     if(!nw||nw.value.length<4){toast("Use at least 4 characters");return}
     b.disabled=true;call("changePassword",token,u,od?od.value:"",nw.value).then(()=>{toast(self?"Password changed":`Password reset for ${dispName(u)}`);nw.value="";if(od)od.value=""}).catch(err=>toast(String(err&&err.message||"Couldn’t change it").replace(/^Error: /,""))).finally(()=>{b.disabled=false})}
   else if(act==="addRaw"){askRaw(b.dataset.d)}
+  else if(act==="addSlot"){askSlot(b.dataset.d)}
+  else if(act==="osnOn"){askNotif()}
+  else if(act==="osnTest"){osTest()}
   else if(act==="qlink"){b.disabled=true;flush().then(()=>call("makeDeviceKey",token)).then(r=>{const link=location.origin+location.pathname+"?key="+r.key;$("#qlBox").value=link;$("#qlOpen").href=link;openDlg($("#qlDlg"));setTimeout(()=>$("#qlBox").select(),80)}).catch(err=>toast(String(err&&err.message||"Couldn’t make the link").replace(/^Error: /,""))).finally(()=>{b.disabled=false})}
   else if(act==="qlCopy"){copyText($("#qlBox").value)}
   else if(act==="qrevoke"){if(!await ask("Turn off your quick-login links?","Home Screen shortcuts made with them will ask for your password again.","Turn off"))return;call("revokeDeviceKeys",token).then(n=>toast(n?`${n} link${n>1?"s":""} turned off`:"You had no quick-login links")).catch(()=>toast("Couldn’t turn them off"))}
@@ -3050,6 +3193,7 @@ document.addEventListener("change",e=>{
   if(t.id==="ckAll"){const L=filtered();if(t.checked)L.forEach(v=>S.sel.add(v.id));else L.forEach(v=>S.sel.delete(v.id));render();return}
   if(t.id==="bulkStatus"&&t.value){const st=t.value;const ids=[...S.sel];ids.forEach(id=>{const v=S.videos[id];if(v)putVideo(bulkStatus(v,st),true)});render();toast(["Ready","In review","Edited"].includes(st)?`Sent to ${reviewerName()} for review`:`${ids.length} set to ${st}`);return}
   if(t.dataset.sst){const s=S.shoots[t.dataset.sst];if(s&&s.status!==t.value){putShoot({...s,status:t.value});toast(`Shoot marked ${t.value.toLowerCase()}`)}return}
+  if(t.dataset.osn){lsSet("seb-osnotif",t.checked?null:"off");toast(t.checked?"Windows notifications on":"Windows notifications off");return}
   if(t.dataset.snd){lsSet("seb-sound",t.checked?null:"off");if(t.checked)chime();return}
   if(t.dataset.opt){S.opts[t.dataset.opt]=t.checked;if(t.dataset.opt==="readyOnly")render();return}
   if(t.dataset.assign){const [d,tm]=t.dataset.assign.split("|");const v=S.videos[t.value];if(v){putVideo({...v,postDate:d,postTime:tm,pinned:true});toast("Placed and locked. Unlock it if a reshuffle may move it.")}return}
@@ -3057,12 +3201,14 @@ document.addEventListener("change",e=>{
   if(t.dataset.cplan!=null){
     const P=cplans();const p={...P[+t.dataset.cplan]};
     if(t.dataset.pf==="from"){if(!t.value)return;p.from=t.value}
+    else if(t.dataset.pf==="to"){if(t.value&&t.value<p.from){toast("The end date can’t be before the start");render();return}p.to=t.value}
     else{const T=parseTimes(t.value);if(!T.length){toast("Add a time like 9:00 PM");render();return}p.times=T}
     P[+t.dataset.cplan]=p;S.settings.cplans=P;putSettings();render();return;
   }
   if(t.dataset.plan!=null){
     const P=plans();const p={...P[+t.dataset.plan]};
     if(t.dataset.pf==="from"){if(!t.value)return;p.from=t.value}
+    else if(t.dataset.pf==="to"){if(t.value&&t.value<p.from){toast("The end date can’t be before the start");render();return}p.to=t.value}
     else{const T=parseTimes(t.value);if(!T.length){toast("Add times like 3:00 PM, 6:00 PM");render();return}p.times=T}
     P[+t.dataset.plan]=p;S.settings.plans=P;putSettings();render();return;
   }
@@ -3165,6 +3311,7 @@ async function startSession(t,user){
   try{const r=await call("loadAll",token);S.videos={};S.shoots={};S.scripts={};S.profiles={};r.rows.forEach(applyDoc);since=r.now-60000;loaded=true;render();checkAlerts();
     try{lsSet("seb-cache",JSON.stringify({user:S.me,rows:r.rows}))}catch(e){}
     $("#sync").textContent="Connected to your Google Sheet. Changes save automatically.";
+    if(OSN&&Notification.permission==="default"&&!lsGet("seb-asked-osn")&&!PHONE()){lsSet("seb-asked-osn","1");setTimeout(()=>toast("Get Windows notifications for reviews and posting times?","Turn on",askNotif),2500)}
     clearInterval(pollT);pollT=setInterval(poll,12000);
   }catch(e){if(String(e&&e.message).includes("SESSION"))return sessionExpired();$("#sync").textContent="Couldn’t load: "+(e&&e.message||e)}
 }
