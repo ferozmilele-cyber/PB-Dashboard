@@ -1692,6 +1692,65 @@ td input.dt-in:hover{background:radial-gradient(circle at 10px 50%,var(--dc) 0 4
 td select[data-f="format"]{min-width:80px!important}
 td input[type=date]{min-width:128px!important}
 td input.dt-in{padding-left:24px!important}
+
+/* ================= Liquid glass 2.0 ================= */
+/* floating glass bubbles behind everything */
+#bubbles{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;transform:translate3d(calc(var(--bx,0) * -26px),calc(var(--by,0) * -20px),0);transition:transform 1.4s cubic-bezier(.22,1,.36,1)}
+.bb{position:absolute;border-radius:50%;
+  background:radial-gradient(circle at 32% 28%,rgba(255,255,255,.95) 0 6%,rgba(255,255,255,.35) 18%,rgba(255,255,255,.08) 45%,rgba(170,255,0,.10) 72%,rgba(255,255,255,.28) 100%);
+  box-shadow:inset -12px -16px 34px rgba(150,220,0,.16),inset 10px 12px 26px rgba(255,255,255,.75),0 20px 50px rgba(20,24,10,.06);
+  border:1px solid rgba(255,255,255,.7);animation:bbFloat 38s ease-in-out infinite alternate;will-change:transform}
+.bb::after{content:"";position:absolute;left:22%;top:14%;width:26%;height:14%;border-radius:50%;background:rgba(255,255,255,.85);filter:blur(2px);transform:rotate(-30deg)}
+.b1{width:260px;height:260px;left:-60px;top:12%;animation-duration:44s}
+.b2{width:120px;height:120px;left:38%;top:62%;animation-duration:36s;animation-delay:-8s}
+.b3{width:190px;height:190px;right:-50px;top:28%;animation-duration:48s;animation-delay:-14s}
+.b4{width:70px;height:70px;left:22%;top:18%;animation-duration:30s;animation-delay:-4s}
+.b5{width:340px;height:340px;right:12%;bottom:-160px;animation-duration:56s;animation-delay:-20s;opacity:.8}
+.b6{width:46px;height:46px;right:30%;top:10%;animation-duration:26s;animation-delay:-10s}
+.b7{width:90px;height:90px;left:8%;bottom:10%;animation-duration:40s;animation-delay:-16s}
+@keyframes bbFloat{0%{transform:translate(0,0) scale(1)}33%{transform:translate(40px,-60px) scale(1.04)}66%{transform:translate(-30px,-110px) scale(.97)}100%{transform:translate(20px,-40px) scale(1.02)}}
+/* fine paper grain for a premium, less digital feel */
+body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.05;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+/* liquid-glass panels: brighter rim, deeper frost */
+section.panel{-webkit-backdrop-filter:blur(34px) saturate(185%) brightness(1.03)!important;backdrop-filter:blur(34px) saturate(185%) brightness(1.03)!important;
+  box-shadow:0 1px 1px rgba(20,24,10,.03),0 12px 30px rgba(20,24,10,.06),0 30px 80px rgba(20,24,10,.06),inset 0 1px 0 rgba(255,255,255,1),inset 0 -1px 0 rgba(255,255,255,.4),inset 0 0 0 1px rgba(255,255,255,.35)!important}
+section.panel::before{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;pointer-events:none;z-index:0;
+  background:conic-gradient(from 210deg,rgba(255,255,255,.95),rgba(170,255,0,.35),rgba(255,255,255,.6),rgba(200,220,255,.35),rgba(255,255,255,.95));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:.8}
+/* specular highlight that follows the pointer on glass pieces */
+.btn,.gchip,.fchip,.ovk>div,.pl-row,.tcard,.idea,.acct,.ep-day,.bkrow,.searchbtn,.me,.bell,.morebtn,.shuffle{position:relative;isolation:isolate}
+.ovk>div,.pl-row,.tcard,.idea,.acct,.ep-day,.bkrow{overflow:hidden}
+.btn::after,.gchip::after,.fchip::after,.ovk>div::after,.pl-row::after,.tcard::after,.idea::after,.acct::after,.ep-day::after,.bkrow::after,.searchbtn::after,.me::after,.morebtn::after,.shuffle::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:2;opacity:0;transition:opacity .35s ease;
+  background:radial-gradient(180px circle at var(--lx,50%) var(--ly,50%),rgba(255,255,255,.75),rgba(255,255,255,0) 60%);mix-blend-mode:soft-light}
+.btn:hover::after,.gchip:hover::after,.fchip:hover::after,.ovk>div:hover::after,.pl-row:hover::after,.tcard:hover::after,.idea:hover::after,.acct:hover::after,.ep-day:hover::after,.bkrow:hover::after,.searchbtn:hover::after,.me:hover::after,.morebtn:hover::after,.shuffle:hover::after{opacity:1}
+/* gentle 3D tilt on cards */
+.ovk>div,.ep-day,.tcard,.acct,.hstats div{transform:perspective(800px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateY(var(--ty,0px))!important;
+  transition:transform .6s cubic-bezier(.22,1,.36,1),box-shadow .45s ease,background .3s!important;transform-style:preserve-3d}
+.ovk>div:hover,.ep-day:hover,.tcard:hover,.acct:hover,.hstats div:hover{--ty:-3px}
+.ovk>div b{transform:translateZ(18px)}
+/* jelly press */
+.jelly{animation:jelly .55s cubic-bezier(.3,1.6,.5,1)!important}
+@keyframes jelly{0%{scale:1 1}25%{scale:1.08 .9}50%{scale:.95 1.05}75%{scale:1.02 .98}100%{scale:1 1}}
+/* click bubbles and tab wave */
+.puff{position:fixed;z-index:450;pointer-events:none;border-radius:50%;
+  background:radial-gradient(circle at 30% 30%,#fff 0 20%,rgba(255,255,255,.3) 45%,rgba(170,255,0,.35) 100%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.8),0 2px 6px rgba(120,190,0,.25)}
+.tabwave{position:fixed;z-index:0;pointer-events:none;width:60px;height:60px;border-radius:50%;
+  background:radial-gradient(circle,rgba(170,255,0,.35),rgba(170,255,0,.08) 45%,rgba(170,255,0,0) 70%)}
+/* the active tab and switch pills feel like liquid glass drops */
+.tab-ind{background:linear-gradient(180deg,#C8FF55,#A6F500)!important;box-shadow:0 6px 18px rgba(150,230,0,.45),inset 0 1px 0 rgba(255,255,255,.8),inset 0 -2px 6px rgba(90,150,0,.25)!important}
+.tab-ind::after{content:"";position:absolute;left:12%;right:12%;top:3px;height:40%;border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,.75),rgba(255,255,255,0))}
+.seg-ind::after{content:"";position:absolute;left:10%;right:10%;top:2px;height:45%;border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(255,255,255,0))}
+.btn.primary::before,.shuffle::before{content:"";position:absolute;left:10%;right:10%;top:2px;height:42%;border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,.7),rgba(255,255,255,0));pointer-events:none;z-index:1}
+/* page switch: content arrives with a soft rise and de-blur */
+::view-transition-new(main){animation:vtIn2 .65s cubic-bezier(.16,1,.3,1) .05s both!important}
+html[data-vt="back"]::view-transition-new(main){animation-name:vtIn2b!important}
+@keyframes vtIn2{from{opacity:0;transform:translateX(34px) translateY(6px) scale(.985);filter:blur(10px) saturate(1.3)}}
+@keyframes vtIn2b{from{opacity:0;transform:translateX(-34px) translateY(6px) scale(.985);filter:blur(10px) saturate(1.3)}}
+@media (max-width:600px){.b1{width:170px;height:170px}.b3{width:120px;height:120px}.b5{width:220px;height:220px}.b2,.b6{display:none}}
+@media (hover:none){.ovk>div,.ep-day,.tcard,.acct,.hstats div{transform:none!important}}
+@media (prefers-reduced-motion:reduce){.bb{animation:none!important}#bubbles{transform:none!important}.jelly{animation:none!important}}
 </style>
 </head>
 <body>
@@ -1890,6 +1949,7 @@ td input.dt-in{padding-left:24px!important}
     <div class="foot"><a class="btn" id="scriptOpen" target="_blank" rel="noopener noreferrer" hidden>Open original</a><span style="flex:1"></span><button class="btn primary" value="ok">Close</button></div>
   </form>
 </dialog>
+<div id="bubbles" aria-hidden="true"><i class="bb b1"></i><i class="bb b2"></i><i class="bb b3"></i><i class="bb b4"></i><i class="bb b5"></i><i class="bb b6"></i><i class="bb b7"></i></div>
 <div class="alerts" id="alerts" aria-live="polite"></div>
 <div class="tabpop" id="tabPop" role="tooltip" aria-hidden="true"></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -3471,6 +3531,38 @@ function openWrapped(from,to,label){
 function wrappedOffer(){const d0=new Date(today()+"T00:00:00");if(d0.getDate()>7)return;const pm=new Date(d0.getFullYear(),d0.getMonth()-1,1),key="seb-wrapped-"+iso(pm).slice(0,7);if(lsGet(key))return;
   const from=iso(pm),to=iso(new Date(d0.getFullYear(),d0.getMonth(),0));if(!vids().some(v=>(v.shotDate>=from&&v.shotDate<=to)||(v.editedOn>=from&&v.editedOn<=to)))return;
   lsSet(key,"1");setTimeout(()=>toast(`Your ${MONL[pm.getMonth()]} Wrapped is ready`,"Play",()=>openWrapped(from,to,MONL[pm.getMonth()])),2500)}
+
+
+/* ================= liquid glass: specular light, tilt, jelly, bubbles ================= */
+(function(){
+  const fine=window.matchMedia&&matchMedia("(hover:hover) and (pointer:fine)").matches;
+  const reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(reduce)return;
+  const LG=".btn,.gchip,.fchip,.ovk>div,.pl-row,.tcard,.idea,.acct,.ep-day,.bkrow,.searchbtn,.me,.bell,.morebtn,.shuffle";
+  const TILT=".ovk>div,.ep-day,.tcard,.acct,.hstats div";
+  let raf=0,ev=null,lastTilt=null;
+  if(fine)document.addEventListener("pointermove",e=>{ev=e;if(raf)return;raf=requestAnimationFrame(()=>{raf=0;const t=ev.target;if(!t.closest)return;
+    const el=t.closest(LG);if(el){const r=el.getBoundingClientRect();el.style.setProperty("--lx",(ev.clientX-r.left)+"px");el.style.setProperty("--ly",(ev.clientY-r.top)+"px")}
+    const tl=t.closest(TILT);if(lastTilt&&lastTilt!==tl){lastTilt.style.setProperty("--rx","0deg");lastTilt.style.setProperty("--ry","0deg")}
+    if(tl){const r=tl.getBoundingClientRect(),x=(ev.clientX-r.left)/r.width-.5,y=(ev.clientY-r.top)/r.height-.5;tl.style.setProperty("--rx",(-y*6).toFixed(2)+"deg");tl.style.setProperty("--ry",(x*7).toFixed(2)+"deg")}
+    lastTilt=tl})},{passive:true});
+  document.addEventListener("pointerleave",()=>{if(lastTilt){lastTilt.style.setProperty("--rx","0deg");lastTilt.style.setProperty("--ry","0deg")}},true);
+  // jelly bounce + a puff of tiny glass bubbles where you click
+  const JB=".btn,.shuffle,.fchip,.gchip,.seg button,nav.tabs button,.mbar button,.wd,.iconbtn,.copy,.tag.pin,.ovst-i";
+  document.addEventListener("pointerup",e=>{const b=e.target.closest&&e.target.closest(JB);if(!b)return;
+    b.classList.remove("jelly");void b.offsetWidth;b.classList.add("jelly");setTimeout(()=>b.classList.remove("jelly"),600);
+    for(let i=0;i<6;i++){const s=document.createElement("i");s.className="puff";const sz=5+Math.random()*9;
+      s.style.cssText=`left:${e.clientX}px;top:${e.clientY}px;width:${sz}px;height:${sz}px`;document.body.appendChild(s);
+      const dx=(Math.random()*2-1)*36,dy=-(22+Math.random()*46);
+      s.animate([{transform:"translate(-50%,-50%) scale(.3)",opacity:.95},{transform:`translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px)) scale(1)`,opacity:0}],{duration:620+Math.random()*380,easing:"cubic-bezier(.2,.8,.3,1)"}).onfinish=()=>s.remove()}},{passive:true});
+  // a soft lime wave rolls out from the tab you pick
+  document.querySelectorAll("nav.tabs,.mbar").forEach(nav=>nav.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;const r=b.getBoundingClientRect();
+    const w=document.createElement("i");w.className="tabwave";w.style.left=(r.left+r.width/2)+"px";w.style.top=(r.top+r.height/2)+"px";document.body.appendChild(w);
+    w.animate([{transform:"translate(-50%,-50%) scale(.2)",opacity:.55},{transform:"translate(-50%,-50%) scale(14)",opacity:0}],{duration:900,easing:"cubic-bezier(.16,1,.3,1)"}).onfinish=()=>w.remove()}));
+  // bubbles drift a little with the pointer for depth
+  const bb=document.getElementById("bubbles");
+  if(fine&&bb)document.addEventListener("pointermove",e=>{bb.style.setProperty("--bx",((e.clientX/innerWidth)-.5).toFixed(3));bb.style.setProperty("--by",((e.clientY/innerHeight)-.5).toFixed(3))},{passive:true});
+})();
 
 /* ---------- shoot plan ---------- */
 const SH_ST=[{k:"Planned",c:"#AAFF00"},{k:"Done",c:"#0B0B0C"},{k:"Cancelled",c:"#A1A1A6"}];
