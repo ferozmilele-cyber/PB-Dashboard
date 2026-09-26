@@ -1777,6 +1777,47 @@ html[data-vt="back"]::view-transition-new(main){animation-name:vtIn2b!important}
 .stpop button.cur{background:rgba(12,14,8,.05)}
 .stpop hr{border:0;height:1px;background:rgba(12,14,8,.08);margin:5px 8px}
 @media (max-width:600px){.stsel{height:36px;width:100%;min-width:0}.stpop button{padding:12px 14px;font-size:15px}}
+
+/* ===== glass dropdown buttons ===== */
+.gx-hidden{position:absolute!important;opacity:0!important;pointer-events:none!important;width:1px!important;height:1px!important;overflow:hidden!important;margin:0!important;padding:0!important;border:0!important}
+.gsel{display:inline-flex!important;align-items:center;gap:8px;min-width:var(--gw,120px);max-width:100%;height:36px;padding:0 10px 0 12px!important;border-radius:12px!important;cursor:pointer;
+  background:rgba(255,255,255,.72)!important;border:1px solid rgba(12,14,8,.08)!important;box-shadow:0 1px 2px rgba(20,24,10,.04),inset 0 1px 0 #fff!important;
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);font:600 14px/1 inherit!important;color:#1f221c!important;text-align:left;
+  transition:background .2s,box-shadow .3s,border-color .2s,transform .4s var(--spring)}
+.gsel i{width:9px;height:9px;border-radius:50%;flex:none;box-shadow:0 0 0 3px rgba(12,14,8,.05)}
+.gsel span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gsel svg{flex:none;color:#7a7f73;transition:transform .35s var(--spring)}
+.gsel.ph span{color:var(--muted);font-weight:500}
+.gsel:hover{background:#fff!important;box-shadow:0 6px 16px rgba(20,24,10,.08),inset 0 1px 0 #fff!important}
+.gsel.open{border-color:rgba(123,209,0,.6)!important;box-shadow:0 0 0 4px rgba(170,255,0,.25)!important}
+.gsel.open svg{transform:rotate(180deg)}
+.gsel:disabled{opacity:.5;cursor:not-allowed}
+/* in tables and rows the buttons stay quiet until hovered */
+td .gsel{background:transparent!important;border-color:transparent!important;box-shadow:none!important;height:32px;border-radius:10px!important}
+td .gsel:hover,td .gsel.open{background:rgba(255,255,255,.85)!important;border-color:rgba(12,14,8,.08)!important}
+.gsel.assign{border:1.5px dashed rgba(12,14,8,.18)!important;background:rgba(255,255,255,.45)!important;color:var(--muted)!important;font-weight:500!important}
+.gsel.assign:hover{border-color:rgba(123,209,0,.7)!important;color:#0B0B0C!important}
+.gsel.psel{border-left:1px solid rgba(12,14,8,.08)!important}
+.toolbar .gsel,.bulk .gsel{height:40px;border-radius:999px!important}
+.bulk .gsel{background:rgba(255,255,255,.14)!important;color:#fff!important;border-color:rgba(255,255,255,.2)!important}
+.bulk .gsel svg{color:#fff}
+#gsPop{overflow:auto;overscroll-behavior:contain}
+#gsPop .gx-group{padding:8px 12px 4px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+#gsPop button i.none{display:none}
+#gsPop button.ph span{color:var(--muted);font-weight:500}
+#gsPop button[disabled]{opacity:.45;cursor:default}
+@media (max-width:600px){.gsel{height:40px;font-size:15px!important;min-width:0;width:100%}.sday .slot .gsel.assign{width:100%}}
+/* pillar name chips: the text box sits cleanly inside the chip */
+.pl-chip{height:40px;padding:0 4px 0 12px!important;background:rgba(255,255,255,.72)!important;border:1px solid rgba(255,255,255,.95)!important;box-shadow:0 1px 2px rgba(20,24,10,.05),inset 0 1px 0 #fff}
+.pl-chip input{border:0!important;background:transparent!important;box-shadow:none!important;padding:0!important;height:100%;width:130px;font-weight:600;border-radius:0!important}
+.pl-chip input:focus{box-shadow:none!important}
+.pl-chip:focus-within{box-shadow:0 0 0 4px rgba(170,255,0,.25),inset 0 1px 0 #fff!important;border-color:rgba(123,209,0,.6)!important}
+.pl-slot{height:44px;padding:0 4px 0 12px!important;background:rgba(255,255,255,.72)!important;border:1px solid rgba(255,255,255,.95)!important}
+.pl-slot .gsel{height:34px;border:0!important;background:transparent!important;box-shadow:none!important;min-width:150px}
+.pl-slot .gsel:hover{background:rgba(12,14,8,.04)!important}
+
+.stpop[popover]{inset:auto;margin:0;color:inherit;overflow:auto}
+.stpop[popover]:not(:popover-open){display:none}
 </style>
 </head>
 <body>
@@ -1977,7 +2018,8 @@ html[data-vt="back"]::view-transition-new(main){animation-name:vtIn2b!important}
 </dialog>
 <div id="bubbles" aria-hidden="true"><i class="bb b1"></i><i class="bb b2"></i><i class="bb b3"></i><i class="bb b4"></i><i class="bb b5"></i><i class="bb b6"></i><i class="bb b7"></i></div>
 <div class="alerts" id="alerts" aria-live="polite"></div>
-<div id="stPop" class="stpop" role="listbox" aria-label="Choose a status"></div>
+<div id="stPop" class="stpop" role="listbox" aria-label="Choose a status" popover="manual"></div>
+<div id="gsPop" class="stpop" role="listbox" aria-label="Choose an option" popover="manual"></div>
 <div class="tabpop" id="tabPop" role="tooltip" aria-hidden="true"></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -2080,16 +2122,20 @@ function stMenuItems(v){
 }
 function openStMenu(btn){
   const v=S.videos[btn.dataset.id];if(!v)return;const pop=$("#stPop");
-  if(pop.classList.contains("show")&&pop.dataset.id===v.id){closeStMenu();return}
+  if(STM.btn&&pop.dataset.id===v.id){closeStMenu();return}
   pop.dataset.id=v.id;pop.innerHTML=stMenuItems(v).map((it,i)=>`${it.v==="Shot"&&i>0?'<hr>':""}<button type="button" role="option" data-stv="${esc(it.v)}" class="${it.cur?"cur":""}" style="--c:${it.c}" aria-selected="${!!it.cur}"><i></i><span>${esc(it.label)}${it.hint?`<small>${esc(it.hint)}</small>`:""}</span>${it.cur?'<b>✓</b>':""}</button>`).join("");
-  const r=btn.getBoundingClientRect();pop.style.minWidth=Math.max(200,r.width)+"px";pop.classList.remove("up");
+  popShow(pop,btn);const r=btn.getBoundingClientRect();pop.style.minWidth=Math.max(200,r.width)+"px";pop.classList.remove("up");
   pop.style.left=Math.min(r.left,innerWidth-Math.max(200,r.width)-10)+"px";
   const ph=pop.offsetHeight||300;if(r.bottom+ph+12>innerHeight&&r.top>ph+12){pop.style.top=(r.top-ph-6)+"px";pop.classList.add("up")}else pop.style.top=(r.bottom+6)+"px";
-  pop.classList.add("show");btn.classList.add("open");STM.btn=btn;
+  requestAnimationFrame(()=>pop.classList.add("show"));btn.classList.add("open");STM.btn=btn;
   const f=pop.querySelector("button.cur")||pop.querySelector("button");if(f)f.focus({preventScroll:true});
 }
 const STM={btn:null};
-function closeStMenu(){const pop=$("#stPop");pop.classList.remove("show");if(STM.btn)STM.btn.classList.remove("open");STM.btn=null}
+// inside an open dialog the page behind is inactive, so the menu moves into that dialog before it opens
+function popShow(pop,anchor){const host=(anchor&&anchor.closest("dialog[open]"))||document.body;if(pop.parentNode!==host){try{if(pop.matches&&pop.matches(":popover-open"))pop.hidePopover()}catch(e){}host.appendChild(pop)}
+  if(!pop.showPopover)return;try{if(pop.matches(":popover-open"))pop.hidePopover();pop.showPopover()}catch(e){}}
+function popHide(pop){if(pop.hidePopover)setTimeout(()=>{if(!pop.classList.contains("show")&&pop.matches(":popover-open"))try{pop.hidePopover()}catch(e){}},200)}
+function closeStMenu(){const pop=$("#stPop");pop.classList.remove("show");popHide(pop);if(STM.btn)STM.btn.classList.remove("open");STM.btn=null}
 document.addEventListener("click",e=>{const o=e.target.closest&&e.target.closest("#stPop [data-stv]");
   if(o){const v=S.videos[$("#stPop").dataset.id],val=o.dataset.stv;closeStMenu();if(!v)return;
     if(val==="__approve"){approveVideo(v);return}if(val===v.status)return;setStatusFlow(v,val);return}
@@ -2150,7 +2196,7 @@ function toast(m,label,fn){const t=$("#toast");t.classList.remove("act");void t.
   if(label){const b=document.createElement("button");b.textContent=label;b.onclick=()=>{t.classList.remove("show");fn()};t.appendChild(b)}
   t.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove("show"),label?9000:2400)}
 function shuffleArr(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
-function openDlg(d){if(d.showModal)d.showModal();else d.setAttribute("open","")}
+function openDlg(d){if(d.showModal)d.showModal();else d.setAttribute("open","");setTimeout(()=>{gxEnhance(d);gxSyncAll(d)},0)}
 function ask(title,msg,ok,safe){
   return new Promise(res=>{const d=$("#askDlg");$("#askTitle").textContent=title;$("#askMsg").textContent=msg;$("#askOk").textContent=ok||"Delete";$("#askOk").className="btn "+(safe?"primary":"danger");d.returnValue="";
     d.addEventListener("close",()=>res(d.returnValue==="ok"),{once:true});openDlg(d)});
@@ -3617,6 +3663,54 @@ function wrappedOffer(){const d0=new Date(today()+"T00:00:00");if(d0.getDate()>7
   const bb=document.getElementById("bubbles");
   if(fine&&bb)document.addEventListener("pointermove",e=>{bb.style.setProperty("--bx",((e.clientX/innerWidth)-.5).toFixed(3));bb.style.setProperty("--by",((e.clientY/innerHeight)-.5).toFixed(3))},{passive:true});
 })();
+
+
+/* ================= glass dropdowns: every <select> gets a glass button and menu; the real select stays for values and change events ================= */
+const GX={sel:null,btn:null};
+const GX_CHEV='<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+function gxLabel(sel){const o=sel.options[sel.selectedIndex];return o?o.textContent:""}
+function gxDot(text){return pillars().includes(text)?pillarColor(text):SC[text]||""}
+function gxSync(sel){const b=sel._gx;if(!b)return;const t=gxLabel(sel),dc=gxDot(t);b.querySelector("span").textContent=t||"Choose…";
+  b.classList.toggle("ph",!sel.value);const i=b.querySelector("i");i.style.display=dc?"":"none";if(dc)i.style.background=dc;b.disabled=sel.disabled}
+function gxSyncAll(root){(root||document).querySelectorAll("select.gx-hidden").forEach(gxSync)}
+function gxEnhance(root){
+  (root||document).querySelectorAll("select:not(.gx-hidden):not([multiple])").forEach(sel=>{
+    if(sel.closest(".stpop"))return;
+    const w=sel.offsetWidth;const b=document.createElement("button");b.type="button";
+    b.className="gsel "+[...sel.classList].join(" ");const st=sel.getAttribute("style");if(st)b.setAttribute("style",st);
+    if(w)b.style.setProperty("--gw",w+"px");b.setAttribute("aria-haspopup","listbox");b.setAttribute("aria-label",sel.getAttribute("aria-label")||"Choose");
+    b.innerHTML=`<i></i><span></span>${GX_CHEV}`;sel.classList.add("gx-hidden");sel.tabIndex=-1;sel.setAttribute("aria-hidden","true");
+    sel.after(b);sel._gx=b;b._sel=sel;gxSync(sel);
+  });
+}
+function gxOpen(b){
+  const sel=b._sel,pop=$("#gsPop");if(!sel)return;if(GX.btn===b){gxClose();return}
+  closeStMenu&&closeStMenu();
+  let html="",lastGroup=null;
+  [...sel.options].forEach((o,i)=>{const g=o.parentElement.tagName==="OPTGROUP"?o.parentElement.label:null;
+    if(g!==lastGroup){if(g)html+=`<div class="gx-group">${esc(g)}</div>`;lastGroup=g}
+    const dc=gxDot(o.textContent);
+    html+=`<button type="button" role="option" data-gxi="${i}" class="${i===sel.selectedIndex?"cur":""}${o.value===""?" ph":""}"${o.disabled?" disabled":""}${dc?` style="--c:${dc}"`:""} aria-selected="${i===sel.selectedIndex}">${dc?"<i></i>":'<i class="none"></i>'}<span>${esc(o.textContent)}</span>${i===sel.selectedIndex?"<b>✓</b>":""}</button>`});
+  pop.innerHTML=html;popShow(pop,b);const r=b.getBoundingClientRect(),W=Math.max(190,r.width);pop.style.minWidth=W+"px";pop.style.maxHeight=Math.min(380,innerHeight-40)+"px";pop.classList.remove("up");
+  pop.style.left=Math.max(8,Math.min(r.left,innerWidth-W-10))+"px";
+  const ph=Math.min(pop.scrollHeight||300,380);if(r.bottom+ph+12>innerHeight&&r.top>ph+12){pop.style.top=(r.top-ph-6)+"px";pop.classList.add("up")}else pop.style.top=(r.bottom+6)+"px";
+  requestAnimationFrame(()=>pop.classList.add("show"));b.classList.add("open");GX.btn=b;GX.sel=sel;
+  const c=pop.querySelector("button.cur")||pop.querySelector("button:not([disabled])");if(c){c.focus({preventScroll:true});c.scrollIntoView({block:"nearest"})}
+}
+function gxClose(){const pop=$("#gsPop");if(!pop)return;pop.classList.remove("show");popHide(pop);if(GX.btn)GX.btn.classList.remove("open");GX.btn=null;GX.sel=null}
+document.addEventListener("click",e=>{
+  const b=e.target.closest&&e.target.closest(".gsel");if(b){e.preventDefault();e.stopPropagation();gxOpen(b);return}
+  const o=e.target.closest&&e.target.closest("#gsPop [data-gxi]");
+  if(o){e.stopPropagation();const sel=GX.sel;gxClose();if(!sel)return;const i=+o.dataset.gxi;if(i!==sel.selectedIndex){sel.selectedIndex=i;gxSync(sel);sel.dispatchEvent(new Event("input",{bubbles:true}));sel.dispatchEvent(new Event("change",{bubbles:true}))}return}
+  if(!(e.target.closest&&e.target.closest("#gsPop")))gxClose()},true);
+document.addEventListener("keydown",e=>{const pop=$("#gsPop");if(!pop||!pop.classList.contains("show"))return;
+  if(e.key==="Escape"){e.preventDefault();e.stopPropagation();const b=GX.btn;gxClose();b&&b.focus();return}
+  if(e.key==="ArrowDown"||e.key==="ArrowUp"){e.preventDefault();const B=[...pop.querySelectorAll("button:not([disabled])")];let i=B.indexOf(document.activeElement);i=e.key==="ArrowDown"?Math.min(B.length-1,i+1):Math.max(0,i-1);B[i]&&B[i].focus()}},true);
+document.addEventListener("change",e=>{if(e.target&&e.target._gx)gxSync(e.target)},true);
+addEventListener("scroll",e=>{if(!(e.target&&e.target.closest&&e.target.closest("#gsPop")))gxClose()},{passive:true,capture:true});addEventListener("resize",gxClose);
+new MutationObserver(ms=>{let hit=false;for(const m of ms)for(const n of m.addedNodes)if(n.nodeType===1&&(n.tagName==="SELECT"||n.querySelector&&n.querySelector("select"))){hit=true;break}
+  if(hit)requestAnimationFrame(()=>gxEnhance(document))}).observe(document.body,{childList:true,subtree:true});
+requestAnimationFrame(()=>gxEnhance(document));
 
 /* ---------- shoot plan ---------- */
 const SH_ST=[{k:"Planned",c:"#AAFF00"},{k:"Done",c:"#0B0B0C"},{k:"Cancelled",c:"#A1A1A6"}];
