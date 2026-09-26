@@ -1583,6 +1583,75 @@ body.is-dragging .sday .slot:not(.drop-target):not(.drag-src)>*:not(.tm){filter:
   section.panel .sub{font-size:13.5px}
 }
 @media (max-width:600px){.sday .slot .status,.erow .status,tbody td .status{min-width:0!important}.sday .slot .ttl .openlink{margin-left:6px}}
+
+/* ================= Glass & polish pass ================= */
+:root{
+  --g-bg:rgba(255,255,255,.58);--g-bg2:rgba(255,255,255,.72);--g-line:rgba(255,255,255,.85);--g-edge:rgba(12,14,8,.06);
+  --g-shadow:0 1px 1px rgba(20,24,10,.03),0 8px 24px rgba(20,24,10,.06),0 24px 60px rgba(20,24,10,.05);
+  --g-shadow-h:0 2px 4px rgba(20,24,10,.04),0 14px 34px rgba(20,24,10,.10);
+  --g-blur:blur(28px) saturate(170%);
+}
+body::before{background:
+  radial-gradient(42% 46% at 8% 6%,rgba(170,255,0,.24),transparent 70%),
+  radial-gradient(40% 44% at 92% 10%,rgba(214,232,196,.55),transparent 70%),
+  radial-gradient(46% 50% at 85% 90%,rgba(170,255,0,.12),transparent 70%),
+  radial-gradient(40% 45% at 6% 92%,rgba(225,230,218,.7),transparent 70%)!important;filter:blur(30px)!important}
+/* panels: frosted glass with a soft top highlight */
+section.panel{position:relative;background:linear-gradient(180deg,rgba(255,255,255,.66),rgba(255,255,255,.48))!important;
+  -webkit-backdrop-filter:var(--g-blur);backdrop-filter:var(--g-blur);border:1px solid var(--g-line)!important;
+  box-shadow:var(--g-shadow),inset 0 1px 0 rgba(255,255,255,.95),inset 0 0 0 1px rgba(255,255,255,.25)!important}
+section.panel::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(135deg,rgba(255,255,255,.55),rgba(255,255,255,0) 32%,rgba(255,255,255,0) 70%,rgba(255,255,255,.25));mix-blend-mode:soft-light}
+section.panel>*{position:relative;z-index:1}
+/* inner cards and rows: lighter glass, gentle lift on hover */
+.ovk>div,.pl-row,.tcard,.acct,.idea,.bkrow,.eplan,.ep-day,.hstats div,.card,.tp,.need,.sheroes .card{
+  background:var(--g-bg2)!important;-webkit-backdrop-filter:blur(18px) saturate(160%);backdrop-filter:blur(18px) saturate(160%);
+  border:1px solid var(--g-line)!important;box-shadow:0 1px 2px rgba(20,24,10,.04),inset 0 1px 0 rgba(255,255,255,.9)!important;
+  transition:transform .5s var(--spring),box-shadow .45s var(--ease),background .35s var(--ease)!important}
+.ovk>div:hover,.pl-row:hover,.tcard:hover,.acct:hover,.idea:hover,.bkrow:hover,.ep-day:hover,.hstats div:hover{transform:translateY(-2px);box-shadow:var(--g-shadow-h),inset 0 1px 0 #fff!important;background:rgba(255,255,255,.85)!important}
+.tp,.need{background:transparent!important;border-color:transparent!important;box-shadow:none!important;-webkit-backdrop-filter:none;backdrop-filter:none}
+.ovk .k1,.hstats div:first-child,.ep-day.now{background:linear-gradient(160deg,#C4FF4D,#AAFF00 55%,#9BEF00)!important;border-color:rgba(255,255,255,.6)!important;box-shadow:0 10px 28px rgba(150,230,0,.35),inset 0 1px 0 rgba(255,255,255,.7)!important}
+/* segmented controls: glass track, bright pill */
+.seg{background:rgba(12,14,8,.045)!important;border:1px solid rgba(255,255,255,.7);box-shadow:inset 0 1px 2px rgba(12,14,8,.06)}
+.seg button{color:#5f6459!important;font-weight:600}
+.seg button[aria-pressed="true"]{color:#0B0B0C!important}
+.seg-ind{background:linear-gradient(180deg,#fff,#f7f8f4)!important;box-shadow:0 1px 2px rgba(0,0,0,.06),0 4px 12px rgba(20,24,10,.08),inset 0 0 0 .5px rgba(12,14,8,.06)!important}
+/* buttons */
+.btn{background:rgba(255,255,255,.72)!important;border:1px solid rgba(255,255,255,.9)!important;box-shadow:0 1px 2px rgba(20,24,10,.05),inset 0 1px 0 #fff!important;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.btn:hover{background:rgba(255,255,255,.92)!important;box-shadow:0 6px 18px rgba(20,24,10,.09),inset 0 1px 0 #fff!important}
+.btn.primary,.shuffle{background:linear-gradient(180deg,#C2FF45,#AAFF00)!important;border-color:rgba(123,209,0,.35)!important;box-shadow:0 6px 18px rgba(150,230,0,.32),inset 0 1px 0 rgba(255,255,255,.65)!important}
+.btn.ghost{background:transparent!important;border-color:transparent!important;box-shadow:none!important}
+.btn.ghost:hover{background:rgba(255,255,255,.6)!important}
+/* chips and tags: glass with a small colour dot instead of loud fills */
+.ptag{background:rgba(255,255,255,.72)!important;color:#2B2E27!important;border:1px solid rgba(12,14,8,.07)!important;font-weight:600!important;box-shadow:inset 0 1px 0 #fff}
+.ptag::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--pc);margin-right:6px;vertical-align:1px;box-shadow:0 0 0 2px color-mix(in srgb,var(--pc) 18%,transparent)}
+.pl-next{font-size:15px!important;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.pl-next b{display:inline-flex!important;align-items:center;gap:7px;margin:0!important;padding:6px 12px!important;border-radius:999px!important;
+  background:rgba(255,255,255,.75)!important;color:#0B0B0C!important;font-weight:700;border:1px solid rgba(255,255,255,.95);box-shadow:0 2px 8px rgba(20,24,10,.06),inset 0 1px 0 #fff}
+.pl-next b::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--pc);box-shadow:0 0 0 3px color-mix(in srgb,var(--pc) 20%,transparent)}
+.pl-n i{box-shadow:0 0 0 3px color-mix(in srgb,currentColor 0%,rgba(255,255,255,.9))}
+.pl-s.on b{background:linear-gradient(180deg,#C2FF45,#AAFF00)!important;box-shadow:0 4px 12px rgba(150,230,0,.3)}
+.pbtn{background:rgba(255,255,255,.72)!important;color:#2B2E27!important;border:1px solid rgba(12,14,8,.08)!important}
+.pbtn::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--pc);margin-right:6px}
+.psel{border-left:3px solid var(--pc)!important}
+.pl-chip i{box-shadow:0 0 0 3px color-mix(in srgb,var(--pc) 20%,transparent)}
+.tag{background:rgba(12,14,8,.05)!important;color:#5f6459!important;border:1px solid rgba(12,14,8,.04);font-weight:600!important}
+.tag.warn{background:rgba(208,105,74,.10)!important;color:#A9502F!important;border-color:rgba(208,105,74,.18)}
+.tag.new{background:rgba(170,255,0,.35)!important;color:#2c4a00!important;border-color:rgba(123,209,0,.35)}
+.tag.tmp{background:rgba(201,160,58,.14)!important;color:#7a5d12!important}
+.fchip{background:rgba(255,255,255,.7)!important;border:1px solid rgba(255,255,255,.95)!important;box-shadow:0 1px 2px rgba(20,24,10,.04),inset 0 1px 0 #fff!important}
+.fchip[aria-pressed="true"]{background:linear-gradient(180deg,#C2FF45,#AAFF00)!important;border-color:rgba(123,209,0,.4)!important;box-shadow:0 4px 14px rgba(150,230,0,.3)!important}
+.count{box-shadow:0 2px 6px rgba(0,0,0,.12)}
+.count.long{background:rgba(139,114,207,.14)!important;color:#5a45a0!important}
+/* inputs: soft glass fields */
+input[type=text],input[type=search],input[type=date],input[type=time],input[type=password],select,textarea{transition:border-color .25s,box-shadow .3s,background .25s}
+.field input,.field select,.toolbar input[type=search],.toolbar select,.id-add textarea,.id-add input,.id-add select,.vault-form input,.tf input,.tpw input,.plan input,.cplan input{
+  background:rgba(255,255,255,.78)!important;border:1px solid rgba(12,14,8,.08)!important;box-shadow:inset 0 1px 2px rgba(12,14,8,.04)}
+input:focus,select:focus,textarea:focus{border-color:rgba(123,209,0,.7)!important;box-shadow:0 0 0 4px rgba(170,255,0,.22)!important;outline:none}
+/* nav + header glass */
+nav.tabs{background:rgba(255,255,255,.62)!important;border:1px solid rgba(255,255,255,.9)!important;box-shadow:var(--g-shadow),inset 0 1px 0 #fff!important;-webkit-backdrop-filter:var(--g-blur);backdrop-filter:var(--g-blur)}
+.me,.searchbtn,.bell:not(.has),.morebtn{background:rgba(255,255,255,.7)!important;border:1px solid rgba(255,255,255,.95)!important;box-shadow:0 1px 2px rgba(20,24,10,.05),inset 0 1px 0 #fff;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.mbar{background:rgba(255,255,255,.7)!important;box-shadow:0 18px 50px rgba(20,24,10,.16),inset 0 1px 0 #fff!important}
 </style>
 </head>
 <body>
@@ -1793,8 +1862,8 @@ window.addEventListener("error",function(e){try{var s=document.getElementById("s
 "use strict";
 /* Free version: data lives in your Google Sheet. Nothing to configure here. */
 const STATUSES=[
-  {k:"Not started",c:"#8A939B"},{k:"Shot",c:"#3B7DD8"},{k:"Pending",c:"#D99A1E"},{k:"Editing",c:"#8A5CD1"},
-  {k:"In review",c:"#E0A100"},{k:"Re-edit",c:"#E4572E"},{k:"Approved",c:"#1F9E8F"},{k:"Ready",c:"#2E9E4F"},{k:"Scheduled",c:"#6FAE00"},{k:"Posted",c:"#56606A"}];
+  {k:"Not started",c:"#9AA0A6"},{k:"Shot",c:"#5B7FD1"},{k:"Pending",c:"#C9A03A"},{k:"Editing",c:"#8B72CF"},
+  {k:"In review",c:"#D1A23A"},{k:"Re-edit",c:"#D0694A"},{k:"Approved",c:"#3E9C8C"},{k:"Ready",c:"#3E9C5E"},{k:"Scheduled",c:"#7DAF1F"},{k:"Posted",c:"#6B7280"}];
 const SC=Object.fromEntries(STATUSES.map(s=>[s.k,s.c]));
 const EDIT_POOL=["Shot","Pending","Editing","Re-edit"];
 const DONE_EDIT=["Edited","In review","Approved","Ready","Scheduled","Posted"];
@@ -1851,7 +1920,7 @@ function cslotsFor(d){const wd=new Date(d+"T00:00:00").getDay();const s=new Set(
 function isCar(v){return v.format==="Carousel"}
 function kindName(v){return isCar(v)?"Carousel":"Reel"}
 /* content pillars: each reel slot of the day gets a pillar from the daily order in Settings */
-const PCOL=["#3B7DD8","#E4572E","#2E9E4F","#8A5CD1","#D99A1E","#17A2B8"];
+const PCOL=["#5B7FD1","#D07A52","#3E9C7A","#8B72CF","#C39A2E","#3C98AE"];
 function pillars(){return (S.settings.pillars||[]).filter(Boolean)}
 function pillarOrder(){return (S.settings.pillarOrder||[]).filter(p=>pillars().includes(p))}
 function pillarOn(d){return pillarOrder().length>0&&d>=(S.settings.pillarFrom||"2000-01-01")}
