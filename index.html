@@ -1446,6 +1446,77 @@ body.is-dragging .sday .slot:not(.drop-target):not(.drag-src)>*:not(.tm){filter:
 .dial-hint{margin:0;font-size:13px;color:var(--muted)}
 .dial-act{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
 @media (max-width:600px){.dial-wrap{width:270px;height:270px}#rdial{width:270px;height:270px}}
+
+/* ===== delight layer ===== */
+#fx{position:fixed;inset:0;z-index:400;pointer-events:none;display:grid;place-items:center}
+.fxbox{grid-area:1/1;transition:opacity .4s,transform .4s}
+.fxbox.out{opacity:0;transform:scale(.96)}
+.stamp{padding:14px 34px;border:6px solid #2E9E4F;border-radius:14px;color:#2E9E4F;font:900 64px/1 Inter,sans-serif;letter-spacing:.06em;transform:rotate(-12deg);
+  background:rgba(255,255,255,.82);box-shadow:0 20px 60px rgba(46,158,79,.35);animation:stampIn .45s cubic-bezier(.2,1.6,.4,1) both;
+  -webkit-mask-image:radial-gradient(circle at 30% 40%,#000 60%,rgba(0,0,0,.85) 61%,#000 70%)}
+@keyframes stampIn{0%{transform:rotate(-12deg) scale(2.6);opacity:0}60%{transform:rotate(-12deg) scale(.92);opacity:1}100%{transform:rotate(-12deg) scale(1)}}
+.scrib{width:360px;filter:drop-shadow(0 8px 20px rgba(228,87,46,.35))}
+.scrib path{fill:none;stroke:#E4572E;stroke-width:9;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:900;stroke-dashoffset:900;animation:draw .6s ease-out forwards}
+.scrib text{font:900 36px Inter,sans-serif;fill:#E4572E;opacity:0;animation:fadeUp .3s .45s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.cal3d{position:relative;width:170px;perspective:600px;text-align:center;animation:stampIn .4s cubic-bezier(.2,1.4,.4,1) both;--r:0}
+.cal-top{background:#0B0B0C;color:#AAFF00;font:800 18px Inter,sans-serif;letter-spacing:.12em;padding:10px;border-radius:18px 18px 0 0}
+.cal-page,.cal-flip{background:#fff;height:130px;border-radius:0 0 18px 18px;box-shadow:0 24px 60px rgba(20,30,8,.25);display:grid;place-content:center}
+.cal-page b{font:900 64px/1 Inter,sans-serif}
+.cal-page small{font-weight:700;color:#6A6E64}
+.cal-flip{position:absolute;left:0;right:0;top:40px;transform-origin:50% 0;animation:pageFlip .7s .15s ease-in forwards;background:linear-gradient(#fff,#eef0ea)}
+@keyframes pageFlip{to{transform:rotateX(-110deg);opacity:0}}
+.cal3d em{display:inline-block;margin-top:12px;font-style:normal;font-weight:800;background:#6FAE00;color:#fff;padding:4px 14px;border-radius:999px}
+.clap{width:220px;animation:stampIn .35s cubic-bezier(.2,1.4,.4,1) both;filter:drop-shadow(0 24px 50px rgba(20,30,8,.35))}
+.clap .arm{transform-origin:14px 48px;transform:rotate(-28deg);animation:clapShut .22s .22s cubic-bezier(.6,0,.9,.5) forwards}
+@keyframes clapShut{to{transform:rotate(0)}}
+.gwrap{display:inline-flex;align-items:center;gap:8px}
+.gring{position:relative;width:38px;height:38px;display:inline-grid;place-items:center}
+.gring svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.gring b{position:relative;font-size:13px;font-weight:800}
+.gr-bg{fill:none;stroke:rgba(12,14,8,.1);stroke-width:5}
+.gr-fg{fill:none;stroke:#7BD100;stroke-width:5;stroke-linecap:round;transition:stroke-dashoffset .9s cubic-bezier(.22,1,.36,1)}
+.gring.full .gr-fg{stroke:#AAFF00;filter:drop-shadow(0 0 6px rgba(170,255,0,.9))}
+.gring.full{animation:ringPop .6s cubic-bezier(.3,1.6,.5,1)}
+@keyframes ringPop{50%{transform:scale(1.2)}}
+.streak{font-style:normal;font-weight:800;color:#B8480A;margin-left:8px;font-size:12.5px}
+.slide{position:relative;height:44px;border-radius:999px;background:#0B0B0C;overflow:hidden;min-width:210px;user-select:none;-webkit-user-select:none;touch-action:none}
+.sl-fill{position:absolute;left:0;top:0;bottom:0;width:44px;border-radius:999px;background:linear-gradient(90deg,#7BD100,#AAFF00)}
+.sl-text{position:absolute;inset:0;display:grid;place-items:center;color:#AAFF00;font-weight:800;font-size:13.5px;letter-spacing:.02em;padding-left:30px;
+  background:linear-gradient(90deg,#AAFF00 0%,#fff 20%,#AAFF00 40%) -200% 0/200% 100% text;-webkit-background-clip:text;color:transparent;animation:shimmer 2.4s linear infinite}
+@keyframes shimmer{to{background-position:200% 0}}
+.slide.done .sl-text{color:#0B0B0C;background:none;-webkit-background-clip:border-box;animation:none;padding-left:0}
+.sl-knob{position:absolute;left:4px;top:4px;width:36px;height:36px;border-radius:50%;background:#fff;color:#0B0B0C;display:grid;place-items:center;cursor:grab;box-shadow:0 4px 12px rgba(0,0,0,.35);touch-action:none}
+.slide.drag .sl-knob{cursor:grabbing}
+.al-slide{margin-top:8px}.al-slide .slide{width:100%}
+.tp-a .slide{min-width:190px;height:38px}.tp-a .sl-knob{width:30px;height:30px}.tp-a .sl-fill{width:38px}
+.wrapped{position:fixed;inset:0;z-index:500;display:grid;place-items:center;background:rgba(11,11,12,.7);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);opacity:0;transition:opacity .35s}
+.wrapped.show{opacity:1}.wrapped.out{opacity:0}
+.wr-card{position:relative;width:min(405px,94vw);height:min(720px,88vh);border-radius:32px;overflow:hidden;background:#0B0B0C;color:#fff;box-shadow:0 40px 120px rgba(0,0,0,.5)}
+.wr-blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:.55}
+.wr-blob.a{width:360px;height:360px;background:#AAFF00;left:-120px;top:-100px;animation:blobA 9s ease-in-out infinite alternate}
+.wr-blob.b{width:300px;height:300px;background:#3B7DD8;right:-120px;bottom:-60px;opacity:.35;animation:blobA 11s ease-in-out infinite alternate-reverse}
+@keyframes blobA{to{transform:translate(80px,120px) scale(1.2)}}
+.wr-bars{position:absolute;top:14px;left:14px;right:14px;display:flex;gap:4px;z-index:3}
+.wr-bars i{flex:1;height:3px;border-radius:3px;background:rgba(255,255,255,.25);overflow:hidden}
+.wr-bars b{display:block;height:100%;width:0;background:#fff}
+.wr-x{position:absolute;top:26px;right:14px;z-index:4;width:34px;height:34px;border-radius:50%;border:0;background:rgba(255,255,255,.14);color:#fff;font-size:20px;cursor:pointer}
+.wr-slide{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;justify-content:center;padding:40px 32px;gap:10px}
+.wr-slide.in>*{animation:wrIn .6s cubic-bezier(.22,1,.36,1) both}
+.wr-slide.in>*:nth-child(2){animation-delay:.08s}.wr-slide.in>*:nth-child(3){animation-delay:.16s}
+@keyframes wrIn{from{opacity:0;transform:translateY(24px);filter:blur(6px)}}
+.wr-slide small{font-size:15px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#AAFF00}
+.wr-slide h1{font:900 54px/1 Inter,sans-serif;letter-spacing:-.04em;margin:8px 0}
+.wr-slide h1 span{color:#AAFF00}
+.wr-slide h2{font:900 120px/1 Inter,sans-serif;letter-spacing:-.06em;margin:0;color:#fff}
+.wr-slide h2.wr-word{font-size:62px}
+.wr-slide p{font-size:18px;line-height:1.4;color:rgba(255,255,255,.8);margin:0}
+.wr-slide p b{color:#fff}
+.wr-intro{display:grid;gap:10px;justify-items:start}
+.wr-nav{position:absolute;inset:0;z-index:3;display:grid;grid-template-columns:1fr 2fr;top:60px}
+.wr-nav span{cursor:pointer}
+@media (prefers-reduced-motion:reduce){.stamp,.clap,.cal3d,.sl-text,.wr-blob{animation:none!important}}
 </style>
 </head>
 <body>
@@ -1820,6 +1891,7 @@ async function flush(){
 }
 function putVideo(v,quiet){
   v.updatedAt=Date.now();S.videos[v.id]=v;markSeen(v);if(!quiet)render();
+  if(v.editedOn===today()&&loaded)setTimeout(goalCheck,350);
   const body={...v};delete body.id;enqueue("set","videos",v.id,body);
 }
 function delVideos(ids){ids.forEach(id=>{delete S.videos[id];S.sel.delete(id);enqueue("delete","videos",id,null)});render()}
@@ -2198,7 +2270,7 @@ function todayPosts(){
     const lnk=safeUrl(v.finalLink);
     return `<div class="tp${v.status==="Posted"?" done":""}${late?" late":""}"><span class="tp-t">${v.postTime?fmtT(v.postTime):"No time"}</span>
       <span class="tp-n"><b>${esc(v.title||"Untitled")}</b><small><i style="background:${SC[v.status]}"></i>${esc(v.status)}${isCar(v)?", carousel":""}${late?` <span class="tag warn">Overdue</span>`:soon?` <span class="tag new">${now>=due?"Now":"Soon"}</span>`:""}</small></span>
-      <span class="tp-a">${v.status==="Posted"?`<span class="tp-ok">✓ Posted</span>`:v.status==="Scheduled"?`<span class="tp-ok sched">✓ Scheduled</span>`:`${lnk?`<a class="iconbtn" href="${esc(lnk)}" target="_blank" rel="noopener noreferrer">Open</a>`:""}${v.status==="Ready"?`<button class="iconbtn" data-act="markScheduled" data-id="${v.id}">Scheduled</button><button class="iconbtn tp-mark" data-act="markPosted" data-id="${v.id}">Mark posted</button>`:""}`}</span></div>`}).join("");
+      <span class="tp-a">${v.status==="Posted"?`<span class="tp-ok">✓ Posted</span>`:v.status==="Scheduled"?`<span class="tp-ok sched">✓ Scheduled</span>`:`${lnk?`<a class="iconbtn" href="${esc(lnk)}" target="_blank" rel="noopener noreferrer">Open</a>`:""}${v.status==="Ready"?`<button class="iconbtn" data-act="markScheduled" data-id="${v.id}">Scheduled</button>${slideHTML(v.id,"Slide to post","tp")}`:""}`}</span></div>`}).join("");
   const open=slots.filter(s=>!L.some(v=>v.postTime===s.tm&&kindOf(v)===s.k)).length;
   return `<section class="panel"><div class="phead"><h2>Today’s posts</h2><span class="stat">${posted} of ${L.length} posted${open?`, ${open} empty slot${open>1?"s":""}`:""}</span></div>
     ${rows||`<p class="sub">Nothing scheduled for today yet.</p>`}</section>`;
@@ -2273,7 +2345,7 @@ function vOverview(){
   return `
   <section class="panel ov">
     <div class="phead"><h2>${esc(niceW(t))}</h2>
-      <div class="ovtoday"><span>Shot today <b>${shotT}</b>/${S.settings.shootTarget}</span><i style="--p:${Math.min(1,shotT/S.settings.shootTarget)}"></i>${(()=>{const ep=editPlan();const goal=edT+ep.todayLeft;return ep.todayOff?`<span>Edited <b>${edT}</b> · day off</span>`:`<span>Edited <b>${edT}</b>/${goal||edT}</span><i style="--p:${goal?Math.min(1,edT/goal):1}"></i>`})()}</div></div>
+      <div class="ovtoday"><span>Shot today <b>${shotT}</b>/${S.settings.shootTarget}</span><i style="--p:${Math.min(1,shotT/S.settings.shootTarget)}"></i>${(()=>{const ep=editPlan();const goal=edT+ep.todayLeft;const s=editStreak();return `<span class="gwrap">${goalRing(edT,ep.todayOff?0:goal)}<span>${ep.todayOff?"Day off":`Edited <b>${edT}</b>/${goal||edT}`}${s>1?`<em class="streak">🔥 ${s}-day streak</em>`:""}</span></span>`})()}</div></div>
     <div class="ovk">
       <div class="k1"><b>${inHand}</b><span>Videos in hand</span></div>
       <div><b>${ready}</b><span>Ready to post</span></div>
@@ -2555,7 +2627,7 @@ function vSummary(){
     D.firstPass!=null?`Approved first time: <b>${D.firstPass}%</b> of ${D.sent} reviews`:""].filter(Boolean);
   const pilRows=Object.entries(D.pil);
   return `<section class="panel sumpanel">
-    <div class="phead"><h2>Summary</h2><div class="pactions">${histSwitch()}<button class="btn small" data-act="printSum">Print / Save PDF</button></div></div>
+    <div class="phead"><h2>Summary</h2><div class="pactions">${histSwitch()}<button class="btn small primary" data-act="playWrapped">▶ Play Wrapped</button><button class="btn small" data-act="printSum">Print / Save PDF</button></div></div>
     <div class="pl-filter"><div class="seg" role="group" aria-label="Summary range">${modes.map(([k,l])=>`<button data-act="sumMode" data-m="${k}" aria-pressed="${(R.mode||"thismonth")===k}">${l}</button>`).join("")}</div>
       ${R.mode==="custom"?`<span class="pl-cust"><input type="date" value="${esc(R.from||D.from)}" data-sumr="from" aria-label="From"><span>to</span><input type="date" value="${esc(R.to||D.to)}" data-sumr="to" aria-label="To"></span>`:""}
       <span class="stat">${esc(nice(D.from))} – ${esc(nice(D.to))}</span></div>
@@ -2716,8 +2788,9 @@ function vSettings(){
 
 /* ---------- render ---------- */
 function isTyping(){const a=document.activeElement;return a&&a.closest&&a.closest("#main")&&!a.dataset.live&&(a.tagName==="TEXTAREA"||(a.tagName==="INPUT"&&/^(text|number)$/.test(a.type)))}
+let VT_ON=false;
 function render(){
-  if(isTyping()||DIAL.busy||DIAL.trying){pendingRender=true;return}
+  if(isTyping()||DIAL.busy||DIAL.trying||VT_ON){pendingRender=true;return}
   pendingRender=false;
   const a=document.activeElement,live=a&&a.dataset&&a.dataset.live,sel=live&&a.selectionStart;
   const y=window.scrollY;
@@ -2749,12 +2822,12 @@ document.querySelector("nav.tabs").addEventListener("click",e=>{const b=e.target
   if(document.startViewTransition&&!RM){
     document.documentElement.dataset.vt=order.indexOf(S.tab)>order.indexOf(prevTab)?"fwd":"back";
     S.animate="vt";
-    const vt=document.startViewTransition(()=>{window.scrollTo(0,0);render()});
-    vt.finished.finally(()=>{delete document.documentElement.dataset.vt});
+    const vt=document.startViewTransition(()=>{window.scrollTo(0,0);render();VT_ON=true});
+    vt.finished.finally(()=>{delete document.documentElement.dataset.vt;VT_ON=false;if(pendingRender)render()});
   }else leaveThen(()=>{window.scrollTo({top:0,behavior:"smooth"});render()})}});
 
 /* ---------- backups (Settings) ---------- */
-let BK={at:0,data:null,busy:false};
+let BK={at:0,data:(()=>{try{return JSON.parse(lsGet("seb-bk")||"null")}catch(e){return null}})(),busy:false};
 function backupsPanel(){
   if(!GAS)return `<section class="panel"><h2>Backups</h2><p class="sub">Backups run once the board is connected to your Google Sheet.</p><button class="btn" data-act="dlBackup">Download a backup file</button></section>`;
   const d=BK.data;
@@ -2770,7 +2843,7 @@ function loadBackups(force){
   if(!GAS||!token)return;
   if(!force&&BK.data&&Date.now()-BK.at<60000)return;
   BK.at=Date.now();
-  call("listBackups",token).then(d=>{BK.data=d;if(S.tab==="settings")render()}).catch(()=>{});
+  call("listBackups",token).then(d=>{const same=JSON.stringify(d)===JSON.stringify(BK.data);BK.data=d;lsSet("seb-bk",JSON.stringify(d));if(!same&&S.tab==="settings")render()}).catch(()=>{});
 }
 function downloadBackup(){
   const data={exportedAt:new Date().toISOString(),videos:S.videos,shoots:S.shoots,scripts:S.scripts,settings:S.settings,queue:S.queue};
@@ -2839,7 +2912,7 @@ document.addEventListener("keydown",e=>{
 });
 
 /* ---------- team: profile photos, names, passwords ---------- */
-let TEAM={at:0,data:null};
+let TEAM={at:0,data:(()=>{try{return JSON.parse(lsGet("seb-team")||"null")}catch(e){return null}})()};
 function prof(u){return (S.profiles||{})[u]||{}}
 function dispName(u){return prof(u).name||u||"You"}
 function initials(u){const n=dispName(u).trim().split(/\s+/);return ((n[0]||"?")[0]+(n.length>1?n[n.length-1][0]:"")).toUpperCase()}
@@ -2852,7 +2925,7 @@ function putProfile(u,data){const cur={...prof(u),...data,updatedAt:Date.now()};
 function loadTeam(force){
   if(!GAS){if(!TEAM.data){TEAM.data={me:S.me||"me",admin:S.me||"me",users:[S.me||"me"]};if(S.tab==="settings")setTimeout(render,0)}return}
   if(!token||(!force&&TEAM.data&&Date.now()-TEAM.at<60000))return;
-  TEAM.at=Date.now();call("listUsers",token).then(d=>{TEAM.data=d;if(S.tab==="settings")render()}).catch(()=>{});
+  TEAM.at=Date.now();call("listUsers",token).then(d=>{const same=JSON.stringify(d)===JSON.stringify(TEAM.data);TEAM.data=d;lsSet("seb-team",JSON.stringify(d));if(!same&&S.tab==="settings")render()}).catch(()=>{});
 }
 function canEditUser(u){const d=TEAM.data;return !!d&&(u===d.me||d.admin===d.me)}
 function teamPanel(){
@@ -3112,6 +3185,105 @@ document.addEventListener("pointercancel",()=>dialEnd());
 document.addEventListener("keydown",e=>{if(!document.getElementById("rdial")||e.target.closest("input,textarea,select"))return;
   if(/^[0-9]$/.test(e.key)){dialDigit(e.key)}else if(e.key==="Backspace"){DIAL.code=DIAL.code.slice(0,-1);const el=document.getElementById("dialDots");if(el)el.innerHTML=dialDotsHTML()}else if(e.key==="Enter")dialAutoTry(true)});
 
+
+/* ================= delight layer: sounds and small moments ================= */
+function sfx2(kind){
+  if(lsGet("seb-sound")==="off")return;
+  try{if(!actx)actx=new (window.AudioContext||window.webkitAudioContext)();const t=actx.currentTime,out=actx.destination;
+    const noise=(st,dur,vol,type,f,f2,q)=>{const n=Math.floor(actx.sampleRate*dur),buf=actx.createBuffer(1,n,actx.sampleRate),d=buf.getChannelData(0);for(let i=0;i<n;i++)d[i]=Math.random()*2-1;
+      const s=actx.createBufferSource(),fl=actx.createBiquadFilter(),g=actx.createGain();s.buffer=buf;fl.type=type;fl.frequency.setValueAtTime(f,t+st);if(f2)fl.frequency.exponentialRampToValueAtTime(f2,t+st+dur);fl.Q.value=q||1;
+      g.gain.setValueAtTime(0,t+st);g.gain.linearRampToValueAtTime(vol,t+st+.004);g.gain.exponentialRampToValueAtTime(.0001,t+st+dur);s.connect(fl).connect(g).connect(out);s.start(t+st);s.stop(t+st+dur+.02)};
+    const tone=(f,st,dur,vol,type,f2)=>{const o=actx.createOscillator(),g=actx.createGain();o.type=type||"sine";o.frequency.setValueAtTime(f,t+st);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+st+dur);
+      g.gain.setValueAtTime(0,t+st);g.gain.linearRampToValueAtTime(vol,t+st+.006);g.gain.exponentialRampToValueAtTime(.0001,t+st+dur);o.connect(g).connect(out);o.start(t+st);o.stop(t+st+dur+.02)};
+    if(kind==="swoosh"){noise(0,.35,.35,"bandpass",600,4200,1.4);tone(520,.22,.18,.1,"sine",1040)}
+    else if(kind==="stamp"){noise(0,.09,.9,"lowpass",900);tone(110,0,.18,.45,"sine",55)}
+    else if(kind==="scribble"){for(let i=0;i<6;i++)noise(i*.07,.06,.25,"bandpass",2400+i*300,1600,2)}
+    else if(kind==="flip"){noise(0,.12,.35,"highpass",2400);tone(1800,.08,.05,.08,"square")}
+    else if(kind==="clap"){noise(0,.05,1,"highpass",1500);noise(.005,.12,.5,"lowpass",700);tone(90,0,.12,.35,"sine",60)}
+    else if(kind==="win"){[523,659,784,1047].forEach((f,i)=>tone(f,i*.09,.28,.16));tone(1568,.36,.5,.12)}
+    else if(kind==="shuffle"){for(let i=0;i<14;i++)noise(i*.028,.03,.3,"bandpass",2800+Math.random()*1400,0,1.5)}
+    else if(kind==="paper"){noise(0,.28,.3,"bandpass",1400,500,.8);noise(.2,.12,.25,"lowpass",600)}
+    else if(kind==="whoosh"){noise(0,.4,.18,"bandpass",300,2400,.9)}
+  }catch(e){}
+}
+function fxLayer(){let f=document.getElementById("fx");if(!f){f=document.createElement("div");f.id="fx";document.body.appendChild(f)}return f}
+function fxShow(html,cls,ms){const el=document.createElement("div");el.className="fxbox "+(cls||"");el.innerHTML=html;fxLayer().appendChild(el);setTimeout(()=>{el.classList.add("out");setTimeout(()=>el.remove(),450)},ms||1100);return el}
+// 2. rubber stamp and red pen
+function stampFx(){sfx2("stamp");fxShow(`<div class="stamp"><span>APPROVED</span></div>`,"fx-stamp",1150)}
+function scribbleFx(){sfx2("scribble");fxShow(`<svg class="scrib" viewBox="0 0 360 150"><path d="M20 95 C 60 20, 90 140, 130 60 S 190 20, 210 90 S 280 130, 300 50 S 340 80, 345 70"/><text x="180" y="140" text-anchor="middle">Re-edit</text></svg>`,"fx-scrib",1300)}
+// 3. calendar page flip
+function calFx(v){sfx2("flip");const d=v&&v.postDate?new Date(v.postDate+"T00:00:00"):new Date();
+  fxShow(`<div class="cal3d"><div class="cal-top">${MON[d.getMonth()].toUpperCase()}</div><div class="cal-page"><b>${d.getDate()}</b><small>${v&&v.postTime?fmtT(v.postTime):""}</small></div><div class="cal-flip"></div><em>Scheduled</em></div>`,"fx-cal",1300)}
+// 4. clapperboard
+function clapFx(n){fxShow(`<div class="clap"><svg viewBox="0 0 200 170"><g class="arm"><rect x="10" y="18" width="180" height="30" rx="6" fill="#0B0B0C"/>${[0,1,2,3,4,5].map(i=>`<path d="M${24+i*30} 18 l18 0 l-12 30 l-18 0z" fill="#AAFF00"/>`).join("")}</g>
+  <rect x="10" y="52" width="180" height="108" rx="10" fill="#0B0B0C"/><rect x="10" y="52" width="180" height="16" fill="#1d1f18"/>
+  <text x="100" y="112" text-anchor="middle" fill="#AAFF00" font-size="30" font-weight="800">+${n}</text><text x="100" y="140" text-anchor="middle" fill="#fff" font-size="13" font-weight="600">${n===1?"video logged":"videos logged"}</text></svg></div>`,"fx-clap",1150);
+  setTimeout(()=>sfx2("clap"),240)}
+// 5. daily edit target: ring, win moment and streak
+function editStreak(){const tgt=Math.max(1,S.settings.editTarget||4);const cnt={};vids().forEach(v=>{if(v.editedOn)cnt[v.editedOn]=(cnt[v.editedOn]||0)+1});
+  let n=0,d=today();if((cnt[d]||0)>=tgt)n++;d=addDays(d,-1);
+  for(let g=0;g<120;g++,d=addDays(d,-1)){if(!isWorkDay(d))continue;if((cnt[d]||0)>=tgt)n++;else break}return n}
+function goalRing(done,goal){const p=goal?Math.min(1,done/goal):1,C=2*Math.PI*18;
+  return `<span class="gring${goal&&done>=goal?" full":""}"><svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="18" class="gr-bg"/><circle cx="22" cy="22" r="18" class="gr-fg" style="stroke-dasharray:${C};stroke-dashoffset:${C*(1-p)}"/></svg><b>${done}</b></span>`}
+function goalCheck(){const ep=editPlan();if(ep.todayOff||ep.todayLeft>0||!ep.doneToday)return;const k="seb-goal-"+today();if(lsGet(k))return;lsSet(k,"1");
+  sfx2("win");const r=document.querySelector(".gring");const box=r?r.getBoundingClientRect():{left:innerWidth/2,top:innerHeight/3,width:0,height:0};
+  confetti(box,40);setTimeout(()=>confetti({left:innerWidth/2,top:innerHeight/3,width:0,height:0},30),220);
+  const s=editStreak();toast(`Today’s edits done 🎉${s>1?` ${s}-day streak 🔥`:""}`)}
+// 6. deck shuffle before a reorder
+function deckShuffle(sel,then){const els=[...document.querySelectorAll(sel)].slice(0,40);if(RM||!els.length||!els[0].animate){then();return}
+  sfx2("shuffle");els.forEach((el,i)=>{const r=(Math.random()*16-8),x=(Math.random()*60-30);
+    el.animate([{transform:"none"},{transform:`translate(${x}px,${-6-Math.random()*10}px) rotate(${r}deg) scale(.97)`,offset:.45},{transform:"none"}],{duration:420,delay:i*8,easing:"cubic-bezier(.3,.7,.3,1)"})});
+  setTimeout(then,300)}
+// 7. idea card folds into the archive
+function fileAway(el,then){if(RM||!el||!el.animate){then();return}sfx2("paper");const tgt=document.querySelector('[data-act="ideaArch"][data-v="1"]');
+  const a=el.getBoundingClientRect(),b=tgt?tgt.getBoundingClientRect():{left:a.left,top:a.top-200,width:0,height:0};
+  const dx=b.left+b.width/2-(a.left+a.width/2),dy=b.top+b.height/2-(a.top+a.height/2);el.style.transformOrigin="50% 0";el.style.zIndex=50;
+  const an=el.animate([{transform:"none",opacity:1},{transform:"perspective(600px) rotateX(70deg) scaleY(.5)",opacity:.9,offset:.35},{transform:`translate(${dx}px,${dy}px) perspective(600px) rotateX(80deg) scale(.08)`,opacity:0}],{duration:650,easing:"cubic-bezier(.55,0,.35,1)",fill:"forwards"});
+  an.onfinish=then;if(tgt)setTimeout(()=>tgt.animate&&tgt.animate([{transform:"scale(1)"},{transform:"scale(1.18)"},{transform:"scale(1)"}],{duration:360,easing:"cubic-bezier(.3,1.5,.5,1)"}),560)}
+// 1. slide to post
+function slideHTML(id,label,ctx){return `<div class="slide" data-slide="${id}" data-ctx="${ctx||""}"><div class="sl-fill"></div><span class="sl-text">${label||"Slide to post"}</span><div class="sl-knob"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>`}
+const SL={el:null};
+document.addEventListener("pointerdown",e=>{const k=e.target.closest&&e.target.closest(".sl-knob");if(!k)return;const el=k.closest(".slide");if(el.classList.contains("done"))return;
+  e.preventDefault();e.stopPropagation();const r=el.getBoundingClientRect();SL.el=el;SL.x0=e.clientX;SL.max=r.width-k.offsetWidth-8;SL.x=0;el.classList.add("drag");try{k.setPointerCapture(e.pointerId)}catch(_){}},true);
+document.addEventListener("pointermove",e=>{if(!SL.el)return;SL.x=Math.max(0,Math.min(SL.max,e.clientX-SL.x0));const p=SL.x/SL.max;
+  SL.el.querySelector(".sl-knob").style.transform=`translateX(${SL.x}px)`;SL.el.querySelector(".sl-fill").style.width=`calc(${SL.x}px + 44px)`;SL.el.querySelector(".sl-text").style.opacity=String(1-p*1.3)});
+document.addEventListener("pointerup",()=>{const el=SL.el;if(!el)return;SL.el=null;el.classList.remove("drag");const k=el.querySelector(".sl-knob"),f=el.querySelector(".sl-fill");
+  if(SL.x>=SL.max*.86){k.style.transform=`translateX(${SL.max}px)`;f.style.width="100%";el.classList.add("done");el.querySelector(".sl-text").textContent="Posted ✓";el.querySelector(".sl-text").style.opacity="1";sfx2("swoosh");
+    const id=el.dataset.slide,v=S.videos[id];setTimeout(()=>{if(v){putVideo(withStatus(S.videos[id]||v,"Posted"));celebrate(id,"Posted")}const al=el.closest(".alert");if(al)closeAlert(al);toast(`“${(v&&v.title)||"Untitled"}” marked as posted`)},420)}
+  else{k.style.transition="transform .45s cubic-bezier(.3,1.5,.5,1)";f.style.transition="width .45s cubic-bezier(.3,1.5,.5,1)";k.style.transform="translateX(0)";f.style.width="44px";el.querySelector(".sl-text").style.opacity="1";
+    setTimeout(()=>{k.style.transition="";f.style.transition=""},480)}});
+// 8. monthly Wrapped
+function wrappedData(from,to){const keep=S.sumRange;S.sumRange={mode:"custom",from,to};const D=summaryData();S.sumRange=keep;return D}
+function openWrapped(from,to,label){
+  const D=wrappedData(from,to),WDN=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  const pil=Object.entries(D.pil).filter(([p])=>p!=="No pillar").sort((a,b)=>(b[1].shot+b[1].edited)-(a[1].shot+a[1].edited))[0];
+  const photo=(document.querySelector(".hdr-ava img")||{}).src||"";
+  const slides=[
+    `<div class="wr-intro">${photo?`<span class="ava big" style="--s:120px"><img src="${photo}" alt=""></span>`:""}<small>Fahad Riaz</small><h1>Your ${esc(label)}<br><span>wrapped</span></h1></div>`,
+    `<small>You shot</small><h2 data-n="${D.shot.length}">0</h2><p>videos across <b>${D.shootDays}</b> shoot day${D.shootDays===1?"":"s"}${D.topShot?`. Biggest day: <b>${esc(niceW(D.topShot[0]))}</b> with ${D.topShot[1]}`:""}.</p>`,
+    `<small>You edited</small><h2 data-n="${D.edited.length}">0</h2><p>videos${D.editDays?`, about <b>${Math.round(D.edited.length/D.editDays*10)/10}</b> on every editing day`:""}${D.avgEdit?`. Average edit: <b>${fmtDur(D.avgEdit)}</b>`:""}.</p>`,
+    D.busyW||D.topEdit?`<small>Your power day</small><h2 class="wr-word">${D.busyW?WDN[+D.busyW[0]]:esc(niceW(D.topEdit[0]))}</h2><p>${D.topEdit?`Most edited day: <b>${esc(niceW(D.topEdit[0]))}</b> with ${D.topEdit[1]} videos.`:""}</p>`:"",
+    pil?`<small>Top pillar</small><h2 class="wr-word" style="color:${pillarColor(pil[0])}">${esc(pil[0])}</h2><p><b>${pil[1].shot}</b> shot · <b>${pil[1].edited}</b> edited</p>`:"",
+    `<small>You posted</small><h2 data-n="${D.posted.length}">0</h2><p>videos${D.firstPass!=null?`, and <b>${D.firstPass}%</b> were approved first time`:""}.</p>`,
+    `<div class="wr-intro"><small>That’s a wrap</small><h1>On to the<br><span>next one</span></h1><p>${editStreak()>1?`Current streak: <b>${editStreak()} days 🔥</b>`:"Keep the streak going."}</p></div>`].filter(Boolean);
+  const ov=document.createElement("div");ov.className="wrapped";ov.innerHTML=`<div class="wr-card"><div class="wr-bars">${slides.map(()=>`<i><b></b></i>`).join("")}</div>
+    <button class="wr-x" aria-label="Close">×</button><div class="wr-blob a"></div><div class="wr-blob b"></div><div class="wr-slide"></div>
+    <div class="wr-nav"><span data-w="-1"></span><span data-w="1"></span></div></div>`;document.body.appendChild(ov);
+  let i=-1,tm=0;const bars=[...ov.querySelectorAll(".wr-bars b")],box=ov.querySelector(".wr-slide");
+  const go=n=>{i=n;if(i<0)i=0;if(i>=slides.length){close();return}clearTimeout(tm);sfx2("whoosh");
+    bars.forEach((b,k)=>{b.style.transition="none";b.style.width=k<i?"100%":"0%"});void ov.offsetWidth;bars[i].style.transition="width 4.2s linear";bars[i].style.width="100%";
+    box.classList.remove("in");void box.offsetWidth;box.innerHTML=slides[i];box.classList.add("in");
+    box.querySelectorAll("[data-n]").forEach(el=>{const end=+el.dataset.n,t0=performance.now();const st=now=>{const k=Math.min(1,(now-t0)/1100);el.textContent=Math.round(end*(1-Math.pow(1-k,3)));if(k<1)requestAnimationFrame(st)};requestAnimationFrame(st)});
+    if(i===slides.length-1){setTimeout(()=>{sfx2("win");const c=box.getBoundingClientRect();confetti({left:c.left+c.width/2,top:c.top+c.height/2,width:0,height:0},34)},500)}
+    tm=setTimeout(()=>go(i+1),4200)};
+  const close=()=>{clearTimeout(tm);ov.classList.add("out");setTimeout(()=>ov.remove(),350)};
+  ov.querySelector(".wr-x").onclick=close;ov.querySelectorAll("[data-w]").forEach(s=>s.onclick=()=>go(i+ +s.dataset.w));
+  ov.addEventListener("click",e=>{if(e.target===ov)close()});requestAnimationFrame(()=>{ov.classList.add("show");go(0)});
+}
+function wrappedOffer(){const d0=new Date(today()+"T00:00:00");if(d0.getDate()>7)return;const pm=new Date(d0.getFullYear(),d0.getMonth()-1,1),key="seb-wrapped-"+iso(pm).slice(0,7);if(lsGet(key))return;
+  const from=iso(pm),to=iso(new Date(d0.getFullYear(),d0.getMonth(),0));if(!vids().some(v=>(v.shotDate>=from&&v.shotDate<=to)||(v.editedOn>=from&&v.editedOn<=to)))return;
+  lsSet(key,"1");setTimeout(()=>toast(`Your ${MONL[pm.getMonth()]} Wrapped is ready`,"Play",()=>openWrapped(from,to,MONL[pm.getMonth()])),2500)}
+
 /* ---------- shoot plan ---------- */
 const SH_ST=[{k:"Planned",c:"#AAFF00"},{k:"Done",c:"#0B0B0C"},{k:"Cancelled",c:"#A1A1A6"}];
 function shoots(){return Object.values(S.shoots||{})}
@@ -3339,7 +3511,7 @@ function showAlert(v,kind){
     <p class="al-note">${esc(v.reviewNote||"No notes added.")}</p><div class="al-btns"><button class="al-done" data-al="x">Later</button><button class="al-open" data-al="startedit">Start re-edit</button></div>`;
   else if(kind==="soon"||kind==="now"||(kind==="late"&&isPoster())){const lnk=safeUrl(v.finalLink);
     body=`<div class="al-top"><span class="al-pill${kind==="late"?" warn":kind==="now"?" pulse":""}">${kind==="soon"?"Posting in 15 min":kind==="now"?"Post now":"Not posted yet"}</span>${x}</div>${title}<small>${isCar(v)?"Carousel":"Reel"}, ${kind==="late"?"was due ":""}${when}</small>
-    <div class="al-btns">${lnk?`<a class="al-done" href="${esc(lnk)}" target="_blank" rel="noopener noreferrer">Open video</a>`:""}<button class="al-open" data-al="posted">Mark posted</button></div>`}
+    <div class="al-btns">${lnk?`<a class="al-done" href="${esc(lnk)}" target="_blank" rel="noopener noreferrer">Open video</a>`:""}${slideHTML(v.id,"Slide to post")}</div>`}
   else if(kind==="late")body=`<div class="al-top"><span class="al-pill warn">Not posted yet</span>${x}</div>${title}<small>Was due ${when}. ${esc(posterName())} hasn’t marked it posted.</small>
     <div class="al-btns"><button class="al-done" data-al="x">OK</button><button class="al-open" data-al="posted">It’s posted</button></div>`;
   else if(kind==="posted"){const lnk=safeUrl(v.finalLink);
@@ -3348,7 +3520,7 @@ function showAlert(v,kind){
   else if(kind==="notready")body=`<div class="al-top"><span class="al-pill warn">Due soon, not ready</span>${x}</div>${title}<small>Posts ${when}, still ${esc(v.status)}.</small>
     <div class="al-btns"><button class="al-done" data-al="x">OK</button></div>`;
   else body=`<div class="al-top"><span class="al-pill">Ready to post</span>${x}</div>${title}<small>${isCar(v)?"Carousel":"Reel"}, ${when}</small>
-    <div class="al-btns"><a class="al-open" href="${esc(safeUrl(v.finalLink))}" target="_blank" rel="noopener noreferrer" data-al="open">Open video</a><button class="al-done" data-al="scheduled">Scheduled</button><button class="al-done" data-al="posted">Posted</button></div>`;
+    <div class="al-btns"><a class="al-open" href="${esc(safeUrl(v.finalLink))}" target="_blank" rel="noopener noreferrer" data-al="open">Open video</a><button class="al-done" data-al="scheduled">Scheduled</button></div><div class="al-slide">${slideHTML(v.id,"Slide to post")}</div>`;
   el.innerHTML=body;el.dataset.id=v.id;el.dataset.key=alertKey(v,kind);box.prepend(el);
   if(RM||!el.animate)return;
   const hgt=el.offsetHeight;el.style.overflow="hidden";
@@ -3375,6 +3547,7 @@ function closeAlert(el){
 function nextRound(v){return v.submittedAt&&v.status!=="In review"?(v.round||1)+1:(v.round||1)}
 function hist(v,what,note){return [...(v.reviewLog||[]),{what,by:S.me||"",at:Date.now(),round:v.round||1,note:note||""}].slice(-20)}
 function approveVideo(v){
+  stampFx();
   const base={...v,reviewNote:"",approvedBy:S.me||"",approvedAt:Date.now(),reviewLog:hist(v,"approved")};
   if(safeUrl(v.finalLink)){putVideo(withStatus(base,"Ready"));celebrate(v.id,"Ready");toast("Approved. It already has a final link, so it’s ready to post")}
   else{putVideo(withStatus(base,"Approved"));celebrate(v.id,"Approved");toast(`Approved. ${dispName(v.editedBy||"")||"The editor"} will add the final link`)}
@@ -3382,7 +3555,7 @@ function approveVideo(v){
 function askReedit(v){
   const d=$("#noteDlg");$("#noteFor").textContent=`“${v.title||"Untitled"}”, round ${v.round||1}`;const box=$("#noteBox");box.value="";d.returnValue="";
   d.addEventListener("close",()=>{if(d.returnValue!=="ok"){render();return}const note=box.value.trim();const cur=S.videos[v.id];if(!cur)return;
-    putVideo({...withStatus(cur,"Re-edit"),reviewNote:note,reviewLog:hist(cur,"re-edit",note)});toast("Sent back for re-edit")},{once:true});
+    putVideo({...withStatus(cur,"Re-edit"),reviewNote:note,reviewLog:hist(cur,"re-edit",note)});scribbleFx();toast("Sent back for re-edit")},{once:true});
   openDlg(d);setTimeout(()=>box.focus(),80);
 }
 function sendForReview(v){
@@ -3410,7 +3583,7 @@ function bulkStatus(v,st){
 document.addEventListener("click",e=>{
   const a=e.target.closest&&e.target.closest("[data-al]");if(!a)return;const el=a.closest(".alert");if(!el)return;
   const k=a.dataset.al,v=S.videos[el.dataset.id];
-  if(k==="scheduled"&&v){putVideo(withStatus(v,"Scheduled"));toast(`“${v.title||"Untitled"}” scheduled. It becomes Posted by itself at ${v.postTime?fmtT(v.postTime):"its time"}`)}
+  if(k==="scheduled"&&v){putVideo(withStatus(v,"Scheduled"));calFx(v);toast(`“${v.title||"Untitled"}” scheduled. It becomes Posted by itself at ${v.postTime?fmtT(v.postTime):"its time"}`)}
   if(k==="posted"&&v){putVideo(withStatus(v,"Posted"));celebrate(v.id,"Posted");toast(`“${v.title||"Untitled"}” marked as posted`)}
   else if(k==="approve"&&v)approveVideo(v);
   else if(k==="reedit"&&v)askReedit(v);
@@ -3469,7 +3642,7 @@ function osPanel(){
 // actions pressed on a Windows notification come back here
 if(navigator.serviceWorker)navigator.serviceWorker.addEventListener("message",e=>{
   const d=e.data||{};const v=S.videos[d.id];if(!v)return;
-  if(d.action==="scheduled"){putVideo(withStatus(v,"Scheduled"));toast(`“${v.title||"Untitled"}” scheduled`);return}
+  if(d.action==="scheduled"){putVideo(withStatus(v,"Scheduled"));calFx(v);toast(`“${v.title||"Untitled"}” scheduled`);return}
   if(d.action==="posted"){putVideo(withStatus(v,"Posted"));toast(`“${v.title||"Untitled"}” marked as posted`)}
   else if(d.action==="approve"){approveVideo(v)}
   else showAlert(v,d.k);
@@ -3537,6 +3710,7 @@ function flipAll(sel,key,before,stagger){
   });
 }
 function celebrate(id,st){
+  if(st==="Scheduled")calFx(S.videos[id]);
   const sel=document.querySelector(`select[data-f="status"][data-id="${id}"]`);if(!sel)return;
   const row=sel.closest(".erow, .slot, tr, .hrow");
   if(row&&row.animate&&!RM)row.animate([{boxShadow:"0 0 0 0 rgba(170,255,0,.0)"},{boxShadow:"0 0 0 6px rgba(170,255,0,.45)"},{boxShadow:"0 0 0 14px rgba(170,255,0,0)"}],{duration:700,easing:EASE});
@@ -3701,7 +3875,7 @@ document.addEventListener("click",async e=>{
   else if(act==="del"){const v=S.videos[b.dataset.id];if(v&&await ask("Delete this video?",`“${v.title||"Untitled"}” will be removed from the board. This can’t be undone.`))delVideos([v.id])}
   else if(act==="bulkDel"){const ids=[...S.sel];if(ids.length&&await ask(`Delete ${ids.length} video${ids.length>1?"s":""}?`,"They’ll be removed from the board. This can’t be undone.",`Delete ${ids.length}`)){delVideos(ids);toast(`Deleted ${ids.length}`)}}
   else if(act==="clearSel"){S.sel.clear();render()}
-  else if(act==="shuffle"){const before=rectsOf(".erow[data-fid]","fid");const cur=currentQueue().map(x=>x.v.id);const pins=cleanPins(cur);const ids=Object.keys(pins).length||S.opts.keepEditing?arrangeWithPins(cur,pins):buildOrder().map(v=>v.id);S.queue={ids,at:Date.now(),pins};putQueue();render();flipAll(".erow[data-fid]","fid",before,true);toast("Shuffled")}
+  else if(act==="shuffle"){deckShuffle(".erow[data-fid]",()=>{const before=rectsOf(".erow[data-fid]","fid");const cur=currentQueue().map(x=>x.v.id);const pins=cleanPins(cur);const ids=Object.keys(pins).length||S.opts.keepEditing?arrangeWithPins(cur,pins):buildOrder().map(v=>v.id);S.queue={ids,at:Date.now(),pins};putQueue();render();flipAll(".erow[data-fid]","fid",before,true);toast("Shuffled")})}
   else if(act==="up"||act==="down"){
     const list=currentQueue().map(x=>x.v.id);const i=+b.dataset.i,j=act==="up"?i-1:i+1;
     if(j<0||j>=list.length)return;const id=list[i],other=list[j];[list[i],list[j]]=[list[j],list[i]];
@@ -3713,7 +3887,7 @@ document.addEventListener("click",async e=>{
     if(!r.changes.length){toast("Schedule is already mixed, nothing to change");return}
     const msg=`${r.changes.length} post${r.changes.length>1?"s":""} will move or be added. Locked and Ready slots stay where they are.`+(r.unplaced?` ${r.unplaced} video${r.unplaced>1?"s":""} can’t be placed without two from one shoot day on the same posting day, so they stay unscheduled.`:"");
     if(!await ask("Reshuffle the posting schedule?",msg,"Reshuffle",true))return;
-    {const before=rectsOf(".sday [data-drag-id]","dragId");applyReshuffle(r);flipAll(".sday [data-drag-id]","dragId",before,true)}toast(`Reshuffled ${r.changes.length} post${r.changes.length>1?"s":""}`,"Undo",undoReshuffle);
+    deckShuffle(".sday [data-drag-id]",()=>{const before=rectsOf(".sday [data-drag-id]","dragId");applyReshuffle(r);flipAll(".sday [data-drag-id]","dragId",before,true)});toast(`Reshuffled ${r.changes.length} post${r.changes.length>1?"s":""}`,"Undo",undoReshuffle);
   }
   else if(act==="undoAuto")undoReshuffle();
   else if(act==="days"){S.schedDays=+b.dataset.n;render()}
@@ -3754,7 +3928,7 @@ document.addEventListener("click",async e=>{
     const twin=ideaTwin(text,link);if(twin&&!await ask(twin.used?"You already used this idea":"This idea is already in the bank",`“${(twin.text||twin.link||"").slice(0,80)}”${twin.used?` was used on ${nice(iso(new Date(twin.usedAt||Date.now())))}.`:"."} Add it anyway?`,"Add anyway",true))return;
     const pil=T==="R"?(($("#idPil")||{}).value||""):"";if(T==="R")S.ideaNewPil=pil;
     putIdea({id:"i"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),type:T,text,link,pillar:pil,notes:"",used:false,createdAt:Date.now(),by:S.me||""});toast("Added to the content bank")}
-  else if(act==="ideaUse"){const x=S.ideas[b.dataset.id];if(x){putIdea({...x,used:true,usedAt:Date.now(),usedBy:S.me||""});toast("Marked used. It’s in the archive now","Undo",()=>putIdea({...S.ideas[x.id],used:false,usedAt:null}))}}
+  else if(act==="ideaUse"){const x=S.ideas[b.dataset.id];if(x)fileAway(b.closest(".idea"),()=>{putIdea({...x,used:true,usedAt:Date.now(),usedBy:S.me||""});toast("Marked used. It’s in the archive now","Undo",()=>putIdea({...S.ideas[x.id],used:false,usedAt:null}))})}
   else if(act==="ideaRestore"){const x=S.ideas[b.dataset.id];if(x){putIdea({...x,used:false,usedAt:null});toast("Back in the ideas list")}}
   else if(act==="ideaCopy"){const x=S.ideas[b.dataset.id];if(x){try{await navigator.clipboard.writeText([x.text,x.link].filter(Boolean).join(String.fromCharCode(10)));toast("Copied")}catch(e){toast("Couldn’t copy")}}}
   else if(act==="ideaDel"){const x=S.ideas[b.dataset.id];if(x&&await ask("Delete this idea?",`“${(x.text||x.link||"").slice(0,80)}” will be removed from the bank.`))delIdea(x.id)}
@@ -3774,6 +3948,8 @@ document.addEventListener("click",async e=>{
   else if(act==="histView"){S.histView=b.dataset.v;render()}
   else if(act==="sumMode"){const m=b.dataset.m;S.sumRange={...(S.sumRange||{}),mode:m};if(m==="custom"&&!S.sumRange.from){const r=sumRange();S.sumRange.from=iso(new Date(new Date(today()+"T00:00:00").getFullYear(),new Date(today()+"T00:00:00").getMonth(),1));S.sumRange.to=today()}render()}
   else if(act==="printSum"){window.print()}
+  else if(act==="playWrapped"){const r=sumRange(),d=new Date(r.from+"T00:00:00");const whole=r.from.slice(8)==="01"&&r.to===iso(new Date(d.getFullYear(),d.getMonth()+1,0));
+    openWrapped(r.from,r.to,whole?MONL[d.getMonth()]:`${nice(r.from)} – ${nice(r.to)}`)}
   else if(act==="plMode"){const m=b.dataset.m;S.plRange={...(S.plRange||{}),mode:m};if(m==="custom"&&!S.plRange.from){S.plRange.from=today();S.plRange.to=addDays(today(),6)}render()}
   else if(act==="plByDay"){S.plByDay=!S.plByDay;render()}
   else if(act==="addPillar"){const P=[...pillars()];let n="New pillar",k=2;while(P.includes(n))n="New pillar "+(k++);P.push(n);S.settings.pillars=P;putSettings();render()}
@@ -3805,7 +3981,7 @@ document.addEventListener("click",async e=>{
   else if(act==="rmScript"){SD.script=null;scriptState()}
   else if(act==="delShoot"){const id=SD.id;if(!id)return;$("#shootDlg").close("cancel");if(await ask("Delete this shoot?","Its plan and script will be removed from the board.","Delete"))delShoot(id)}
   else if(act==="hrange"){S.hist.range=b.dataset.r;render()}
-  else if(act==="markScheduled"){const v=S.videos[b.dataset.id];if(v){putVideo(withStatus(v,"Scheduled"));toast("Scheduled. It becomes Posted by itself at posting time")}}
+  else if(act==="markScheduled"){const v=S.videos[b.dataset.id];if(v){putVideo(withStatus(v,"Scheduled"));calFx(v);toast("Scheduled. It becomes Posted by itself at posting time")}}
   else if(act==="markPosted"){const v=S.videos[b.dataset.id];if(v)putVideo(withStatus(v,"Posted"))}
   else if(act==="markAllPosted"){const t=today();const L=vids().filter(v=>v.postDate&&v.postDate<t&&v.status!=="Posted");L.forEach(v=>putVideo(withStatus(v,"Posted"),true));render();toast(`${L.length} marked as posted`)}
   else if(act==="slotMove"){
@@ -3904,6 +4080,7 @@ form.elements.titles.addEventListener("input",updAdd);
 dlg.addEventListener("close",()=>{
   if(dlg.returnValue!=="ok")return;
   const L=lines();if(!L.length){toast("Type at least one title");return}
+  clapFx(L.length);
   const now=Date.now(),st=form.elements.status.value,sd=form.elements.shotDate.value;
   const rawIn=cleanPath(form.elements.rawLink.value);
   const link=safeUrl(rawIn)||rawLinkFor(sd)||"",pth=(rawIn&&!safeUrl(rawIn))?rawIn:rawPathFor(sd);
@@ -3969,6 +4146,8 @@ async function startSession(t,user){
   try{const r=await call("loadAll",token);S.videos={};S.shoots={};S.scripts={};S.profiles={};S.ideas={};r.rows.forEach(applyDoc);since=r.now-60000;loaded=true;render();checkAlerts();
     try{lsSet("seb-cache",JSON.stringify({user:S.me,rows:r.rows}))}catch(e){}
     $("#sync").textContent="Connected to your Google Sheet. Changes save automatically.";
+    wrappedOffer();
+    setTimeout(()=>{loadTeam(true);loadBackups(true)},1500);
     if(OSN&&Notification.permission==="default"&&!lsGet("seb-asked-osn")&&!PHONE()){lsSet("seb-asked-osn","1");setTimeout(()=>toast("Get Windows notifications for reviews and posting times?","Turn on",askNotif),2500)}
     clearInterval(pollT);pollT=setInterval(poll,12000);
   }catch(e){if(String(e&&e.message).includes("SESSION"))return sessionExpired();$("#sync").textContent="Couldn’t load: "+(e&&e.message||e)}
@@ -3982,7 +4161,7 @@ $("#loginForm").addEventListener("submit",async e=>{
   catch(err){const m=String(err&&err.message||"");$("#loginErr").textContent=/wrong username|password/i.test(m)?"Wrong username or password.":m||"Couldn’t sign in. Please try again."}
   finally{clearTimeout(slow);btn.disabled=false}
 });
-$("#logoutBtn").addEventListener("click",async()=>{await flush();if(token)try{await call("logout",token)}catch(e){}token=null;lsSet("seb-token",null);lsSet("seb-cache",null);location.replace(location.origin+location.pathname)});
+$("#logoutBtn").addEventListener("click",async()=>{await flush();if(token)try{await call("logout",token)}catch(e){}token=null;lsSet("seb-token",null);lsSet("seb-cache",null);lsSet("seb-team",null);lsSet("seb-bk",null);location.replace(location.origin+location.pathname)});
 
 if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
 render();
