@@ -1818,6 +1818,22 @@ td .gsel:hover,td .gsel.open{background:rgba(255,255,255,.85)!important;border-c
 
 .stpop[popover]{inset:auto;margin:0;color:inherit;overflow:auto}
 .stpop[popover]:not(:popover-open){display:none}
+
+/* frosted, slightly dimmed band at the top while scrolling, so content never shows sharp behind the menu */
+#topScrim{position:fixed;left:0;right:0;top:0;height:calc(96px + env(safe-area-inset-top,0px));z-index:55;pointer-events:none;opacity:0;
+  background:linear-gradient(180deg,rgba(226,230,220,.78) 0%,rgba(232,235,227,.62) 55%,rgba(240,242,236,0) 100%);
+  -webkit-backdrop-filter:blur(18px) saturate(150%) brightness(.94);backdrop-filter:blur(18px) saturate(150%) brightness(.94);
+  -webkit-mask-image:linear-gradient(180deg,#000 62%,transparent);mask-image:linear-gradient(180deg,#000 62%,transparent);
+  transition:opacity .45s cubic-bezier(.22,1,.36,1)}
+body.scrolled #topScrim{opacity:1}
+nav.tabs.stuck{background:rgba(255,255,255,.8)!important;box-shadow:0 16px 40px rgba(20,24,10,.14),inset 0 1px 0 #fff!important}
+@media (max-width:600px){#topScrim{height:calc(env(safe-area-inset-top,0px) + 26px)}}
+@media print{#topScrim{display:none}}
+
+#reDlg{width:min(520px,calc(100vw - 24px))}
+#reDlg textarea{width:100%;border:1px solid var(--line);border-radius:14px;padding:12px;background:rgba(255,255,255,.8)}
+#reDlg .foot{flex-wrap:wrap}
+@media (max-width:600px){#reDlg{width:100%!important}}
 </style>
 </head>
 <body>
@@ -1970,6 +1986,15 @@ td .gsel:hover,td .gsel.open{background:rgba(255,255,255,.85)!important;border-c
     <div class="foot"><button class="btn" value="cancel" formnovalidate>Cancel</button><button class="btn primary" value="ok">Save</button></div>
   </form>
 </dialog>
+<dialog id="reDlg">
+  <form method="dialog">
+    <span class="al-pill warn">Re-edit?</span>
+    <h2 style="margin-top:10px">Is this a re-edit Zain asked for?</h2>
+    <p class="sub" id="reFor"></p>
+    <textarea id="reNote" rows="3" placeholder="What did he ask to change? (optional)" style="min-height:90px"></textarea>
+    <div class="foot"><button class="btn" value="cancel" formnovalidate>Cancel</button><span style="flex:1"></span><button class="btn" value="no">No, just editing</button><button class="btn primary" value="ok">Yes, re-edit</button></div>
+  </form>
+</dialog>
 <dialog id="rawDlg">
   <form method="dialog">
     <span class="al-pill">Raw footage</span>
@@ -2016,6 +2041,7 @@ td .gsel:hover,td .gsel.open{background:rgba(255,255,255,.85)!important;border-c
     <div class="foot"><a class="btn" id="scriptOpen" target="_blank" rel="noopener noreferrer" hidden>Open original</a><span style="flex:1"></span><button class="btn primary" value="ok">Close</button></div>
   </form>
 </dialog>
+<div id="topScrim" aria-hidden="true"></div>
 <div id="bubbles" aria-hidden="true"><i class="bb b1"></i><i class="bb b2"></i><i class="bb b3"></i><i class="bb b4"></i><i class="bb b5"></i><i class="bb b6"></i><i class="bb b7"></i></div>
 <div class="alerts" id="alerts" aria-live="polite"></div>
 <div id="stPop" class="stpop" role="listbox" aria-label="Choose a status" popover="manual"></div>
@@ -2116,6 +2142,9 @@ function statusSelect(v){
 function stMenuItems(v){
   const out=[];
   if(isReviewer()&&v.status==="In review"){out.push({v:"__approve",label:"Approve",c:"#3E9C5E",hint:"Goes to Ready"});out.push({v:"Re-edit",label:"Re-edit…",c:SC["Re-edit"],hint:"Send back with notes"})}
+  else if(isReviewer()&&["Ready","Scheduled","Approved"].includes(v.status))out.push({v:"Re-edit",label:"Re-edit…",c:SC["Re-edit"],hint:"Send it back with notes"});
+  // the editor can record a re-edit Zain asked for in person, after the fact
+  if(!isReviewer()&&["Shot","Editing","Pending"].includes(v.status)&&(v.submittedAt||v.approvedAt))out.push({v:"__logre",label:"Log as re-edit…",c:SC["Re-edit"],hint:"If Zain asked for changes"});
   if(!ST_MAIN.includes(v.status))out.push({v:v.status,label:v.status,c:SC[v.status]||"#888",cur:true});
   ST_MAIN.forEach(k=>out.push({v:k,label:k==="In review"&&v.status!=="In review"?"Send for review":k,c:SC[k],cur:k===v.status}));
   return out;
@@ -2138,7 +2167,8 @@ function popHide(pop){if(pop.hidePopover)setTimeout(()=>{if(!pop.classList.conta
 function closeStMenu(){const pop=$("#stPop");pop.classList.remove("show");popHide(pop);if(STM.btn)STM.btn.classList.remove("open");STM.btn=null}
 document.addEventListener("click",e=>{const o=e.target.closest&&e.target.closest("#stPop [data-stv]");
   if(o){const v=S.videos[$("#stPop").dataset.id],val=o.dataset.stv;closeStMenu();if(!v)return;
-    if(val==="__approve"){approveVideo(v);return}if(val===v.status)return;setStatusFlow(v,val);return}
+    if(val==="__approve"){approveVideo(v);return}
+    if(val==="__logre"){askEditorReedit(v,v.status);return}if(val===v.status)return;setStatusFlow(v,val);return}
   if(!(e.target.closest&&e.target.closest("#stPop,.stsel")))closeStMenu()});
 document.addEventListener("keydown",e=>{const pop=$("#stPop");if(!pop||!pop.classList.contains("show"))return;
   if(e.key==="Escape"){closeStMenu();return}
@@ -2754,7 +2784,7 @@ function vVideos(){
       <button class="btn" data-act="clearSel">Clear selection</button></div>`:"";
   const rows=L.map(v=>`<tr class="${S.sel.has(v.id)?"sel":""}${(S.moreRows||{})[v.id]?" open":""}" data-k="v-${v.id}">
     <td class="ck"><input type="checkbox" data-act-ck="${v.id}"${S.sel.has(v.id)?" checked":""} aria-label="Select ${esc(v.title)}"></td>
-    <td class="title"><input type="text" value="${esc(v.title)}" data-f="title" data-id="${v.id}" aria-label="Title"><button class="mob-more" data-act="rowMore" data-id="${v.id}">${(S.moreRows||{})[v.id]?"Less":"Details"}</button>${v.status==="Re-edit"&&v.reviewNote?`<small class="rnote">Changes: ${esc(v.reviewNote)}</small>`:""}${v.status==="In review"?`<small class="rnote rv">With ${esc(reviewerName())} for review${v.round>1?`, round ${v.round}`:""}</small>`:""}</td>
+    <td class="title"><input type="text" value="${esc(v.title)}" data-f="title" data-id="${v.id}" aria-label="Title"><button class="mob-more" data-act="rowMore" data-id="${v.id}">${(S.moreRows||{})[v.id]?"Less":"Details"}</button>${(v.status==="Re-edit"||EDIT_POOL.includes(v.status))&&v.reviewNote?`<small class="rnote">Changes: ${esc(v.reviewNote)}</small>`:""}${v.status==="In review"?`<small class="rnote rv">With ${esc(reviewerName())} for review${v.round>1?`, round ${v.round}`:""}</small>`:""}</td>
     <td class="c-fmt" data-l="Format"><select data-f="format" data-id="${v.id}" aria-label="Format"><option${v.format!=="Carousel"?" selected":""}>Reel</option><option${v.format==="Carousel"?" selected":""}>Carousel</option></select></td>
     <td class="c-pil" data-l="Pillar">${isCar(v)?`<span class="stat">Carousel</span>`:pillarSelect(`data-f="pillar" data-id="${v.id}" aria-label="Pillar" class="psel" style="--pc:${pillarColor(v.pillar)}"`,v.pillar||"")}</td>
     <td class="c-shot" data-l="Shot on"><input type="date" value="${esc(v.shotDate||"")}" data-f="shotDate" data-id="${v.id}" aria-label="Shot date" class="dt-in" style="--dc:${hue(v.shotDate)}"></td>
@@ -2790,7 +2820,7 @@ function vOrder(){
     const mix=g.items.map(x=>`<i style="background:${hue(x.v.shotDate)}" title="Shot ${esc(nice(x.v.shotDate)||"date unknown")}"></i>`).join("");
     const rows=g.items.map((x,k)=>{const idx=g.start+k;const v=x.v;const prev=idx>0?list[idx-1].v.shotDate:null;const clash=prev&&prev===v.shotDate;const late=v.postDate&&v.postDate<g.day;
       const pinned=S.queue.pins&&S.queue.pins[v.id]!=null;
-      const tags=(pinned?`<button class="tag pin" data-act="unpin" data-id="${v.id}" title="Unpin: let Shuffle move it again">Pinned ×</button>`:"")+(v.status==="Editing"?`<span class="tag">Stays put while editing</span>`:"")+(v.status==="Re-edit"?`<span class="tag warn">Changes: ${esc((v.reviewNote||"see notes").slice(0,90))}</span>`:"")+(v.round>1&&EDIT_POOL.includes(v.status)?`<span class="tag">Round ${v.round}</span>`:"")+(x.fresh?`<span class="tag new">New</span>`:"")+(clash?`<span class="tag warn">Same shoot as above</span>`:"")+(late?`<span class="tag warn">Due before this</span>`:"");
+      const tags=(pinned?`<button class="tag pin" data-act="unpin" data-id="${v.id}" title="Unpin: let Shuffle move it again">Pinned ×</button>`:"")+(v.status==="Editing"?`<span class="tag">Stays put while editing</span>`:"")+(v.status==="Re-edit"||(EDIT_POOL.includes(v.status)&&v.reviewNote)?`<span class="tag warn">Changes: ${esc((v.reviewNote||"see notes").slice(0,90))}</span>`:"")+(v.round>1&&EDIT_POOL.includes(v.status)?`<span class="tag">Round ${v.round}</span>`:"")+(x.fresh?`<span class="tag new">New</span>`:"")+(clash?`<span class="tag warn">Same shoot as above</span>`:"")+(late?`<span class="tag warn">Due before this</span>`:"");
       return `<div class="erow${pinned?" pinned":""}" data-fid="${v.id}">
         <div class="num grip" title="Drag to reorder"><span class="n">${idx+1}</span><span class="g">⋮⋮</span></div>
         <div class="etitle"><span class="dot" style="background:${hue(v.shotDate)}"></span><div><b>${esc(v.title||"Untitled")}</b>${pillarTag(v)}<small>Shot ${esc(v.shotDate?nice(v.shotDate):"date unknown")}${v.postDate?`, posts ${esc(niceW(v.postDate))}${v.postTime?" "+fmtT(v.postTime):""}`:""}${tags}</small></div></div>
@@ -3993,7 +4023,16 @@ function sendForReview(v){
   celebrate(v.id,"In review");
   toast(`Sent to ${reviewerName()} for review${round>1?`, round ${round}`:""}`,"Undo",()=>{putVideo(prev);toast("Moved back")});
 }
+function askEditorReedit(v,st){
+  const d=$("#reDlg");$("#reFor").textContent=`“${v.title||"Untitled"}”`;const box=$("#reNote");box.value="";d.returnValue="";
+  d.addEventListener("close",()=>{const r=d.returnValue,cur=S.videos[v.id];if(!cur)return;
+    if(r==="ok"){const note=box.value.trim();putVideo({...withStatus(cur,st),reviewNote:note||cur.reviewNote||"",reviewLog:hist(cur,"re-edit",note),reeditByEditor:true});scribbleFx();toast(`Recorded as a re-edit${note?" with notes":""}`)}
+    else if(r==="no"){if(st!==cur.status)putVideo(withStatus(cur,st));else render()}
+    else render()},{once:true});
+  openDlg(d);setTimeout(()=>box.focus(),80);
+}
 function setStatusFlow(v,st){
+  if(!isReviewer()&&["Ready","Scheduled","Approved","In review"].includes(v.status)&&["Editing","Shot","Pending"].includes(st)){askEditorReedit(v,st);return}
   const wantsDone=["Ready","In review","Edited"].includes(st);
   if(st==="Approved"){if(!isReviewer()){toast(`Only ${reviewerName()} can approve`);render();return}approveVideo(v);return}
   if(st==="Re-edit"){if(!isReviewer()){toast(`Only ${reviewerName()} can ask for a re-edit`);render();return}askReedit(v);return}
@@ -4211,7 +4250,7 @@ function segInds(root){
 })();
 /* ---------- sticky glass nav ---------- */
 (function(){const nav=document.querySelector("nav.tabs");if(!nav)return;let t=nav.getBoundingClientRect().top+scrollY;
-  const on=()=>nav.classList.toggle("stuck",scrollY>t-12);addEventListener("scroll",on,{passive:true});addEventListener("resize",()=>{nav.classList.remove("stuck");t=nav.getBoundingClientRect().top+scrollY;on()})})();
+  const on=()=>{const s=scrollY>t-12;nav.classList.toggle("stuck",s);document.body.classList.toggle("scrolled",scrollY>24)};addEventListener("scroll",on,{passive:true});addEventListener("resize",()=>{nav.classList.remove("stuck");t=nav.getBoundingClientRect().top+scrollY;on()})})();
 /* ---------- background drifts gently with the mouse ---------- */
 if(canHoverFine&&!RM){let pr=0,px=0,py=0;document.addEventListener("pointermove",e=>{px=e.clientX/innerWidth*2-1;py=e.clientY/innerHeight*2-1;if(!pr)pr=requestAnimationFrame(()=>{pr=0;document.documentElement.style.setProperty("--px",px.toFixed(3));document.documentElement.style.setProperty("--py",py.toFixed(3))})},{passive:true})}
 /* ---------- dialogs close with a soft fade instead of vanishing ---------- */
