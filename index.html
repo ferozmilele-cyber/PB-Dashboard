@@ -1652,6 +1652,46 @@ input:focus,select:focus,textarea:focus{border-color:rgba(123,209,0,.7)!importan
 nav.tabs{background:rgba(255,255,255,.62)!important;border:1px solid rgba(255,255,255,.9)!important;box-shadow:var(--g-shadow),inset 0 1px 0 #fff!important;-webkit-backdrop-filter:var(--g-blur);backdrop-filter:var(--g-blur)}
 .me,.searchbtn,.bell:not(.has),.morebtn{background:rgba(255,255,255,.7)!important;border:1px solid rgba(255,255,255,.95)!important;box-shadow:0 1px 2px rgba(20,24,10,.05),inset 0 1px 0 #fff;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
 .mbar{background:rgba(255,255,255,.7)!important;box-shadow:0 18px 50px rgba(20,24,10,.16),inset 0 1px 0 #fff!important}
+
+/* ===== All videos: clean glass table ===== */
+.scroll{border-radius:20px}
+table{font-size:13.5px}
+thead th{position:sticky;top:0;z-index:4;background:rgba(248,249,245,.85);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  font-size:11px!important;letter-spacing:.06em;color:#7a7f73!important;padding:10px 8px!important;border-bottom:1px solid rgba(12,14,8,.07)!important}
+tbody td{padding:7px 8px!important;border-bottom:1px solid rgba(12,14,8,.05)!important}
+tbody tr:nth-child(even) td{background:rgba(255,255,255,.28)}
+td.title input{min-width:210px;font-weight:600!important}
+td select,td input[type=text],td input[type=date]{border:1px solid transparent!important;background:transparent!important;border-radius:10px!important;padding:6px 8px!important;transition:background .2s,border-color .2s}
+td select:hover,td input[type=text]:hover,td input[type=date]:hover{background:rgba(255,255,255,.75)!important;border-color:rgba(12,14,8,.08)!important}
+td select:focus,td input:focus{background:#fff!important}
+td select[data-f="format"]{min-width:92px!important}
+td .psel{border-left:0!important;padding-left:22px!important;min-width:140px;background:radial-gradient(circle at 10px 50%,var(--pc) 0 4px,transparent 4.5px) no-repeat!important}
+td .psel:hover{background:radial-gradient(circle at 10px 50%,var(--pc) 0 4px,transparent 4.5px) no-repeat,rgba(255,255,255,.75)!important}
+.dt-in{padding-left:22px!important;background:radial-gradient(circle at 10px 50%,var(--dc) 0 4px,transparent 4.5px) no-repeat!important;min-width:138px}
+td .status{background-color:rgba(255,255,255,.7)!important;border:1px solid rgba(12,14,8,.07)!important;border-radius:999px!important;min-width:128px;font-weight:600}
+.note-in{min-width:150px;color:var(--muted)}
+.link-in{min-width:150px;border:1px dashed rgba(12,14,8,.18)!important}
+.chipset{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.gchip{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:999px;border:1px solid rgba(255,255,255,.95);
+  background:rgba(255,255,255,.72);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:0 1px 2px rgba(20,24,10,.05),inset 0 1px 0 #fff;
+  color:#2B2E27;font-size:12.5px;font-weight:700;text-decoration:none;cursor:pointer;transition:transform .4s var(--spring),box-shadow .3s,background .25s}
+.gchip:hover{transform:translateY(-1px);background:#fff;box-shadow:0 6px 16px rgba(20,24,10,.1),inset 0 1px 0 #fff}
+.gchip.ic{width:30px;padding:0;justify-content:center;color:#6A6E64}
+.gchip.play{background:linear-gradient(180deg,#1b1c1a,#0B0B0C);color:#AAFF00;border-color:rgba(0,0,0,.2);box-shadow:0 4px 12px rgba(0,0,0,.18)}
+.gchip.play:hover{background:#0B0B0C}
+.muted-chip{font-size:12px;color:var(--muted)}
+td.c-del .xbtn{opacity:.35;transition:opacity .2s,background .2s}
+tbody tr:hover td.c-del .xbtn{opacity:1}
+tbody tr:hover td{background:rgba(255,255,255,.85)!important}
+@media (max-width:600px){.gchip span{display:inline}.dt-in,.note-in,.link-in{min-width:0}}
+
+td select.status{background:rgba(255,255,255,.72) radial-gradient(circle at 13px 50%,var(--c) 0 4.5px,transparent 5px) no-repeat!important;padding-left:26px!important}
+td select.status:hover{background:#fff radial-gradient(circle at 13px 50%,var(--c) 0 4.5px,transparent 5px) no-repeat!important}
+td input.dt-in{background:radial-gradient(circle at 10px 50%,var(--dc) 0 4px,transparent 4.5px) no-repeat!important;min-width:128px}
+td input.dt-in:hover{background:radial-gradient(circle at 10px 50%,var(--dc) 0 4px,transparent 4.5px) no-repeat,rgba(255,255,255,.75)!important}
+td select[data-f="format"]{min-width:80px!important}
+td input[type=date]{min-width:128px!important}
+td input.dt-in{padding-left:24px!important}
 </style>
 </head>
 <body>
@@ -1947,6 +1987,19 @@ function statusSelect(v){
 function timeSelect(v){
   const T=allTimes();
   return `<select data-f="postTime" data-id="${v.id}" aria-label="Post time"><option value="">No time</option>`+T.map(t=>`<option value="${t}"${v.postTime===t?" selected":""}>${fmtT(t)}</option>`).join("")+`</select>`;
+}
+const ICO_F='<svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M3 7.5A2.5 2.5 0 0 1 5.5 5h4l2 2h7A2.5 2.5 0 0 1 21 9.5v7a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 16.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>';
+const ICO_P='<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg>';
+const ICO_E='<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path d="M4 20l4-1 10.5-10.5a2 2 0 0 0-3-3L5 16z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>';
+function folderChip(s){
+  if(!s)return `<span class="muted-chip">No shot date</span>`;
+  const f=folder(s),rl=rawLinkFor(s),own=rawPathFor(s);
+  return `<span class="chipset"><button class="gchip" data-act="copy" data-text="${esc(f)}" title="${esc(f)}">${ICO_F}<span>Copy path</span></button>${rl?`<a class="gchip ic" href="${esc(rl)}" target="_blank" rel="noopener noreferrer" title="Open folder">${ICO_P}</a>`:""}<button class="gchip ic" data-act="addRaw" data-d="${s}" title="${own?"Change this day’s folder":"Set this day’s folder"}">${ICO_E}</button></span>`;
+}
+function linkChip(v){
+  const u=safeUrl(v.finalLink),ed=(S.editLinks||{})[v.id];
+  if(u&&!ed)return `<span class="chipset"><a class="gchip play" href="${esc(u)}" target="_blank" rel="noopener noreferrer" title="${esc(u)}">${ICO_P}<span>Open video</span></a><button class="gchip ic" data-act="editLink" data-id="${v.id}" title="Change link">${ICO_E}</button></span>`;
+  return `<input type="text" class="link-in" value="${esc(v.finalLink||"")}" data-f="finalLink" data-id="${v.id}" placeholder="Paste link" aria-label="Final video link"${ed?" autofocus":""}>`;
 }
 function folderCell(s){
   if(!s)return `<span class="folder"><code>Add a shot date to get the folder</code></span>`;
@@ -2544,14 +2597,14 @@ function vVideos(){
     <td class="title"><input type="text" value="${esc(v.title)}" data-f="title" data-id="${v.id}" aria-label="Title"><button class="mob-more" data-act="rowMore" data-id="${v.id}">${(S.moreRows||{})[v.id]?"Less":"Details"}</button>${v.status==="Re-edit"&&v.reviewNote?`<small class="rnote">Changes: ${esc(v.reviewNote)}</small>`:""}${v.status==="In review"?`<small class="rnote rv">With ${esc(reviewerName())} for review${v.round>1?`, round ${v.round}`:""}</small>`:""}</td>
     <td class="c-fmt" data-l="Format"><select data-f="format" data-id="${v.id}" aria-label="Format"><option${v.format!=="Carousel"?" selected":""}>Reel</option><option${v.format==="Carousel"?" selected":""}>Carousel</option></select></td>
     <td class="c-pil" data-l="Pillar">${isCar(v)?`<span class="stat">Carousel</span>`:pillarSelect(`data-f="pillar" data-id="${v.id}" aria-label="Pillar" class="psel" style="--pc:${pillarColor(v.pillar)}"`,v.pillar||"")}</td>
-    <td class="c-shot" data-l="Shot on"><input type="date" value="${esc(v.shotDate||"")}" data-f="shotDate" data-id="${v.id}" aria-label="Shot date" style="border-left:4px solid ${hue(v.shotDate)}"></td>
-    <td class="c-fold" data-l="Raw folder">${folderCell(v.shotDate)}</td>
+    <td class="c-shot" data-l="Shot on"><input type="date" value="${esc(v.shotDate||"")}" data-f="shotDate" data-id="${v.id}" aria-label="Shot date" class="dt-in" style="--dc:${hue(v.shotDate)}"></td>
+    <td class="c-fold" data-l="Raw folder">${folderChip(v.shotDate)}</td>
     <td class="c-st" data-l="Status">${statusSelect(v)}</td>
     <td class="c-post" data-l="Post on"><input type="date" value="${esc(v.postDate||"")}" data-f="postDate" data-id="${v.id}" aria-label="Post date"></td>
     <td class="c-time" data-l="Time">${timeSelect(v)}</td>
-    <td class="c-link" data-l="Final video"><div class="linkcell"><input type="text" value="${esc(v.finalLink||"")}" data-f="finalLink" data-id="${v.id}" placeholder="Paste SharePoint link" aria-label="Final video link">${openLink(v,"Open")}</div></td>
-    <td class="c-note" data-l="Notes"><input type="text" value="${esc(v.notes||"")}" data-f="notes" data-id="${v.id}" placeholder="Add note" aria-label="Notes" style="min-width:140px"></td>
-    <td class="c-del"><button class="btn small ghost" data-act="del" data-id="${v.id}">Delete</button></td></tr>`).join("");
+    <td class="c-link" data-l="Final video">${linkChip(v)}</td>
+    <td class="c-note" data-l="Notes"><input type="text" value="${esc(v.notes||"")}" data-f="notes" data-id="${v.id}" placeholder="Add note" aria-label="Notes" class="note-in"></td>
+    <td class="c-del"><button class="xbtn" data-act="del" data-id="${v.id}" title="Delete" aria-label="Delete">×</button></td></tr>`).join("");
   return `<section class="panel">
     <div class="toolbar">
       <input type="search" placeholder="Search titles and notes" value="${esc(f.q)}" data-live="q" aria-label="Search">
@@ -4051,6 +4104,7 @@ document.addEventListener("click",async e=>{
     if(!nw||nw.value.length<4){toast("Use at least 4 characters");return}
     b.disabled=true;call("changePassword",token,u,od?od.value:"",nw.value).then(()=>{toast(self?"Password changed":`Password reset for ${dispName(u)}`);nw.value="";if(od)od.value=""}).catch(err=>toast(String(err&&err.message||"Couldn’t change it").replace(/^Error: /,""))).finally(()=>{b.disabled=false})}
   else if(act==="addRaw"){askRaw(b.dataset.d)}
+  else if(act==="editLink"){S.editLinks=S.editLinks||{};S.editLinks[b.dataset.id]=true;render();setTimeout(()=>{const i=document.querySelector(`.link-in[data-id="${b.dataset.id}"]`);if(i){i.focus();i.select()}},30)}
   else if(act==="rowMore"){S.moreRows=S.moreRows||{};S.moreRows[b.dataset.id]=!S.moreRows[b.dataset.id];render()}
   else if(act==="dialBack"){DIAL.code=DIAL.code.slice(0,-1);const el=document.getElementById("dialDots");if(el)el.innerHTML=dialDotsHTML();sfx("tick")}
   else if(act==="dialTry"){if(!DIAL.code){toast("Dial the code first");return}dialAutoTry(true)}
@@ -4187,7 +4241,8 @@ document.addEventListener("change",e=>{
   const v=S.videos[id];if(!v)return;
   if(f==="status"){setStatusFlow(v,t.value)}
   else if(f==="finalLink"&&v.status==="Approved"&&safeUrl(t.value)){putVideo({...withStatus(v,"Ready"),finalLink:t.value.trim()});celebrate(id,"Ready");toast("Ready to post")}
-  else if(v[f]!==t.value)putVideo({...v,[f]:t.value});
+  else if(v[f]!==t.value){if(f==="finalLink"&&S.editLinks)delete S.editLinks[id];putVideo({...v,[f]:t.value})}
+  else if(f==="finalLink"&&S.editLinks&&S.editLinks[id]){delete S.editLinks[id];render()}
 });
 document.addEventListener("input",e=>{
   const t=e.target;
