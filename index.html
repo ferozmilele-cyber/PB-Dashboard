@@ -2257,12 +2257,12 @@ function enqueue(op,collection,id,data){
   if(!GAS){saveLocal();return}
   pending.set(collection+"/"+id,{op,collection,id,data});
   $("#sync").textContent="Saving…";
-  clearTimeout(flushT);flushT=setTimeout(flush,500);
+  clearTimeout(flushT);flushT=setTimeout(flush,250);
 }
 async function flush(){
   if(!pending.size)return;
   const ops=[...pending.values()];ops.forEach(o=>inflight.set(o.collection+"/"+o.id,o));pending.clear();
-  try{const res=await call("save",token,ops);$("#sync").textContent="Saved to your Google Sheet. Changes appear for your team within a few seconds.";
+  try{FAST_UNTIL=Date.now()+45000;const res=await call("save",token,ops);$("#sync").textContent="Saved to your Google Sheet. Changes appear for your team within a few seconds.";
     if(res&&res.notified)toast(`Notified ${String(S.settings.notifyEmails||"").split(/[,;\s]+/).filter(Boolean)[0]||"poster"}${res.notified>1?` about ${res.notified} videos`:""}`)}
   catch(e){if(String(e&&e.message).includes("SESSION"))return sessionExpired();ops.forEach(o=>{const k=o.collection+"/"+o.id;if(!pending.has(k))pending.set(k,o)});$("#sync").textContent="Not saved yet, retrying…";clearTimeout(flushT);flushT=setTimeout(flush,4000)}
   finally{ops.forEach(o=>inflight.delete(o.collection+"/"+o.id))}
@@ -2288,10 +2288,16 @@ function applyDoc(row){
   else if(row.collection==="meta"&&row.id==="queue"){const d=row.data||{};S.queue={ids:[...(d.ids||[])],at:d.at||null,pins:{...(d.pins||{})}}}
 }
 let polling=false;
+let FAST_UNTIL=0,lastSig="";
+function schedulePoll(){clearTimeout(pollT);if(!token)return;
+  const vis=!document.hidden,foc=document.hasFocus(),fast=Date.now()<FAST_UNTIL;
+  const d=!vis?30000:foc?(fast?2500:5000):(fast?4000:10000);
+  pollT=setTimeout(async()=>{await poll();schedulePoll()},d)}
+function pollNow(){if(!token)return;poll().finally(schedulePoll)}
 async function poll(){
   if(!token||polling)return;polling=true;
   try{const r=await call("changes",token,since);since=r.now-60000;
-    if(r.restoredAt){if(S.knownRestore==null)S.knownRestore=r.restoredAt;else if(r.restoredAt>S.knownRestore){S.knownRestore=r.restoredAt;const f=await call("loadAll",token);S.videos={};S.shoots={};S.scripts={};S.profiles={};S.ideas={};f.rows.forEach(applyDoc);render();toast("The board was restored from a backup");return}}if(r.rows.length){r.rows.forEach(applyDoc);render();checkAlerts()}}
+    if(r.restoredAt){if(S.knownRestore==null)S.knownRestore=r.restoredAt;else if(r.restoredAt>S.knownRestore){S.knownRestore=r.restoredAt;const f=await call("loadAll",token);S.videos={};S.shoots={};S.scripts={};S.profiles={};S.ideas={};f.rows.forEach(applyDoc);render();toast("The board was restored from a backup");return}}if(r.rows.length){const sig=JSON.stringify(r.rows.map(x=>[x.collection,x.id,x.updated||0,x.deleted?1:0]));if(sig!==lastSig){lastSig=sig;FAST_UNTIL=Date.now()+45000}r.rows.forEach(applyDoc);render();checkAlerts()}}
   catch(e){if(String(e&&e.message).includes("SESSION"))sessionExpired()}
   finally{polling=false}
 }
@@ -4620,10 +4626,11 @@ async function startSession(t,user){
     wrappedOffer();
     setTimeout(()=>{loadTeam(true);loadBackups(true)},1500);
     if(OSN&&Notification.permission==="default"&&!lsGet("seb-asked-osn")&&!PHONE()){lsSet("seb-asked-osn","1");setTimeout(()=>toast("Get Windows notifications for reviews and posting times?","Turn on",askNotif),2500)}
-    clearInterval(pollT);pollT=setInterval(poll,12000);
+    clearTimeout(pollT);schedulePoll();
   }catch(e){if(String(e&&e.message).includes("SESSION"))return sessionExpired();$("#sync").textContent="Couldn’t load: "+(e&&e.message||e)}
 }
-document.addEventListener("visibilitychange",()=>{if(!document.hidden)poll()});
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)pollNow()});
+addEventListener("focus",()=>pollNow());
 window.addEventListener("beforeunload",e=>{if(pending.size||inflight.size){flush();e.preventDefault();e.returnValue=""}});
 $("#loginForm").addEventListener("submit",async e=>{
   e.preventDefault();const f=e.target;const btn=f.querySelector("button");$("#loginErr").textContent="Signing in…";btn.disabled=true;
