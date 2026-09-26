@@ -1116,7 +1116,7 @@ dialog.cropdlg{width:min(420px,calc(100vw - 24px))}
   .moremenu .danger{color:#C4321F}
   /* top tabs move to an iOS style bottom bar */
   nav.tabs{display:none!important}
-  .mbar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));position:fixed;z-index:90;left:max(8px,env(safe-area-inset-left,0px));right:max(8px,env(safe-area-inset-right,0px));
+  .mbar{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));position:fixed;z-index:90;left:max(8px,env(safe-area-inset-left,0px));right:max(8px,env(safe-area-inset-right,0px));
     bottom:calc(8px + env(safe-area-inset-bottom,0px));padding:6px 4px;border-radius:28px;background:rgba(255,255,255,.78);
     -webkit-backdrop-filter:blur(30px) saturate(200%);backdrop-filter:blur(30px) saturate(200%);border:1px solid rgba(255,255,255,.95);box-shadow:0 14px 40px rgba(20,30,8,.16),inset 0 1px 0 #fff}
   .mbar button{display:flex;flex-direction:column;align-items:center;gap:2px;border:0;background:transparent;padding:4px 0;color:var(--muted);font:inherit;min-width:0}
@@ -1382,6 +1382,44 @@ body.is-dragging .sday .slot:not(.drop-target):not(.drag-src)>*:not(.tm){filter:
   body{background:#fff}section.panel{box-shadow:none;border:1px solid #ddd;background:#fff}
   header.top{margin-bottom:8px}
 }
+
+/* header photo */
+.brandrow{display:flex;align-items:center;gap:16px}
+.hdr-ava img{object-fit:cover}
+@media (max-width:600px){.brandrow{gap:12px}.hdr-ava{--s:50px!important}}
+/* content bank */
+.id-types{margin:2px 0 14px}
+.id-types em{font-style:normal;font-weight:700;opacity:.6;margin-left:4px}
+.id-add{display:grid;grid-template-columns:170px minmax(0,1fr) minmax(0,260px) auto;gap:10px;align-items:start;padding:14px;border-radius:18px;background:rgba(170,255,0,.10);border:1px solid rgba(123,209,0,.35);margin-bottom:14px}
+.id-add select,.id-add textarea,.id-add input{border:1px solid var(--line);border-radius:12px;padding:9px 11px;background:#fff;resize:vertical;min-width:0}
+.id-add select:only-child{display:none}
+.id-tools{flex-wrap:wrap}
+.id-list{display:grid;gap:8px}
+.idea{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.85);border:1px solid var(--glass-border);transition:transform .45s var(--spring),box-shadow .35s}
+.idea:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(20,30,8,.09)}
+.id-main{min-width:0;display:grid;gap:3px}
+.id-main b{font-size:15px;font-weight:600;white-space:pre-wrap;word-break:break-word}
+.id-main small{color:var(--muted);font-size:12.5px}
+.id-meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.id-meta .openlink{margin-left:0}
+.ptag.id-p{margin-left:0;justify-self:start}
+.id-act{display:flex;align-items:center;gap:6px;flex:none}
+.idea.used b{color:var(--muted)}
+/* vault */
+.vault-form{display:flex;flex-wrap:wrap;gap:8px;max-width:640px}
+.vault-form input{flex:1;min-width:180px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:#fff}
+.acct-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.acct{padding:14px 16px;border-radius:18px;background:rgba(255,255,255,.85);border:1px solid var(--glass-border);display:grid;gap:8px}
+.ac-n{display:flex;align-items:center;gap:8px}
+.ac-n b{font-size:17px;letter-spacing:-.02em}
+.ac-n .tag{margin-left:0}
+.ac-f{display:grid;grid-template-columns:80px minmax(0,1fr) auto auto;gap:6px;align-items:center;font-size:14px}
+.ac-f small{font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.ac-f span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:ui-monospace,Consolas,monospace;font-size:13.5px}
+.ac-notes span{white-space:normal;font-family:inherit}
+.ac-a{display:flex;gap:6px;justify-content:flex-end}
+#acctDlg{width:min(620px,calc(100vw - 24px))}
+@media (max-width:760px){.id-add{grid-template-columns:1fr}.idea{flex-direction:column}.acct-grid{grid-template-columns:1fr}#acctDlg{width:100%!important}}
 </style>
 </head>
 <body>
@@ -1397,9 +1435,12 @@ body.is-dragging .sday .slot:not(.drop-target):not(.drag-src)>*:not(.tm){filter:
 </div>
 <div class="wrap">
   <header class="top">
-    <div>
+    <div class="brandrow">
+      <span class="ava big hdr-ava" style="--s:64px"><img src="data:image/jpeg;base64,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" alt="Fahad Riaz"></span>
+      <div>
       <h1>Shoot & edit board</h1>
       <p id="subline">Fahad Riaz, content production</p>
+      </div>
     </div>
     <div class="actions">
       <button class="me" id="meBtn" data-act="goTab" data-tab-go="settings" title="Your profile" hidden></button>
@@ -1421,11 +1462,12 @@ body.is-dragging .sday .slot:not(.drop-target):not(.drag-src)>*:not(.tm){filter:
     <button role="tab" data-tab="order">Edit order</button>
     <button role="tab" data-tab="schedule">Posting schedule</button>
     <button role="tab" data-tab="shoots">Shoot plan</button>
+    <button role="tab" data-tab="ideas">Content bank</button>
     <button role="tab" data-tab="history">History</button>
     <button role="tab" data-tab="settings">Settings</button>
   </nav>
 
-  <nav class="mbar" aria-label="Pages"><button data-mtab="overview" aria-label="Home"><span class="mi"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 11 12 4l8.5 7v8.5a1 1 0 0 1-1 1H15v-6H9v6H4.5a1 1 0 0 1-1-1z"/></svg></span><span class="ml">Home</span></button><button data-mtab="videos" aria-label="Videos"><span class="mi"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5.5" width="17" height="13" rx="3"/><path d="M10.5 9.5v5l4-2.5z" fill="currentColor"/></svg></span><span class="ml">Videos</span></button><button data-mtab="order" aria-label="Edit"><span class="mi"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l4.2-1 10.6-10.6a2 2 0 0 0-2.8-2.8L5.4 16.2z"/><path d="M14.5 6.5l3 3"/></svg></span><span class="ml">Edit</span></button><button data-mtab="schedule" aria-label="Schedule"><span class="mi"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></span><span class="ml">Schedule</span></button><button data-mtab="shoots" aria-label="Shoots"><span class="mi"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8.5h3l1.8-2.5h6.4L17 8.5h3a.5.5 0 0 1 .5.5v9.5a1 1 0 0 1-1 1h-15a1 1 0 0 1-1-1V9a.5.5 0 0 1 .5-.5z"/><circle cx="12" cy="13.5" r="3.3"/></svg></span><span class="ml">Shoots</span></button><button data-mtab="history" aria-label="History"><span class="mi"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg></span><span class="ml">History</span></button><button data-mtab="settings" aria-label="Settings"><span class="mi"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2.2"/><circle cx="9" cy="17" r="2.2"/></svg></span><span class="ml">Settings</span></button></nav>
+  <nav class="mbar" aria-label="Pages"><button data-mtab="overview" aria-label="Home"><span class="mi"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 11 12 4l8.5 7v8.5a1 1 0 0 1-1 1H15v-6H9v6H4.5a1 1 0 0 1-1-1z"/></svg></span><span class="ml">Home</span></button><button data-mtab="videos" aria-label="Videos"><span class="mi"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5.5" width="17" height="13" rx="3"/><path d="M10.5 9.5v5l4-2.5z" fill="currentColor"/></svg></span><span class="ml">Videos</span></button><button data-mtab="order" aria-label="Edit"><span class="mi"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l4.2-1 10.6-10.6a2 2 0 0 0-2.8-2.8L5.4 16.2z"/><path d="M14.5 6.5l3 3"/></svg></span><span class="ml">Edit</span></button><button data-mtab="schedule" aria-label="Schedule"><span class="mi"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></span><span class="ml">Schedule</span></button><button data-mtab="shoots" aria-label="Shoots"><span class="mi"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8.5h3l1.8-2.5h6.4L17 8.5h3a.5.5 0 0 1 .5.5v9.5a1 1 0 0 1-1 1h-15a1 1 0 0 1-1-1V9a.5.5 0 0 1 .5-.5z"/><circle cx="12" cy="13.5" r="3.3"/></svg></span><span class="ml">Shoots</span></button><button data-mtab="ideas" aria-label="Ideas"><span class="mi"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1 2V16h5.2v-.2c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/></svg></span><span class="ml">Ideas</span></button><button data-mtab="history" aria-label="History"><span class="mi"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg></span><span class="ml">History</span></button><button data-mtab="settings" aria-label="Settings"><span class="mi"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2.2"/><circle cx="9" cy="17" r="2.2"/></svg></span><span class="ml">Settings</span></button></nav>
   <main id="main"></main>
   <p class="sync" id="sync">Loading your videos…</p>
 </div>
@@ -1514,6 +1556,22 @@ body.is-dragging .sday .slot:not(.drop-target):not(.drag-src)>*:not(.tm){filter:
     <div class="foot"><button class="btn" value="cancel" formnovalidate>Cancel</button><button class="btn primary" value="ok">Add slot</button></div>
   </form>
 </dialog>
+<dialog id="acctDlg">
+  <form method="dialog" id="acctForm">
+    <span class="al-pill">Vault</span>
+    <h2 style="margin-top:10px" id="acctTitle">Add account</h2>
+    <div class="sgrid">
+      <label class="span3">Account<input name="account" placeholder="Instagram" required></label>
+      <label class="span2">Username<input name="user" autocomplete="off" spellcheck="false"></label>
+      <label>Authenticator<select name="auth"><option>Yes</option><option>No</option></select></label>
+      <label class="span3">Password<input name="pass" type="text" autocomplete="off" spellcheck="false"></label>
+      <label>Phone number<input name="phone" autocomplete="off"></label>
+      <label class="span2">Email<input name="email" autocomplete="off" spellcheck="false"></label>
+      <label class="span3">Notes<textarea name="notes" rows="2" placeholder="Backup codes location, recovery email…"></textarea></label>
+    </div>
+    <div class="foot"><button class="btn" value="cancel" formnovalidate>Cancel</button><button class="btn primary" value="ok">Save</button></div>
+  </form>
+</dialog>
 <dialog id="rawDlg">
   <form method="dialog">
     <span class="al-pill">Raw footage</span>
@@ -1596,7 +1654,7 @@ const S={
   opts:{older:true,keepEditing:true,deadlineFirst:true,readyOnly:false},
   lastAuto:null,
   sel:new Set(),
-  shoots:{},scripts:{},profiles:{},shootView:"upcoming",
+  shoots:{},scripts:{},profiles:{},ideas:{},vaultDoc:null,ideaView:"R",ideaArch:false,ideaQ:"",ideaPil:"",shootView:"upcoming",
   schedDays:14,schedView:"list",schedStart:null,monthCursor:null,hist:{range:"all",q:""}
 };
 let db=null, downloads=null, pendingRender=false;
@@ -1746,6 +1804,8 @@ function applyDoc(row){
   if(row.collection==="videos"){if(row.deleted)delete S.videos[row.id];else{const d={...row.data,id:row.id};if(d.status==="Edited")d.status="In review";S.videos[row.id]=d}}
   else if(row.collection==="shoots"){if(row.deleted)delete S.shoots[row.id];else S.shoots[row.id]={...row.data,id:row.id}}
   else if(row.collection==="profiles"){if(row.deleted)delete S.profiles[row.id];else S.profiles[row.id]=row.data}
+  else if(row.collection==="ideas"){if(row.deleted)delete S.ideas[row.id];else S.ideas[row.id]={...row.data,id:row.id}}
+  else if(row.collection==="meta"&&row.id==="vault"){if(row.deleted){S.vaultDoc=null;return}S.vaultDoc=row.data;vaultRefresh()}
   else if(row.collection==="scripts"){if(row.deleted)delete S.scripts[row.id];else S.scripts[row.id]=row.data}
   else if(row.deleted)return;
   else if(row.collection==="meta"&&row.id==="settings"){const d=row.data||{};Object.assign(S.settings,d);if(Array.isArray(d.plans))S.settings.plans=d.plans.map(p=>({from:p.from,to:p.to||"",times:[...(p.times||[])]}));if(Array.isArray(d.cplans))S.settings.cplans=d.cplans.map(p=>({from:p.from,to:p.to||"",days:[...(p.days||[])],times:[...(p.times||[])]}))}
@@ -1755,7 +1815,7 @@ let polling=false;
 async function poll(){
   if(!token||polling)return;polling=true;
   try{const r=await call("changes",token,since);since=r.now-60000;
-    if(r.restoredAt){if(S.knownRestore==null)S.knownRestore=r.restoredAt;else if(r.restoredAt>S.knownRestore){S.knownRestore=r.restoredAt;const f=await call("loadAll",token);S.videos={};S.shoots={};S.scripts={};S.profiles={};f.rows.forEach(applyDoc);render();toast("The board was restored from a backup");return}}if(r.rows.length){r.rows.forEach(applyDoc);render();checkAlerts()}}
+    if(r.restoredAt){if(S.knownRestore==null)S.knownRestore=r.restoredAt;else if(r.restoredAt>S.knownRestore){S.knownRestore=r.restoredAt;const f=await call("loadAll",token);S.videos={};S.shoots={};S.scripts={};S.profiles={};S.ideas={};f.rows.forEach(applyDoc);render();toast("The board was restored from a backup");return}}if(r.rows.length){r.rows.forEach(applyDoc);render();checkAlerts()}}
   catch(e){if(String(e&&e.message).includes("SESSION"))sessionExpired()}
   finally{polling=false}
 }
@@ -2553,7 +2613,7 @@ function vSettings(){
       <span class="cnt">${p.times.length} a day${p===cur?` <span class="tag">now</span>`:""}${p.to?` <span class="tag${p.to<t?"":" tmp"}">${p.to<t?"Ended":p.from===p.to?"One day":"Until "+esc(nice(p.to))}</span>`:""}</span>
       ${P.length>1?`<button class="btn small ghost" data-act="rmPlan" data-i="${i}">Remove</button>`:"<span></span>"}
     </div>`).join("");
-  return teamPanel()+`<section class="panel">
+  return teamPanel()+vaultPanel()+`<section class="panel">
     <h2>Reel plan</h2>
     <p class="sub">Reel times per day, separated by commas. Add an end date for a one-off change, such as an extra post on a single day. It replaces the regular plan only between those dates.</p>
     ${rows}
@@ -2640,7 +2700,7 @@ function render(){
   const autoFlip=!S.animate&&!RM&&m.firstElementChild&&m.dataset.tab===S.tab;
   const before=autoFlip?keyRects(m):null;
   m.dataset.tab=S.tab;
-  m.innerHTML=S.tab==="overview"?vOverview():S.tab==="videos"?vVideos():S.tab==="order"?vOrder():S.tab==="schedule"?vSchedule():S.tab==="history"?vHistory():S.tab==="shoots"?vShoots():vSettings();
+  m.innerHTML=S.tab==="overview"?vOverview():S.tab==="videos"?vVideos():S.tab==="order"?vOrder():S.tab==="schedule"?vSchedule():S.tab==="history"?vHistory():S.tab==="shoots"?vShoots():S.tab==="ideas"?vIdeas():vSettings();
   if(S.animate){const mode=S.animate;S.animate=false;if(mode==="m")setTimeout(()=>countUp(m),80);else enterMotion(m,mode==="vt")}
   else if(before)autoFlipRun(m,before);
   segInds(m);
@@ -2656,6 +2716,7 @@ function render(){
 document.addEventListener("focusout",()=>setTimeout(()=>{if(pendingRender)render()},0));
 document.querySelector("nav.tabs").addEventListener("click",e=>{const b=e.target.closest("button[data-tab]");if(b){hidePop(true);if(S.tab===b.dataset.tab)return;S.animate=true;S.tab=b.dataset.tab;
   document.querySelectorAll("nav.tabs button").forEach(x=>x.setAttribute("aria-selected",x===b));moveInd();
+  if(S.tab!=="settings"&&VAULT.items)vaultLock();
   const order=[...document.querySelectorAll("nav.tabs button[data-tab]")].map(x=>x.dataset.tab);
   const prevTab=$("#main").dataset.tab||"overview";
   if(PHONE()&&!RM){phoneSwap();return}
@@ -2698,7 +2759,7 @@ function cmdSources(){
     sub:`${v.status}${v.shotDate?", shot "+nice(v.shotDate):""}${v.postDate?", posts "+niceW(v.postDate)+(v.postTime?" "+fmtT(v.postTime):""):""}${isCar(v)?", carousel":""}`,dot:SC[v.status],v}));
   shoots().forEach(s=>items.push({type:"shoot",id:s.id,title:s.title||"Untitled shoot",hay:((s.title||"")+" "+(s.location||"")+" "+(s.cast||"")+" "+(s.videos||[]).join(" ")).toLowerCase(),
     sub:`Shoot, ${niceW(s.date)}${s.time?" "+fmtT(s.time):""}${s.location?", "+s.location:""}`,dot:hue(s.date),s}));
-  [["overview","Go to Overview"],["videos","Go to All videos"],["order","Go to Edit order"],["schedule","Go to Posting schedule"],["shoots","Go to Shoot plan"],["history","Go to History"],["settings","Go to Settings"]]
+  [["overview","Go to Overview"],["videos","Go to All videos"],["order","Go to Edit order"],["schedule","Go to Posting schedule"],["shoots","Go to Shoot plan"],["ideas","Go to Content bank"],["history","Go to History"],["settings","Go to Settings"]]
     .forEach(([k,l])=>items.push({type:"tab",id:k,title:l,hay:l.toLowerCase(),sub:"Page"}));
   items.push({type:"act",id:"log",title:"Log a shoot",hay:"log a shoot add videos new",sub:"Action"});
   items.push({type:"act",id:"plan",title:"Plan a shoot",hay:"plan a shoot schedule shoot script",sub:"Action"});
@@ -2844,6 +2905,83 @@ document.addEventListener("change",async e=>{
   if(t.dataset&&t.dataset.photo){const f=t.files[0];const u=t.dataset.photo;t.value="";if(!f)return;try{const src=await prepSource(f);openCrop(u,src,null)}catch(err){toast(err.message)}return}
   if(t.dataset&&t.dataset.pname!=null){putProfile(t.dataset.pname,{name:t.value.trim()});return}
 });
+
+
+/* ---------- content bank: reel ideas by pillar, carousel ideas, titles; used ideas move to the archive ---------- */
+function ideas(){return Object.values(S.ideas||{})}
+function putIdea(x,quiet){x.updatedAt=Date.now();S.ideas[x.id]=x;if(!quiet)render();const b={...x};delete b.id;enqueue("set","ideas",x.id,b)}
+function delIdea(id){delete S.ideas[id];enqueue("delete","ideas",id,null);render()}
+function normIdea(s){return String(s||"").toLowerCase().replace(/https?:\S+/g,"").replace(/[^a-z0-9\u0600-\u06ff ]+/g," ").replace(/\s+/g," ").trim()}
+function ideaTwin(text,link){const n=normIdea(text),l=safeUrl(link);return ideas().find(i=>(n&&n.length>6&&normIdea(i.text)===n)||(l&&safeUrl(i.link)===l))}
+function vIdeas(){
+  const T=S.ideaView||"R",arch=!!S.ideaArch,q=(S.ideaQ||"").toLowerCase(),pf=S.ideaPil||"";
+  const types=[["R","Reels"],["C","Carousels"],["T","Titles"]];
+  const all=ideas();const cnt=k=>all.filter(i=>i.type===k&&!i.used).length;
+  let L=all.filter(i=>i.type===T&&!!i.used===arch&&(!pf||i.pillar===pf)&&(!q||(i.text||"").toLowerCase().includes(q)||(i.link||"").toLowerCase().includes(q)||(i.notes||"").toLowerCase().includes(q)));
+  L.sort((a,b)=>arch?(b.usedAt||0)-(a.usedAt||0):(b.createdAt||0)-(a.createdAt||0));
+  const row=i=>{const lnk=safeUrl(i.link);return `<div class="idea${i.used?" used":""}" data-k="i-${i.id}">
+    <div class="id-main">${T==="R"?pillarTag(i).replace('class="ptag"','class="ptag id-p"'):""}<b>${esc(i.text||(lnk?"Reference video":"Untitled"))}</b>
+      ${i.notes?`<small>${esc(i.notes)}</small>`:""}
+      <small class="id-meta">${lnk?`<a class="openlink" href="${esc(lnk)}" target="_blank" rel="noopener noreferrer">Open reference</a>`:""}Added ${esc(nice(iso(new Date(i.createdAt||Date.now()))))}${i.by?` by ${esc(dispName(i.by))}`:""}${i.used?` · used ${esc(nice(iso(new Date(i.usedAt||Date.now()))))}`:""}</small></div>
+    <div class="id-act">${i.used?`<button class="iconbtn" data-act="ideaRestore" data-id="${i.id}">Restore</button>`:`<button class="iconbtn" data-act="ideaCopy" data-id="${i.id}">Copy</button><button class="iconbtn tp-mark" data-act="ideaUse" data-id="${i.id}">Mark used</button>`}<button class="xbtn" data-act="ideaDel" data-id="${i.id}" aria-label="Delete">×</button></div></div>`};
+  return `<section class="panel">
+    <div class="phead"><h2>Content bank</h2><div class="pactions"><div class="seg" role="group" aria-label="Bank view"><button data-act="ideaArch" data-v="0" aria-pressed="${!arch}">Ideas</button><button data-act="ideaArch" data-v="1" aria-pressed="${arch}">Archive</button></div></div></div>
+    <div class="seg id-types" role="group" aria-label="Type">${types.map(([k,l])=>`<button data-act="ideaType" data-v="${k}" aria-pressed="${T===k}">${l} <em>${cnt(k)}</em></button>`).join("")}</div>
+    ${arch?"":`<div class="id-add">
+      ${T==="R"&&pillars().length?pillarSelect(`id="idPil" aria-label="Pillar"`,S.ideaNewPil||pillars()[0]||"",true):""}
+      <textarea id="idText" rows="2" placeholder="${T==="T"?"Type a title idea":T==="C"?"Describe the carousel idea":"Type the idea, or paste a video link"}"></textarea>
+      ${T!=="T"?`<input id="idLink" type="text" placeholder="Reference link (optional)" autocomplete="off">`:""}
+      <button class="btn primary" data-act="ideaAdd">Add</button></div>`}
+    <div class="toolbar id-tools"><input type="search" placeholder="Search ${arch?"the archive":"ideas"}" value="${esc(S.ideaQ||"")}" data-live="ideaq" aria-label="Search ideas">
+      ${T==="R"&&pillars().length?`<div class="fgroup">${["",...pillars()].map(p=>`<button class="fchip" data-act="ideaPil" data-v="${esc(p)}" aria-pressed="${pf===p}">${p?`<i style="background:${pillarColor(p)}"></i>${esc(p)} <em>${all.filter(i=>i.type==="R"&&!!i.used===arch&&i.pillar===p).length}</em>`:"All pillars"}</button>`).join("")}</div>`:""}</div>
+    <div class="id-list">${L.length?L.map(row).join(""):`<div class="empty"><b>${arch?"Nothing archived yet":"No ideas here yet"}</b>${arch?"Ideas you mark as used land here, so you don’t make them twice.":"Add one above. Paste a reference link or just type the idea."}</div>`}</div>
+  </section>`;
+}
+/* ---------- account management: encrypted in the browser with a separate vault password; only the vault editor can change it ---------- */
+const VAULT={key:null,items:null,salt:null,timer:0};
+function vaultEditors(){return userList(S.settings.vaultEditors||"zain")}
+function canEditVault(){return vaultEditors().includes(S.me||"")}
+const b64e=buf=>btoa(String.fromCharCode(...new Uint8Array(buf)));
+const b64d=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+async function vaultKey(pw,salt){const base=await crypto.subtle.importKey("raw",new TextEncoder().encode(pw),"PBKDF2",false,["deriveKey"]);
+  return crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:250000,hash:"SHA-256"},base,{name:"AES-GCM",length:256},false,["encrypt","decrypt"])}
+async function vaultDecrypt(key,doc){const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:b64d(doc.iv)},key,b64d(doc.ct));return JSON.parse(new TextDecoder().decode(pt))}
+async function vaultSave(){const iv=crypto.getRandomValues(new Uint8Array(12));
+  const ct=await crypto.subtle.encrypt({name:"AES-GCM",iv},VAULT.key,new TextEncoder().encode(JSON.stringify(VAULT.items)));
+  S.vaultDoc={v:1,salt:b64e(VAULT.salt),iv:b64e(iv),ct:b64e(ct),updatedAt:Date.now(),by:S.me||""};enqueue("set","meta","vault",S.vaultDoc)}
+function vaultLock(){VAULT.key=null;VAULT.items=null;VAULT.salt=null;clearTimeout(VAULT.timer);if(S.tab==="settings")render()}
+function vaultTouch(){clearTimeout(VAULT.timer);VAULT.timer=setTimeout(vaultLock,5*60000)}
+async function vaultRefresh(){if(!VAULT.key||!S.vaultDoc)return;try{if(S.vaultDoc.salt!==b64e(VAULT.salt)){vaultLock();return}VAULT.items=await vaultDecrypt(VAULT.key,S.vaultDoc);if(S.tab==="settings")render()}catch(e){vaultLock()}}
+function vaultPanel(){
+  const D=S.vaultDoc,ed=canEditVault();
+  const head=`<div class="phead"><h2>Account management</h2>${VAULT.items?`<div class="pactions">${ed?`<button class="btn small" data-act="acctAdd">Add account</button><button class="btn small ghost" data-act="vaultPw">Change vault password</button>`:""}<button class="btn small" data-act="vaultLock">Lock</button></div>`:""}</div>`;
+  if(!window.crypto||!crypto.subtle)return `<section class="panel">${head}<p class="sub">This browser can’t open the vault. Use the installed app or a recent browser.</p></section>`;
+  if(!D)return `<section class="panel">${head}${ed?`<p class="sub">Set a vault password to start. Account details are locked with it before they’re saved, so they never sit in the Google Sheet as plain text. Keep this password safe: without it the saved details can’t be recovered.</p>
+    <div class="vault-form"><input type="password" id="vp1" placeholder="New vault password" autocomplete="new-password"><input type="password" id="vp2" placeholder="Repeat the password" autocomplete="new-password"><button class="btn primary" data-act="vaultCreate">Create vault</button></div>`
+    :`<p class="sub">${esc(dispName(vaultEditors()[0]||"zain"))} hasn’t set up the account vault yet.</p>`}</section>`;
+  if(!VAULT.items)return `<section class="panel">${head}<p class="sub">Locked. Enter the vault password to see the accounts.${ed?"":` Only ${esc(dispName(vaultEditors()[0]||"zain"))} can make changes.`}</p>
+    <div class="vault-form"><input type="password" id="vpu" placeholder="Vault password" autocomplete="current-password"><button class="btn primary" data-act="vaultOpen">Unlock</button></div></section>`;
+  const cp=(v,lab)=>v?`<button class="copy" data-act="vcopy" data-v="${esc(v)}" data-l="${lab}">Copy</button>`:"";
+  const rows=VAULT.items.map((a,i)=>`<div class="acct">
+    <div class="ac-n"><b>${esc(a.account||"Account")}</b>${a.auth==="Yes"?`<span class="tag new">2FA on</span>`:`<span class="tag warn">No 2FA</span>`}</div>
+    <div class="ac-f"><small>Username</small><span>${esc(a.user||"—")}</span>${cp(a.user,"Username")}</div>
+    <div class="ac-f"><small>Password</small><span class="ac-pw" data-pw="${i}">••••••••</span><button class="copy" data-act="vshow" data-i="${i}">Show</button>${cp(a.pass,"Password")}</div>
+    <div class="ac-f"><small>Phone</small><span>${esc(a.phone||"—")}</span>${cp(a.phone,"Phone number")}</div>
+    ${a.email?`<div class="ac-f"><small>Email</small><span>${esc(a.email)}</span>${cp(a.email,"Email")}</div>`:""}
+    ${a.notes?`<div class="ac-f ac-notes"><small>Notes</small><span>${esc(a.notes)}</span></div>`:""}
+    ${ed?`<div class="ac-a"><button class="btn small ghost" data-act="acctEdit" data-i="${i}">Edit</button><button class="btn small ghost" data-act="acctDel" data-i="${i}">Delete</button></div>`:""}</div>`).join("");
+  return `<section class="panel">${head}<p class="sub">Unlocked. It locks again after 5 minutes or when you leave Settings.${ed?"":" View only."}</p>
+    <div class="acct-grid">${rows||`<div class="empty"><b>No accounts yet</b>${ed?"Click Add account.":""}</div>`}</div></section>`;
+}
+function openAcct(i){
+  const a=i==null?{account:"",user:"",pass:"",phone:"",email:"",auth:"No",notes:""}:VAULT.items[i];const f=$("#acctForm").elements;
+  f.account.value=a.account||"";f.user.value=a.user||"";f.pass.value=a.pass||"";f.phone.value=a.phone||"";f.email.value=a.email||"";f.auth.value=a.auth||"No";f.notes.value=a.notes||"";
+  $("#acctTitle").textContent=i==null?"Add account":"Edit account";const d=$("#acctDlg");d.returnValue="";
+  d.addEventListener("close",async()=>{if(d.returnValue!=="ok"||!VAULT.items)return;
+    const x={account:f.account.value.trim(),user:f.user.value.trim(),pass:f.pass.value,phone:f.phone.value.trim(),email:f.email.value.trim(),auth:f.auth.value,notes:f.notes.value.trim()};
+    if(i==null)VAULT.items.push(x);else VAULT.items[i]=x;await vaultSave();vaultTouch();render();toast("Saved to the vault")},{once:true});
+  openDlg(d);
+}
 
 /* ---------- shoot plan ---------- */
 const SH_ST=[{k:"Planned",c:"#AAFF00"},{k:"Done",c:"#0B0B0C"},{k:"Cancelled",c:"#A1A1A6"}];
@@ -3461,7 +3599,7 @@ document.addEventListener("click",async e=>{
   else if(act==="dlBackup"){downloadBackup()}
   else if(act==="backupNow"){BK.busy=true;render();flush().then(()=>call("backupNow",token)).then(n=>{toast("Backup saved");BK.busy=false;loadBackups(true)}).catch(e=>{BK.busy=false;render();toast(String(e&&e.message||"Backup failed").replace(/^Error: /,""))})}
   else if(act==="restoreBk"){const n=b.dataset.n;if(!await ask("Restore this backup?",`The board goes back to how it was at ${n.replace(/^Backup /,"")}. A copy of the current state is saved first, so you can undo this.`,"Restore",true))return;
-    toast("Restoring…");flush().then(()=>call("restoreBackup",token,n)).then(r=>{S.knownRestore=r.restoredAt;return call("loadAll",token)}).then(r=>{S.videos={};S.shoots={};S.scripts={};S.profiles={};r.rows.forEach(applyDoc);render();loadBackups(true);toast("Backup restored")}).catch(e=>toast(String(e&&e.message||"Restore failed").replace(/^Error: /,"")))}
+    toast("Restoring…");flush().then(()=>call("restoreBackup",token,n)).then(r=>{S.knownRestore=r.restoredAt;return call("loadAll",token)}).then(r=>{S.videos={};S.shoots={};S.scripts={};S.profiles={};S.ideas={};r.rows.forEach(applyDoc);render();loadBackups(true);toast("Backup restored")}).catch(e=>toast(String(e&&e.message||"Restore failed").replace(/^Error: /,"")))}
   else if(act==="ovH"){S.ovH=+b.dataset.n;render()}
   else if(act==="goTab"){goTab(b.dataset.tabGo)}
   else if(act==="ovStatus"){S.filter={q:"",st:[b.dataset.s],date:"all",fmt:"all",sched:"any",noLink:false};goTab("videos")}
@@ -3475,6 +3613,32 @@ document.addEventListener("click",async e=>{
     if(!nw||nw.value.length<4){toast("Use at least 4 characters");return}
     b.disabled=true;call("changePassword",token,u,od?od.value:"",nw.value).then(()=>{toast(self?"Password changed":`Password reset for ${dispName(u)}`);nw.value="";if(od)od.value=""}).catch(err=>toast(String(err&&err.message||"Couldn’t change it").replace(/^Error: /,""))).finally(()=>{b.disabled=false})}
   else if(act==="addRaw"){askRaw(b.dataset.d)}
+  else if(act==="ideaType"){S.ideaView=b.dataset.v;S.ideaPil="";render()}
+  else if(act==="ideaArch"){S.ideaArch=b.dataset.v==="1";render()}
+  else if(act==="ideaPil"){S.ideaPil=b.dataset.v;render()}
+  else if(act==="ideaAdd"){const T=S.ideaView||"R",tx=($("#idText").value||"").trim(),lk=(($("#idLink")||{}).value||"").trim();
+    const link=safeUrl(lk)||(safeUrl(tx)&&!tx.includes(" ")?safeUrl(tx):"");const text=link&&tx===link?"":tx;
+    if(!text&&!link){toast("Type an idea or paste a link");return}
+    const twin=ideaTwin(text,link);if(twin&&!await ask(twin.used?"You already used this idea":"This idea is already in the bank",`“${(twin.text||twin.link||"").slice(0,80)}”${twin.used?` was used on ${nice(iso(new Date(twin.usedAt||Date.now())))}.`:"."} Add it anyway?`,"Add anyway",true))return;
+    const pil=T==="R"?(($("#idPil")||{}).value||""):"";if(T==="R")S.ideaNewPil=pil;
+    putIdea({id:"i"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),type:T,text,link,pillar:pil,notes:"",used:false,createdAt:Date.now(),by:S.me||""});toast("Added to the content bank")}
+  else if(act==="ideaUse"){const x=S.ideas[b.dataset.id];if(x){putIdea({...x,used:true,usedAt:Date.now(),usedBy:S.me||""});toast("Marked used. It’s in the archive now","Undo",()=>putIdea({...S.ideas[x.id],used:false,usedAt:null}))}}
+  else if(act==="ideaRestore"){const x=S.ideas[b.dataset.id];if(x){putIdea({...x,used:false,usedAt:null});toast("Back in the ideas list")}}
+  else if(act==="ideaCopy"){const x=S.ideas[b.dataset.id];if(x){try{await navigator.clipboard.writeText([x.text,x.link].filter(Boolean).join(String.fromCharCode(10)));toast("Copied")}catch(e){toast("Couldn’t copy")}}}
+  else if(act==="ideaDel"){const x=S.ideas[b.dataset.id];if(x&&await ask("Delete this idea?",`“${(x.text||x.link||"").slice(0,80)}” will be removed from the bank.`))delIdea(x.id)}
+  else if(act==="vaultCreate"){const a=$("#vp1").value,c=$("#vp2").value;if(a.length<6){toast("Use at least 6 characters");return}if(a!==c){toast("The passwords don’t match");return}
+    VAULT.salt=crypto.getRandomValues(new Uint8Array(16));VAULT.key=await vaultKey(a,VAULT.salt);VAULT.items=[];await vaultSave();vaultTouch();render();toast("Vault created")}
+  else if(act==="vaultOpen"){const pw=$("#vpu").value;if(!pw)return;b.disabled=true;
+    try{const salt=b64d(S.vaultDoc.salt),key=await vaultKey(pw,salt);VAULT.items=await vaultDecrypt(key,S.vaultDoc);VAULT.key=key;VAULT.salt=salt;vaultTouch();render()}
+    catch(e){toast("Wrong vault password");b.disabled=false}}
+  else if(act==="vaultLock"){vaultLock();toast("Vault locked")}
+  else if(act==="acctAdd"){if(canEditVault())openAcct(null)}
+  else if(act==="acctEdit"){if(canEditVault())openAcct(+b.dataset.i)}
+  else if(act==="acctDel"){if(!canEditVault())return;const a=VAULT.items[+b.dataset.i];if(a&&await ask(`Delete ${a.account||"this account"}?`,"It will be removed from the vault.")){VAULT.items.splice(+b.dataset.i,1);await vaultSave();render()}}
+  else if(act==="vshow"){const el=document.querySelector(`[data-pw="${b.dataset.i}"]`),a=VAULT.items&&VAULT.items[+b.dataset.i];if(el&&a){const on=el.dataset.on!=="1";el.textContent=on?(a.pass||"—"):"••••••••";el.dataset.on=on?"1":"";b.textContent=on?"Hide":"Show";vaultTouch()}}
+  else if(act==="vcopy"){try{await navigator.clipboard.writeText(b.dataset.v);toast(`${b.dataset.l} copied`)}catch(e){toast("Couldn’t copy")}vaultTouch()}
+  else if(act==="vaultPw"){if(!canEditVault())return;const n=prompt("New vault password (at least 6 characters)");if(!n)return;if(n.length<6){toast("Use at least 6 characters");return}
+    VAULT.salt=crypto.getRandomValues(new Uint8Array(16));VAULT.key=await vaultKey(n,VAULT.salt);await vaultSave();toast("Vault password changed. Tell Fahad the new one")}
   else if(act==="histView"){S.histView=b.dataset.v;render()}
   else if(act==="sumMode"){const m=b.dataset.m;S.sumRange={...(S.sumRange||{}),mode:m};if(m==="custom"&&!S.sumRange.from){const r=sumRange();S.sumRange.from=iso(new Date(new Date(today()+"T00:00:00").getFullYear(),new Date(today()+"T00:00:00").getMonth(),1));S.sumRange.to=today()}render()}
   else if(act==="printSum"){window.print()}
@@ -3585,6 +3749,7 @@ document.addEventListener("input",e=>{
   const t=e.target;
   if(t.dataset.live==="q"){S.filter.q=t.value;render()}
   if(t.dataset.live==="hq"){S.hist.q=t.value;render()}
+  if(t.dataset.live==="ideaq"){S.ideaQ=t.value;render()}
   if(t.dataset.set==="pattern"){const p=$("#patPrev");const old=S.settings.pattern;S.settings.pattern=t.value||old;if(p)p.textContent="Today’s folder: "+folder(today());S.settings.pattern=old}
 });
 document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.matches("td input[type=text], .plan input[type=text], .cplan input[type=text]"))e.target.blur()});
@@ -3668,8 +3833,8 @@ function sessionExpired(){token=null;lsSet("seb-token",null);clearInterval(pollT
 async function startSession(t,user){
   token=t;$("#login").hidden=true;S.me=String(user||"").toLowerCase();updateMe();$("#sync").textContent="Loading…";
   S.me=String(user||"").toLowerCase();
-  try{const cached=JSON.parse(lsGet("seb-cache")||"null");if(cached&&cached.user===S.me&&!loaded){S.videos={};S.shoots={};S.scripts={};S.profiles={};cached.rows.forEach(applyDoc);render();$("#sync").textContent="Updating…"}}catch(e){}
-  try{const r=await call("loadAll",token);S.videos={};S.shoots={};S.scripts={};S.profiles={};r.rows.forEach(applyDoc);since=r.now-60000;loaded=true;render();checkAlerts();
+  try{const cached=JSON.parse(lsGet("seb-cache")||"null");if(cached&&cached.user===S.me&&!loaded){S.videos={};S.shoots={};S.scripts={};S.profiles={};S.ideas={};cached.rows.forEach(applyDoc);render();$("#sync").textContent="Updating…"}}catch(e){}
+  try{const r=await call("loadAll",token);S.videos={};S.shoots={};S.scripts={};S.profiles={};S.ideas={};r.rows.forEach(applyDoc);since=r.now-60000;loaded=true;render();checkAlerts();
     try{lsSet("seb-cache",JSON.stringify({user:S.me,rows:r.rows}))}catch(e){}
     $("#sync").textContent="Connected to your Google Sheet. Changes save automatically.";
     if(OSN&&Notification.permission==="default"&&!lsGet("seb-asked-osn")&&!PHONE()){lsSet("seb-asked-osn","1");setTimeout(()=>toast("Get Windows notifications for reviews and posting times?","Turn on",askNotif),2500)}
@@ -3697,7 +3862,7 @@ if(!GAS){
   const go=()=>{if(started)return;started=true;const t=lsGet("seb-token");
     if(t)startSession(t,lsGet("seb-user")||"");else if(QKEY)keyLogin(QKEY);else showLogin()};
   const qs=new URLSearchParams(location.search);const v=qs.get("view");
-  if(v&&["overview","videos","order","schedule","shoots","history","settings"].includes(v)){S.tab=v;render()}
+  if(v&&["overview","videos","order","schedule","shoots","ideas","history","settings"].includes(v)){S.tab=v;render()}
   QKEY=qs.get("key");
   go();
 }
