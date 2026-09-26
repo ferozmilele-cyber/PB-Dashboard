@@ -1361,6 +1361,27 @@ body.is-dragging .sday .slot:not(.drop-target):not(.drag-src)>*:not(.tm){filter:
 .pl-day .ptag{margin-left:0}
 .pl-dd{min-width:110px;font-weight:700;font-size:13.5px}
 .pl-ok{font-size:12.5px;font-weight:700;color:#2E7D0F}
+
+/* summary */
+.sumk{grid-template-columns:repeat(3,1fr)!important;margin-top:4px}
+.sumk .warn b{color:var(--warn)}
+.sum-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;margin-top:10px}
+.sum-hl{margin:0;padding-left:18px;display:grid;gap:8px;font-size:15px}
+.sum-hl b{background:rgba(170,255,0,.45);padding:0 6px;border-radius:6px}
+.sum-t{width:100%;border-collapse:collapse;font-size:14px}
+.sum-t th{font-size:12px}
+.sum-t td,.sum-t th{padding:7px 8px;border-bottom:1px solid var(--line)}
+.sum-t tr:hover{transform:none!important;filter:none!important}
+.sum-t .ptag{margin-left:0}
+.sum-chart{overflow-x:auto;padding:6px 0;border-radius:14px;background:rgba(255,255,255,.7);border:1px solid var(--line)}
+.sum-leg{display:flex;gap:16px;font-size:12.5px;color:var(--muted);margin-top:6px}
+.sum-leg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+@media (max-width:760px){.sumk{grid-template-columns:1fr 1fr!important}.sum-grid{grid-template-columns:1fr}}
+@media print{
+  body::before,header.top .actions,nav.tabs,.mbar,.alerts,.toast,#sync,.pl-filter .seg,.sumpanel .pactions{display:none!important}
+  body{background:#fff}section.panel{box-shadow:none;border:1px solid #ddd;background:#fff}
+  header.top{margin-bottom:8px}
+}
 </style>
 </head>
 <body>
@@ -1744,6 +1765,7 @@ function withStatus(v,st){
   if(st==="Shot"&&!n.shotDate)n.shotDate=today();
   if(DONE_EDIT.includes(st)&&!DONE_EDIT.includes(v.status))n.editedOn=today();
   if(!DONE_EDIT.includes(st))n.editedOn="";
+  if(st!==v.status)n.log=[...(v.log||[]),{s:st,at:Date.now(),by:S.me||""}].slice(-40);
   return n;
 }
 
@@ -2386,7 +2408,89 @@ function monthView(){
     <div class="mgrid">${["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map(w=>`<div class="mw">${w}</div>`).join("")}${cells}</div>
   </div>`;
 }
+function histSwitch(){return `<div class="seg" role="group" aria-label="History view"><button data-act="histView" data-v="posts" aria-pressed="${S.histView!=="summary"}">Posts</button><button data-act="histView" data-v="summary" aria-pressed="${S.histView==="summary"}">Summary</button></div>`}
+function sumRange(){
+  const R=S.sumRange||{mode:"thismonth"},t=today(),d0=new Date(t+"T00:00:00"),dow=d0.getDay(),mon=addDays(t,-((dow+6)%7));
+  const eom=(y,m)=>iso(new Date(y,m+1,0));
+  if(R.mode==="lastmonth")return {from:iso(new Date(d0.getFullYear(),d0.getMonth()-1,1)),to:eom(d0.getFullYear(),d0.getMonth()-1)};
+  if(R.mode==="thisweek")return {from:mon,to:addDays(mon,6)};
+  if(R.mode==="lastweek")return {from:addDays(mon,-7),to:addDays(mon,-1)};
+  if(R.mode==="custom"&&R.from&&R.to)return {from:R.from<=R.to?R.from:R.to,to:R.from<=R.to?R.to:R.from};
+  return {from:iso(new Date(d0.getFullYear(),d0.getMonth(),1)),to:eom(d0.getFullYear(),d0.getMonth())};
+}
+function fmtDur(ms){if(!ms||!isFinite(ms))return "—";const h=ms/36e5;return h<1?Math.round(h*60)+" min":h<48?(Math.round(h*10)/10)+" h":(Math.round(h/24*10)/10)+" days"}
+function summaryData(){
+  const {from,to}=sumRange(),inR=d=>!!d&&d>=from&&d<=to,dayOf=ms=>iso(new Date(ms));
+  const all=vids();
+  const shot=all.filter(v=>inR(v.shotDate)),edited=all.filter(v=>inR(v.editedOn)),posted=all.filter(v=>v.status==="Posted"&&inR(v.postDate));
+  const count=(L,f)=>{const m={};L.forEach(v=>{const k=f(v);if(k)m[k]=(m[k]||0)+1});return m};
+  const shotBy=count(shot,v=>v.shotDate),editBy=count(edited,v=>v.editedOn);
+  const top=m=>Object.entries(m).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]))[0]||null;
+  const wd={};Object.entries(editBy).forEach(([d,n])=>{const w=new Date(d+"T00:00:00").getDay();wd[w]=(wd[w]||0)+n});
+  const busyW=Object.entries(wd).sort((a,b)=>b[1]-a[1])[0];
+  let reedits=0,sent=0;const reVids=new Set();
+  all.forEach(v=>(v.reviewLog||[]).forEach(e=>{if(!e.at||!inR(dayOf(e.at)))return;if(e.what==="re-edit"){reedits++;reVids.add(v.id)}if(e.what==="sent for review")sent++}));
+  // edit time: from starting Editing (or Re-edit) to the next finished status, per round
+  const spans=[];all.forEach(v=>{const L=v.log||[];let st=null;L.forEach(e=>{if(e.s==="Editing")st=e.at;else if(st&&DONE_EDIT.includes(e.s)){if(inR(dayOf(e.at)))spans.push(e.at-st);st=null}})});
+  const avgEdit=spans.length?spans.reduce((a,b)=>a+b,0)/spans.length:0;
+  const turn=edited.filter(v=>v.shotDate&&v.editedOn>=v.shotDate).map(v=>daysBetween(v.shotDate,v.editedOn));
+  const avgTurn=turn.length?turn.reduce((a,b)=>a+b,0)/turn.length:null;
+  const editDays=Object.keys(editBy).length,shootDays=Object.keys(shotBy).length;
+  const sh=shoots().filter(s=>inR(s.date));
+  const pil={};[...shot,...edited].forEach(v=>{if(isCar(v))return;const k=v.pillar||"No pillar";pil[k]=pil[k]||{shot:0,edited:0}});
+  shot.forEach(v=>{if(!isCar(v))pil[v.pillar||"No pillar"].shot++});edited.forEach(v=>{if(!isCar(v))pil[v.pillar||"No pillar"].edited++});
+  return {from,to,shot,edited,posted,shotBy,editBy,topEdit:top(editBy),topShot:top(shotBy),busyW,reedits,reVids:reVids.size,sent,
+    firstPass:sent?Math.round(100*Math.max(0,sent-reedits)/sent):null,avgEdit,spans:spans.length,avgTurn,editDays,shootDays,
+    shootsDone:sh.filter(s=>s.status==="Done").length,shootsPlanned:sh.length,pil,
+    cars:{shot:shot.filter(isCar).length,edited:edited.filter(isCar).length}};
+}
+function sumChart(D){
+  const days=[];for(let d=D.from,g=0;d<=D.to&&g<62;d=addDays(d,1),g++)days.push(d);
+  const mx=Math.max(1,...days.map(d=>Math.max(D.shotBy[d]||0,D.editBy[d]||0)));
+  const W=Math.max(560,days.length*26),H=180,bw=Math.max(4,Math.min(10,(W/days.length-6)/2));
+  const bars=days.map((d,i)=>{const x=i*(W/days.length)+4,s=(D.shotBy[d]||0),e=(D.editBy[d]||0),hs=s/mx*(H-40),he=e/mx*(H-40);
+    const lab=days.length<=16||i%Math.ceil(days.length/16)===0?`<text x="${x+bw}" y="${H-4}" font-size="10" fill="#6A6E64" text-anchor="middle">${+d.slice(8)}</text>`:"";
+    return `<rect x="${x}" y="${H-22-hs}" width="${bw}" height="${hs}" rx="2" fill="#3B7DD8"><title>${niceW(d)}: ${s} shot</title></rect><rect x="${x+bw+1}" y="${H-22-he}" width="${bw}" height="${he}" rx="2" fill="#7BD100"><title>${niceW(d)}: ${e} edited</title></rect>${lab}`}).join("");
+  return `<div class="sum-chart"><svg viewBox="0 0 ${W} ${H}" width="100%" style="min-width:${Math.min(W,600)}px;display:block" role="img" aria-label="Shot and edited per day">${bars}</svg></div>
+    <div class="sum-leg"><span><i style="background:#3B7DD8"></i>Shot</span><span><i style="background:#7BD100"></i>Edited</span></div>`;
+}
+function vSummary(){
+  const D=summaryData(),R=S.sumRange||{mode:"thismonth"};
+  const modes=[["thismonth","This month"],["lastmonth","Last month"],["thisweek","This week"],["lastweek","Last week"],["custom","Custom"]];
+  const WDN=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  const tile=(n,l,cls)=>`<div class="${cls||""}"><b>${n}</b><span>${l}</span></div>`;
+  const hl=[
+    D.topEdit?`Most edited day: <b>${esc(niceW(D.topEdit[0]))}</b>, ${D.topEdit[1]} video${D.topEdit[1]>1?"s":""}`:"",
+    D.busyW?`Busiest editing weekday: <b>${WDN[+D.busyW[0]]}</b>, ${D.busyW[1]} edited`:"",
+    D.topShot?`Biggest shoot day: <b>${esc(niceW(D.topShot[0]))}</b>, ${D.topShot[1]} video${D.topShot[1]>1?"s":""}`:"",
+    D.editDays?`Average on an editing day: <b>${(Math.round(D.edited.length/D.editDays*10)/10)}</b> videos`:"",
+    D.shootDays?`Average on a shoot day: <b>${(Math.round(D.shot.length/D.shootDays*10)/10)}</b> videos`:"",
+    D.avgTurn!=null?`Shot to edited: <b>${Math.round(D.avgTurn*10)/10} days</b> on average`:"",
+    D.firstPass!=null?`Approved first time: <b>${D.firstPass}%</b> of ${D.sent} reviews`:""].filter(Boolean);
+  const pilRows=Object.entries(D.pil);
+  return `<section class="panel sumpanel">
+    <div class="phead"><h2>Summary</h2><div class="pactions">${histSwitch()}<button class="btn small" data-act="printSum">Print / Save PDF</button></div></div>
+    <div class="pl-filter"><div class="seg" role="group" aria-label="Summary range">${modes.map(([k,l])=>`<button data-act="sumMode" data-m="${k}" aria-pressed="${(R.mode||"thismonth")===k}">${l}</button>`).join("")}</div>
+      ${R.mode==="custom"?`<span class="pl-cust"><input type="date" value="${esc(R.from||D.from)}" data-sumr="from" aria-label="From"><span>to</span><input type="date" value="${esc(R.to||D.to)}" data-sumr="to" aria-label="To"></span>`:""}
+      <span class="stat">${esc(nice(D.from))} – ${esc(nice(D.to))}</span></div>
+    <div class="ovk sumk">
+      ${tile(D.shot.length,`Videos shot · ${D.shootDays} shoot day${D.shootDays===1?"":"s"}`,"k1")}
+      ${tile(D.edited.length,`Videos edited · ${D.editDays} editing day${D.editDays===1?"":"s"}`)}
+      ${tile(D.reedits,`Re-edits · ${D.reVids} video${D.reVids===1?"":"s"}`,D.reedits?"warn":"")}
+      ${tile(fmtDur(D.avgEdit),`Avg edit time${D.spans?` · ${D.spans} edit${D.spans===1?"":"s"} timed`:""}`)}
+      ${tile(D.posted.length,"Videos posted")}
+      ${tile(`${D.shootsDone}/${D.shootsPlanned}`,"Planned shoots done")}
+    </div>
+    ${D.spans?"":`<p class="ovnote">Edit time is measured from when a video moves to <b>Editing</b> until it’s finished. It starts counting from this update.</p>`}
+    <div class="sum-grid">
+      <div><h3 class="subh">Highlights</h3>${hl.length?`<ul class="sum-hl">${hl.map(x=>`<li>${x}</li>`).join("")}</ul>`:`<p class="sub">Nothing logged in this range yet.</p>`}</div>
+      <div><h3 class="subh">By pillar</h3>${pilRows.length?`<table class="sum-t"><thead><tr><th>Pillar</th><th>Shot</th><th>Edited</th></tr></thead><tbody>${pilRows.map(([p,r])=>`<tr><td><span class="ptag" style="--pc:${p==="No pillar"?"#8A939B":pillarColor(p)}">${esc(p)}</span></td><td>${r.shot}</td><td>${r.edited}</td></tr>`).join("")}<tr><td><span class="ptag" style="--pc:#6FAE00">Carousels</span></td><td>${D.cars.shot}</td><td>${D.cars.edited}</td></tr></tbody></table>`:`<p class="sub">No reels in this range.</p>`}</div>
+    </div>
+    <h3 class="subh">Per day</h3>${sumChart(D)}
+  </section>`;
+}
 function vHistory(){
+  if(S.histView==="summary")return vSummary();
   const t=today(),mo=t.slice(0,7),lm=iso(new Date(+mo.slice(0,4),+mo.slice(5)-2,1)).slice(0,7);
   const H=S.hist,q=H.q.toLowerCase();
   const posted=vids().filter(v=>v.status==="Posted"&&v.postDate);
@@ -2401,7 +2505,7 @@ function vHistory(){
   const body=Object.keys(groups).sort().reverse().map(k=>{const [y,m]=k.split("-").map(Number);
     return `<div class="card"><header><h3>${MONL[m-1]} ${y}</h3><span class="count">${groups[k].length}</span></header>${groups[k].map(row).join("")}</div>`}).join("");
   return `<section class="panel">
-    <div class="phead"><h2>Posting history</h2>
+    <div class="phead"><h2>Posting history</h2>${histSwitch()}
       <div class="pactions">${GAS?`<button class="btn small" data-act="newWin" data-view="history">Open in new window</button>`:""}<div class="seg" role="group" aria-label="Range">${[["all","All"],["month","This month"],["last","Last month"]].map(([k,l])=>`<button data-act="hrange" data-r="${k}" aria-pressed="${H.range===k}">${l}</button>`).join("")}</div></div></div>
     <div class="hstats">
       <div><b>${thisM}</b><span>Posted this month</span></div>
@@ -3371,6 +3475,9 @@ document.addEventListener("click",async e=>{
     if(!nw||nw.value.length<4){toast("Use at least 4 characters");return}
     b.disabled=true;call("changePassword",token,u,od?od.value:"",nw.value).then(()=>{toast(self?"Password changed":`Password reset for ${dispName(u)}`);nw.value="";if(od)od.value=""}).catch(err=>toast(String(err&&err.message||"Couldn’t change it").replace(/^Error: /,""))).finally(()=>{b.disabled=false})}
   else if(act==="addRaw"){askRaw(b.dataset.d)}
+  else if(act==="histView"){S.histView=b.dataset.v;render()}
+  else if(act==="sumMode"){const m=b.dataset.m;S.sumRange={...(S.sumRange||{}),mode:m};if(m==="custom"&&!S.sumRange.from){const r=sumRange();S.sumRange.from=iso(new Date(new Date(today()+"T00:00:00").getFullYear(),new Date(today()+"T00:00:00").getMonth(),1));S.sumRange.to=today()}render()}
+  else if(act==="printSum"){window.print()}
   else if(act==="plMode"){const m=b.dataset.m;S.plRange={...(S.plRange||{}),mode:m};if(m==="custom"&&!S.plRange.from){S.plRange.from=today();S.plRange.to=addDays(today(),6)}render()}
   else if(act==="plByDay"){S.plByDay=!S.plByDay;render()}
   else if(act==="addPillar"){const P=[...pillars()];let n="New pillar",k=2;while(P.includes(n))n="New pillar "+(k++);P.push(n);S.settings.pillars=P;putSettings();render()}
@@ -3439,6 +3546,7 @@ document.addEventListener("change",e=>{
     vids().filter(v=>v.pillar===old).forEach(v=>putVideo({...v,pillar:nw},true));putSettings();render();toast(`Renamed to ${nw}`);return}
   if(t.dataset.porder!=null){const O=[...(S.settings.pillarOrder||[])];O[+t.dataset.porder]=t.value;S.settings.pillarOrder=O;putSettings();render();return}
   if(t.dataset.plr){S.plRange={...(S.plRange||{mode:"custom"}),mode:"custom",[t.dataset.plr]:t.value};render();return}
+  if(t.dataset.sumr){S.sumRange={...(S.sumRange||{}),mode:"custom",[t.dataset.sumr]:t.value};render();return}
   if(t.dataset.sset){S.settings[t.dataset.sset]=t.checked;putSettings();render();return}
   if(t.dataset.cplan!=null){
     const P=cplans();const p={...P[+t.dataset.cplan]};
