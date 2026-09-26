@@ -1420,6 +1420,32 @@ body.is-dragging .sday .slot:not(.drop-target):not(.drag-src)>*:not(.tm){filter:
 .ac-a{display:flex;gap:6px;justify-content:flex-end}
 #acctDlg{width:min(620px,calc(100vw - 24px))}
 @media (max-width:760px){.id-add{grid-template-columns:1fr}.idea{flex-direction:column}.acct-grid{grid-template-columns:1fr}#acctDlg{width:100%!important}}
+
+/* rotary dial */
+.vault-lock{display:grid;justify-items:center;gap:12px;padding:10px 0 4px}
+.dial-dots{display:flex;gap:10px;min-height:16px}
+.dial-dots i{width:14px;height:14px;border-radius:50%;background:rgba(12,14,8,.1);transition:background .3s,transform .35s var(--spring)}
+.dial-dots i.on{background:#0B0B0C;box-shadow:0 0 0 3px rgba(170,255,0,.55)}
+.dial-dots i.pop{animation:dotPop .45s var(--spring)}
+@keyframes dotPop{0%{transform:scale(.3)}60%{transform:scale(1.35)}100%{transform:scale(1)}}
+.dial-wrap{position:relative;width:300px;height:300px;border-radius:50%;touch-action:none;user-select:none;-webkit-user-select:none;
+  filter:drop-shadow(0 24px 40px rgba(20,30,8,.22));transition:filter .4s,transform .5s var(--spring)}
+#rdial{display:block;cursor:grab}
+.dial-wrap.turning #rdial{cursor:grabbing}
+.dn{font:800 24px Inter,system-ui,sans-serif;fill:#0B0B0C}
+.dh{fill:none;stroke:rgba(170,255,0,.0);stroke-width:3;transition:stroke .3s}
+.dial-wrap:hover .dh{stroke:rgba(170,255,0,.35)}
+.dstop{stroke:#AAFF00;stroke-width:9;stroke-linecap:round;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))}
+.dcap{filter:drop-shadow(0 4px 10px rgba(123,209,0,.6))}
+.dial-wrap.atstop .dstop{stroke:#FFFFFF}
+.dial-wrap.atstop{filter:drop-shadow(0 24px 40px rgba(20,30,8,.22)) drop-shadow(0 0 22px rgba(170,255,0,.65))}
+.dial-wrap.open{transform:scale(1.04);filter:drop-shadow(0 0 40px rgba(170,255,0,.9))}
+.dial-wrap.open .dlock path{transform:translateY(-5px);transition:transform .4s var(--spring)}
+.dial-wrap.shake{animation:dialShake .5s cubic-bezier(.36,.07,.19,.97)}
+@keyframes dialShake{10%,90%{transform:translateX(-2px)}20%,80%{transform:translateX(4px)}30%,50%,70%{transform:translateX(-8px)}40%,60%{transform:translateX(8px)}}
+.dial-hint{margin:0;font-size:13px;color:var(--muted)}
+.dial-act{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+@media (max-width:600px){.dial-wrap{width:270px;height:270px}#rdial{width:270px;height:270px}}
 </style>
 </head>
 <body>
@@ -2691,7 +2717,7 @@ function vSettings(){
 /* ---------- render ---------- */
 function isTyping(){const a=document.activeElement;return a&&a.closest&&a.closest("#main")&&!a.dataset.live&&(a.tagName==="TEXTAREA"||(a.tagName==="INPUT"&&/^(text|number)$/.test(a.type)))}
 function render(){
-  if(isTyping()){pendingRender=true;return}
+  if(isTyping()||DIAL.busy||DIAL.trying){pendingRender=true;return}
   pendingRender=false;
   const a=document.activeElement,live=a&&a.dataset&&a.dataset.live,sel=live&&a.selectionStart;
   const y=window.scrollY;
@@ -2949,7 +2975,7 @@ async function vaultDecrypt(key,doc){const pt=await crypto.subtle.decrypt({name:
 async function vaultSave(){const iv=crypto.getRandomValues(new Uint8Array(12));
   const ct=await crypto.subtle.encrypt({name:"AES-GCM",iv},VAULT.key,new TextEncoder().encode(JSON.stringify(VAULT.items)));
   S.vaultDoc={v:1,salt:b64e(VAULT.salt),iv:b64e(iv),ct:b64e(ct),updatedAt:Date.now(),by:S.me||""};enqueue("set","meta","vault",S.vaultDoc)}
-function vaultLock(){VAULT.key=null;VAULT.items=null;VAULT.salt=null;clearTimeout(VAULT.timer);if(S.tab==="settings")render()}
+function vaultLock(){VAULT.key=null;VAULT.items=null;VAULT.salt=null;DIAL.code="";clearTimeout(VAULT.timer);if(S.tab==="settings")render()}
 function vaultTouch(){clearTimeout(VAULT.timer);VAULT.timer=setTimeout(vaultLock,5*60000)}
 async function vaultRefresh(){if(!VAULT.key||!S.vaultDoc)return;try{if(S.vaultDoc.salt!==b64e(VAULT.salt)){vaultLock();return}VAULT.items=await vaultDecrypt(VAULT.key,S.vaultDoc);if(S.tab==="settings")render()}catch(e){vaultLock()}}
 function vaultPanel(){
@@ -2957,10 +2983,17 @@ function vaultPanel(){
   const head=`<div class="phead"><h2>Account management</h2>${VAULT.items?`<div class="pactions">${ed?`<button class="btn small" data-act="acctAdd">Add account</button><button class="btn small ghost" data-act="vaultPw">Change vault password</button>`:""}<button class="btn small" data-act="vaultLock">Lock</button></div>`:""}</div>`;
   if(!window.crypto||!crypto.subtle)return `<section class="panel">${head}<p class="sub">This browser can’t open the vault. Use the installed app or a recent browser.</p></section>`;
   if(!D)return `<section class="panel">${head}${ed?`<p class="sub">Set a vault password to start. Account details are locked with it before they’re saved, so they never sit in the Google Sheet as plain text. Keep this password safe: without it the saved details can’t be recovered.</p>
-    <div class="vault-form"><input type="password" id="vp1" placeholder="New vault password" autocomplete="new-password"><input type="password" id="vp2" placeholder="Repeat the password" autocomplete="new-password"><button class="btn primary" data-act="vaultCreate">Create vault</button></div>`
+    <p class="sub">Tip: use numbers only (at least 4) so you can open it with the rotary dial.</p>
+    <div class="vault-form"><input type="password" id="vp1" placeholder="New vault code" autocomplete="new-password" inputmode="numeric"><input type="password" id="vp2" placeholder="Repeat the password" autocomplete="new-password"><button class="btn primary" data-act="vaultCreate">Create vault</button></div>`
     :`<p class="sub">${esc(dispName(vaultEditors()[0]||"zain"))} hasn’t set up the account vault yet.</p>`}</section>`;
-  if(!VAULT.items)return `<section class="panel">${head}<p class="sub">Locked. Enter the vault password to see the accounts.${ed?"":` Only ${esc(dispName(vaultEditors()[0]||"zain"))} can make changes.`}</p>
-    <div class="vault-form"><input type="password" id="vpu" placeholder="Vault password" autocomplete="current-password"><button class="btn primary" data-act="vaultOpen">Unlock</button></div></section>`;
+  if(!VAULT.items)return `<section class="panel">${head}<p class="sub">Locked. Dial the vault code to open it.${ed?"":` Only ${esc(dispName(vaultEditors()[0]||"zain"))} can make changes.`}</p>
+    <div class="vault-lock">
+      <div class="dial-dots" id="dialDots">${dialDotsHTML()}</div>
+      <div class="dial-wrap" id="dialWrap">${dialSVG()}</div>
+      <p class="dial-hint">Drag a number clockwise to the lime stop, then let go.</p>
+      <div class="dial-act"><button class="btn small ghost" data-act="dialBack">⌫ Delete</button><button class="btn small primary" data-act="dialTry">Unlock</button><button class="btn small ghost" data-act="dialType">${S.dialType?"Hide":"Type instead"}</button></div>
+      ${S.dialType?`<div class="vault-form"><input type="password" id="vpu" placeholder="Vault password" autocomplete="current-password"><button class="btn primary" data-act="vaultOpen">Unlock</button></div>`:""}
+    </div></section>`;
   const cp=(v,lab)=>v?`<button class="copy" data-act="vcopy" data-v="${esc(v)}" data-l="${lab}">Copy</button>`:"";
   const rows=VAULT.items.map((a,i)=>`<div class="acct">
     <div class="ac-n"><b>${esc(a.account||"Account")}</b>${a.auth==="Yes"?`<span class="tag new">2FA on</span>`:`<span class="tag warn">No 2FA</span>`}</div>
@@ -2982,6 +3015,102 @@ function openAcct(i){
     if(i==null)VAULT.items.push(x);else VAULT.items[i]=x;await vaultSave();vaultTouch();render();toast("Saved to the vault")},{once:true});
   openDlg(d);
 }
+
+
+/* ---------- rotary dial for the vault: drag a finger hole to the stop, it springs back with ratchet clicks ---------- */
+const DIAL={code:"",busy:false,rot:0,digit:null,acc:0,last:0,raf:0,trying:false,tick:0};
+const DC=160,DRAD=104,DSTOP=95,DDIG=["1","2","3","4","5","6","7","8","9","0"];
+const dAng=i=>60-30*i;                                 // hole angle, degrees clockwise from 12 o'clock
+const dPos=(a,r)=>[DC+r*Math.sin(a*Math.PI/180),DC-r*Math.cos(a*Math.PI/180)];
+const dMax=i=>((DSTOP-dAng(i))%360+360)%360;
+function dialSVG(){
+  const nums=DDIG.map((d,i)=>{const [x,y]=dPos(dAng(i),DRAD);return `<text x="${x}" y="${y+8}" text-anchor="middle" class="dn">${d}</text>`}).join("");
+  const holes=DDIG.map((d,i)=>{const [x,y]=dPos(dAng(i),DRAD);return `<circle cx="${x}" cy="${y}" r="24" fill="black"/>`}).join("");
+  const rims=DDIG.map((d,i)=>{const [x,y]=dPos(dAng(i),DRAD);return `<circle cx="${x}" cy="${y}" r="24" class="dh" data-i="${i}"/>`}).join("");
+  const [sx,sy]=dPos(DSTOP,DRAD+6),[sx2,sy2]=dPos(DSTOP,DRAD+44);
+  return `<svg id="rdial" viewBox="0 0 320 320" width="300" height="300" role="img" aria-label="Rotary dial">
+    <defs><mask id="dmask"><rect width="320" height="320" fill="white"/>${holes}</mask>
+      <radialGradient id="dplate" cx="40%" cy="35%"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#E9ECE4"/></radialGradient>
+      <radialGradient id="dwheel" cx="35%" cy="30%"><stop offset="0" stop-color="#3a3d34"/><stop offset=".6" stop-color="#16171a"/><stop offset="1" stop-color="#0B0B0C"/></radialGradient>
+      <radialGradient id="dcap" cx="35%" cy="30%"><stop offset="0" stop-color="#E4FF9E"/><stop offset="1" stop-color="#8FE000"/></radialGradient></defs>
+    <circle cx="${DC}" cy="${DC}" r="150" fill="url(#dplate)" class="dplate"/>
+    ${nums}
+    <g id="dwheelg"><circle cx="${DC}" cy="${DC}" r="140" fill="url(#dwheel)" mask="url(#dmask)"/>
+      <circle cx="${DC}" cy="${DC}" r="139" fill="none" stroke="rgba(255,255,255,.14)" stroke-width="2"/>${rims}
+      <path d="M ${DC-120} ${DC-60} A 134 134 0 0 1 ${DC+40} ${DC-128}" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="6" stroke-linecap="round"/></g>
+    <line x1="${sx}" y1="${sy}" x2="${sx2}" y2="${sy2}" class="dstop"/>
+    <circle cx="${DC}" cy="${DC}" r="46" fill="url(#dcap)" class="dcap"/>
+    <g transform="translate(${DC-13} ${DC-16})" class="dlock"><rect x="2" y="12" width="22" height="17" rx="4" fill="#0B0B0C"/><path d="M7 12V8a6 6 0 0 1 12 0v4" fill="none" stroke="#0B0B0C" stroke-width="3" stroke-linecap="round"/></g>
+  </svg>`;
+}
+function dialDotsHTML(){const n=Math.max(4,DIAL.code.length+1);let s="";for(let i=0;i<n;i++)s+=`<i class="${i<DIAL.code.length?"on":""}${i===DIAL.code.length-1?" pop":""}"></i>`;return s}
+function dialSetRot(r){DIAL.rot=r;const g=document.getElementById("dwheelg");if(g)g.setAttribute("transform",`rotate(${r} ${DC} ${DC})`)}
+function dialAngle(e){const svg=document.getElementById("rdial");const b=svg.getBoundingClientRect(),k=320/b.width;const x=(e.clientX-b.left)*k-DC,y=(e.clientY-b.top)*k-DC;
+  return {a:((Math.atan2(x,-y)*180/Math.PI)+360)%360,r:Math.hypot(x,y)}}
+function sfx(kind){
+  if(lsGet("seb-sound")==="off")return;
+  try{if(!actx)actx=new (window.AudioContext||window.webkitAudioContext)();const t=actx.currentTime,out=actx.destination;
+    const tone=(f,st,dur,vol,type,f2)=>{const o=actx.createOscillator(),g=actx.createGain();o.type=type||"sine";o.frequency.setValueAtTime(f,t+st);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+st+dur);
+      g.gain.setValueAtTime(0,t+st);g.gain.linearRampToValueAtTime(vol,t+st+.005);g.gain.exponentialRampToValueAtTime(.0001,t+st+dur);o.connect(g).connect(out);o.start(t+st);o.stop(t+st+dur+.02)};
+    const click=(vol,hp)=>{const n=Math.floor(actx.sampleRate*.018),buf=actx.createBuffer(1,n,actx.sampleRate),d=buf.getChannelData(0);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/n,4);
+      const s=actx.createBufferSource(),f=actx.createBiquadFilter(),g=actx.createGain();s.buffer=buf;f.type="bandpass";f.frequency.value=hp;f.Q.value=1.2;g.gain.value=vol;s.connect(f).connect(g).connect(out);s.start(t)};
+    if(kind==="tick")click(.55,2600);
+    else if(kind==="rtick")click(.35,3400);
+    else if(kind==="stop"){click(.7,1200);tone(140,0,.09,.3,"sine",70)}
+    else if(kind==="digit")tone(1320,0,.08,.08,"sine");
+    else if(kind==="unlock"){tone(660,0,.16,.16);tone(880,.07,.16,.16);tone(1320,.14,.3,.18);click(.5,1800)}
+    else if(kind==="error"){tone(180,0,.12,.14,"square");tone(150,.14,.16,.14,"square")}
+  }catch(e){}
+  if(navigator.vibrate&&(kind==="tick"||kind==="stop"))try{navigator.vibrate(kind==="stop"?18:6)}catch(e){}
+}
+function dialStart(e){
+  if(DIAL.busy||DIAL.trying)return;const {a,r}=dialAngle(e);if(r<DRAD-30||r>DRAD+30)return;
+  let best=-1,bd=99;DDIG.forEach((d,i)=>{let da=Math.abs(((a-(dAng(i)+DIAL.rot))%360+540)%360-180);if(da<bd){bd=da;best=i}});
+  if(bd>16)return;
+  e.preventDefault();DIAL.busy=true;DIAL.digit=best;DIAL.acc=0;DIAL.last=a;DIAL.tick=0;
+  document.getElementById("rdial").setPointerCapture(e.pointerId);document.getElementById("dialWrap").classList.add("turning");
+}
+function dialMove(e){
+  if(!DIAL.busy||DIAL.digit==null)return;const {a}=dialAngle(e);let d=a-DIAL.last;if(d>180)d-=360;if(d<-180)d+=360;DIAL.last=a;
+  const max=dMax(DIAL.digit);DIAL.acc=Math.max(0,Math.min(max,DIAL.acc+d));
+  const tk=Math.floor(DIAL.acc/30);if(tk!==DIAL.tick){if(tk>DIAL.tick)sfx("tick");DIAL.tick=tk}
+  if(DIAL.acc>=max-0.5&&!DIAL.atStop){DIAL.atStop=true;sfx("stop");document.getElementById("dialWrap").classList.add("atstop")}
+  else if(DIAL.acc<max-6&&DIAL.atStop){DIAL.atStop=false;document.getElementById("dialWrap").classList.remove("atstop")}
+  dialSetRot(DIAL.acc);
+}
+function dialEnd(){
+  if(!DIAL.busy||DIAL.digit==null)return;const i=DIAL.digit,max=dMax(i),got=DIAL.acc>=max-8;DIAL.digit=null;
+  const w=document.getElementById("dialWrap");if(w)w.classList.remove("turning","atstop");DIAL.atStop=false;
+  if(got)dialDigit(DDIG[i],true);
+  // spring back like the real thing: fast at first, clicking past every number
+  const from=DIAL.rot,dur=Math.max(260,from/360*900),t0=performance.now();let lastTk=Math.floor(from/30);
+  const step=now=>{const k=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-k,2.2),r=from*(1-e);dialSetRot(r);
+    const tk=Math.floor(r/30);if(tk<lastTk){sfx("rtick");lastTk=tk}
+    if(k<1)DIAL.raf=requestAnimationFrame(step);else{dialSetRot(0);DIAL.busy=false;if(got)dialAutoTry();if(pendingRender&&!DIAL.trying)render()}};
+  DIAL.raf=requestAnimationFrame(step);
+}
+function dialDigit(d,fromDial){
+  if(DIAL.code.length>=16)return;DIAL.code+=d;if(!fromDial)sfx("tick");sfx("digit");
+  const el=document.getElementById("dialDots");if(el)el.innerHTML=dialDotsHTML();
+  if(!fromDial)dialAutoTry();
+}
+async function dialAutoTry(final){
+  if(!S.vaultDoc||DIAL.trying)return;const code=DIAL.code;if(code.length<4&&!final)return;
+  DIAL.trying=true;
+  try{const salt=b64d(S.vaultDoc.salt),key=await vaultKey(code,salt);const items=await vaultDecrypt(key,S.vaultDoc);
+    sfx("unlock");const w=document.getElementById("dialWrap");if(w)w.classList.add("open");
+    setTimeout(()=>{VAULT.items=items;VAULT.key=key;VAULT.salt=salt;DIAL.code="";DIAL.trying=false;vaultTouch();render();toast("Vault unlocked")},650);
+  }catch(e){DIAL.trying=false;
+    if(final||code.length>=12){sfx("error");const w=document.getElementById("dialWrap");if(w){w.classList.remove("shake");void w.offsetWidth;w.classList.add("shake")}
+      DIAL.code="";const el=document.getElementById("dialDots");if(el)el.innerHTML=dialDotsHTML();toast("Wrong code")}
+    if(pendingRender&&!DIAL.busy)render()}
+}
+document.addEventListener("pointerdown",e=>{if(e.target.closest&&e.target.closest("#rdial"))dialStart(e)});
+document.addEventListener("pointermove",e=>{if(DIAL.busy&&DIAL.digit!=null)dialMove(e)});
+document.addEventListener("pointerup",()=>dialEnd());
+document.addEventListener("pointercancel",()=>dialEnd());
+document.addEventListener("keydown",e=>{if(!document.getElementById("rdial")||e.target.closest("input,textarea,select"))return;
+  if(/^[0-9]$/.test(e.key)){dialDigit(e.key)}else if(e.key==="Backspace"){DIAL.code=DIAL.code.slice(0,-1);const el=document.getElementById("dialDots");if(el)el.innerHTML=dialDotsHTML()}else if(e.key==="Enter")dialAutoTry(true)});
 
 /* ---------- shoot plan ---------- */
 const SH_ST=[{k:"Planned",c:"#AAFF00"},{k:"Done",c:"#0B0B0C"},{k:"Cancelled",c:"#A1A1A6"}];
@@ -3613,6 +3742,9 @@ document.addEventListener("click",async e=>{
     if(!nw||nw.value.length<4){toast("Use at least 4 characters");return}
     b.disabled=true;call("changePassword",token,u,od?od.value:"",nw.value).then(()=>{toast(self?"Password changed":`Password reset for ${dispName(u)}`);nw.value="";if(od)od.value=""}).catch(err=>toast(String(err&&err.message||"Couldn’t change it").replace(/^Error: /,""))).finally(()=>{b.disabled=false})}
   else if(act==="addRaw"){askRaw(b.dataset.d)}
+  else if(act==="dialBack"){DIAL.code=DIAL.code.slice(0,-1);const el=document.getElementById("dialDots");if(el)el.innerHTML=dialDotsHTML();sfx("tick")}
+  else if(act==="dialTry"){if(!DIAL.code){toast("Dial the code first");return}dialAutoTry(true)}
+  else if(act==="dialType"){S.dialType=!S.dialType;render()}
   else if(act==="ideaType"){S.ideaView=b.dataset.v;S.ideaPil="";render()}
   else if(act==="ideaArch"){S.ideaArch=b.dataset.v==="1";render()}
   else if(act==="ideaPil"){S.ideaPil=b.dataset.v;render()}
@@ -3626,7 +3758,7 @@ document.addEventListener("click",async e=>{
   else if(act==="ideaRestore"){const x=S.ideas[b.dataset.id];if(x){putIdea({...x,used:false,usedAt:null});toast("Back in the ideas list")}}
   else if(act==="ideaCopy"){const x=S.ideas[b.dataset.id];if(x){try{await navigator.clipboard.writeText([x.text,x.link].filter(Boolean).join(String.fromCharCode(10)));toast("Copied")}catch(e){toast("Couldn’t copy")}}}
   else if(act==="ideaDel"){const x=S.ideas[b.dataset.id];if(x&&await ask("Delete this idea?",`“${(x.text||x.link||"").slice(0,80)}” will be removed from the bank.`))delIdea(x.id)}
-  else if(act==="vaultCreate"){const a=$("#vp1").value,c=$("#vp2").value;if(a.length<6){toast("Use at least 6 characters");return}if(a!==c){toast("The passwords don’t match");return}
+  else if(act==="vaultCreate"){const a=$("#vp1").value,c=$("#vp2").value;if(a.length<4){toast("Use at least 4 characters");return}if(a!==c){toast("The passwords don’t match");return}
     VAULT.salt=crypto.getRandomValues(new Uint8Array(16));VAULT.key=await vaultKey(a,VAULT.salt);VAULT.items=[];await vaultSave();vaultTouch();render();toast("Vault created")}
   else if(act==="vaultOpen"){const pw=$("#vpu").value;if(!pw)return;b.disabled=true;
     try{const salt=b64d(S.vaultDoc.salt),key=await vaultKey(pw,salt);VAULT.items=await vaultDecrypt(key,S.vaultDoc);VAULT.key=key;VAULT.salt=salt;vaultTouch();render()}
@@ -3637,7 +3769,7 @@ document.addEventListener("click",async e=>{
   else if(act==="acctDel"){if(!canEditVault())return;const a=VAULT.items[+b.dataset.i];if(a&&await ask(`Delete ${a.account||"this account"}?`,"It will be removed from the vault.")){VAULT.items.splice(+b.dataset.i,1);await vaultSave();render()}}
   else if(act==="vshow"){const el=document.querySelector(`[data-pw="${b.dataset.i}"]`),a=VAULT.items&&VAULT.items[+b.dataset.i];if(el&&a){const on=el.dataset.on!=="1";el.textContent=on?(a.pass||"—"):"••••••••";el.dataset.on=on?"1":"";b.textContent=on?"Hide":"Show";vaultTouch()}}
   else if(act==="vcopy"){try{await navigator.clipboard.writeText(b.dataset.v);toast(`${b.dataset.l} copied`)}catch(e){toast("Couldn’t copy")}vaultTouch()}
-  else if(act==="vaultPw"){if(!canEditVault())return;const n=prompt("New vault password (at least 6 characters)");if(!n)return;if(n.length<6){toast("Use at least 6 characters");return}
+  else if(act==="vaultPw"){if(!canEditVault())return;const n=prompt("New vault code (numbers only, at least 4, to use the dial)");if(!n)return;if(n.length<4){toast("Use at least 4 characters");return}
     VAULT.salt=crypto.getRandomValues(new Uint8Array(16));VAULT.key=await vaultKey(n,VAULT.salt);await vaultSave();toast("Vault password changed. Tell Fahad the new one")}
   else if(act==="histView"){S.histView=b.dataset.v;render()}
   else if(act==="sumMode"){const m=b.dataset.m;S.sumRange={...(S.sumRange||{}),mode:m};if(m==="custom"&&!S.sumRange.from){const r=sumRange();S.sumRange.from=iso(new Date(new Date(today()+"T00:00:00").getFullYear(),new Date(today()+"T00:00:00").getMonth(),1));S.sumRange.to=today()}render()}
