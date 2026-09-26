@@ -1751,6 +1751,32 @@ html[data-vt="back"]::view-transition-new(main){animation-name:vtIn2b!important}
 @media (max-width:600px){.b1{width:170px;height:170px}.b3{width:120px;height:120px}.b5{width:220px;height:220px}.b2,.b6{display:none}}
 @media (hover:none){.ovk>div,.ep-day,.tcard,.acct,.hstats div{transform:none!important}}
 @media (prefers-reduced-motion:reduce){.bb{animation:none!important}#bubbles{transform:none!important}.jelly{animation:none!important}}
+
+/* ===== glass status menu ===== */
+.stsel{display:inline-flex;align-items:center;gap:8px;min-width:132px;height:34px;padding:0 10px 0 12px!important;border-radius:999px!important;cursor:pointer;
+  background:rgba(255,255,255,.72)!important;border:1px solid rgba(255,255,255,.95)!important;box-shadow:0 1px 2px rgba(20,24,10,.05),inset 0 1px 0 #fff!important;
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);font:600 13.5px/1 inherit;color:#1f221c;text-align:left;transition:transform .4s var(--spring),box-shadow .3s,background .25s}
+.stsel i{width:9px;height:9px;border-radius:50%;background:var(--c);box-shadow:0 0 0 3px color-mix(in srgb,var(--c) 20%,transparent);flex:none}
+.stsel span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stsel svg{flex:none;color:#7a7f73;transition:transform .35s var(--spring)}
+.stsel:hover{background:#fff!important;box-shadow:0 6px 16px rgba(20,24,10,.1),inset 0 1px 0 #fff!important}
+.stsel.open{box-shadow:0 0 0 4px rgba(170,255,0,.28),0 6px 16px rgba(20,24,10,.1)!important}
+.stsel.open svg{transform:rotate(180deg)}
+.stpop{position:fixed;z-index:420;padding:6px;border-radius:18px;background:rgba(255,255,255,.74);
+  -webkit-backdrop-filter:blur(30px) saturate(190%);backdrop-filter:blur(30px) saturate(190%);border:1px solid rgba(255,255,255,.95);
+  box-shadow:0 24px 60px rgba(20,24,10,.2),0 2px 6px rgba(20,24,10,.06),inset 0 1px 0 #fff;
+  opacity:0;pointer-events:none;transform:translateY(-6px) scale(.96);transform-origin:top left;transition:opacity .18s ease,transform .35s cubic-bezier(.3,1.4,.5,1)}
+.stpop.up{transform-origin:bottom left;transform:translateY(6px) scale(.96)}
+.stpop.show{opacity:1;pointer-events:auto;transform:none}
+.stpop button{display:flex;align-items:center;gap:10px;width:100%;border:0;background:transparent;padding:9px 12px;border-radius:12px;font:600 14px/1.2 inherit;color:#1f221c;cursor:pointer;text-align:left;transition:background .18s}
+.stpop button i{width:10px;height:10px;border-radius:50%;background:var(--c);box-shadow:0 0 0 3px color-mix(in srgb,var(--c) 20%,transparent);flex:none}
+.stpop button span{flex:1;display:grid}
+.stpop button small{font-size:11.5px;font-weight:500;color:var(--muted)}
+.stpop button b{color:#4E7A00}
+.stpop button:hover,.stpop button:focus{background:rgba(170,255,0,.22);outline:none}
+.stpop button.cur{background:rgba(12,14,8,.05)}
+.stpop hr{border:0;height:1px;background:rgba(12,14,8,.08);margin:5px 8px}
+@media (max-width:600px){.stsel{height:36px;width:100%;min-width:0}.stpop button{padding:12px 14px;font-size:15px}}
 </style>
 </head>
 <body>
@@ -1951,6 +1977,7 @@ html[data-vt="back"]::view-transition-new(main){animation-name:vtIn2b!important}
 </dialog>
 <div id="bubbles" aria-hidden="true"><i class="bb b1"></i><i class="bb b2"></i><i class="bb b3"></i><i class="bb b4"></i><i class="bb b5"></i><i class="bb b6"></i><i class="bb b7"></i></div>
 <div class="alerts" id="alerts" aria-live="polite"></div>
+<div id="stPop" class="stpop" role="listbox" aria-label="Choose a status"></div>
 <div class="tabpop" id="tabPop" role="tooltip" aria-hidden="true"></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -2040,10 +2067,37 @@ function folder(s){
     .replace(/\{DD\}/g,pad(D)).replace(/\{D\}/g,D);
 }
 function slate(s){return s?`<span class="slate" style="--h:${hue(s)}"><span>${esc(niceW(s))}</span></span>`:`<span class="slate none"><span>No shot date</span></span>`}
+const ST_MAIN=["Shot","Editing","In review","Ready","Scheduled","Posted"];
 function statusSelect(v){
-  return `<select class="status" style="--c:${SC[v.status]||"#888"}" data-f="status" data-id="${v.id}" aria-label="Status">`+
-    STATUSES.map(s=>`<option${s.k===v.status?" selected":""}>${s.k}</option>`).join("")+`</select>`;
+  return `<button type="button" class="status stsel" data-act="stMenu" data-id="${v.id}" data-stsel="${v.id}" style="--c:${SC[v.status]||"#888"}" aria-haspopup="listbox" aria-label="Status: ${esc(v.status)}"><i></i><span>${esc(v.status)}</span><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;
 }
+function stMenuItems(v){
+  const out=[];
+  if(isReviewer()&&v.status==="In review"){out.push({v:"__approve",label:"Approve",c:"#3E9C5E",hint:"Goes to Ready"});out.push({v:"Re-edit",label:"Re-edit…",c:SC["Re-edit"],hint:"Send back with notes"})}
+  if(!ST_MAIN.includes(v.status))out.push({v:v.status,label:v.status,c:SC[v.status]||"#888",cur:true});
+  ST_MAIN.forEach(k=>out.push({v:k,label:k==="In review"&&v.status!=="In review"?"Send for review":k,c:SC[k],cur:k===v.status}));
+  return out;
+}
+function openStMenu(btn){
+  const v=S.videos[btn.dataset.id];if(!v)return;const pop=$("#stPop");
+  if(pop.classList.contains("show")&&pop.dataset.id===v.id){closeStMenu();return}
+  pop.dataset.id=v.id;pop.innerHTML=stMenuItems(v).map((it,i)=>`${it.v==="Shot"&&i>0?'<hr>':""}<button type="button" role="option" data-stv="${esc(it.v)}" class="${it.cur?"cur":""}" style="--c:${it.c}" aria-selected="${!!it.cur}"><i></i><span>${esc(it.label)}${it.hint?`<small>${esc(it.hint)}</small>`:""}</span>${it.cur?'<b>✓</b>':""}</button>`).join("");
+  const r=btn.getBoundingClientRect();pop.style.minWidth=Math.max(200,r.width)+"px";pop.classList.remove("up");
+  pop.style.left=Math.min(r.left,innerWidth-Math.max(200,r.width)-10)+"px";
+  const ph=pop.offsetHeight||300;if(r.bottom+ph+12>innerHeight&&r.top>ph+12){pop.style.top=(r.top-ph-6)+"px";pop.classList.add("up")}else pop.style.top=(r.bottom+6)+"px";
+  pop.classList.add("show");btn.classList.add("open");STM.btn=btn;
+  const f=pop.querySelector("button.cur")||pop.querySelector("button");if(f)f.focus({preventScroll:true});
+}
+const STM={btn:null};
+function closeStMenu(){const pop=$("#stPop");pop.classList.remove("show");if(STM.btn)STM.btn.classList.remove("open");STM.btn=null}
+document.addEventListener("click",e=>{const o=e.target.closest&&e.target.closest("#stPop [data-stv]");
+  if(o){const v=S.videos[$("#stPop").dataset.id],val=o.dataset.stv;closeStMenu();if(!v)return;
+    if(val==="__approve"){approveVideo(v);return}if(val===v.status)return;setStatusFlow(v,val);return}
+  if(!(e.target.closest&&e.target.closest("#stPop,.stsel")))closeStMenu()});
+document.addEventListener("keydown",e=>{const pop=$("#stPop");if(!pop||!pop.classList.contains("show"))return;
+  if(e.key==="Escape"){closeStMenu();return}
+  if(e.key==="ArrowDown"||e.key==="ArrowUp"){e.preventDefault();const B=[...pop.querySelectorAll("button")];let i=B.indexOf(document.activeElement);i=e.key==="ArrowDown"?Math.min(B.length-1,i+1):Math.max(0,i-1);B[i].focus()}});
+addEventListener("scroll",()=>closeStMenu(),{passive:true});addEventListener("resize",()=>closeStMenu());
 function timeSelect(v){
   const T=allTimes();
   return `<select data-f="postTime" data-id="${v.id}" aria-label="Post time"><option value="">No time</option>`+T.map(t=>`<option value="${t}"${v.postTime===t?" selected":""}>${fmtT(t)}</option>`).join("")+`</select>`;
@@ -2639,7 +2693,7 @@ function vVideos(){
   const allSel=L.length&&L.every(v=>S.sel.has(v.id));
   const nFilters=f.st.length+(f.fmt!=="all")+(f.sched!=="any")+(f.noLink?1:0)+(f.date!=="all")+(f.q?1:0);
   const chips=`<div class="filters">
-    <div class="fgroup" role="group" aria-label="Status">${STATUSES.map(s=>`<button class="fchip" data-act="fst" data-s="${s.k}" aria-pressed="${f.st.includes(s.k)}"><i style="background:${s.c}"></i>${s.k}<em>${all.filter(v=>v.status===s.k).length}</em></button>`).join("")}</div>
+    <div class="fgroup" role="group" aria-label="Status">${STATUSES.filter(s=>ST_MAIN.includes(s.k)||all.some(v=>v.status===s.k)||f.st.includes(s.k)).map(s=>`<button class="fchip" data-act="fst" data-s="${s.k}" aria-pressed="${f.st.includes(s.k)}"><i style="background:${s.c}"></i>${s.k}<em>${all.filter(v=>v.status===s.k).length}</em></button>`).join("")}</div>
     <div class="fgroup">
       <div class="seg" role="group" aria-label="Format">${[["all","All formats"],["Reel","Reels"],["Carousel","Carousels"]].map(([k,l])=>`<button data-act="ffmt" data-v="${k}" aria-pressed="${f.fmt===k}">${l}</button>`).join("")}</div>
       <div class="seg" role="group" aria-label="Scheduling">${[["any","Any"],["yes","Scheduled"],["no","Unscheduled"]].map(([k,l])=>`<button data-act="fsched" data-v="${k}" aria-pressed="${f.sched===k}">${l}</button>`).join("")}</div>
@@ -3731,7 +3785,7 @@ function alertKind(v){
   // a scheduled post that went live on its own in the last 12 hours: tell everyone once
   if(v.status==="Posted"&&v.autoPosted&&v.autoPostedAt&&Date.now()-v.autoPostedAt<12*3600e3)return "posted";
   if(v.status==="In review"&&isReviewer())return "review";
-  if(v.status==="Approved"&&!safeUrl(v.finalLink)&&isEditor())return "approved";
+  if((v.status==="Approved"||(v.status==="Ready"&&v.approvedAt))&&!safeUrl(v.finalLink)&&isEditor())return "approved";
   if(v.status==="Re-edit"&&isEditor())return "reedit";
   if(isReadyPost(v)&&isPoster())return "ready";
   return null;
@@ -3829,8 +3883,8 @@ function hist(v,what,note){return [...(v.reviewLog||[]),{what,by:S.me||"",at:Dat
 function approveVideo(v){
   stampFx();
   const base={...v,reviewNote:"",approvedBy:S.me||"",approvedAt:Date.now(),reviewLog:hist(v,"approved")};
-  if(safeUrl(v.finalLink)){putVideo(withStatus(base,"Ready"));celebrate(v.id,"Ready");toast("Approved. It already has a final link, so it’s ready to post")}
-  else{putVideo(withStatus(base,"Approved"));celebrate(v.id,"Approved");toast(`Approved. ${dispName(v.editedBy||"")||"The editor"} will add the final link`)}
+  putVideo(withStatus(base,"Ready"));celebrate(v.id,"Ready");
+  toast(safeUrl(v.finalLink)?"Approved. It’s ready to post":`Approved and Ready. ${dispName(v.editedBy||"")||"The editor"} will add the final link`)
 }
 function askReedit(v){
   const d=$("#noteDlg");$("#noteFor").textContent=`“${v.title||"Untitled"}”, round ${v.round||1}`;const box=$("#noteBox");box.value="";d.returnValue="";
@@ -3991,7 +4045,7 @@ function flipAll(sel,key,before,stagger){
 }
 function celebrate(id,st){
   if(st==="Scheduled")calFx(S.videos[id]);
-  const sel=document.querySelector(`select[data-f="status"][data-id="${id}"]`);if(!sel)return;
+  const sel=document.querySelector(`[data-stsel="${id}"]`);if(!sel)return;
   const row=sel.closest(".erow, .slot, tr, .hrow");
   if(row&&row.animate&&!RM)row.animate([{boxShadow:"0 0 0 0 rgba(170,255,0,.0)"},{boxShadow:"0 0 0 6px rgba(170,255,0,.45)"},{boxShadow:"0 0 0 14px rgba(170,255,0,0)"}],{duration:700,easing:EASE});
   if(sel.animate&&!RM)sel.animate([{transform:"scale(1)"},{transform:"scale(1.08)"},{transform:"scale(1)"}],{duration:420,easing:"cubic-bezier(.34,1.56,.64,1)"});
@@ -4196,6 +4250,7 @@ document.addEventListener("click",async e=>{
     if(!nw||nw.value.length<4){toast("Use at least 4 characters");return}
     b.disabled=true;call("changePassword",token,u,od?od.value:"",nw.value).then(()=>{toast(self?"Password changed":`Password reset for ${dispName(u)}`);nw.value="";if(od)od.value=""}).catch(err=>toast(String(err&&err.message||"Couldn’t change it").replace(/^Error: /,""))).finally(()=>{b.disabled=false})}
   else if(act==="addRaw"){askRaw(b.dataset.d)}
+  else if(act==="stMenu"){openStMenu(b)}
   else if(act==="editLink"){S.editLinks=S.editLinks||{};S.editLinks[b.dataset.id]=true;render();setTimeout(()=>{const i=document.querySelector(`.link-in[data-id="${b.dataset.id}"]`);if(i){i.focus();i.select()}},30)}
   else if(act==="rowMore"){S.moreRows=S.moreRows||{};S.moreRows[b.dataset.id]=!S.moreRows[b.dataset.id];render()}
   else if(act==="dialBack"){DIAL.code=DIAL.code.slice(0,-1);const el=document.getElementById("dialDots");if(el)el.innerHTML=dialDotsHTML();sfx("tick")}
