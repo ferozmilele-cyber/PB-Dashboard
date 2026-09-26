@@ -1558,9 +1558,10 @@ const API="https://script.google.com/macros/s/AKfycbxVRxJ-FD50-KCdU3aD8bvJ3-HRbW
 const GAS=true;
 let token=null,since=0,pending=new Map(),inflight=new Map(),flushT=null,pollT=null,loaded=false;
 async function call(fn,...args){
-  let r;
-  try{r=await fetch(API,{method:"POST",redirect:"follow",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({fn,args})})}
-  catch(e){throw new Error("No connection. Check your internet.")}
+  let r;const ctl=new AbortController();const tm=setTimeout(()=>ctl.abort(),fn==="loadAll"?60000:30000);
+  try{r=await fetch(API,{method:"POST",redirect:"follow",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({fn,args}),signal:ctl.signal})}
+  catch(e){throw new Error(e&&e.name==="AbortError"?"Google is taking too long to answer. Please try again.":"Can’t reach your Google Sheet. Check your internet, or make sure the Apps Script deployment is set to Anyone.")}
+  finally{clearTimeout(tm)}
   let j;try{j=await r.json()}catch(e){throw new Error("The board’s server didn’t answer properly. Check the API link in index.html.")}
   if(!j.ok)throw new Error(j.error||"Something went wrong");return j.data;
 }
@@ -1760,7 +1761,17 @@ function currentQueue(){
   const seen=new Set();const list=[];
   S.queue.ids.forEach(id=>{if(ids.has(id)&&!seen.has(id)){seen.add(id);list.push({v:S.videos[id],fresh:false})}});
   pool.filter(v=>!seen.has(v.id)).sort((a,b)=>(a.status==="Editing"?0:1)-(b.status==="Editing"?0:1)||(a.postDate?postKey(a):"~").localeCompare(b.postDate?postKey(b):"~")||key(a).localeCompare(key(b))).forEach(v=>list.push({v,fresh:S.queue.at!=null}));
-  return list;
+  if(!S.opts.deadlineFirst)return list;
+  // follow the posting schedule: videos being edited first, then scheduled videos in posting order,
+  // then unscheduled ones in their shuffled order. Videos you pinned by hand keep their place.
+  const pins=S.queue.pins||{};
+  const pinned=list.filter(x=>pins[x.v.id]!=null),rest=list.filter(x=>pins[x.v.id]==null);
+  const ed=S.opts.keepEditing?rest.filter(x=>x.v.status==="Editing"):[];
+  const sch=rest.filter(x=>!ed.includes(x)&&x.v.postDate).sort((a,b)=>postKey(a.v).localeCompare(postKey(b.v)));
+  const un=rest.filter(x=>!ed.includes(x)&&!x.v.postDate);
+  const out=[...ed,...sch,...un];
+  pinned.sort((a,b)=>pins[a.v.id]-pins[b.v.id]).forEach(x=>out.splice(Math.min(pins[x.v.id],out.length),0,x));
+  return out;
 }
 function clashes(list){let c=0;for(let i=1;i<list.length;i++){const a=list[i-1].v.shotDate,b=list[i].v.shotDate;if(a&&a===b)c++}return c}
 
@@ -2959,8 +2970,9 @@ document.addEventListener("click",async e=>{
   else if(act==="shuffle"){const before=rectsOf(".erow[data-fid]","fid");const cur=currentQueue().map(x=>x.v.id);const pins=cleanPins(cur);const ids=Object.keys(pins).length||S.opts.keepEditing?arrangeWithPins(cur,pins):buildOrder().map(v=>v.id);S.queue={ids,at:Date.now(),pins};putQueue();render();flipAll(".erow[data-fid]","fid",before,true);toast("Shuffled")}
   else if(act==="up"||act==="down"){
     const list=currentQueue().map(x=>x.v.id);const i=+b.dataset.i,j=act==="up"?i-1:i+1;
-    if(j<0||j>=list.length)return;[list[i],list[j]]=[list[j],list[i]];
-    S.queue={ids:list,at:S.queue.at||Date.now()};putQueue();render();
+    if(j<0||j>=list.length)return;const id=list[i],other=list[j];[list[i],list[j]]=[list[j],list[i]];
+    const pins={...cleanPins(list)};delete pins[other];pins[id]=j;
+    S.queue={ids:list,at:S.queue.at||Date.now(),pins};putQueue();render();
   }
   else if(act==="reshuffle"){
     const r=planReshuffle();
@@ -3138,7 +3150,7 @@ $("#importFile").addEventListener("change",async e=>{
 });
 
 /* ---------- login + boot ---------- */
-function showLogin(msg){$("#login").hidden=false;$("#loginErr").textContent=msg||""}
+function showLogin(msg){$("#login").hidden=false;$("#loginErr").textContent=msg||"";call("appUrl").catch(()=>{})}
 let QKEY=null,keyTried=false;
 function keyLogin(key){
   keyTried=true;$("#sync").textContent="Signing you in…";
@@ -3159,9 +3171,11 @@ async function startSession(t,user){
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)poll()});
 window.addEventListener("beforeunload",e=>{if(pending.size||inflight.size){flush();e.preventDefault();e.returnValue=""}});
 $("#loginForm").addEventListener("submit",async e=>{
-  e.preventDefault();const f=e.target;$("#loginErr").textContent="Signing in…";
+  e.preventDefault();const f=e.target;const btn=f.querySelector("button");$("#loginErr").textContent="Signing in…";btn.disabled=true;
+  const slow=setTimeout(()=>{$("#loginErr").textContent="Waking up Google, this can take up to 20 seconds the first time…"},4000);
   try{const r=await call("login",f.elements.user.value,f.elements.pass.value);lsSet("seb-token",r.token);lsSet("seb-user",r.user);f.elements.pass.value="";startSession(r.token,r.user)}
-  catch(err){$("#loginErr").textContent="Wrong username or password."}
+  catch(err){const m=String(err&&err.message||"");$("#loginErr").textContent=/wrong username|password/i.test(m)?"Wrong username or password.":m||"Couldn’t sign in. Please try again."}
+  finally{clearTimeout(slow);btn.disabled=false}
 });
 $("#logoutBtn").addEventListener("click",async()=>{await flush();if(token)try{await call("logout",token)}catch(e){}token=null;lsSet("seb-token",null);lsSet("seb-cache",null);location.replace(location.origin+location.pathname)});
 
