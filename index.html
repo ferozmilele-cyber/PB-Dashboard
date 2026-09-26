@@ -1296,6 +1296,61 @@ a.iconbtn{text-decoration:none;display:inline-flex;align-items:center}
 body.is-dragging .sday .slot .tm{filter:none!important;opacity:1!important}
 body.is-dragging .sday .slot:not(.drop-target):not(.drag-src){filter:none!important;opacity:1!important;transform:none!important}
 body.is-dragging .sday .slot:not(.drop-target):not(.drag-src)>*:not(.tm){filter:blur(2.5px);opacity:.5;transition:filter .4s,opacity .4s}
+
+/* smart edit plan */
+.eplan{margin:0 0 18px;padding:18px 20px;border-radius:22px;background:rgba(255,255,255,.8);border:1px solid var(--glass-border);box-shadow:0 10px 30px rgba(20,30,8,.07)}
+.ep-h{font-size:22px;font-weight:800;letter-spacing:-.02em}
+.ep-h b{background:var(--lime);padding:0 8px;border-radius:8px}
+.ep-h span{font-size:15px;font-weight:600;color:var(--muted)}
+.ep-s{font-size:14px;color:var(--muted);margin-top:4px}
+.ep-s b{color:var(--ink)}
+.ep-w{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.ep-w .tag{margin-left:0}
+.ep-days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;margin-top:14px}
+.ep-day{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:16px;background:#fff;border:1px solid var(--line);transition:transform .4s var(--spring),box-shadow .3s}
+.ep-day:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(20,30,8,.1)}
+.ep-day small{font-size:12px;font-weight:700;color:var(--muted)}
+.ep-day b{font-size:26px;font-weight:800;letter-spacing:-.03em;line-height:1.1}
+.ep-day i{font-style:normal;font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ep-day.now{background:var(--lime);border-color:transparent}
+.ep-day.now small,.ep-day.now i{color:#0B0B0C}
+.ep-day.heavy:not(.now){box-shadow:inset 0 0 0 2px rgba(170,255,0,.8)}
+.ep-day.off{background:rgba(12,14,8,.04)}
+.ep-day.off b{color:var(--muted);font-size:18px;padding:5px 0}
+.ep-note{font-size:12.5px;color:var(--muted);margin:10px 0 0}
+@media (max-width:600px){.ep-days{grid-template-columns:repeat(4,minmax(0,1fr))}.ep-h{font-size:19px}}
+
+.lockd.sched{color:#4E7A00;font-weight:700}
+.tp-ok.sched{color:#4E7A00}
+
+/* content pillars */
+.ptag{display:inline-block;margin-left:8px;padding:1px 9px;border-radius:999px;font-size:11px;font-weight:700;vertical-align:2px;color:var(--pc);background:color-mix(in srgb,var(--pc) 14%,#fff);border:1px solid color-mix(in srgb,var(--pc) 30%,transparent)}
+.kind.pk{color:var(--pc)!important}
+.psel{border-left:4px solid var(--pc)!important;min-width:130px}
+.pill-all{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 8px;font-size:13px;font-weight:600}
+.pill-all:empty{display:none}
+.pbtn{border:1px solid color-mix(in srgb,var(--pc) 40%,transparent);background:color-mix(in srgb,var(--pc) 10%,#fff);color:var(--pc);border-radius:999px;padding:4px 11px;font-size:12px;font-weight:700;cursor:pointer}
+.pill-rows{display:grid;gap:6px;margin-top:10px;max-height:240px;overflow:auto}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) 170px;gap:10px;align-items:center;font-size:14px}
+.prow .pt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prow select{border:1px solid var(--line);border-radius:10px;padding:6px 8px;background:#fff}
+.pl-next{font-size:17px;font-weight:600;margin:0 0 14px}
+.pl-next b{display:inline-block;margin:2px 4px 2px 0;padding:2px 10px;border-radius:8px;background:color-mix(in srgb,var(--pc) 16%,#fff);color:var(--pc)}
+.pl-grid{display:grid;gap:8px}
+.pl-row{display:grid;grid-template-columns:minmax(140px,1.4fr) repeat(4,minmax(0,1fr));gap:10px;align-items:center;padding:10px 14px;border-radius:16px;background:rgba(255,255,255,.8);border:1px solid var(--glass-border)}
+.pl-row>span{display:flex;flex-direction:column}
+.pl-row b{font-size:22px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+.pl-row small{font-size:11.5px;color:var(--muted)}
+.pl-n{flex-direction:row!important;align-items:center;gap:8px;font-weight:700;font-size:15px}
+.pl-n i{width:10px;height:10px;border-radius:50%}
+.pl-s.on b{background:var(--lime);border-radius:8px;padding:0 8px;align-self:flex-start}
+.pl-edit,.pl-order{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.pl-chip,.pl-slot{display:inline-flex;align-items:center;gap:6px;padding:4px 4px 4px 10px;border-radius:14px;background:#fff;border:1px solid var(--line)}
+.pl-chip i{width:9px;height:9px;border-radius:50%;background:var(--pc)}
+.pl-chip input{border:0;background:transparent;font-weight:600;width:130px;padding:4px 0}
+.pl-slot small{font-size:11px;font-weight:700;color:var(--muted)}
+.pl-slot select{border:0;background:transparent;font-weight:600}
+@media (max-width:600px){.pl-row{grid-template-columns:repeat(4,minmax(0,1fr))}.pl-n{grid-column:1/-1}.prow{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -1353,7 +1408,9 @@ body.is-dragging .sday .slot:not(.drop-target):not(.drag-src)>*:not(.tm){filter:
       <label>Status<select name="status"></select></label>
     </div>
     <label for="titles" style="font-weight:600;font-size:13px">Titles, one per line</label>
+    <div id="pillarAll" class="pill-all"></div>
     <textarea id="titles" name="titles" placeholder="Dori eating chocolate&#10;He sold 70 cars&#10;I saved money to buy this car"></textarea>
+    <div id="pillarRows" class="pill-rows"></div>
     <label class="rawin">Footage folder <span>(optional, press Ctrl + Shift + C on the folder in File Explorer, then paste)</span><input name="rawLink" type="text" placeholder="D:\Raw Footage\24-09-2026 Showroom" autocomplete="off" spellcheck="false"></label>
     <div class="foot">
       <button class="btn" value="cancel" formnovalidate>Cancel</button>
@@ -1485,10 +1542,10 @@ window.addEventListener("error",function(e){try{var s=document.getElementById("s
 /* Free version: data lives in your Google Sheet. Nothing to configure here. */
 const STATUSES=[
   {k:"Not started",c:"#8A939B"},{k:"Shot",c:"#3B7DD8"},{k:"Pending",c:"#D99A1E"},{k:"Editing",c:"#8A5CD1"},
-  {k:"In review",c:"#E0A100"},{k:"Re-edit",c:"#E4572E"},{k:"Approved",c:"#1F9E8F"},{k:"Ready",c:"#2E9E4F"},{k:"Posted",c:"#56606A"}];
+  {k:"In review",c:"#E0A100"},{k:"Re-edit",c:"#E4572E"},{k:"Approved",c:"#1F9E8F"},{k:"Ready",c:"#2E9E4F"},{k:"Scheduled",c:"#6FAE00"},{k:"Posted",c:"#56606A"}];
 const SC=Object.fromEntries(STATUSES.map(s=>[s.k,s.c]));
 const EDIT_POOL=["Shot","Pending","Editing","Re-edit"];
-const DONE_EDIT=["Edited","In review","Approved","Ready","Posted"];
+const DONE_EDIT=["Edited","In review","Approved","Ready","Scheduled","Posted"];
 const HUES=["#E4572E","#3B7DD8","#2E9E4F","#D99A1E","#8A5CD1","#D1497B","#17A2B8","#8C9A2E","#C9772B","#5B6BD6"];
 const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const MONL=["January","February","March","April","May","June","July","August","September","October","November","December"];
@@ -1499,7 +1556,8 @@ const S={
   settings:{
     pattern:"D:\\Raw Footage\\{YYYY}-{MM}-{DD}",reviewers:"zain",shootTarget:10,editTarget:4,autoOnLog:true,allowSame:false,notifyOn:false,notifyEmails:"",alertUsers:"",
     plans:[{from:"2026-09-01",times:["15:00","18:00"]},{from:"2026-10-01",times:["11:00","15:00","18:00","21:00"]}],
-    cplans:[{from:"2026-10-01",days:[1,3,5],times:["21:00"]}]
+    cplans:[{from:"2026-10-01",days:[1,3,5],times:["21:00"]}],
+    pillars:["Awareness","Desire","Call to action"],pillarOrder:["Awareness","Desire","Awareness","Call to action"],pillarFrom:"2026-10-01",pillarLoose:false
   },
   queue:{ids:[],at:null},
   tab:"overview",
@@ -1539,6 +1597,16 @@ function cplanFor(d){const act=cplans().filter(p=>p.from<=d&&(!p.to||d<=p.to));c
   let f=null;pool.forEach(p=>{if(!f||p.from>f)f=p.from});return f?pool.filter(p=>p.from===f):[]}
 function cslotsFor(d){const wd=new Date(d+"T00:00:00").getDay();const s=new Set();cplanFor(d).forEach(p=>{if((p.days||[]).includes(wd))(p.times||[]).forEach(t=>s.add(t))});return [...s].sort()}
 function isCar(v){return v.format==="Carousel"}
+function kindName(v){return isCar(v)?"Carousel":"Reel"}
+/* content pillars: each reel slot of the day gets a pillar from the daily order in Settings */
+const PCOL=["#3B7DD8","#E4572E","#2E9E4F","#8A5CD1","#D99A1E","#17A2B8"];
+function pillars(){return (S.settings.pillars||[]).filter(Boolean)}
+function pillarOrder(){return (S.settings.pillarOrder||[]).filter(p=>pillars().includes(p))}
+function pillarOn(d){return pillarOrder().length>0&&d>=(S.settings.pillarFrom||"2000-01-01")}
+function slotPillar(d,tm){if(!pillarOn(d))return null;const i=slotsFor(d).indexOf(tm);if(i<0)return null;const O=pillarOrder();return O[i%O.length]}
+function pillarColor(p){const i=pillars().indexOf(p);return i<0?"#8A939B":PCOL[i%PCOL.length]}
+function pillarTag(v){return v&&v.pillar?`<span class="ptag" style="--pc:${pillarColor(v.pillar)}">${esc(v.pillar)}</span>`:""}
+function pillarSelect(attrs,val,withNone){return `<select ${attrs}>${withNone!==false?`<option value="">No pillar</option>`:""}${pillars().map(p=>`<option${p===val?" selected":""}>${esc(p)}</option>`).join("")}${val&&!pillars().includes(val)?`<option selected>${esc(val)}</option>`:""}</select>`}
 function kindOf(v){return isCar(v)?"C":"R"}
 function slotsK(d,k){return k==="C"?cslotsFor(d):slotsFor(d)}
 function allTimes(){const set=new Set();plans().forEach(p=>(p.times||[]).forEach(t=>set.add(t)));cplans().forEach(p=>(p.times||[]).forEach(t=>set.add(t)));vids().forEach(v=>v.postTime&&set.add(v.postTime));return [...set].sort()}
@@ -1676,7 +1744,7 @@ function coverage(){
   let d=today(),n=0;
   for(let i=0;i<120;i++){
     const T=slotsFor(d);if(!T.length){d=addDays(d,1);continue}
-    const ok=T.every(t=>postedAt(d,t).some(v=>v.status==="Ready"||v.status==="Posted"));
+    const ok=T.every(t=>postedAt(d,t).some(v=>v.status==="Ready"||v.status==="Scheduled"||v.status==="Posted"));
     if(!ok)break;n++;d=addDays(d,1);
   }
   return n;
@@ -1688,7 +1756,7 @@ const TIER={Ready:0,Approved:1,"In review":1,Edited:1,"Re-edit":2,Editing:2,Pend
 function nowHM(){const d=new Date();return pad(d.getHours())+":"+pad(d.getMinutes())}
 function isReel(v){return (v.format||"Reel")==="Reel"}
 // Ready or Posted videos that already have a slot, and anything you lock, never move
-function isLocked(v){return v.pinned||v.status==="Posted"||(v.status==="Ready"&&!!v.postDate)}
+function isLocked(v){return v.pinned||v.status==="Posted"||v.status==="Scheduled"||(v.status==="Ready"&&!!v.postDate)}
 // people in a video: names after the last " - " in a title, plus known cast names found anywhere in it
 function suffixCast(t){const m=String(t||"").match(/\s[-–—]\s([^-–—]+)$/);if(!m)return [];
   return m[1].split(/,|&|\band\b|\//i).map(x=>x.trim().toLowerCase()).filter(x=>x&&x!=="guest"&&x.length<30)}
@@ -1702,6 +1770,7 @@ function castOf(v){
   return [...out];
 }
 function planKind(isK,slotsF){
+  const reelKind=isK===isReel;
   const t=today(),hm=nowHM();
   const future=(d,tm)=>d>t||(d===t&&tm>hm);
   const items=vids().filter(isK);
@@ -1722,7 +1791,9 @@ function planKind(isK,slotsF){
       if(lockedHere.length){prev=lockedHere[0].shotDate||null;prevCast=new Set(castOf(lockedHere[0]));continue}
       if(!future(d,tm))continue;
       if(!cands.length)break;
-      const ok=v=>!v.shotDate||!dayShots.has(v.shotDate);
+      const req=reelKind?slotPillar(d,tm):null;
+      const pm=v=>!req||v.pillar===req||(S.settings.pillarLoose&&!v.pillar);
+      const ok=v=>pm(v)&&(!v.shotDate||!dayShots.has(v.shotDate));
       const hits=(v,set)=>castOf(v).filter(n=>set.has(n)).length;
       // lowest score wins: the same person twice in a day costs most, then readiness, then back-to-back repeats
       const demand={};cands.forEach(c=>castOf(c).forEach(n=>{demand[n]=(demand[n]||0)+1}));
@@ -1730,7 +1801,7 @@ function planKind(isK,slotsF){
       const score=v=>hits(v,dayCast)*10+(TIER[v.status]||0)*3+(v.shotDate&&v.shotDate===prev?3:0)+hits(v,prevCast)*2-need(v)*1.2;
       const pick=test=>{let best=-1,bs=1e9;cands.forEach((v,idx)=>{if(!test(v))return;const s=score(v)+idx*.001;if(s<bs){bs=s;best=idx}});return best};
       let k=pick(ok);
-      if(k<0&&S.settings.allowSame)k=pick(v=>!v.shotDate||v.shotDate!==prev);
+      if(k<0&&S.settings.allowSame)k=pick(v=>pm(v)&&(!v.shotDate||v.shotDate!==prev));
       if(k<0){prev=null;prevCast=new Set();continue}
       const v=cands.splice(k,1)[0];
       target[v.id]={d,tm};if(v.shotDate)dayShots.add(v.shotDate);prev=v.shotDate||null;
@@ -1759,8 +1830,48 @@ function undoReshuffle(){
 /* ---------- shuffle ---------- */
 function editPool(){return vids().filter(v=>EDIT_POOL.includes(v.status))}
 function editedToday(){return vids().filter(v=>v.editedOn===today()).length}
-function firstCap(){return Math.max(0,S.settings.editTarget-editedToday())}
-function batchSizes(n){const out=[];let fc=firstCap();if(fc>0)out.push(fc);while(out.reduce((a,b)=>a+b,0)<n)out.push(Math.max(1,S.settings.editTarget));return out}
+/* ---------- smart edit plan: spreads the edits evenly over your work days so the week never piles up ---------- */
+const FIN=["Edited","In review","Approved","Ready","Scheduled","Posted"];
+function workDaysSet(){return Array.isArray(S.settings.workDays)?S.settings.workDays:[1,2,3,4,5,6]}
+function isWorkDay(d){const on=(S.settings.daysOn||[]).includes(d),off=(S.settings.daysOff||[]).includes(d);
+  return !off&&(on||workDaysSet().includes(new Date(d+"T00:00:00").getDay()))}
+function editPlan(){
+  const t=today(),H=14,hm=nowHM(),lead=S.settings.editLead==null?1:+S.settings.editLead;
+  const kinds=S.settings.editCountAll===false?["R"]:(typeof lslotsFor==="function"?["R","C","L"]:["R","C"]);
+  let stock=vids().filter(v=>!v.postDate&&FIN.includes(v.status)&&v.status!=="Posted"&&kinds.includes(kindOf(v))).length;
+  const due={};
+  for(let i=0;i<=H+lead;i++){const P=addDays(t,i);let n=0;
+    kinds.forEach(k=>slotsK(P,k).forEach(tm=>{if(P===t&&tm<=hm)return;
+      const v=vids().find(x=>kindOf(x)===k&&x.postDate===P&&x.postTime===tm);
+      if(v&&FIN.includes(v.status))return;if(!v&&stock>0){stock--;return}n++}));
+    vids().forEach(v=>{if(v.postDate===P&&kinds.includes(kindOf(v))&&!slotsK(P,kindOf(v)).includes(v.postTime)&&!FIN.includes(v.status)&&!(P===t&&(v.postTime||"99")<=hm))n++});
+    if(n)due[P]=n}
+  const work=[];for(let i=0;i<H;i++){const d=addDays(t,i);if(isWorkDay(d))work.push(d)}
+  const need=work.map(()=>0),covers=work.map(()=>[]);let late=0;
+  Object.keys(due).sort().forEach(P=>{const lim=addDays(P,-lead);if(!work.length||lim>work[work.length-1])return;
+    let j=-1;work.forEach((d,x)=>{if(d<=lim)j=x});if(j<0){j=0;late+=due[P]}need[j]+=due[P];covers[j].push(P)});
+  let cum=0,rate=0;need.forEach((n,i)=>{cum+=n;rate=Math.max(rate,Math.ceil(cum/(i+1)))});
+  const plan=[];let done=0;need.forEach(()=>{const p=Math.max(0,Math.min(rate,cum-done));plan.push(p);done+=p});
+  const footage=vids().filter(v=>EDIT_POOL.includes(v.status)&&kinds.includes(kindOf(v))).length;
+  return {work,need,plan,covers,rate,total:cum,late,lead,footage,shortage:Math.max(0,cum-footage),
+    todayLeft:work[0]===t?plan[0]:0,todayOff:work[0]!==t,doneToday:editedToday()};
+}
+function batchSizes(n){const ep=editPlan();const out=ep.plan.filter(x=>x>0);const pace=Math.max(1,ep.rate||S.settings.editTarget||4);while(out.reduce((a,b)=>a+b,0)<n)out.push(pace);return out}
+function planPanel(){
+  const ep=editPlan(),t=today();
+  const name=d=>d===t?"Today":d===addDays(t,1)?"Tomorrow":niceW(d);
+  const short=d=>WD[new Date(d+"T00:00:00").getDay()];
+  const head=ep.todayOff?`Day off today. Next: <b>${ep.plan[0]||0}</b> on ${esc(name(ep.work[0]||t))}`
+    :ep.todayLeft?`Edit <b>${ep.todayLeft}</b> more today${ep.doneToday?` <span>(${ep.doneToday} done)</span>`:""}`:ep.doneToday?`Done for today, <b>${ep.doneToday}</b> edited ✓`:`Nothing due today. You’re ahead ✓`;
+  const sub=ep.total?`${ep.total} edit${ep.total===1?"":"s"} needed over the next ${ep.work.length} work days. A steady <b>${ep.rate} a day</b> keeps you on track.`:"No edits due in the next two weeks.";
+  let chips="";for(let i=0;i<7;i++){const d=addDays(t,i),w=ep.work.indexOf(d);
+    if(w<0){chips+=`<button class="ep-day off" data-act="toggleDay" data-d="${d}" title="Day off. Click to make it a work day"><small>${esc(name(d))}</small><b>Off</b><i>${(S.settings.daysOff||[]).includes(d)?"day off":"no editing"}</i></button>`;continue}
+    const cv=ep.covers[w];const covTxt=cv.length?"for "+cv.map(short).join(", "):"buffer";
+    chips+=`<button class="ep-day${d===t?" now":""}${cv.length>1?" heavy":""}" data-act="toggleDay" data-d="${d}" title="Click to take this day off"><small>${esc(name(d))}</small><b>${ep.plan[w]}</b><i>${esc(covTxt)}</i></button>`}
+  const warn=[ep.late?`<span class="tag warn">${ep.late} post${ep.late>1?"s":""} due before you can edit them</span>`:"",ep.shortage?`<span class="tag warn">Only ${ep.footage} videos have footage. Shoot ${ep.shortage} more</span>`:""].join("");
+  return `<div class="eplan"><div class="ep-top"><div><div class="ep-h">${head}</div><div class="ep-s">${sub}</div>${warn?`<div class="ep-w">${warn}</div>`:""}</div></div>
+    <div class="ep-days">${chips}</div><p class="ep-note">Each day shows how many to edit and which posting days it covers. ${ep.lead?"Videos are finished a day before they post, so Saturday covers Sunday and Monday.":"Videos are finished on the day they post."} Click a day to take it off or add it back.</p></div>`;
+}
 function batchStart(i,sizes){let acc=0;for(let b=0;b<sizes.length;b++){acc+=sizes[b];if(i<acc)return acc-sizes[b]}return acc}
 const key=v=>v.shotDate||"~none";
 const postKey=v=>(v.postDate||"")+" "+(v.postTime||"99:99");
@@ -1935,7 +2046,7 @@ function needFor(k,H){
   const t=today(),hm=nowHM();let total=0,ready=0,prog=0,empty=0;
   for(let i=0;i<H;i++){const d=addDays(t,i);for(const tm of slotsK(d,k)){if(d===t&&tm<=hm)continue;total++;
     const v=vids().find(x=>kindOf(x)===k&&x.postDate===d&&x.postTime===tm);
-    if(!v)empty++;else if(v.status==="Ready"||v.status==="Posted")ready++;else prog++}}
+    if(!v)empty++;else if(v.status==="Ready"||v.status==="Scheduled"||v.status==="Posted")ready++;else prog++}}
   const pool=vids().filter(v=>kindOf(v)===k&&!v.postDate&&v.status in TIER);
   const availReady=pool.filter(v=>v.status==="Ready"||v.status==="Approved").length,avail=pool.length;
   const fromStock=Math.min(empty,avail),toShoot=Math.max(0,empty-avail);
@@ -1945,7 +2056,7 @@ function needFor(k,H){
 function coveredUntil(){
   const t=today(),hm=nowHM();let d=t,last=null;
   for(let i=0;i<120;i++){const all=[...slotsFor(d).map(tm=>["R",tm]),...cslotsFor(d).map(tm=>["C",tm])].filter(([k,tm])=>!(d===t&&tm<=hm));
-    const ok=all.every(([k,tm])=>vids().some(v=>kindOf(v)===k&&v.postDate===d&&v.postTime===tm&&(v.status==="Ready"||v.status==="Posted")));
+    const ok=all.every(([k,tm])=>vids().some(v=>kindOf(v)===k&&v.postDate===d&&v.postTime===tm&&(v.status==="Ready"||v.status==="Scheduled"||v.status==="Posted")));
     if(!ok)break;if(all.length)last=d;d=addDays(d,1)}
   return last;
 }
@@ -1969,10 +2080,33 @@ function todayPosts(){
     const lnk=safeUrl(v.finalLink);
     return `<div class="tp${v.status==="Posted"?" done":""}${late?" late":""}"><span class="tp-t">${v.postTime?fmtT(v.postTime):"No time"}</span>
       <span class="tp-n"><b>${esc(v.title||"Untitled")}</b><small><i style="background:${SC[v.status]}"></i>${esc(v.status)}${isCar(v)?", carousel":""}${late?` <span class="tag warn">Overdue</span>`:soon?` <span class="tag new">${now>=due?"Now":"Soon"}</span>`:""}</small></span>
-      <span class="tp-a">${v.status==="Posted"?`<span class="tp-ok">✓ Posted</span>`:`${lnk?`<a class="iconbtn" href="${esc(lnk)}" target="_blank" rel="noopener noreferrer">Open</a>`:""}${v.status==="Ready"?`<button class="iconbtn tp-mark" data-act="markPosted" data-id="${v.id}">Mark posted</button>`:""}`}</span></div>`}).join("");
+      <span class="tp-a">${v.status==="Posted"?`<span class="tp-ok">✓ Posted</span>`:v.status==="Scheduled"?`<span class="tp-ok sched">✓ Scheduled</span>`:`${lnk?`<a class="iconbtn" href="${esc(lnk)}" target="_blank" rel="noopener noreferrer">Open</a>`:""}${v.status==="Ready"?`<button class="iconbtn" data-act="markScheduled" data-id="${v.id}">Scheduled</button><button class="iconbtn tp-mark" data-act="markPosted" data-id="${v.id}">Mark posted</button>`:""}`}</span></div>`}).join("");
   const open=slots.filter(s=>!L.some(v=>v.postTime===s.tm&&kindOf(v)===s.k)).length;
   return `<section class="panel"><div class="phead"><h2>Today’s posts</h2><span class="stat">${posted} of ${L.length} posted${open?`, ${open} empty slot${open>1?"s":""}`:""}</span></div>
     ${rows||`<p class="sub">Nothing scheduled for today yet.</p>`}</section>`;
+}
+function pillarStats(H){
+  const t=today(),hm=nowHM();const P=pillars();const by={};P.forEach(p=>by[p]={p,need:0,filled:0,hand:0,free:0});
+  const reels=vids().filter(isReel),live=v=>v.status!=="Posted"&&v.status!=="Not started";
+  for(let i=0;i<H;i++){const d=addDays(t,i);if(!pillarOn(d))continue;
+    slotsFor(d).forEach(tm=>{if(d===t&&tm<=hm)return;const p=slotPillar(d,tm),r=by[p];if(!r)return;r.need++;
+      if(reels.some(x=>x.postDate===d&&x.postTime===tm&&x.pillar===p))r.filled++})}
+  reels.filter(live).forEach(v=>{const r=by[v.pillar];if(!r)return;r.hand++;if(!v.postDate)r.free++});
+  const rows=P.map(p=>{const r=by[p];return {...r,shoot:Math.max(0,r.need-r.filled-r.free)}});
+  const cars=vids().filter(isCar);let cNeed=0,cFilled=0;
+  for(let i=0;i<H;i++){const d=addDays(t,i);cslotsFor(d).forEach(tm=>{if(d===t&&tm<=hm)return;cNeed++;if(cars.some(x=>x.postDate===d&&x.postTime===tm))cFilled++})}
+  const cHand=cars.filter(live).length,cFree=cars.filter(v=>live(v)&&!v.postDate).length;
+  const untagged=reels.filter(v=>live(v)&&!v.pillar).length;
+  return {rows,car:{need:cNeed,filled:cFilled,hand:cHand,free:cFree,shoot:Math.max(0,cNeed-cFilled-cFree)},untagged};
+}
+function pillarPanel(H){
+  if(!pillars().length)return "";
+  const st=pillarStats(H);const next=[...st.rows.filter(r=>r.shoot).map(r=>`<b style="--pc:${pillarColor(r.p)}">${r.shoot} ${esc(r.p)}</b>`),st.car.shoot?`<b style="--pc:#6FAE00">${st.car.shoot} carousel${st.car.shoot>1?"s":""}</b>`:""].filter(Boolean);
+  const row=(name,col,r)=>`<div class="pl-row"><span class="pl-n"><i style="background:${col}"></i>${esc(name)}</span><span><b>${r.hand}</b><small>in hand</small></span><span><b>${r.need}</b><small>needed</small></span><span><b>${r.need-r.filled}</b><small>still open</small></span><span class="pl-s${r.shoot?" on":""}"><b>${r.shoot}</b><small>to shoot</small></span></div>`;
+  return `<section class="panel"><div class="phead"><h2>Pillars</h2><span class="stat">Next ${H} days, from ${esc(nice(S.settings.pillarFrom||today()))}</span></div>
+    <p class="pl-next">${next.length?`Shoot next: ${next.join(" ")}`:"You have enough footage for every pillar. ✓"}</p>
+    <div class="pl-grid">${st.rows.map(r=>row(r.p,pillarColor(r.p),r)).join("")}${row("Carousels","#6FAE00",st.car)}</div>
+    ${st.untagged?`<p class="ovnote"><b>${st.untagged}</b> reel${st.untagged>1?"s":""} in hand ha${st.untagged>1?"ve":"s"} no pillar yet. Set it in All videos so they can be scheduled.</p>`:""}</section>`;
 }
 function vOverview(){
   const all=vids(),t=today(),H=S.ovH||7;
@@ -2001,7 +2135,7 @@ function vOverview(){
   return `
   <section class="panel ov">
     <div class="phead"><h2>${esc(niceW(t))}</h2>
-      <div class="ovtoday"><span>Shot today <b>${shotT}</b>/${S.settings.shootTarget}</span><i style="--p:${Math.min(1,shotT/S.settings.shootTarget)}"></i><span>Edited <b>${edT}</b>/${S.settings.editTarget}</span><i style="--p:${Math.min(1,edT/S.settings.editTarget)}"></i></div></div>
+      <div class="ovtoday"><span>Shot today <b>${shotT}</b>/${S.settings.shootTarget}</span><i style="--p:${Math.min(1,shotT/S.settings.shootTarget)}"></i>${(()=>{const ep=editPlan();const goal=edT+ep.todayLeft;return ep.todayOff?`<span>Edited <b>${edT}</b> · day off</span>`:`<span>Edited <b>${edT}</b>/${goal||edT}</span><i style="--p:${goal?Math.min(1,edT/goal):1}"></i>`})()}</div></div>
     <div class="ovk">
       <div class="k1"><b>${inHand}</b><span>Videos in hand</span></div>
       <div><b>${ready}</b><span>Ready to post</span></div>
@@ -2023,6 +2157,7 @@ function vOverview(){
       <p class="ovnote">${upcomingShoots().length} shoot${upcomingShoots().length===1?"":"s"} coming up${noScript?`, <b>${noScript}</b> without a script`:""}.</p>
     </section>
   </div>
+  ${pillarPanel(S.ovH||7)}
   ${todayPosts()}
   <section class="panel">
     <div class="phead"><h2>Status</h2><span class="stat">${all.length} videos in total</span></div>
@@ -2063,6 +2198,7 @@ function vVideos(){
     <td class="ck"><input type="checkbox" data-act-ck="${v.id}"${S.sel.has(v.id)?" checked":""} aria-label="Select ${esc(v.title)}"></td>
     <td class="title"><input type="text" value="${esc(v.title)}" data-f="title" data-id="${v.id}" aria-label="Title">${v.status==="Re-edit"&&v.reviewNote?`<small class="rnote">Changes: ${esc(v.reviewNote)}</small>`:""}${v.status==="In review"?`<small class="rnote rv">With ${esc(reviewerName())} for review${v.round>1?`, round ${v.round}`:""}</small>`:""}</td>
     <td class="c-fmt" data-l="Format"><select data-f="format" data-id="${v.id}" aria-label="Format"><option${v.format!=="Carousel"?" selected":""}>Reel</option><option${v.format==="Carousel"?" selected":""}>Carousel</option></select></td>
+    <td class="c-pil" data-l="Pillar">${isCar(v)?`<span class="stat">Carousel</span>`:pillarSelect(`data-f="pillar" data-id="${v.id}" aria-label="Pillar" class="psel" style="--pc:${pillarColor(v.pillar)}"`,v.pillar||"")}</td>
     <td class="c-shot" data-l="Shot on"><input type="date" value="${esc(v.shotDate||"")}" data-f="shotDate" data-id="${v.id}" aria-label="Shot date" style="border-left:4px solid ${hue(v.shotDate)}"></td>
     <td class="c-fold" data-l="Raw folder">${folderCell(v.shotDate)}</td>
     <td class="c-st" data-l="Status">${statusSelect(v)}</td>
@@ -2078,7 +2214,7 @@ function vVideos(){
     </div>
     ${chips}
     ${bulk}
-    ${L.length?`<div class="scroll"><table><thead><tr><th class="ck"><input type="checkbox" id="ckAll"${allSel?" checked":""} aria-label="Select all shown"></th><th>Title</th><th>Format</th><th>Shot on</th><th>Raw folder</th><th>Status</th><th>Post on</th><th>Time</th><th>Final video</th><th>Notes</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`
+    ${L.length?`<div class="scroll"><table><thead><tr><th class="ck"><input type="checkbox" id="ckAll"${allSel?" checked":""} aria-label="Select all shown"></th><th>Title</th><th>Format</th><th>Pillar</th><th>Shot on</th><th>Raw folder</th><th>Status</th><th>Post on</th><th>Time</th><th>Final video</th><th>Notes</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`
       :`<div class="empty"><b>${all.length?"Nothing matches these filters":"No videos yet"}</b>${all.length?"Try clearing some filters.":"Use “Log a shoot” to add videos."}</div>`}
   </section>`;
 }
@@ -2086,10 +2222,11 @@ function vVideos(){
 function toggle(attr,key,on,label){return `<label class="sw"><input type="checkbox" ${attr}="${key}"${on?" checked":""}><span class="knob" aria-hidden="true"></span>${label}</label>`}
 function vOrder(){
   const list=currentQueue();
-  const sizes=batchSizes(list.length);
-  const startDay=firstCap()>0?today():addDays(today(),1);
+  const ep=editPlan(),slotsE=[];ep.work.forEach((d,j)=>{if(ep.plan[j]>0)slotsE.push({day:d,n:ep.plan[j]})});
+  const pace=Math.max(1,ep.rate||S.settings.editTarget||4);let nx=ep.work.length?addDays(ep.work[ep.work.length-1],1):today();
+  for(let guard=0;slotsE.reduce((a,s)=>a+s.n,0)<list.length&&guard<60;guard++){while(!isWorkDay(nx))nx=addDays(nx,1);slotsE.push({day:nx,n:pace});nx=addDays(nx,1)}
   const groups=[];let i=0;
-  sizes.forEach((n,b)=>{if(i>=list.length)return;groups.push({day:addDays(startDay,b),items:list.slice(i,i+n),start:i});i+=n});
+  slotsE.forEach(s=>{if(i>=list.length)return;groups.push({day:s.day,items:list.slice(i,i+s.n),start:i});i+=s.n});
   const dayLabel=d=>d===today()?"Today":d===addDays(today(),1)?"Tomorrow":niceW(d);
   const body=groups.map(g=>{
     const mix=g.items.map(x=>`<i style="background:${hue(x.v.shotDate)}" title="Shot ${esc(nice(x.v.shotDate)||"date unknown")}"></i>`).join("");
@@ -2098,7 +2235,7 @@ function vOrder(){
       const tags=(pinned?`<button class="tag pin" data-act="unpin" data-id="${v.id}" title="Unpin: let Shuffle move it again">Pinned ×</button>`:"")+(v.status==="Editing"?`<span class="tag">Stays put while editing</span>`:"")+(v.status==="Re-edit"?`<span class="tag warn">Changes: ${esc((v.reviewNote||"see notes").slice(0,90))}</span>`:"")+(v.round>1&&EDIT_POOL.includes(v.status)?`<span class="tag">Round ${v.round}</span>`:"")+(x.fresh?`<span class="tag new">New</span>`:"")+(clash?`<span class="tag warn">Same shoot as above</span>`:"")+(late?`<span class="tag warn">Due before this</span>`:"");
       return `<div class="erow${pinned?" pinned":""}" data-fid="${v.id}">
         <div class="num grip" title="Drag to reorder"><span class="n">${idx+1}</span><span class="g">⋮⋮</span></div>
-        <div class="etitle"><span class="dot" style="background:${hue(v.shotDate)}"></span><div><b>${esc(v.title||"Untitled")}</b><small>Shot ${esc(v.shotDate?nice(v.shotDate):"date unknown")}${v.postDate?`, posts ${esc(niceW(v.postDate))}${v.postTime?" "+fmtT(v.postTime):""}`:""}${tags}</small></div></div>
+        <div class="etitle"><span class="dot" style="background:${hue(v.shotDate)}"></span><div><b>${esc(v.title||"Untitled")}</b>${pillarTag(v)}<small>Shot ${esc(v.shotDate?nice(v.shotDate):"date unknown")}${v.postDate?`, posts ${esc(niceW(v.postDate))}${v.postTime?" "+fmtT(v.postTime):""}`:""}${tags}</small></div></div>
         ${v.shotDate?`<span class="eacts"><button class="iconbtn" data-act="copy" data-text="${esc(folder(v.shotDate))}" title="${esc(folder(v.shotDate))}">Copy path</button>${rawLinkFor(v.shotDate)?`<a class="openlink" href="${esc(rawLinkFor(v.shotDate))}" target="_blank" rel="noopener noreferrer">Open folder</a>`:`<button class="iconbtn" data-act="addRaw" data-d="${v.shotDate}">+ Link</button>`}</span>`:"<span></span>"}
         <div>${statusSelect(v)}</div>
         <div class="mv2"><button data-act="up" data-i="${idx}" aria-label="Move up"${idx===0?" disabled":""}>↑</button><button data-act="down" data-i="${idx}" aria-label="Move down"${idx===list.length-1?" disabled":""}>↓</button></div>
@@ -2109,11 +2246,12 @@ function vOrder(){
   return `<section class="panel">
     <div class="phead"><h2>Edit order</h2>
       <div class="pactions">${list.length?`<span class="stat">${list.length} in queue${c?`, ${c} same-day pair${c>1?"s":""}`:""}</span>${Object.keys(S.queue.pins||{}).length?`<button class="btn small ghost" data-act="unpinAll">Unpin all</button>`:""}`:""}<button class="shuffle" data-act="shuffle"${list.length<2?" disabled":""}>Shuffle</button></div></div>
+    ${planPanel()}
     <div class="switches">
       ${toggle("data-opt","deadlineFirst",S.opts.deadlineFirst,"Scheduled first")}
       ${toggle("data-opt","older",S.opts.older,"Older footage first")}
       ${toggle("data-opt","keepEditing",S.opts.keepEditing,"Editing on top")}
-      <label class="sw num-in">Per day <input type="number" min="1" max="30" value="${S.settings.editTarget}" data-set="editTarget"></label>
+
     </div>
     ${list.length?body:`<div class="empty"><b>Nothing to edit</b>Log a shoot to fill the queue.</div>`}
   </section>`;
@@ -2121,6 +2259,7 @@ function vOrder(){
 
 function lockCtl(v){
   if(v.status==="Posted")return `<span class="lockd">Posted</span>`;
+  if(v.status==="Scheduled")return `<span class="lockd sched">Scheduled</span>`;
   if(v.status==="Ready"&&!v.pinned)return `<span class="lockd">Locked</span>`;
   return `<button class="lockbtn${v.pinned?" on":""}" data-act="pin" data-id="${v.id}" aria-pressed="${!!v.pinned}">${v.pinned?"Locked":"Lock"}</button>`;
 }
@@ -2133,11 +2272,13 @@ function vSchedule(){
   const optsOf=(L,k)=>`<option value="">${k==="C"?"Add a carousel…":"Add a reel…"}</option>`+L.map(v=>`<option value="${v.id}">${esc(v.title||"Untitled")} (${v.status})</option>`).join("");
   const optsR=optsOf(freeR,"R"),optsC=optsOf(freeC,"C");
   const row=(v,d,tm,label,k,extraTags)=>{
-    const tags=(v.status==="Ready"&&!safeUrl(v.finalLink)?`<span class="tag warn">No final link</span>`:"")+(v.status!=="Ready"&&v.status!=="Posted"?`<span class="tag">Not ready</span>`:"")+(extraTags||"");
+    const tags=(v.status==="Ready"&&!safeUrl(v.finalLink)?`<span class="tag warn">No final link</span>`:"")+(v.status!=="Ready"&&v.status!=="Scheduled"&&v.status!=="Posted"?`<span class="tag">Not ready</span>`:"")+(extraTags||"");
     const sl=d?`${d}|${tm}|${k}`:"";
-    return `<div class="slot filled${k==="C"?" car":""}"${d?` data-slot="${sl}"`:""} data-drag-id="${v.id}"><div class="grip" title="Drag to move">⋮⋮</div><div class="tm">${label}${k==="C"?`<span class="kind">Carousel</span>`:""}</div><div class="ttl"><b>${esc(v.title||"Untitled")}</b>${openLink(v,"Open")}<small>${v.shotDate?"Shot "+esc(nice(v.shotDate)):"No shot date"}${tags}</small></div><div>${statusSelect(v)}</div><div>${lockCtl(v)}</div><div class="mv2">${d?`<button data-act="slotMove" data-dir="-1" data-slot="${sl}" aria-label="Move up">↑</button><button data-act="slotMove" data-dir="1" data-slot="${sl}" aria-label="Move down">↓</button>`:""}</div><div><button class="xbtn" data-act="unassign" data-id="${v.id}" aria-label="Remove from schedule" title="Remove">×</button></div></div>`;
+    return `<div class="slot filled${k==="C"?" car":""}"${d?` data-slot="${sl}"`:""} data-drag-id="${v.id}"><div class="grip" title="Drag to move">⋮⋮</div><div class="tm">${label}${k==="C"?`<span class="kind">Carousel</span>`:(d&&slotPillar(d,tm))?`<span class="kind pk" style="--pc:${pillarColor(slotPillar(d,tm))}">${esc(slotPillar(d,tm))}</span>`:""}</div><div class="ttl"><b>${esc(v.title||"Untitled")}</b>${pillarTag(v)}${openLink(v,"Open")}<small>${v.shotDate?"Shot "+esc(nice(v.shotDate)):"No shot date"}${tags}</small></div><div>${statusSelect(v)}</div><div>${lockCtl(v)}</div><div class="mv2">${d?`<button data-act="slotMove" data-dir="-1" data-slot="${sl}" aria-label="Move up">↑</button><button data-act="slotMove" data-dir="1" data-slot="${sl}" aria-label="Move down">↓</button>`:""}</div><div><button class="xbtn" data-act="unassign" data-id="${v.id}" aria-label="Remove from schedule" title="Remove">×</button></div></div>`;
   };
-  const emptyRow=(d,tm,k)=>`<div class="slot empty${k==="C"?" car":""}" data-slot="${d}|${tm}|${k}"><div class="grip" aria-hidden="true"></div><div class="tm">${fmtT(tm)}${k==="C"?`<span class="kind">Carousel</span>`:""}</div><div><select class="assign" data-assign="${d}|${tm}" aria-label="Add at ${fmtT(tm)}">${k==="C"?optsC:optsR}</select></div><div></div><div></div><div></div><div></div></div>`;
+  const optsP=req=>{const a=freeR.filter(v=>v.pillar===req),b=freeR.filter(v=>v.pillar!==req);
+    return `<option value="">Add ${esc(req)}…</option>`+a.map(v=>`<option value="${v.id}">${esc(v.title||"Untitled")} (${v.status})</option>`).join("")+(b.length?`<optgroup label="Other pillars">${b.map(v=>`<option value="${v.id}">${esc(v.title||"Untitled")} · ${esc(v.pillar||"no pillar")}</option>`).join("")}</optgroup>`:"")};
+  const emptyRow=(d,tm,k)=>{const req=k==="R"?slotPillar(d,tm):null;return `<div class="slot empty${k==="C"?" car":""}" data-slot="${d}|${tm}|${k}"><div class="grip" aria-hidden="true"></div><div class="tm">${fmtT(tm)}${k==="C"?`<span class="kind">Carousel</span>`:req?`<span class="kind pk" style="--pc:${pillarColor(req)}">${esc(req)}</span>`:""}</div><div><select class="assign" data-assign="${d}|${tm}" aria-label="Add at ${fmtT(tm)}">${k==="C"?optsC:req?optsP(req):optsR}</select></div><div></div><div></div><div></div><div></div></div>`};
   const free=[...freeR,...freeC];
   if(S.schedView==="month")return schedShell(free,monthView());
   let html="";
@@ -2151,7 +2292,8 @@ function vSchedule(){
       const pool=k==="C"?cars:reels;const here=pool.filter(v=>v.postTime===tm);
       if(!here.length)return {tm,k,html:d<t?"":emptyRow(d,tm,k)};
       return here.map(v=>{const same=castOf(v).filter(n=>items.some(o=>o!==v&&castOf(o).includes(n)));
-        return row(v,d,tm,fmtT(tm),k,(v.shotDate&&pool.some(o=>o!==v&&o.shotDate===v.shotDate)?`<span class="tag warn">Same shoot day</span>`:"")+(same.length?`<span class="tag warn">${esc(same.map(n=>n.charAt(0).toUpperCase()+n.slice(1)).join(", "))} twice today</span>`:""))}).join("");
+        const req=k==="R"?slotPillar(d,tm):null;
+        return row(v,d,tm,fmtT(tm),k,(req&&v.pillar!==req?`<span class="tag warn">Should be ${esc(req)}</span>`:"")+(v.shotDate&&pool.some(o=>o!==v&&o.shotDate===v.shotDate)?`<span class="tag warn">Same shoot day</span>`:"")+(same.length?`<span class="tag warn">${esc(same.map(n=>n.charAt(0).toUpperCase()+n.slice(1)).join(", "))} twice today</span>`:""))}).join("");
     }).map((x,i)=>typeof x==="string"?{tm:all[i].tm,k:all[i].k,html:x}:x);
     [...reels.filter(v=>!TR.includes(v.postTime)),...cars.filter(v=>!TC.includes(v.postTime))]
       .forEach(v=>parts.push({tm:v.postTime||"99:99",k:kindOf(v),html:row(v,"","",v.postTime?fmtT(v.postTime):"No time",kindOf(v),`<span class="tag">Off-plan time</span>`)}));
@@ -2285,6 +2427,17 @@ function vSettings(){
     ${maxPer>S.settings.editTarget?`<p class="sub" style="margin-top:12px;color:var(--warn)">At ${maxPer} reels a day you’ll need at least ${maxPer} edits a day to keep up. Your edit target is ${S.settings.editTarget}.</p>`:""}
   </section>
   <section class="panel">
+    <h2>Content pillars</h2>
+    <p class="sub">Each reel gets a pillar. Reshuffle fills every reel slot with a video of the pillar the daily order asks for.</p>
+    <div class="field"><label>Pillars</label>
+      <div class="pl-edit">${pillars().map((p,i)=>`<span class="pl-chip" style="--pc:${pillarColor(p)}"><i></i><input type="text" value="${esc(p)}" data-pillar="${i}" aria-label="Pillar name"><button class="xbtn" data-act="rmPillar" data-i="${i}" aria-label="Remove">×</button></span>`).join("")}<button class="btn small" data-act="addPillar">+ Add pillar</button></div></div>
+    <div class="field"><label>Daily reel order</label>
+      <div class="pl-order">${(S.settings.pillarOrder||[]).map((p,i)=>`<span class="pl-slot"><small>Reel ${i+1}</small>${pillarSelect(`data-porder="${i}" aria-label="Pillar for reel ${i+1}"`,p,false)}<button class="xbtn" data-act="rmOrder" data-i="${i}" aria-label="Remove">×</button></span>`).join("")}<button class="btn small" data-act="addOrder">+ Add</button></div>
+      <span class="hint">The first reel of the day gets the first pillar, the second reel the second, and so on. The order repeats if a day has more reels.</span></div>
+    <div class="field"><label for="pfrom">Follow the order from</label><input id="pfrom" type="date" value="${esc(S.settings.pillarFrom||"")}" data-set="pillarFrom"></div>
+    <div class="switches">${toggle("data-sset","pillarLoose",!!S.settings.pillarLoose,"Use reels without a pillar when a pillar runs out")}</div>
+  </section>
+  <section class="panel">
     <h2>Carousel plan</h2>
     <p class="sub">Pick the days and times carousels go out each week. Rows with an end date replace the regular plan only between their dates.</p>
     ${cplanRows()}
@@ -2330,8 +2483,14 @@ function vSettings(){
     
     <div class="row2">
       <div class="field"><label for="st">Videos shot per day</label><input id="st" type="number" min="1" max="50" value="${S.settings.shootTarget}" data-set="shootTarget"></div>
-      <div class="field"><label for="et">Videos edited per day</label><input id="et" type="number" min="1" max="30" value="${S.settings.editTarget}" data-set="editTarget"></div>
+      <div class="field"><label for="et">Usual edits per day</label><input id="et" type="number" min="1" max="30" value="${S.settings.editTarget}" data-set="editTarget"><span class="hint">Used for videos beyond the next two weeks. Your daily target is worked out from the posting schedule.</span></div>
     </div>
+    <div class="field"><label>Edit days</label>
+      <div class="wds" role="group" aria-label="Edit days">${[1,2,3,4,5,6,0].map(w=>`<button class="wd" data-act="workday" data-w="${w}" aria-pressed="${workDaysSet().includes(w)}">${WD[w].slice(0,2)}</button>`).join("")}</div>
+      <span class="hint">Days you edit. Posts on your days off are covered the work day before. Take a single day off from the Edit order tab.</span></div>
+    <div class="field"><label for="elead">Finish edits</label>
+      <select id="elead" data-set="editLead"><option value="1"${(S.settings.editLead==null?1:+S.settings.editLead)===1?" selected":""}>A day before they post</option><option value="0"${+S.settings.editLead===0&&S.settings.editLead!=null?" selected":""}>On the day they post</option></select></div>
+    <div class="switches">${toggle("data-sset","editCountAll",S.settings.editCountAll!==false,"Count carousels in the edit target")}</div>
   </section>`+backupsPanel();
 }
 
@@ -2716,6 +2875,8 @@ function reviewerName(){const u=reviewers()[0];const n=dispName(u)||u;return n.c
 function isReadyPost(v){return !!(v&&safeUrl(v.finalLink)&&v.status==="Ready")}
 function alertKind(v){
   if(!v)return null;
+  // a scheduled post that went live on its own in the last 12 hours: tell everyone once
+  if(v.status==="Posted"&&v.autoPosted&&v.autoPostedAt&&Date.now()-v.autoPostedAt<12*3600e3)return "posted";
   if(v.status==="In review"&&isReviewer())return "review";
   if(v.status==="Approved"&&!safeUrl(v.finalLink)&&isEditor())return "approved";
   if(v.status==="Re-edit"&&isEditor())return "reedit";
@@ -2739,14 +2900,20 @@ let SEEN=null;
 function loadSeen(){if(SEEN)return;try{const r=JSON.parse(lsGet(seenKey())||"null");SEEN=r?new Set(r):null}catch(e){SEEN=null}}
 function saveSeen(){if(SEEN)lsSet(seenKey(),JSON.stringify([...SEEN].slice(-800)))}
 function seeKey(k){loadSeen();if(!SEEN)SEEN=new Set();SEEN.add(k);saveSeen()}
-function markSeen(v){const k=alertKind(v);if(k)seeKey(alertKey(v,k))}
+function markSeen(v){const k=alertKind(v);if(k&&k!=="posted")seeKey(alertKey(v,k))}
 function alertsForMe(){return true}
 function readyList(){return myAlerts().map(x=>x.v)}
-function updateBell(){const L=myAlerts(),n=L.length,e=$("#bellN");if(!e)return;e.hidden=!n;e.textContent=n;const b=$("#bellBtn");b.classList.toggle("has",!!n);
+function updateBell(){const L=myAlerts().filter(x=>x.k!=="posted"),n=L.length,e=$("#bellN");if(!e)return;e.hidden=!n;e.textContent=n;const b=$("#bellBtn");b.classList.toggle("has",!!n);
   const kinds=[...new Set(L.map(x=>x.k))];b.title=n?({review:"Waiting for your review",approved:"Approved, add final link",reedit:"Re-edit requested",ready:"Ready to post",soon:"Posting soon",now:"Post now",late:"Not posted yet",notready:"Due soon, not ready"}[kinds[0]]+(kinds.length>1?" and more":"")):"Nothing waiting"}
+function autoPostScheduled(){
+  const now=Date.now();let n=0;
+  vids().forEach(v=>{if(v.status==="Scheduled"){const due=dueMs(v);if(due!=null&&due<=now){putVideo({...withStatus(v,"Posted"),autoPosted:true,autoPostedAt:Date.now()},true);celebrate(v.id,"Posted");n++}}});
+  if(n)render();
+}
 function checkAlerts(){
   updateBell();
   if(!loaded)return;
+  autoPostScheduled();
   loadSeen();const L=myAlerts();
   if(!SEEN){SEEN=new Set(L.map(x=>alertKey(x.v,x.k)));saveSeen();return} // first visit: no flood
   const fresh=L.filter(x=>!SEEN.has(alertKey(x.v,x.k))&&!document.getElementById(alId(x.v,x.k)));
@@ -2774,10 +2941,13 @@ function showAlert(v,kind){
     <div class="al-btns">${lnk?`<a class="al-done" href="${esc(lnk)}" target="_blank" rel="noopener noreferrer">Open video</a>`:""}<button class="al-open" data-al="posted">Mark posted</button></div>`}
   else if(kind==="late")body=`<div class="al-top"><span class="al-pill warn">Not posted yet</span>${x}</div>${title}<small>Was due ${when}. ${esc(posterName())} hasn’t marked it posted.</small>
     <div class="al-btns"><button class="al-done" data-al="x">OK</button><button class="al-open" data-al="posted">It’s posted</button></div>`;
+  else if(kind==="posted"){const lnk=safeUrl(v.finalLink);
+    body=`<div class="al-top"><span class="al-pill">✓ Posted</span>${x}</div>${title}<small>${kindName(v)}, went live ${when} as scheduled.</small>
+    <div class="al-btns">${lnk?`<a class="al-done" href="${esc(lnk)}" target="_blank" rel="noopener noreferrer">Open video</a>`:""}<button class="al-open" data-al="x">OK</button></div>`}
   else if(kind==="notready")body=`<div class="al-top"><span class="al-pill warn">Due soon, not ready</span>${x}</div>${title}<small>Posts ${when}, still ${esc(v.status)}.</small>
     <div class="al-btns"><button class="al-done" data-al="x">OK</button></div>`;
   else body=`<div class="al-top"><span class="al-pill">Ready to post</span>${x}</div>${title}<small>${isCar(v)?"Carousel":"Reel"}, ${when}</small>
-    <div class="al-btns"><a class="al-open" href="${esc(safeUrl(v.finalLink))}" target="_blank" rel="noopener noreferrer" data-al="open">Open final video</a><button class="al-done" data-al="posted">Mark posted</button></div>`;
+    <div class="al-btns"><a class="al-open" href="${esc(safeUrl(v.finalLink))}" target="_blank" rel="noopener noreferrer" data-al="open">Open video</a><button class="al-done" data-al="scheduled">Scheduled</button><button class="al-done" data-al="posted">Posted</button></div>`;
   el.innerHTML=body;el.dataset.id=v.id;el.dataset.key=alertKey(v,kind);box.prepend(el);
   if(RM||!el.animate)return;
   const hgt=el.offsetHeight;el.style.overflow="hidden";
@@ -2827,7 +2997,7 @@ function setStatusFlow(v,st){
   if(st==="Re-edit"){if(!isReviewer()){toast(`Only ${reviewerName()} can ask for a re-edit`);render();return}askReedit(v);return}
   if(wantsDone&&isReviewer()&&v.status==="In review"){approveVideo(v);return}
   if(st==="Ready"&&(v.status==="Approved"||v.status==="Ready")){if(safeUrl(v.finalLink)){putVideo(withStatus(v,"Ready"));celebrate(v.id,"Ready")}else askLink(v.id);return}
-  if(wantsDone&&v.status!=="Approved"&&v.status!=="Ready"&&v.status!=="Posted"){sendForReview(v);return}
+  if(wantsDone&&v.status!=="Approved"&&v.status!=="Ready"&&v.status!=="Scheduled"&&v.status!=="Posted"){sendForReview(v);return}
   putVideo(withStatus(v,st));celebrate(v.id,st);
 }
 function bulkStatus(v,st){
@@ -2839,6 +3009,7 @@ function bulkStatus(v,st){
 document.addEventListener("click",e=>{
   const a=e.target.closest&&e.target.closest("[data-al]");if(!a)return;const el=a.closest(".alert");if(!el)return;
   const k=a.dataset.al,v=S.videos[el.dataset.id];
+  if(k==="scheduled"&&v){putVideo(withStatus(v,"Scheduled"));toast(`“${v.title||"Untitled"}” scheduled. It becomes Posted by itself at ${v.postTime?fmtT(v.postTime):"its time"}`)}
   if(k==="posted"&&v){putVideo(withStatus(v,"Posted"));celebrate(v.id,"Posted");toast(`“${v.title||"Untitled"}” marked as posted`)}
   else if(k==="approve"&&v)approveVideo(v);
   else if(k==="reedit"&&v)askReedit(v);
@@ -2865,6 +3036,7 @@ function osText(v,k){
   return ({review:["Review needed",`${t}. Approve it or ask for a re-edit.`],approved:["Approved, add the final link",`${reviewerName()} approved ${t}.`],
     reedit:["Re-edit requested",`${t}: ${v.reviewNote||"see the notes"}`],ready:["Ready to post",`${t}, posts ${when}`],
     soon:["Posting in 15 minutes",`${t}, posts ${when}`],now:["Post now",`${t}, due ${when}`],late:["Not posted yet",`${t} was due ${when}`],
+    posted:["Posted ✓",`${t} went live ${when} as scheduled.`],
     notready:["Due soon, not ready",`${t} posts ${when}, still ${v.status}`]})[k]||["Shoot Board",t];
 }
 function osNotify(v,k,force){
@@ -2872,7 +3044,7 @@ function osNotify(v,k,force){
   if(!force&&document.hasFocus()&&!document.hidden)return;
   const [title,body]=osText(v,k);
   const opts={body,icon:"icon-192.png",badge:"icon-192.png",tag:alertKey(v,k),renotify:true,requireInteraction:["now","late","review"].includes(k),
-    data:{id:v.id,k},actions:(["ready","soon","now","late"].includes(k)&&isPoster())?[{action:"posted",title:"Mark posted"}]:k==="review"?[{action:"approve",title:"Approve"}]:[]};
+    data:{id:v.id,k},actions:(k==="ready"&&isPoster())?[{action:"scheduled",title:"Scheduled"},{action:"posted",title:"Posted"}]:(["soon","now","late"].includes(k)&&isPoster())?[{action:"posted",title:"Mark posted"}]:k==="review"?[{action:"approve",title:"Approve"}]:[]};
   const plain=()=>{try{const n=new Notification(title,{body,icon:"icon-192.png",tag:opts.tag});n.onclick=()=>{window.focus();showAlert(v,k);n.close()}}catch(e){}};
   if(navigator.serviceWorker&&navigator.serviceWorker.controller)navigator.serviceWorker.ready.then(r=>r.showNotification(title,opts)).catch(plain);else plain();
 }
@@ -2896,6 +3068,7 @@ function osPanel(){
 // actions pressed on a Windows notification come back here
 if(navigator.serviceWorker)navigator.serviceWorker.addEventListener("message",e=>{
   const d=e.data||{};const v=S.videos[d.id];if(!v)return;
+  if(d.action==="scheduled"){putVideo(withStatus(v,"Scheduled"));toast(`“${v.title||"Untitled"}” scheduled`);return}
   if(d.action==="posted"){putVideo(withStatus(v,"Posted"));toast(`“${v.title||"Untitled"}” marked as posted`)}
   else if(d.action==="approve"){approveVideo(v)}
   else showAlert(v,d.k);
@@ -3168,6 +3341,17 @@ document.addEventListener("click",async e=>{
     if(!nw||nw.value.length<4){toast("Use at least 4 characters");return}
     b.disabled=true;call("changePassword",token,u,od?od.value:"",nw.value).then(()=>{toast(self?"Password changed":`Password reset for ${dispName(u)}`);nw.value="";if(od)od.value=""}).catch(err=>toast(String(err&&err.message||"Couldn’t change it").replace(/^Error: /,""))).finally(()=>{b.disabled=false})}
   else if(act==="addRaw"){askRaw(b.dataset.d)}
+  else if(act==="addPillar"){const P=[...pillars()];let n="New pillar",k=2;while(P.includes(n))n="New pillar "+(k++);P.push(n);S.settings.pillars=P;putSettings();render()}
+  else if(act==="rmPillar"){const P=[...pillars()],gone=P.splice(+b.dataset.i,1)[0];if(!await ask(`Remove “${gone}”?`,"It comes out of the daily order. Videos tagged with it keep the tag until you change it.","Remove"))return;
+    S.settings.pillars=P;S.settings.pillarOrder=(S.settings.pillarOrder||[]).filter(x=>x!==gone);putSettings();render()}
+  else if(act==="addOrder"){const O=[...(S.settings.pillarOrder||[])];O.push(pillars()[0]||"");S.settings.pillarOrder=O;putSettings();render()}
+  else if(act==="rmOrder"){const O=[...(S.settings.pillarOrder||[])];O.splice(+b.dataset.i,1);S.settings.pillarOrder=O;putSettings();render()}
+  else if(act==="workday"){const w=+b.dataset.w,W=[...workDaysSet()];S.settings.workDays=W.includes(w)?W.filter(x=>x!==w):[...W,w].sort();putSettings();render()}
+  else if(act==="toggleDay"){const d=b.dataset.d;let off=[...(S.settings.daysOff||[])].filter(x=>x>=today()),on=[...(S.settings.daysOn||[])].filter(x=>x>=today());
+    const usual=workDaysSet().includes(new Date(d+"T00:00:00").getDay());
+    if(isWorkDay(d)){if(usual)off.push(d);else on=on.filter(x=>x!==d);toast(`${niceW(d)} is now a day off. The plan moved its edits to other days`)}
+    else{if(usual)off=off.filter(x=>x!==d);else on.push(d);toast(`${niceW(d)} is now a work day`)}
+    S.settings.daysOff=off;S.settings.daysOn=on;putSettings();render()}
   else if(act==="addSlot"){askSlot(b.dataset.d)}
   else if(act==="osnOn"){askNotif()}
   else if(act==="osnTest"){osTest()}
@@ -3186,6 +3370,7 @@ document.addEventListener("click",async e=>{
   else if(act==="rmScript"){SD.script=null;scriptState()}
   else if(act==="delShoot"){const id=SD.id;if(!id)return;$("#shootDlg").close("cancel");if(await ask("Delete this shoot?","Its plan and script will be removed from the board.","Delete"))delShoot(id)}
   else if(act==="hrange"){S.hist.range=b.dataset.r;render()}
+  else if(act==="markScheduled"){const v=S.videos[b.dataset.id];if(v){putVideo(withStatus(v,"Scheduled"));toast("Scheduled. It becomes Posted by itself at posting time")}}
   else if(act==="markPosted"){const v=S.videos[b.dataset.id];if(v)putVideo(withStatus(v,"Posted"))}
   else if(act==="markAllPosted"){const t=today();const L=vids().filter(v=>v.postDate&&v.postDate<t&&v.status!=="Posted");L.forEach(v=>putVideo(withStatus(v,"Posted"),true));render();toast(`${L.length} marked as posted`)}
   else if(act==="slotMove"){
@@ -3217,6 +3402,10 @@ document.addEventListener("change",e=>{
   if(t.dataset.snd){lsSet("seb-sound",t.checked?null:"off");if(t.checked)chime();return}
   if(t.dataset.opt){S.opts[t.dataset.opt]=t.checked;if(t.dataset.opt==="readyOnly")render();return}
   if(t.dataset.assign){const [d,tm]=t.dataset.assign.split("|");const v=S.videos[t.value];if(v){putVideo({...v,postDate:d,postTime:tm,pinned:true});toast("Placed and locked. Unlock it if a reshuffle may move it.")}return}
+  if(t.dataset.pillar!=null){const i=+t.dataset.pillar,P=[...pillars()],old=P[i],nw=t.value.trim();if(!nw||P.includes(nw)&&nw!==old){toast("Use a new, unique name");render();return}
+    P[i]=nw;S.settings.pillars=P;S.settings.pillarOrder=(S.settings.pillarOrder||[]).map(x=>x===old?nw:x);
+    vids().filter(v=>v.pillar===old).forEach(v=>putVideo({...v,pillar:nw},true));putSettings();render();toast(`Renamed to ${nw}`);return}
+  if(t.dataset.porder!=null){const O=[...(S.settings.pillarOrder||[])];O[+t.dataset.porder]=t.value;S.settings.pillarOrder=O;putSettings();render();return}
   if(t.dataset.sset){S.settings[t.dataset.sset]=t.checked;putSettings();render();return}
   if(t.dataset.cplan!=null){
     const P=cplans();const p={...P[+t.dataset.cplan]};
@@ -3237,6 +3426,8 @@ document.addEventListener("change",e=>{
     if(k==="pattern"){S.settings.pattern=t.value.trim()||S.settings.pattern}
     else if(k==="notifyEmails"){S.settings.notifyEmails=t.value.trim()}
     else if(k==="alertUsers"){S.settings.alertUsers=t.value.trim()}
+    else if(k==="pillarFrom"){S.settings.pillarFrom=t.value}
+    else if(k==="editLead"){S.settings.editLead=+t.value}
     else if(k==="reviewers"){S.settings.reviewers=t.value.trim()}
     else{const n=parseInt(t.value,10);if(n>0)S.settings[k]=n}
     putSettings();render();return;
@@ -3260,9 +3451,17 @@ document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.matches("td
 /* add dialog */
 const dlg=$("#addDlg"),form=$("#addForm");
 form.elements.status.innerHTML=STATUSES.map(s=>`<option${s.k==="Shot"?" selected":""}>${s.k}</option>`).join("");
-function openAdd(){form.elements.shotDate.value=today();form.elements.titles.value="";form.elements.rawLink.value="";updAdd();dlg.returnValue="";openDlg(dlg)}
+function openAdd(){form.elements.shotDate.value=today();form.elements.titles.value="";form.elements.rawLink.value="";ADDP=[];updAdd();dlg.returnValue="";openDlg(dlg)}
 function lines(){return form.elements.titles.value.split(/\r?\n/).map(s=>s.trim()).filter(Boolean)}
-function updAdd(){const n=lines().length;$("#addSubmit").textContent=n?`Add ${n} video${n>1?"s":""}`:"Add videos"}
+let ADDP=[];
+function updAdd(){const L=lines(),n=L.length;$("#addSubmit").textContent=n?`Add ${n} video${n>1?"s":""}`:"Add videos";
+  const show=pillars().length&&form.elements.format.value==="Reel";
+  $("#pillarAll").innerHTML=show?`<span>Pillar</span>${pillars().map(p=>`<button type="button" class="pbtn" data-pall="${esc(p)}" style="--pc:${pillarColor(p)}">All ${esc(p)}</button>`).join("")}`:"";
+  $("#pillarRows").innerHTML=show&&n?L.map((t,i)=>`<div class="prow"><span class="pt">${esc(t)}</span>${pillarSelect(`data-prow="${i}" aria-label="Pillar for ${esc(t)}"`,ADDP[i]||"")}</div>`).join(""):"";
+}
+document.addEventListener("change",e=>{const s=e.target.closest&&e.target.closest("[data-prow]");if(s){ADDP[+s.dataset.prow]=s.value;return}
+  if(e.target===form.elements.format)updAdd()});
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-pall]");if(!b)return;const p=b.dataset.pall;ADDP=lines().map(()=>p);updAdd()});
 form.elements.titles.addEventListener("input",updAdd);
 dlg.addEventListener("close",()=>{
   if(dlg.returnValue!=="ok")return;
@@ -3270,7 +3469,8 @@ dlg.addEventListener("close",()=>{
   const now=Date.now(),st=form.elements.status.value,sd=form.elements.shotDate.value;
   const rawIn=cleanPath(form.elements.rawLink.value);
   const link=safeUrl(rawIn)||rawLinkFor(sd)||"",pth=(rawIn&&!safeUrl(rawIn))?rawIn:rawPathFor(sd);
-  L.forEach((title,i)=>putVideo({id:uid(),title,format:form.elements.format.value,shotDate:sd,status:st,postDate:"",postTime:"",notes:"",editedOn:DONE_EDIT.includes(st)?today():"",createdAt:now+i,rawLink:link,rawPath:pth||""},true));
+  const fmt=form.elements.format.value;
+  L.forEach((title,i)=>putVideo({id:uid(),title,format:fmt,pillar:fmt==="Reel"?(ADDP[i]||""):"",shotDate:sd,status:st,postDate:"",postTime:"",notes:"",editedOn:DONE_EDIT.includes(st)?today():"",createdAt:now+i,rawLink:link,rawPath:pth||""},true));
   if(rawIn)setTimeout(()=>{safeUrl(rawIn)?setRawLink(sd,link):setRawPath(sd,rawIn)},0);
   if(!pth&&!link&&S.settings.askFolder!==false)setTimeout(()=>askRaw(sd,vids().filter(v=>v.shotDate===sd).length),450);
   if(S.settings.autoOnLog&&L.length){
@@ -3283,8 +3483,8 @@ dlg.addEventListener("close",()=>{
 /* export / import */
 function csv(){
   const q=s=>'"'+String(s??"").replace(/"/g,'""')+'"';
-  const head=["Title","Format","Shot date","Raw folder","Status","Post date","Post time","Final video link","Notes"];
-  const rows=vids().sort((a,b)=>postKey(a).localeCompare(postKey(b))).map(v=>[v.title,v.format,v.shotDate,folder(v.shotDate),v.status,v.postDate,fmtT(v.postTime),v.finalLink,v.notes].map(q).join(","));
+  const head=["Title","Format","Pillar","Shot date","Raw folder","Status","Post date","Post time","Final video link","Notes"];
+  const rows=vids().sort((a,b)=>postKey(a).localeCompare(postKey(b))).map(v=>[v.title,v.format,v.pillar||"",v.shotDate,folder(v.shotDate),v.status,v.postDate,fmtT(v.postTime),v.finalLink,v.notes].map(q).join(","));
   return "\ufeff"+head.map(q).join(",")+"\n"+rows.join("\n");
 }
 $("#exportBtn").addEventListener("click",()=>{
@@ -3311,7 +3511,7 @@ $("#importFile").addEventListener("change",async e=>{
   if(!await ask(`Import ${list.length} video${list.length===1?"":"s"}?`,"They’ll be added to the board alongside anything already here.",`Import ${list.length}`,true))return;
   const now=Date.now();
   list.forEach((r,i)=>{const st=STATUSES.some(s=>s.k===get(r,"status"))?get(r,"status"):"Shot";
-    putVideo({id:uid(),title:r[iT].trim(),format:get(r,"format")==="Carousel"?"Carousel":"Reel",shotDate:normDate(get(r,"shot date")),status:st,postDate:normDate(get(r,"post date")),postTime:parseT(get(r,"post time"))||"",notes:get(r,"notes"),finalLink:get(r,"final video link"),editedOn:"",createdAt:now+i},true)});
+    putVideo({id:uid(),title:r[iT].trim(),pillar:get(r,"pillar"),format:get(r,"format")==="Carousel"?"Carousel":"Reel",shotDate:normDate(get(r,"shot date")),status:st,postDate:normDate(get(r,"post date")),postTime:parseT(get(r,"post time"))||"",notes:get(r,"notes"),finalLink:get(r,"final video link"),editedOn:"",createdAt:now+i},true)});
   render();toast(`Imported ${list.length}`);
 });
 
