@@ -2780,7 +2780,7 @@ function vOverview(){
 
 function filtered(){
   const f=S.filter;
-  const L=vids().filter(v=>(!f.st.length||f.st.includes(v.status))&&(f.fmt==="all"||(v.format||"Reel")===f.fmt)&&(f.sched==="any"||(f.sched==="yes"?!!v.postDate:!v.postDate))&&(!f.noLink||!safeUrl(v.finalLink))&&(f.date==="all"||(f.date==="none"?!v.shotDate:v.shotDate===f.date))&&(!f.q||(v.title||"").toLowerCase().includes(f.q.toLowerCase())||(v.notes||"").toLowerCase().includes(f.q.toLowerCase())));
+  const L=vids().filter(v=>(!f.st.length||f.st.includes(v.status))&&(f.fmt==="all"||(v.format||"Reel")===f.fmt)&&(f.sched==="any"||(f.sched==="yes"?!!v.postDate:!v.postDate))&&(!f.noLink||!safeUrl(v.finalLink))&&(!f.noPil||(isReel(v)&&!v.pillar))&&(f.date==="all"||(f.date==="none"?!v.shotDate:v.shotDate===f.date))&&(!f.q||(v.title||"").toLowerCase().includes(f.q.toLowerCase())||(v.notes||"").toLowerCase().includes(f.q.toLowerCase())));
   L.sort((a,b)=>{const pa=a.postDate?postKey(a):"~",pb=b.postDate?postKey(b):"~";return pa.localeCompare(pb)||(b.shotDate||"").localeCompare(a.shotDate||"")||((a.createdAt||0)-(b.createdAt||0))});
   return L;
 }
@@ -2790,18 +2790,20 @@ function vVideos(){
   const dates=[...new Set(all.map(v=>v.shotDate).filter(Boolean))].sort().reverse();
   const L=filtered();
   const allSel=L.length&&L.every(v=>S.sel.has(v.id));
-  const nFilters=f.st.length+(f.fmt!=="all")+(f.sched!=="any")+(f.noLink?1:0)+(f.date!=="all")+(f.q?1:0);
+  const nFilters=f.st.length+(f.fmt!=="all")+(f.sched!=="any")+(f.noLink?1:0)+(f.noPil?1:0)+(f.date!=="all")+(f.q?1:0);
   const chips=`<div class="filters">
     <div class="fgroup" role="group" aria-label="Status">${STATUSES.filter(s=>ST_MAIN.includes(s.k)||all.some(v=>v.status===s.k)||f.st.includes(s.k)).map(s=>`<button class="fchip" data-act="fst" data-s="${s.k}" aria-pressed="${f.st.includes(s.k)}"><i style="background:${s.c}"></i>${s.k}<em>${all.filter(v=>v.status===s.k).length}</em></button>`).join("")}</div>
     <div class="fgroup">
       <div class="seg" role="group" aria-label="Format">${[["all","All formats"],["Reel","Reels"],["Carousel","Carousels"]].map(([k,l])=>`<button data-act="ffmt" data-v="${k}" aria-pressed="${f.fmt===k}">${l}</button>`).join("")}</div>
       <div class="seg" role="group" aria-label="Scheduling">${[["any","Any"],["yes","Scheduled"],["no","Unscheduled"]].map(([k,l])=>`<button data-act="fsched" data-v="${k}" aria-pressed="${f.sched===k}">${l}</button>`).join("")}</div>
       <button class="fchip" data-act="fnolink" aria-pressed="${f.noLink}">No final link</button>
+      <button class="fchip" data-act="fnopil" aria-pressed="${!!f.noPil}">No pillar <em>${vids().filter(v=>isReel(v)&&!v.pillar&&v.status!=="Posted").length}</em></button>
     </div>
     <div class="fsum"><span>Showing <b>${L.length}</b> of ${all.length}</span>${nFilters?`<button class="btn small" data-act="fclear">Clear filters</button>`:""}</div>
   </div>`;
   const n=S.sel.size;
   const bulk=n?`<div class="bulk"><b>${n} selected</b>
+      <select id="bulkPillar" aria-label="Pillar for selected"><option value="">Set pillar to…</option>${pillars().map(p=>`<option>${esc(p)}</option>`).join("")}<option value="__none">No pillar</option></select>
       <select id="bulkStatus" aria-label="Status for selected"><option value="">Set status to…</option>${STATUSES.map(s=>`<option>${s.k}</option>`).join("")}</select>
       <button class="btn danger" data-act="bulkDel">Delete ${n}</button>
       <button class="btn" data-act="clearSel">Clear selection</button></div>`:"";
@@ -4367,6 +4369,7 @@ document.addEventListener("click",async e=>{
   else if(act==="ffmt"){S.filter.fmt=b.dataset.v;render()}
   else if(act==="fsched"){S.filter.sched=b.dataset.v;render()}
   else if(act==="fnolink"){S.filter.noLink=!S.filter.noLink;render()}
+  else if(act==="fnopil"){S.filter.noPil=!S.filter.noPil;render()}
   else if(act==="fclear"){S.filter={q:"",st:[],date:"all",fmt:"all",sched:"any",noLink:false};render()}
   else if(act==="showDay"){S.filter={q:"",st:[],date:b.dataset.d,fmt:"all",sched:"any",noLink:false};S.tab="videos";render()}
   else if(act==="del"){const v=S.videos[b.dataset.id];if(v&&await ask("Delete this video?",`“${v.title||"Untitled"}” will be removed from the board. This can’t be undone.`))delVideos([v.id])}
@@ -4381,10 +4384,16 @@ document.addEventListener("click",async e=>{
   }
   else if(act==="reshuffle"){
     const r=planReshuffle();
-    if(!r.changes.length){toast("Schedule is already mixed, nothing to change");return}
+    const untagged=pillars().length&&!S.settings.pillarLoose?vids().filter(v=>isReel(v)&&!v.pillar&&!v.postDate&&v.status!=="Posted"&&v.status!=="Not started").length:0;
+    const openP=(()=>{let n=0;for(let i=0;i<30;i++){const d=addDays(today(),i);if(!pillarOn(d))continue;slotsFor(d).forEach(tm=>{if(!vids().some(v=>isReel(v)&&v.postDate===d&&v.postTime===tm))n++})}return n})();
+    const loose=async()=>{if(!await ask("Use reels without a pillar?",`${untagged} reel${untagged>1?"s":""} have no pillar. They’ll fill the pillar slots that are still empty. You can switch this off in Settings, Content pillars.`,"Use them"))return;
+      S.settings.pillarLoose=true;putSettings();const r2=planReshuffle();if(r2.changes.length){deckShuffle(".sday [data-drag-id]",()=>{const before=rectsOf(".sday [data-drag-id]","dragId");applyReshuffle(r2);flipAll(".sday [data-drag-id]","dragId",before,true)});toast(`Placed ${r2.changes.length} more post${r2.changes.length>1?"s":""}`,"Undo",undoReshuffle)}else toast("Nothing more could be placed")};
+    if(!r.changes.length){if(untagged&&openP){toast(`${untagged} reel${untagged>1?"s have":" has"} no pillar, so ${untagged>1?"they weren’t":"it wasn’t"} scheduled`,"Use anyway",loose);return}toast("Schedule is already mixed, nothing to change");return}
     const msg=`${r.changes.length} post${r.changes.length>1?"s":""} will move or be added. Locked and Ready slots stay where they are.`+(r.unplaced?` ${r.unplaced} video${r.unplaced>1?"s":""} can’t be placed without two from one shoot day on the same posting day, so they stay unscheduled.`:"");
     if(!await ask("Reshuffle the posting schedule?",msg,"Reshuffle",true))return;
-    deckShuffle(".sday [data-drag-id]",()=>{const before=rectsOf(".sday [data-drag-id]","dragId");applyReshuffle(r);flipAll(".sday [data-drag-id]","dragId",before,true)});toast(`Reshuffled ${r.changes.length} post${r.changes.length>1?"s":""}`,"Undo",undoReshuffle);
+    deckShuffle(".sday [data-drag-id]",()=>{const before=rectsOf(".sday [data-drag-id]","dragId");applyReshuffle(r);flipAll(".sday [data-drag-id]","dragId",before,true)});
+    if(untagged&&openP)setTimeout(()=>toast(`Reshuffled. ${untagged} reel${untagged>1?"s":""} without a pillar ${untagged>1?"were":"was"} left out`,"Use anyway",loose),900);
+    else toast(`Reshuffled ${r.changes.length} post${r.changes.length>1?"s":""}`,"Undo",undoReshuffle);
   }
   else if(act==="undoAuto")undoReshuffle();
   else if(act==="days"){S.schedDays=+b.dataset.n;render()}
@@ -4508,12 +4517,14 @@ document.addEventListener("change",e=>{
   const t=e.target;
   if(t.dataset.actCk){t.checked?S.sel.add(t.dataset.actCk):S.sel.delete(t.dataset.actCk);render();return}
   if(t.id==="ckAll"){const L=filtered();if(t.checked)L.forEach(v=>S.sel.add(v.id));else L.forEach(v=>S.sel.delete(v.id));render();return}
+  if(t.id==="bulkPillar"&&t.value){const p=t.value==="__none"?"":t.value;const ids=[...S.sel].filter(id=>S.videos[id]&&isReel(S.videos[id]));ids.forEach(id=>putVideo({...S.videos[id],pillar:p},true));render();toast(`${ids.length} reel${ids.length===1?"":"s"} set to ${p||"no pillar"}`);return}
   if(t.id==="bulkStatus"&&t.value){const st=t.value;const ids=[...S.sel];ids.forEach(id=>{const v=S.videos[id];if(v)putVideo(bulkStatus(v,st),true)});render();toast(["Ready","In review","Edited"].includes(st)?`Sent to ${reviewerName()} for review`:`${ids.length} set to ${st}`);return}
   if(t.dataset.sst){const s=S.shoots[t.dataset.sst];if(s&&s.status!==t.value){putShoot({...s,status:t.value});toast(`Shoot marked ${t.value.toLowerCase()}`)}return}
   if(t.dataset.osn){lsSet("seb-osnotif",t.checked?null:"off");toast(t.checked?"Windows notifications on":"Windows notifications off");return}
   if(t.dataset.snd){lsSet("seb-sound",t.checked?null:"off");if(t.checked)chime();return}
   if(t.dataset.opt){S.opts[t.dataset.opt]=t.checked;if(t.dataset.opt==="readyOnly")render();return}
-  if(t.dataset.assign){const [d,tm]=t.dataset.assign.split("|");const v=S.videos[t.value];if(v){putVideo({...v,postDate:d,postTime:tm,pinned:true});toast("Placed and locked. Unlock it if a reshuffle may move it.")}return}
+  if(t.dataset.assign){const [d,tm]=t.dataset.assign.split("|");const v=S.videos[t.value];if(v){const req=isReel(v)?slotPillar(d,tm):null,tag=req&&!v.pillar;
+    putVideo({...v,postDate:d,postTime:tm,pinned:true,...(tag?{pillar:req}:{})});toast(tag?`Placed and tagged as ${req}`:"Placed and locked. Unlock it if a reshuffle may move it.")}return}
   if(t.dataset.pillar!=null){const i=+t.dataset.pillar,P=[...pillars()],old=P[i],nw=t.value.trim();if(!nw||P.includes(nw)&&nw!==old){toast("Use a new, unique name");render();return}
     P[i]=nw;S.settings.pillars=P;S.settings.pillarOrder=(S.settings.pillarOrder||[]).map(x=>x===old?nw:x);
     vids().filter(v=>v.pillar===old).forEach(v=>putVideo({...v,pillar:nw},true));putSettings();render();toast(`Renamed to ${nw}`);return}
