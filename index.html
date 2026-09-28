@@ -2245,7 +2245,7 @@ async function copyText(t){
 // ===== The only setting: your Apps Script Web app URL (ends with /exec) =====
 const API="https://script.google.com/macros/s/AKfycbxVRxJ-FD50-KCdU3aD8bvJ3-HRbWNoda7NuVAeYUMMJrTGYYXvqW0HJsfZkyRIpjBmsA/exec";
 const GAS=true;
-let token=null,since=0,pending=new Map(),inflight=new Map(),flushT=null,pollT=null,loaded=false;
+let token=null,since=0,pending=new Map(),inflight=new Map(),flushT=null,pollT=null,loaded=false,FLUSHING=false;const SAVED_AT=new Map();
 async function call(fn,...args){
   let r;const ctl=new AbortController();const tm=setTimeout(()=>ctl.abort(),fn==="loadAll"?60000:30000);
   try{r=await fetch(API,{method:"POST",redirect:"follow",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({fn,args}),signal:ctl.signal})}
@@ -2260,17 +2260,22 @@ function saveLocal(){try{localStorage.setItem("seb-free-demo",JSON.stringify({vi
 function loadLocal(){try{const r=JSON.parse(localStorage.getItem("seb-free-demo")||"null");if(r){S.videos=r.videos||{};S.shoots=r.shoots||{};S.scripts=r.scripts||{};S.profiles=r.profiles||{};Object.assign(S.settings,r.settings||{});S.queue=r.queue||S.queue}}catch(e){}}
 function enqueue(op,collection,id,data){
   if(!GAS){saveLocal();return}
-  pending.set(collection+"/"+id,{op,collection,id,data});
+  pending.set(collection+"/"+id,{op,collection,id,data});savePendingLocal();
   $("#sync").textContent="Saving…";
   clearTimeout(flushT);flushT=setTimeout(flush,250);
 }
+function savePendingLocal(){try{const all=[...inflight.values(),...pending.values()];lsSet("seb-pending",all.length?JSON.stringify(all):null)}catch(e){}}
+function restorePendingLocal(){try{const L=JSON.parse(lsGet("seb-pending")||"null");if(!Array.isArray(L)||!L.length)return;
+  L.forEach(o=>{const k=o.collection+"/"+o.id;if(pending.has(k))return;applyDoc({collection:o.collection,id:o.id,deleted:o.op==="delete",data:o.data});pending.set(k,o)});$("#sync").textContent="Saving changes from last time…";clearTimeout(flushT);flushT=setTimeout(flush,300)}catch(e){}}
 async function flush(){
-  if(!pending.size)return;
+  flushT=null;if(!pending.size)return;
+  if(FLUSHING){clearTimeout(flushT);flushT=setTimeout(flush,300);return}   // one save at a time, in order
+  FLUSHING=true;
   const ops=[...pending.values()];ops.forEach(o=>inflight.set(o.collection+"/"+o.id,o));pending.clear();
-  try{FAST_UNTIL=Date.now()+45000;const res=await call("save",token,ops);$("#sync").textContent="Saved to your Google Sheet. Changes appear for your team within a few seconds.";
+  try{FAST_UNTIL=Date.now()+45000;const res=await call("save",token,ops);const now=Date.now();ops.forEach(o=>SAVED_AT.set(o.collection+"/"+o.id,now));$("#sync").textContent="Saved to your Google Sheet. Changes appear for your team within a few seconds.";
     if(res&&res.notified)toast(`Notified ${String(S.settings.notifyEmails||"").split(/[,;\s]+/).filter(Boolean)[0]||"poster"}${res.notified>1?` about ${res.notified} videos`:""}`)}
   catch(e){if(String(e&&e.message).includes("SESSION"))return sessionExpired();ops.forEach(o=>{const k=o.collection+"/"+o.id;if(!pending.has(k))pending.set(k,o)});$("#sync").textContent="Not saved yet, retrying…";clearTimeout(flushT);flushT=setTimeout(flush,4000)}
-  finally{ops.forEach(o=>inflight.delete(o.collection+"/"+o.id))}
+  finally{ops.forEach(o=>inflight.delete(o.collection+"/"+o.id));FLUSHING=false;savePendingLocal();if(pending.size&&!flushT){flushT=setTimeout(flush,150)}}
 }
 function putVideo(v,quiet){
   v.updatedAt=Date.now();S.videos[v.id]=v;markSeen(v);if(!quiet)render();
@@ -2301,7 +2306,9 @@ function schedulePoll(){clearTimeout(pollT);if(!token)return;
 function pollNow(){if(!token)return;poll().finally(schedulePoll)}
 async function poll(){
   if(!token||polling)return;polling=true;
+  const pollStart=Date.now();
   try{const r=await call("changes",token,since);since=r.now-60000;
+    r.rows=r.rows.filter(row=>(SAVED_AT.get(row.collection+"/"+row.id)||0)<pollStart);
     if(r.restoredAt){if(S.knownRestore==null)S.knownRestore=r.restoredAt;else if(r.restoredAt>S.knownRestore){S.knownRestore=r.restoredAt;const f=await call("loadAll",token);S.videos={};S.shoots={};S.scripts={};S.profiles={};S.ideas={};f.rows.forEach(applyDoc);render();toast("The board was restored from a backup");return}}if(r.rows.length){const sig=JSON.stringify(r.rows);if(sig!==lastSig){lastSig=sig;FAST_UNTIL=Date.now()+45000;r.rows.forEach(applyDoc);render();checkAlerts()}}else lastSig=""}
   catch(e){if(String(e&&e.message).includes("SESSION"))sessionExpired()}
   finally{polling=false}
@@ -4657,7 +4664,7 @@ async function startSession(t,user){
   token=t;$("#login").hidden=true;S.me=String(user||"").toLowerCase();updateMe();$("#sync").textContent="Loading…";
   S.me=String(user||"").toLowerCase();
   try{const cached=JSON.parse(lsGet("seb-cache")||"null");if(cached&&cached.user===S.me&&!loaded){S.videos={};S.shoots={};S.scripts={};S.profiles={};S.ideas={};cached.rows.forEach(applyDoc);render();$("#sync").textContent="Updating…"}}catch(e){}
-  try{const r=await call("loadAll",token);S.videos={};S.shoots={};S.scripts={};S.profiles={};S.ideas={};r.rows.forEach(applyDoc);since=r.now-60000;loaded=true;render();checkAlerts();
+  try{const r=await call("loadAll",token);S.videos={};S.shoots={};S.scripts={};S.profiles={};S.ideas={};r.rows.forEach(applyDoc);since=r.now-60000;loaded=true;restorePendingLocal();render();checkAlerts();
     try{lsSet("seb-cache",JSON.stringify({user:S.me,rows:r.rows}))}catch(e){}
     $("#sync").textContent="Connected to your Google Sheet. Changes save automatically.";
     wrappedOffer();
@@ -4668,6 +4675,9 @@ async function startSession(t,user){
 }
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)pollNow()});
 addEventListener("focus",()=>pollNow());
+document.addEventListener("visibilitychange",()=>{if(document.hidden&&pending.size){clearTimeout(flushT);flush()}});
+addEventListener("pagehide",()=>{if(!pending.size||!token)return;const ops=[...pending.values()];
+  try{fetch(API,{method:"POST",keepalive:true,headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({fn:"save",args:[token,ops]})})}catch(e){}});
 window.addEventListener("beforeunload",e=>{if(pending.size||inflight.size){flush();e.preventDefault();e.returnValue=""}});
 $("#loginForm").addEventListener("submit",async e=>{
   e.preventDefault();const f=e.target;const btn=f.querySelector("button");$("#loginErr").textContent="Signing in…";btn.disabled=true;
@@ -4676,7 +4686,7 @@ $("#loginForm").addEventListener("submit",async e=>{
   catch(err){const m=String(err&&err.message||"");$("#loginErr").textContent=/wrong username|password/i.test(m)?"Wrong username or password.":m||"Couldn’t sign in. Please try again."}
   finally{clearTimeout(slow);btn.disabled=false}
 });
-$("#logoutBtn").addEventListener("click",async()=>{await flush();if(token)try{await call("logout",token)}catch(e){}token=null;lsSet("seb-token",null);lsSet("seb-cache",null);lsSet("seb-team",null);lsSet("seb-bk",null);location.replace(location.origin+location.pathname)});
+$("#logoutBtn").addEventListener("click",async()=>{await flush();if(token)try{await call("logout",token)}catch(e){}token=null;lsSet("seb-token",null);lsSet("seb-cache",null);lsSet("seb-team",null);lsSet("seb-bk",null);lsSet("seb-pending",null);location.replace(location.origin+location.pathname)});
 
 if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
 render();
