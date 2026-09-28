@@ -1834,6 +1834,11 @@ nav.tabs.stuck{background:rgba(255,255,255,.8)!important;box-shadow:0 16px 40px 
 #reDlg textarea{width:100%;border:1px solid var(--line);border-radius:14px;padding:12px;background:rgba(255,255,255,.8)}
 #reDlg .foot{flex-wrap:wrap}
 @media (max-width:600px){#reDlg{width:100%!important}}
+
+.shoot-need{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 16px;font-size:14px;font-weight:600}
+.shoot-need .sn{display:inline-flex;align-items:baseline;gap:6px;padding:8px 14px;border-radius:14px;background:rgba(255,255,255,.75);border:1px solid rgba(255,255,255,.95);box-shadow:0 2px 8px rgba(20,24,10,.06),inset 0 1px 0 #fff;font-weight:700}
+.shoot-need .sn em{font-style:normal;font-size:24px;font-weight:900;letter-spacing:-.02em}
+.shoot-need small{flex-basis:100%;color:var(--muted);font-weight:500;font-size:12.5px}
 </style>
 </head>
 <body>
@@ -2616,9 +2621,18 @@ document.addEventListener("pointercancel",()=>endDrag(true));
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&DR.active)endDrag(true)});
 
 /* ---------- views ---------- */
-function needFor(k,H){
+function rangeFrom(R,def){R=R||{mode:def||"7d"};const t=today(),d0=new Date(t+"T00:00:00"),dow=d0.getDay(),mon=addDays(t,-((dow+6)%7));const eom=(y,m)=>iso(new Date(y,m+1,0));
+  if(R.mode==="week")return {from:t,to:addDays(mon,6),label:"this week"};
+  if(R.mode==="nextweek")return {from:addDays(mon,7),to:addDays(mon,13),label:"next week"};
+  if(R.mode==="month")return {from:t,to:eom(d0.getFullYear(),d0.getMonth()),label:"this month"};
+  if(R.mode==="nextmonth"){const f=iso(new Date(d0.getFullYear(),d0.getMonth()+1,1));return {from:f,to:eom(d0.getFullYear(),d0.getMonth()+1),label:"next month"}}
+  if(R.mode==="custom"&&R.from&&R.to){const a=R.from<=R.to?R.from:R.to,b=R.from<=R.to?R.to:R.from;return {from:a,to:b,label:a===b?niceW(a):`${nice(a)} – ${nice(b)}`}}
+  return {from:t,to:addDays(t,6),label:"the next 7 days"};
+}
+function needFor(k,H,from,to){
   const t=today(),hm=nowHM();let total=0,ready=0,prog=0,empty=0;
-  for(let i=0;i<H;i++){const d=addDays(t,i);for(const tm of slotsK(d,k)){if(d===t&&tm<=hm)continue;total++;
+  const days=[];if(from&&to){for(let d=from>t?from:t,g=0;d<=to&&g<400;d=addDays(d,1),g++)days.push(d)}else for(let i=0;i<H;i++)days.push(addDays(t,i));
+  for(const d of days){for(const tm of slotsK(d,k)){if(d===t&&tm<=hm)continue;total++;
     const v=vids().find(x=>kindOf(x)===k&&x.postDate===d&&x.postTime===tm);
     if(!v)empty++;else if(v.status==="Ready"||v.status==="Scheduled"||v.status==="Posted")ready++;else prog++}}
   const pool=vids().filter(v=>kindOf(v)===k&&!v.postDate&&v.status in TIER);
@@ -2703,19 +2717,19 @@ function pillarPanel(){
     ${st.untagged?`<p class="ovnote"><b>${st.untagged}</b> reel${st.untagged>1?"s":""} in hand ha${st.untagged>1?"ve":"s"} no pillar yet. Set it in All videos so they can be scheduled.</p>`:""}</section>`;
 }
 function vOverview(){
-  const all=vids(),t=today(),H=S.ovH||7;
-  const inHand=all.filter(v=>v.status in TIER).length;
+  const all=vids(),t=today(),OR=rangeFrom(S.ovRange,"7d"),H=0;
+  const inHand=all.filter(v=>v.status!=="Posted"&&v.status!=="Not started").length;
   const ready=all.filter(v=>v.status==="Ready").length;
   const toEditNow=editPool().length;
   const cov=coveredUntil();
   const covDays=cov?daysBetween(t,cov)+1:0;
-  const R=needFor("R",H),C=needFor("C",H);
+  const R=needFor("R",0,OR.from,OR.to),C=needFor("C",0,OR.from,OR.to);
   const toShoot=R.toShoot+C.toShoot,toEdit=R.toEdit+C.toEdit,empty=R.empty+C.empty;
   // verdict line
   const verdict=!R.total&&!C.total?"No posting slots in this period."
-    :empty===0&&R.prog+C.prog===0?`Everything for the next ${H} days is ready. 🎉`
+    :empty===0&&R.prog+C.prog===0?`Everything for ${OR.label} is ready. 🎉`
     :[toEdit?`edit <b>${toEdit}</b>`:"",toShoot?`shoot <b>${toShoot}</b> more`:""].filter(Boolean).length
-      ?`To cover the next ${H} days: ${[toEdit?`edit <b>${toEdit}</b>`:"",toShoot?`shoot <b>${toShoot}</b> more`:""].filter(Boolean).join(" and ")}.`
+      ?`To cover ${OR.label}: ${[toEdit?`edit <b>${toEdit}</b>`:"",toShoot?`shoot <b>${toShoot}</b> more`:""].filter(Boolean).join(" and ")}.`
       :`Assign your ${empty} ready video${empty===1?"":"s"} to the empty slots, or press Reshuffle.`;
   // pipeline
   const counts=STATUSES.map(s=>({...s,n:all.filter(v=>v.status===s.k).length})).filter(c=>c.n);
@@ -2740,7 +2754,10 @@ function vOverview(){
   <div class="ovgrid">
     <section class="panel">
       <div class="phead"><h2>Content needed</h2>
-        <div class="seg" role="group" aria-label="Overview horizon">${[7,14,30].map(n=>`<button data-act="ovH" data-n="${n}" aria-pressed="${H===n}">${n} days</button>`).join("")}</div></div>
+        <span class="stat">${esc(nice(OR.from>t?OR.from:t))} – ${esc(nice(OR.to))}</span></div>
+      <div class="pl-filter"><div class="seg" role="group" aria-label="Content range">${[["7d","7 days"],["week","This week"],["nextweek","Next week"],["month","This month"],["nextmonth","Next month"],["custom","Custom"]].map(([k,l])=>`<button data-act="ovMode" data-m="${k}" aria-pressed="${((S.ovRange||{}).mode||"7d")===k}">${l}</button>`).join("")}</div>
+        ${(S.ovRange||{}).mode==="custom"?`<span class="pl-cust"><input type="date" value="${esc(S.ovRange.from||t)}" data-ovr="from" aria-label="From"><span>to</span><input type="date" value="${esc(S.ovRange.to||addDays(t,6))}" data-ovr="to" aria-label="To"></span>`:""}</div>
+      <div class="shoot-need"><span>Shoot next</span><b class="sn"><em>${R.toShoot}</em> reel${R.toShoot===1?"":"s"}</b><b class="sn"><em>${C.toShoot}</em> carousel${C.toShoot===1?"":"s"}</b><small>${R.total} reel slot${R.total===1?"":"s"} and ${C.total} carousel slot${C.total===1?"":"s"} in this range</small></div>
       <p class="ovverdict">${verdict}</p>
       ${needBar(R,"Reels")}${needBar(C,"Carousels")}
       ${empty?`<p class="ovnote">${R.fromStock+C.fromStock} empty slot${R.fromStock+C.fromStock===1?"":"s"} can be filled with footage you already have.</p>`:""}
@@ -4310,6 +4327,9 @@ if(document.fonts&&document.fonts.ready)document.fonts.ready.then(moveInd);
 function popContent(tab){
   const all=vids(),t=today(),c=k=>all.filter(v=>v.status===k).length;
   const line=(l,v)=>`<div class="pl"><span>${l}</span><b>${v}</b></div>`;
+  if(tab==="ideas"){const I=ideas(),n=(k,u)=>I.filter(i=>i.type===k&&!!i.used===u).length;const latest=I.filter(i=>!i.used).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,3);
+    return `<h4>Content bank</h4>${line("Reel ideas",n("R",false))}${line("Carousel ideas",n("C",false))}${line("Title ideas",n("T",false))}${line("Used, in archive",I.filter(i=>i.used).length)}`
+      +(latest.length?`<hr>`+latest.map(i=>`<div class="pq"><i style="background:${i.type==="R"?pillarColor(i.pillar):i.type==="C"?"#7DAF1F":"#9AA0A6"}"></i>${esc((i.text||"Reference video").slice(0,42))}</div>`).join(""):`<div class="pmore">No ideas yet</div>`)}
   if(tab==="shoots"){const up=upcomingShoots().slice(0,3);return `<h4>Next shoots</h4>`+(up.length?up.map(s=>`<div class="pq"><i style="background:${hue(s.date)}"></i>${esc(s.title||"Untitled shoot")}<small>${s.date===t?"Today":s.date===addDays(t,1)?"Tomorrow":esc(niceW(s.date))}${s.time?", "+fmtT(s.time):""}${S.scripts[s.id]||s.scriptLink?", script ready":", no script yet"}</small></div>`).join(""):`<p>No shoots planned</p>`)}
   if(tab==="history"){const P=all.filter(v=>v.status==="Posted"&&v.postDate).sort((a,b)=>postKey(b).localeCompare(postKey(a)));const mo=t.slice(0,7);
     return `<h4>Posting history</h4>`+line("Posted this month",P.filter(v=>v.postDate.startsWith(mo)).length)+line("Posted in total",P.length)+(P[0]?`<p>Last: ${esc(P[0].title||"Untitled")}, ${esc(niceW(P[0].postDate))}</p>`:"")}
@@ -4393,6 +4413,7 @@ document.addEventListener("click",async e=>{
     if(!nw||nw.value.length<4){toast("Use at least 4 characters");return}
     b.disabled=true;call("changePassword",token,u,od?od.value:"",nw.value).then(()=>{toast(self?"Password changed":`Password reset for ${dispName(u)}`);nw.value="";if(od)od.value=""}).catch(err=>toast(String(err&&err.message||"Couldn’t change it").replace(/^Error: /,""))).finally(()=>{b.disabled=false})}
   else if(act==="addRaw"){askRaw(b.dataset.d)}
+  else if(act==="ovMode"){const m=b.dataset.m;S.ovRange={...(S.ovRange||{}),mode:m};if(m==="custom"&&!S.ovRange.from){S.ovRange.from=today();S.ovRange.to=addDays(today(),6)}render()}
   else if(act==="stMenu"){openStMenu(b)}
   else if(act==="editLink"){S.editLinks=S.editLinks||{};S.editLinks[b.dataset.id]=true;render();setTimeout(()=>{const i=document.querySelector(`.link-in[data-id="${b.dataset.id}"]`);if(i){i.focus();i.select()}},30)}
   else if(act==="rowMore"){S.moreRows=S.moreRows||{};S.moreRows[b.dataset.id]=!S.moreRows[b.dataset.id];render()}
@@ -4499,6 +4520,7 @@ document.addEventListener("change",e=>{
   if(t.dataset.porder!=null){const O=[...(S.settings.pillarOrder||[])];O[+t.dataset.porder]=t.value;S.settings.pillarOrder=O;putSettings();render();return}
   if(t.dataset.plr){S.plRange={...(S.plRange||{mode:"custom"}),mode:"custom",[t.dataset.plr]:t.value};render();return}
   if(t.dataset.sumr){S.sumRange={...(S.sumRange||{}),mode:"custom",[t.dataset.sumr]:t.value};render();return}
+  if(t.dataset.ovr){S.ovRange={...(S.ovRange||{}),mode:"custom",[t.dataset.ovr]:t.value};render();return}
   if(t.dataset.sset){S.settings[t.dataset.sset]=t.checked;putSettings();render();return}
   if(t.dataset.cplan!=null){
     const P=cplans();const p={...P[+t.dataset.cplan]};
