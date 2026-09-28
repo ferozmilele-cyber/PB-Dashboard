@@ -2164,7 +2164,7 @@ const STM={btn:null};
 function popShow(pop,anchor){const host=(anchor&&anchor.closest("dialog[open]"))||document.body;if(pop.parentNode!==host){try{if(pop.matches&&pop.matches(":popover-open"))pop.hidePopover()}catch(e){}host.appendChild(pop)}
   if(!pop.showPopover)return;try{if(pop.matches(":popover-open"))pop.hidePopover();pop.showPopover()}catch(e){}}
 function popHide(pop){if(pop.hidePopover)setTimeout(()=>{if(!pop.classList.contains("show")&&pop.matches(":popover-open"))try{pop.hidePopover()}catch(e){}},200)}
-function closeStMenu(){const pop=$("#stPop");pop.classList.remove("show");popHide(pop);if(STM.btn)STM.btn.classList.remove("open");STM.btn=null}
+function closeStMenu(){const pop=$("#stPop");pop.classList.remove("show");popHide(pop);if(STM.btn)STM.btn.classList.remove("open");STM.btn=null;if(pendingRender)setTimeout(()=>{if(!GX.btn&&!STM.btn&&pendingRender)render()},0)}
 document.addEventListener("click",e=>{const o=e.target.closest&&e.target.closest("#stPop [data-stv]");
   if(o){const v=S.videos[$("#stPop").dataset.id],val=o.dataset.stv;closeStMenu();if(!v)return;
     if(val==="__approve"){approveVideo(v);return}
@@ -2297,7 +2297,7 @@ function pollNow(){if(!token)return;poll().finally(schedulePoll)}
 async function poll(){
   if(!token||polling)return;polling=true;
   try{const r=await call("changes",token,since);since=r.now-60000;
-    if(r.restoredAt){if(S.knownRestore==null)S.knownRestore=r.restoredAt;else if(r.restoredAt>S.knownRestore){S.knownRestore=r.restoredAt;const f=await call("loadAll",token);S.videos={};S.shoots={};S.scripts={};S.profiles={};S.ideas={};f.rows.forEach(applyDoc);render();toast("The board was restored from a backup");return}}if(r.rows.length){const sig=JSON.stringify(r.rows.map(x=>[x.collection,x.id,x.updated||0,x.deleted?1:0]));if(sig!==lastSig){lastSig=sig;FAST_UNTIL=Date.now()+45000}r.rows.forEach(applyDoc);render();checkAlerts()}}
+    if(r.restoredAt){if(S.knownRestore==null)S.knownRestore=r.restoredAt;else if(r.restoredAt>S.knownRestore){S.knownRestore=r.restoredAt;const f=await call("loadAll",token);S.videos={};S.shoots={};S.scripts={};S.profiles={};S.ideas={};f.rows.forEach(applyDoc);render();toast("The board was restored from a backup");return}}if(r.rows.length){const sig=JSON.stringify(r.rows);if(sig!==lastSig){lastSig=sig;FAST_UNTIL=Date.now()+45000;r.rows.forEach(applyDoc);render();checkAlerts()}}else lastSig=""}
   catch(e){if(String(e&&e.message).includes("SESSION"))sessionExpired()}
   finally{polling=false}
 }
@@ -2914,6 +2914,7 @@ function schedShell(free,body){
       ${toggle("data-sset","autoOnLog",S.settings.autoOnLog,"Auto-reshuffle on new shoot")}
       ${toggle("data-sset","allowSame",S.settings.allowSame,"Fill gaps with same shoot day")}
       ${toggle("data-opt","readyOnly",S.opts.readyOnly,"Only finished videos")}
+      ${toggle("data-sset","autoPostScheduled",S.settings.autoPostScheduled===true,"Scheduled posts become Posted at their time")}
       ${free.length?`<span class="stat">${free.length} unscheduled</span>`:""}
     </div>
     ${body}
@@ -3142,6 +3143,7 @@ function vSettings(){
     </div>
     <div class="switches">${`<label class="sw"><input type="checkbox" data-snd="1"${lsGet("seb-sound")==="off"?"":" checked"}><span class="knob" aria-hidden="true"></span>Play a sound on this computer</label>`}
       <button class="btn small" data-act="testAlert">Preview a pop-up</button></div>
+    <div class="switches">${toggle("data-sset","autoPostScheduled",S.settings.autoPostScheduled===true,"Scheduled posts become Posted automatically at their posting time")}</div>
     <h3 class="subh">Windows notifications</h3>
     ${osPanel()}
   </section>
@@ -3174,7 +3176,7 @@ function vSettings(){
 function isTyping(){const a=document.activeElement;return a&&a.closest&&a.closest("#main")&&!a.dataset.live&&(a.tagName==="TEXTAREA"||(a.tagName==="INPUT"&&/^(text|number)$/.test(a.type)))}
 let VT_ON=false;
 function render(){
-  if(isTyping()||DIAL.busy||DIAL.trying||VT_ON){pendingRender=true;return}
+  if(isTyping()||DIAL.busy||DIAL.trying||VT_ON||(typeof GX!=="undefined"&&GX.btn)||(typeof STM!=="undefined"&&STM.btn)){pendingRender=true;return}
   pendingRender=false;
   const a=document.activeElement,live=a&&a.dataset&&a.dataset.live,sel=live&&a.selectionStart;
   const y=window.scrollY;
@@ -3733,11 +3735,12 @@ function gxOpen(b){
   requestAnimationFrame(()=>pop.classList.add("show"));b.classList.add("open");GX.btn=b;GX.sel=sel;
   const c=pop.querySelector("button.cur")||pop.querySelector("button:not([disabled])");if(c){c.focus({preventScroll:true});c.scrollIntoView({block:"nearest"})}
 }
-function gxClose(){const pop=$("#gsPop");if(!pop)return;pop.classList.remove("show");popHide(pop);if(GX.btn)GX.btn.classList.remove("open");GX.btn=null;GX.sel=null}
+function gxClose(){const pop=$("#gsPop");if(!pop)return;pop.classList.remove("show");popHide(pop);if(GX.btn)GX.btn.classList.remove("open");GX.btn=null;GX.sel=null;if(pendingRender)setTimeout(()=>{if(!GX.btn&&!STM.btn&&pendingRender)render()},0)}
 document.addEventListener("click",e=>{
   const b=e.target.closest&&e.target.closest(".gsel");if(b){e.preventDefault();e.stopPropagation();gxOpen(b);return}
   const o=e.target.closest&&e.target.closest("#gsPop [data-gxi]");
-  if(o){e.stopPropagation();const sel=GX.sel;gxClose();if(!sel)return;const i=+o.dataset.gxi;if(i!==sel.selectedIndex){sel.selectedIndex=i;gxSync(sel);sel.dispatchEvent(new Event("input",{bubbles:true}));sel.dispatchEvent(new Event("change",{bubbles:true}))}return}
+  if(o){e.stopPropagation();let sel=GX.sel;gxClose();if(!sel)return;
+    if(!sel.isConnected){const k=["data-assign","data-f","data-id","data-plr","data-sumr","data-porder","data-set","data-live","name","id"].map(a=>sel.getAttribute(a)?`[${a}="${CSS.escape(sel.getAttribute(a))}"]`:"").join("");const s2=k&&document.querySelector("select"+k);if(!s2)return;sel=s2}const i=+o.dataset.gxi;if(i!==sel.selectedIndex){sel.selectedIndex=i;gxSync(sel);sel.dispatchEvent(new Event("input",{bubbles:true}));sel.dispatchEvent(new Event("change",{bubbles:true}))}return}
   if(!(e.target.closest&&e.target.closest("#gsPop")))gxClose()},true);
 document.addEventListener("keydown",e=>{const pop=$("#gsPop");if(!pop||!pop.classList.contains("show"))return;
   if(e.key==="Escape"){e.preventDefault();e.stopPropagation();const b=GX.btn;gxClose();b&&b.focus();return}
@@ -3943,6 +3946,7 @@ function readyList(){return myAlerts().map(x=>x.v)}
 function updateBell(){const L=myAlerts().filter(x=>x.k!=="posted"),n=L.length,e=$("#bellN");if(!e)return;e.hidden=!n;e.textContent=n;const b=$("#bellBtn");b.classList.toggle("has",!!n);
   const kinds=[...new Set(L.map(x=>x.k))];b.title=n?({review:"Waiting for your review",approved:"Approved, add final link",reedit:"Re-edit requested",ready:"Ready to post",soon:"Posting soon",now:"Post now",late:"Not posted yet",notready:"Due soon, not ready"}[kinds[0]]+(kinds.length>1?" and more":"")):"Nothing waiting"}
 function autoPostScheduled(){
+  if(S.settings.autoPostScheduled!==true)return;
   const now=Date.now();let n=0;
   vids().forEach(v=>{if(v.status==="Scheduled"){const due=dueMs(v);if(due!=null&&due<=now){putVideo({...withStatus(v,"Posted"),autoPosted:true,autoPostedAt:Date.now()},true);celebrate(v.id,"Posted");n++}}});
   if(n)render();
