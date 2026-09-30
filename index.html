@@ -2260,7 +2260,7 @@ function saveLocal(){try{localStorage.setItem("seb-free-demo",JSON.stringify({vi
 function loadLocal(){try{const r=JSON.parse(localStorage.getItem("seb-free-demo")||"null");if(r){S.videos=r.videos||{};S.shoots=r.shoots||{};S.scripts=r.scripts||{};S.profiles=r.profiles||{};Object.assign(S.settings,r.settings||{});S.queue=r.queue||S.queue}}catch(e){}}
 function enqueue(op,collection,id,data){
   if(!GAS){saveLocal();return}
-  pending.set(collection+"/"+id,{op,collection,id,data});savePendingLocal();
+  pending.set(collection+"/"+id,{op,collection,id,data});savePendingLocal();cacheRow({collection,id,data,deleted:op==="delete"});
   $("#sync").textContent="Saving…";
   clearTimeout(flushT);flushT=setTimeout(flush,250);
 }
@@ -2285,8 +2285,11 @@ function putVideo(v,quiet){
 function delVideos(ids){ids.forEach(id=>{delete S.videos[id];S.sel.delete(id);enqueue("delete","videos",id,null)});render()}
 function putSettings(){enqueue("set","meta","settings",JSON.parse(JSON.stringify(S.settings)))}
 function putQueue(){enqueue("set","meta","queue",{ids:[...S.queue.ids],at:S.queue.at,pins:{...(S.queue.pins||{})}})}
+const CROWS=new Map();let crT=0;
+function cacheRow(row){const k=row.collection+"/"+row.id;if(row.deleted)CROWS.delete(k);else CROWS.set(k,{collection:row.collection,id:row.id,data:row.data});
+  clearTimeout(crT);crT=setTimeout(()=>{try{lsSet("seb-cache",JSON.stringify({user:S.me,since,savedAt:Date.now(),rows:[...CROWS.values()]}))}catch(e){}},900)}
 function applyDoc(row){
-  const k=row.collection+"/"+row.id;if(pending.has(k)||inflight.has(k))return;
+  const k=row.collection+"/"+row.id;if(pending.has(k)||inflight.has(k))return;cacheRow(row);
   if(row.collection==="videos"){if(row.deleted)delete S.videos[row.id];else{const d={...row.data,id:row.id};if(d.status==="Edited")d.status="In review";S.videos[row.id]=d}}
   else if(row.collection==="shoots"){if(row.deleted)delete S.shoots[row.id];else S.shoots[row.id]={...row.data,id:row.id}}
   else if(row.collection==="profiles"){if(row.deleted)delete S.profiles[row.id];else S.profiles[row.id]=row.data}
@@ -2309,7 +2312,7 @@ async function poll(){
   const pollStart=Date.now();
   try{const r=await call("changes",token,since);since=r.now-60000;
     r.rows=r.rows.filter(row=>(SAVED_AT.get(row.collection+"/"+row.id)||0)<pollStart);
-    if(r.restoredAt){if(S.knownRestore==null)S.knownRestore=r.restoredAt;else if(r.restoredAt>S.knownRestore){S.knownRestore=r.restoredAt;const f=await call("loadAll",token);S.videos={};S.shoots={};S.scripts={};S.profiles={};S.ideas={};f.rows.forEach(applyDoc);render();toast("The board was restored from a backup");return}}if(r.rows.length){const sig=JSON.stringify(r.rows);if(sig!==lastSig){lastSig=sig;FAST_UNTIL=Date.now()+45000;r.rows.forEach(applyDoc);render();checkAlerts()}}else lastSig=""}
+    if(r.restoredAt){if(S.knownRestore==null)S.knownRestore=r.restoredAt;else if(r.restoredAt>S.knownRestore){S.knownRestore=r.restoredAt;const f=await call("loadAll",token);S.videos={};S.shoots={};S.scripts={};S.profiles={};S.ideas={};CROWS.clear();f.rows.forEach(applyDoc);render();toast("The board was restored from a backup");return}}if(r.rows.length){const sig=JSON.stringify(r.rows);if(sig!==lastSig){lastSig=sig;FAST_UNTIL=Date.now()+45000;r.rows.forEach(applyDoc);render();checkAlerts()}}else lastSig=""}
   catch(e){if(String(e&&e.message).includes("SESSION"))sessionExpired()}
   finally{polling=false}
 }
@@ -4663,9 +4666,23 @@ function sessionExpired(){token=null;lsSet("seb-token",null);clearInterval(pollT
 async function startSession(t,user){
   token=t;$("#login").hidden=true;S.me=String(user||"").toLowerCase();updateMe();$("#sync").textContent="Loading…";
   S.me=String(user||"").toLowerCase();
-  try{const cached=JSON.parse(lsGet("seb-cache")||"null");if(cached&&cached.user===S.me&&!loaded){S.videos={};S.shoots={};S.scripts={};S.profiles={};S.ideas={};cached.rows.forEach(applyDoc);render();$("#sync").textContent="Updating…"}}catch(e){}
-  try{const r=await call("loadAll",token);S.videos={};S.shoots={};S.scripts={};S.profiles={};S.ideas={};r.rows.forEach(applyDoc);since=r.now-60000;loaded=true;restorePendingLocal();render();checkAlerts();
-    try{lsSet("seb-cache",JSON.stringify({user:S.me,rows:r.rows}))}catch(e){}
+  let cached=null;try{cached=JSON.parse(lsGet("seb-cache")||"null")}catch(e){}
+  const fresh=cached&&cached.user===S.me&&cached.since&&Date.now()-(cached.savedAt||0)<5*86400e3;
+  if(cached&&cached.user===S.me&&!loaded){S.videos={};S.shoots={};S.scripts={};S.profiles={};S.ideas={};CROWS.clear();cached.rows.forEach(applyDoc);restorePendingLocal();render();$("#sync").textContent="Updating…"}
+  try{
+    let r;
+    let d=null;
+    if(fresh){ // only the changes since this device last synced: a small, fast answer
+      d=await call("changes",token,cached.since-120000);
+      if(d.restoredAt&&d.restoredAt>(cached.savedAt||0))d=null;
+    }
+    if(d){d.rows.forEach(applyDoc);since=d.now-60000;S.knownRestore=d.restoredAt||0;r={now:d.now}}
+    else{
+      r=await call("loadAll",token);S.videos={};S.shoots={};S.scripts={};S.profiles={};S.ideas={};CROWS.clear();r.rows.forEach(applyDoc);since=r.now-60000;
+    }
+    loaded=true;restorePendingLocal();render();checkAlerts();cacheRow({collection:"_",id:"_",deleted:true});
+    if(fresh)setTimeout(()=>{call("loadAll",token).then(f=>{f.rows.forEach(applyDoc);const ids=new Set(f.rows.map(x=>x.collection+"/"+x.id));
+      ["videos","shoots","scripts","ideas"].forEach(c=>Object.keys(S[c]||{}).forEach(id=>{const k=c+"/"+id;if(!ids.has(k)&&!pending.has(k)&&!inflight.has(k)){delete S[c][id];CROWS.delete(k)}}));render()}).catch(()=>{})},20000);
     $("#sync").textContent="Connected to your Google Sheet. Changes save automatically.";
     wrappedOffer();
     setTimeout(()=>{loadTeam(true);loadBackups(true)},1500);
