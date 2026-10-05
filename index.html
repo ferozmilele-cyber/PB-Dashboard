@@ -5289,7 +5289,8 @@ if(!GAS){
     if(t)startSession(t,lsGet("seb-user")||"");else if(QKEY)keyLogin(QKEY);else showLogin()};
   const qs=new URLSearchParams(location.search);const v=qs.get("view");
   if(v&&["overview","videos","order","schedule","shoots","ideas","history","settings"].includes(v)){S.tab=v;render()}
-  QKEY=qs.get("key");
+  QKEY=null;   // old quick-login links: Firebase keeps you signed in, so the key is simply ignored
+  if(qs.get("key")){qs.delete("key");try{history.replaceState(null,"",location.pathname+(qs.toString()?"?"+qs:""))}catch(e){}}
   go();
 }
 })();
