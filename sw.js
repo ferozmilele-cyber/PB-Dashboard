@@ -1,6 +1,6 @@
 // Shoot & Edit Board: always loads the newest page when online, falls back to the saved copy when offline,
 // and handles Windows notification clicks.
-const CACHE = 'shoot-board-v55';
+const CACHE = 'shoot-board-v48';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 self.addEventListener('install', e => {
   // cache: 'reload' skips the browser's own cache, so a new version is really fetched fresh
@@ -12,20 +12,25 @@ self.addEventListener('activate', e => {
 });
 self.addEventListener('fetch', e => {
   const req = e.request;
-  if (req.method !== 'GET') return;                              // data calls go straight to Firebase
+  if (req.method !== 'GET') return;                              // data calls go straight to your Google Sheet
   const url = new URL(req.url);
   const same = url.origin === location.origin;
-  const fontsOrLibs = /fonts\.(googleapis|gstatic)\.com|cdn\.jsdelivr\.net|www\.gstatic\.com/.test(url.host);   // fonts, libraries and the Firebase code
+  const fontsOrLibs = /fonts\.(googleapis|gstatic)\.com|cdn\.jsdelivr\.net/.test(url.host);
   if (!same && !fontsOrLibs) return;
-  // the page itself: open the saved copy straight away (no waiting on the network),
-  // and fetch the newest version in the background for the next open
+  // the page itself: newest version first, saved copy only when offline or very slow
   if (req.mode === 'navigate' || (same && /\/(index\.html)?$/.test(url.pathname))) {
     e.respondWith((async () => {
       const c = await caches.open(CACHE);
-      const hit = (await c.match('./index.html')) || (await c.match('./'));
-      const fresh = fetch(req, { cache: 'no-store' }).then(r => { if (r && r.ok) c.put('./index.html', r.clone()); return r; });
-      if (hit) { e.waitUntil(fresh.catch(() => {})); return hit; }
-      try { return await fresh; } catch (err) { return fetch(req); }
+      try {
+        const net = await Promise.race([
+          fetch(req, { cache: 'no-store' }),
+          new Promise((_, rej) => setTimeout(() => rej(new Error('slow')), 4000))
+        ]);
+        if (net && net.ok) { c.put('./index.html', net.clone()); return net; }
+        throw new Error('bad');
+      } catch (err) {
+        return (await c.match('./index.html')) || (await c.match('./')) || fetch(req);
+      }
     })());
     return;
   }
