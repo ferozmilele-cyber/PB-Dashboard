@@ -1928,6 +1928,11 @@ tbody tr.grp{transform:none!important}
 @keyframes etPulse{50%{opacity:.25}}
 .et-btn{border:0;border-radius:999px;padding:4px 10px;background:#0B0B0C;color:#AAFF00;font:700 11.5px/1 inherit;cursor:pointer}
 .etimer.paused .et-btn{background:linear-gradient(180deg,#C2FF45,#AAFF00);color:#0B0B0C}
+
+.fclear-btn{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 14px;border-radius:999px;border:1px solid rgba(208,105,74,.3);background:rgba(208,105,74,.10);color:#A9502F;font:700 13px/1 inherit;cursor:pointer;transition:background .2s,transform .4s var(--spring)}
+.fclear-btn:hover{background:rgba(208,105,74,.18)}
+.fclear-btn em{font-style:normal;display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#D0694A;color:#fff;font-size:11.5px}
+.fclear-btn.top{height:42px;flex:none}
 </style>
 </head>
 <body>
@@ -2880,14 +2885,17 @@ function vOverview(){
 }
 
 // the date a video belongs to: when it was posted, otherwise when it was shot, otherwise when it was added
-function vidPeriod(v){return (v.status==="Posted"&&v.postDate)?v.postDate:(v.shotDate||iso(new Date(v.createdAt||Date.now())))}
+function vidPeriod(v){return v.shotDate||iso(new Date(v.createdAt||Date.now()))}
 const MONTHN=["January","February","March","April","May","June","July","August","September","October","November","December"];
 function periodLabel(k){return k.length===4?k:`${MONTHN[+k.slice(5)-1]} ${k.slice(0,4)}`}
 function filtered(){
   const f=S.filter;
   const L=vids().filter(v=>(!f.st.length||f.st.includes(v.status))&&(f.fmt==="all"||(v.format||"Reel")===f.fmt)&&(f.sched==="any"||(f.sched==="yes"?!!v.postDate:!v.postDate))&&(!f.noLink||!safeUrl(v.finalLink))&&(!f.noPil||(isReel(v)&&!v.pillar))&&(f.date==="all"||(f.date==="none"?!v.shotDate:v.shotDate===f.date))&&(!f.q||(v.title||"").toLowerCase().includes(f.q.toLowerCase())||(v.notes||"").toLowerCase().includes(f.q.toLowerCase())));
   const per=f.period||"all";if(per!=="all"){for(let i=L.length-1;i>=0;i--)if(!vidPeriod(L[i]).startsWith(per))L.splice(i,1)}
-  L.sort((a,b)=>vidPeriod(b).localeCompare(vidPeriod(a))||((b.createdAt||0)-(a.createdAt||0)));
+  const so=f.sort||"new";
+  if(so==="post")L.sort((a,b)=>(a.postDate?postKey(a):"~").localeCompare(b.postDate?postKey(b):"~")||vidPeriod(b).localeCompare(vidPeriod(a)));
+  else if(so==="old")L.sort((a,b)=>vidPeriod(a).localeCompare(vidPeriod(b))||((a.createdAt||0)-(b.createdAt||0)));
+  else L.sort((a,b)=>vidPeriod(b).localeCompare(vidPeriod(a))||((b.createdAt||0)-(a.createdAt||0)));
   return L;
 }
 function vVideos(){
@@ -2905,7 +2913,7 @@ function vVideos(){
       <button class="fchip" data-act="fnolink" aria-pressed="${f.noLink}">No final link</button>
       <button class="fchip" data-act="fnopil" aria-pressed="${!!f.noPil}">No pillar <em>${vids().filter(v=>isReel(v)&&!v.pillar&&v.status!=="Posted").length}</em></button>
     </div>
-    <div class="fsum"><span>Showing <b>${L.length}</b> of ${all.length}</span>${nFilters?`<button class="btn small" data-act="fclear">Clear filters</button>`:""}</div>
+    <div class="fsum"><span>Showing <b>${L.length}</b> of ${all.length}</span>${nFilters?`<button class="fclear-btn" data-act="fclear">✕ Clear all filters <em>${nFilters}</em></button>`:""}</div>
   </div>`;
   const n=S.sel.size;
   const bulk=n?`<div class="bulk"><b>${n} selected</b>
@@ -2928,7 +2936,7 @@ function vVideos(){
     <td class="c-link" data-l="Final video">${linkChip(v)}</td>
     <td class="c-note" data-l="Notes"><input type="text" value="${esc(v.notes||"")}" data-f="notes" data-id="${v.id}" placeholder="Add note" aria-label="Notes" class="note-in"></td>
     <td class="c-del"><button class="xbtn" data-act="del" data-id="${v.id}" title="Delete" aria-label="Delete">×</button></td></tr>`;
-  const grpRow=(k,n)=>{const open=expandAll||(S.openGroups||{})[k];return `<tr class="grp${open?" open":""}" data-act="grpToggle" data-g="${k}"><td colspan="12"><span class="grp-ch">▸</span><b>${esc(periodLabel(k))}</b><em>${n} posted</em></td></tr>`};
+  const grpRow=(k,n)=>{const open=expandAll||(S.openGroups||{})[k];return `<tr class="grp${open?" open":""}" data-act="grpToggle" data-g="${k}"><td colspan="12"><span class="grp-ch">▸</span><b>Shot in ${esc(periodLabel(k))}</b><em>${n} posted</em></td></tr>`};
   const rows=main.map(rowOf).join("")+Object.keys(G).sort().reverse().map(k=>grpRow(k,G[k].length)+((expandAll||(S.openGroups||{})[k])?G[k].map(rowOf).join(""):"")).join("");
 
   return `<section class="panel">
@@ -2936,7 +2944,9 @@ function vVideos(){
       <input type="search" placeholder="Search titles and notes" value="${esc(f.q)}" data-live="q" aria-label="Search">
       <select data-live="date" aria-label="Filter by shot date"><option value="all">Any shot date</option><option value="none"${f.date==="none"?" selected":""}>No shot date</option>${dates.map(d=>`<option value="${d}"${f.date===d?" selected":""}>${esc(niceW(d))}</option>`).join("")}</select>
       <select data-live="period" aria-label="Month or year">${(()=>{const keys=new Set();all.forEach(v=>{const k=vidPeriod(v);keys.add(k.slice(0,7));keys.add(k.slice(0,4))});
-        const ks=[...keys].sort().reverse();return `<option value="all">All months</option>`+ks.map(k=>`<option value="${k}"${(f.period||"all")===k?" selected":""}>${k.length===4?"Year "+k:periodLabel(k)}</option>`).join("")})()}</select>
+        const ks=[...keys].sort().reverse();return `<option value="all">Shot: all months</option>`+ks.map(k=>`<option value="${k}"${(f.period||"all")===k?" selected":""}>${k.length===4?"Year "+k:periodLabel(k)}</option>`).join("")})()}</select>
+      <select data-live="sort" aria-label="Sort">${[["new","Newest shot first"],["old","Oldest shot first"],["post","By posting date"]].map(([k,l])=>`<option value="${k}"${(f.sort||"new")===k?" selected":""}>${l}</option>`).join("")}</select>
+      ${nFilters?`<button class="fclear-btn top" data-act="fclear" title="Clear all filters">✕ Clear all</button>`:""}
     </div>
     ${chips}
     ${bulk}
@@ -4591,7 +4601,7 @@ document.addEventListener("click",async e=>{
   else if(act==="fsched"){S.filter.sched=b.dataset.v;render()}
   else if(act==="fnolink"){S.filter.noLink=!S.filter.noLink;render()}
   else if(act==="fnopil"){S.filter.noPil=!S.filter.noPil;render()}
-  else if(act==="fclear"){S.filter={q:"",st:[],date:"all",fmt:"all",sched:"any",noLink:false};render()}
+  else if(act==="fclear"){S.filter={q:"",st:[],date:"all",fmt:"all",sched:"any",noLink:false,noPil:false,period:"all"};render();toast("All filters cleared")}
   else if(act==="showDay"){S.filter={q:"",st:[],date:b.dataset.d,fmt:"all",sched:"any",noLink:false};S.tab="videos";render()}
   else if(act==="del"){const v=S.videos[b.dataset.id];if(v&&await ask("Delete this video?",`“${v.title||"Untitled"}” will be removed from the board. This can’t be undone.`))delVideos([v.id])}
   else if(act==="bulkDel"){const ids=[...S.sel];if(ids.length&&await ask(`Delete ${ids.length} video${ids.length>1?"s":""}?`,"They’ll be removed from the board. This can’t be undone.",`Delete ${ids.length}`)){delVideos(ids);toast(`Deleted ${ids.length}`)}}
@@ -4802,6 +4812,7 @@ document.addEventListener("change",e=>{
   }
   if(t.dataset.live==="date"){S.filter.date=t.value;render();return}
   if(t.dataset.live==="period"){S.filter.period=t.value;render();return}
+  if(t.dataset.live==="sort"){S.filter.sort=t.value;render();return}
   if(t.dataset.live==="schedDays"){S.schedDays=+t.value;render();return}
   const id=t.dataset.id,f=t.dataset.f;if(!id||!f)return;
   const v=S.videos[id];if(!v)return;
