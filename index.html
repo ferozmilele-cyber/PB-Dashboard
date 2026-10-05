@@ -2032,6 +2032,25 @@ body.fbloading #fbLoading{display:grid}
 .fbl-card b{font-size:17px}.fbl-card small{font-size:13px;color:var(--muted);max-width:240px}
 .fbl-spin{width:34px;height:34px;border-radius:50%;border:4px solid rgba(170,255,0,.3);border-top-color:#7BD100;animation:fblSpin .8s linear infinite}
 @keyframes fblSpin{to{transform:rotate(360deg)}}
+
+/* ===== phone performance: glass blur over animated backgrounds is very heavy for iPhone Safari ===== */
+@media (hover:none),(max-width:760px){
+  #bubbles,body::after{display:none!important}
+  section.panel{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;background:rgba(255,255,255,.9)!important}
+  section.panel::before,section.panel::after{display:none!important}
+  .ovk>div,.pl-row,.tcard,.acct,.idea,.bkrow,.eplan,.ep-day,.hstats div,.card,.btn,.gchip,.gsel,.stsel,.me,.searchbtn,.morebtn,.away-banner,.fchip{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+  .btn::after,.gchip::after,.fchip::after,.ovk>div::after,.pl-row::after,.tcard::after,.idea::after,.acct::after,.ep-day::after,.bkrow::after,.searchbtn::after,.me::after,.morebtn::after,.shuffle::after,.idea::after{display:none!important}
+  .ovk>div,.ep-day,.tcard,.acct,.hstats div{transform:none!important;transition:none!important}
+  body::before{filter:none!important}
+}
+
+/* keep everything inside the phone screen: the range buttons scroll sideways instead of widening the page */
+.ovgrid>*,section.panel,.pl-filter{min-width:0}
+.pl-filter{max-width:100%}
+.pl-filter .seg{max-width:100%;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.pl-filter .seg::-webkit-scrollbar{display:none}
+.pl-filter .seg button{flex:none}
+@media (max-width:760px){.shoot-need small{flex-basis:100%;white-space:normal}.wrap{overflow-x:clip}}
 </style>
 </head>
 <body>
@@ -2459,14 +2478,15 @@ const VIEW_ONLY=["nawaz"];   // the manager: can see everything, can't change an
 const ADMIN="shibili";
 const COLS=["videos","shoots","scripts","profiles","ideas","meta"];
 const OLD_API=API;   // the Google Sheet link, kept only for the one-time import
-let FBR=null;
+let FBR=null;const T0=performance.now(),TIMES={};function mark(k){if(!(k in TIMES))TIMES[k]=Math.round(performance.now()-T0)}
+const IOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
 try{if(localStorage.getItem("seb-backend")!=="firebase"){["seb-cache","seb-pending","seb-team","seb-bk"].forEach(k=>localStorage.removeItem(k));localStorage.setItem("seb-backend","firebase")}}catch(e){}
 function fbBoot(){if(FBR)return FBR;FBR={buf:[],sys:{},listening:false};
   if(!window.firebase)throw new Error("Can’t load Firebase. Check your internet and reopen the app.");
   firebase.initializeApp(FB_CONFIG);FBR.auth=firebase.auth();FBR.db=firebase.firestore();
-  try{FBR.db.settings({experimentalAutoDetectLongPolling:true,merge:true})}catch(e){}
+  try{FBR.db.settings(IOS?{experimentalForceLongPolling:true,merge:true}:{experimentalAutoDetectLongPolling:true,merge:true})}catch(e){}
   try{FBR.db.enablePersistence({synchronizeTabs:true}).catch(()=>{})}catch(e){}
-  FBR.ready=new Promise(res=>{FBR.auth.onAuthStateChanged(u=>res(u))});return FBR}
+  FBR.ready=new Promise(res=>{FBR.auth.onAuthStateChanged(u=>{mark("signin");res(u)})});return FBR}
 function fbUser(u){const e=String(u&&u.email||"").toLowerCase();return FB_TEAM[e]||e.split("@")[0]}
 async function fbMe(){const F=fbBoot();await F.ready;const u=F.auth.currentUser;if(!u)throw new Error("SESSION");return u}
 function fbRow(c,doc){const v=doc.data()||{};let data=null;try{data=v.j?JSON.parse(v.j):null}catch(e){}return {collection:c,id:doc.id,deleted:!!v.x,data}}
@@ -2515,9 +2535,10 @@ async function call(fn,...a){
   const me=await fbMe(),my=fbUser(me);
   if(fn==="loadAll"){const rows=[];let snaps=null;
     try{const cs=await Promise.all(COLS.map(c=>F.db.collection(c).get({source:"cache"}).then(s=>[c,s])));if(cs.some(([c,s])=>c==="videos"&&s.size>0))snaps=cs}catch(e){}
+    TIMES.src=snaps?"this device":"the cloud";mark("data");
     if(snaps){setTimeout(async()=>{try{const ss=await Promise.all(COLS.map(c=>F.db.collection(c).get({source:"server"}).then(s=>[c,s])));
-        ss.forEach(([c,s])=>s.forEach(d=>{const r=fbRow(c,d);if(c==="meta"&&r.id==="sys"){F.sys=r.data||{};return}F.buf.push(r)}));if(typeof pollNow==="function")pollNow()}catch(e){}},50)}
-    else snaps=await Promise.all(COLS.map(c=>F.db.collection(c).get().then(s=>[c,s])));
+        ss.forEach(([c,s])=>s.forEach(d=>{const r=fbRow(c,d);if(c==="meta"&&r.id==="sys"){F.sys=r.data||{};return}F.buf.push(r)}));mark("cloud");if(typeof pollNow==="function")pollNow()}catch(e){TIMES.err=String(e&&e.message||e)}},50)}
+    else{snaps=await Promise.all(COLS.map(c=>F.db.collection(c).get().then(s=>[c,s])));mark("cloud")}
     snaps.forEach(([c,s])=>s.forEach(d=>{const r=fbRow(c,d);if(c==="meta"&&r.id==="sys"){F.sys=r.data||{};return}if(!r.deleted)rows.push(r)}));
     fbListen(Date.now()-60000);
     if(!VIEW_ONLY.includes(my)&&Date.now()-Number(F.sys.lastBackup||0)>7*86400e3&&rows.length)setTimeout(()=>fbBackup("weekly").catch(()=>{}),20000);
@@ -3481,7 +3502,8 @@ function askSlot(d){
 }
 // the move from the Google Sheet is done; only the "load fresh" button stays
 function importPanel(){return `<section class="panel"><div class="phead"><h2>Data</h2><span class="stat">Saved in Firebase · syncs instantly</span></div>
-  <p class="sub">If this device ever looks out of date, load everything fresh from the cloud.</p><button class="btn small" data-act="freshLoad">Reload everything from the cloud</button></section>`}
+  <p class="sub">If this device ever looks out of date, load everything fresh from the cloud.</p><button class="btn small" data-act="freshLoad">Reload everything from the cloud</button>
+  <p class="sub diag">Speed check (this open): signed in ${TIMES.signin!=null?(TIMES.signin/1000).toFixed(1)+"s":"–"} · board shown ${TIMES.data!=null?(TIMES.data/1000).toFixed(1)+"s":"–"} from ${TIMES.src||"–"} · cloud up to date ${TIMES.cloud!=null?(TIMES.cloud/1000).toFixed(1)+"s":"–"}${IOS?" · iPhone mode":""}${TIMES.err?" · error: "+esc(TIMES.err):""}</p></section>`}
 function vSettings(){
   const P=plans(),t=today(),cur=planFor(t);
   const maxPer=Math.max(...P.map(p=>p.times.length),0);
