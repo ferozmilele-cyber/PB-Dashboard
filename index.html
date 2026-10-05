@@ -1898,6 +1898,16 @@ nav.tabs.stuck{background:rgba(255,255,255,.8)!important;box-shadow:0 16px 40px 
 .away-form:not(.aw-edit){grid-template-columns:1.4fr 1fr 1fr 1fr 1fr auto!important}
 @media (max-width:760px){.aw-boxes.two{grid-template-columns:1fr}}
 .aw-box span b{font-size:inherit!important;font-weight:800;letter-spacing:0}
+.aw-bigs{display:flex;gap:22px;align-items:baseline;margin:4px 0 6px}
+.aw-big{display:inline-flex;align-items:baseline;gap:7px}
+.aw-big b{font-size:44px!important;font-weight:900;letter-spacing:-.03em;line-height:1}
+.aw-big i{font-style:normal;font-size:17px;font-weight:700}
+.aw-box:not(.hi) .aw-big b{font-size:34px!important}
+.aw-note{display:block;font-style:normal;font-size:11.5px;margin-top:4px;opacity:.75}
+.aw-box.hi .aw-note{color:#2c4a00}
+.aw-box span.aw-big b{font-size:48px!important;font-weight:900!important;letter-spacing:-.03em!important;line-height:1;color:#0B0B0C}
+.aw-box:not(.hi) span.aw-big b{font-size:36px!important}
+.aw-box span.aw-big i{color:#0B0B0C}
 </style>
 </head>
 <body>
@@ -3869,9 +3879,17 @@ function awayCard(a){const N=awayNumbers(a),editor=roleOf(a)==="edit";
   const posting=(a.reels===""||a.reels==null?"usual reels":+a.reels===0?"no reels":plural(+a.reels,"reel")+" a day")+(a.cars==="pause"?", no carousels":"");
   const box=(lab,main,sub,hi)=>`<div class="aw-box${hi?" hi":""}"><small>${lab}</small><b>${main}</b>${sub?`<span>${sub}</span>`:""}</div>`;
   const split=(r,c)=>[r?plural(r,"reel"):"",c?plural(c,"carousel"):""].filter(Boolean).join(" + ")||"nothing";
+  const carDays=[];for(let d=a.from;d<=a.to;d=addDays(d,1))if(cslotsFor(d).length)carDays.push(niceW(d).replace(/^(\w+) (\d+) (\w+)$/,"$1 $2"));
+  const rate=(n,days,w)=>{if(!n)return "";if(n>=days)return `<b>${Math.ceil(n/days)} ${w}${Math.ceil(n/days)===1?"":"s"} a day</b>`;const k=Math.round(days/n);return k<=1?`<b>1 ${w} a day</b>`:`<b>1 ${w} every ${k} days</b>`};
+  const big=(n,w)=>`<span class="aw-big"><b>${n}</b><i>${w}${n===1?"":"s"}</i></span>`;
   const body=!N?`<p class="sub">Finished.</p>`:`<div class="aw-boxes two">
-    ${box(N.started?"Shoot (shooting is paused now)":`Shoot before ${esc(niceW(a.from))}`,N.shoot?plural(N.shoot,"video"):"✓ Covered",N.shoot?`${split(N.shootR,N.shootC)} · to cover until ${esc(nice(a.to))}${N.started?"":N.days?` · about <b>${N.pace} a day</b> over ${plural(N.days,"day")}`:" · no shoot days left"}`:`Enough footage until ${esc(nice(a.to))}`,true)}
-    ${box(`Needed while away (${plural(N.len,"day")})`,plural(N.durN,"post"),split(N.dur.r,N.dur.c),false)}</div>`;
+    <div class="aw-box hi"><small>${N.started?"Shooting is paused now":`To shoot before ${esc(niceW(a.from))}`}</small>
+      <div class="aw-bigs">${big(N.shootR,"reel")}${big(N.shootC,"carousel")}</div>
+      <span>${N.shoot&&!N.started?(N.days?`Minimum ${[rate(N.shootR,N.days,"reel"),rate(N.shootC,N.days,"carousel")].filter(Boolean).join(" + ")} over the ${plural(N.days,"day")} left. Skip a day and this goes up.`:"No shoot days left before the trip."):N.shoot?"":`✓ Enough footage until ${esc(nice(a.to))}`}</span>
+      <em class="aw-note">Counts every post until ${esc(nice(a.to))}, minus the footage you already have.</em></div>
+    <div class="aw-box"><small>Posts while away (${plural(N.len,"day")})</small>
+      <div class="aw-bigs">${big(N.dur.r,"reel")}${big(N.dur.c,"carousel")}</div>
+      ${carDays.length?`<span>Carousels on ${esc(carDays.join(", "))}</span>`:""}</div></div>`;
   const m=a.mode||"before",tm=a.teammate?esc(a.teammate):"a teammate";
   const cover=!N||!editor?"":m==="before"?`Editing: you finish everything before leaving.`:m==="remote"?`Editing: you edit from home, about <b>${Math.ceil(N.you/N.len)} a day</b>.`
     :m==="partial"?`Editing: <b>you ${+a.perDay||0} a day</b> (${N.you}), <b>${tm}</b> edits the other <b>${N.team}</b>.`:`Editing: <b>${tm}</b> edits all <b>${N.team}</b>.`;
