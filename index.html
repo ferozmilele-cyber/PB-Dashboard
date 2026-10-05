@@ -1908,6 +1908,26 @@ nav.tabs.stuck{background:rgba(255,255,255,.8)!important;box-shadow:0 16px 40px 
 .aw-box span.aw-big b{font-size:48px!important;font-weight:900!important;letter-spacing:-.03em!important;line-height:1;color:#0B0B0C}
 .aw-box:not(.hi) span.aw-big b{font-size:36px!important}
 .aw-box span.aw-big i{color:#0B0B0C}
+
+.ovk>div.tap{cursor:pointer}
+.ovk>div.tap:active{transform:scale(.98)!important}
+tr.grp td{padding:12px 14px!important;background:rgba(12,14,8,.035)!important;cursor:pointer;font-size:14px;border-top:1px solid rgba(12,14,8,.06)}
+tr.grp:hover td{background:rgba(170,255,0,.14)!important}
+tr.grp b{font-weight:800;margin-right:10px}
+tr.grp em{font-style:normal;color:var(--muted);font-size:12.5px;font-weight:600}
+.grp-ch{display:inline-block;width:18px;color:#7a7f73;transition:transform .3s var(--spring)}
+tr.grp.open .grp-ch{transform:rotate(90deg)}
+tbody tr.grp{transform:none!important}
+@media (max-width:600px){tr.grp{display:block!important;padding:0!important}tr.grp td{display:block!important;border-radius:14px}}
+
+.etimer{display:inline-flex;align-items:center;gap:7px;margin-left:6px;padding:3px 4px 3px 10px;border-radius:999px;background:rgba(170,255,0,.22);border:1px solid rgba(123,209,0,.35);font-size:12.5px;font-weight:600;color:#2c4a00;vertical-align:1px}
+.etimer b{font-weight:800;font-variant-numeric:tabular-nums}
+.et-dot{width:8px;height:8px;border-radius:50%;background:#5aa800;animation:etPulse 1.4s ease-in-out infinite}
+.etimer.paused{background:rgba(209,162,58,.16);border-color:rgba(209,162,58,.35);color:#7a5d12}
+.etimer.paused .et-dot{background:#C9A03A;animation:none}
+@keyframes etPulse{50%{opacity:.25}}
+.et-btn{border:0;border-radius:999px;padding:4px 10px;background:#0B0B0C;color:#AAFF00;font:700 11.5px/1 inherit;cursor:pointer}
+.etimer.paused .et-btn{background:linear-gradient(180deg,#C2FF45,#AAFF00);color:#0B0B0C}
 </style>
 </head>
 <body>
@@ -2392,6 +2412,7 @@ function withStatus(v,st){
   if(DONE_EDIT.includes(st)&&!DONE_EDIT.includes(v.status))n.editedOn=today();
   if(!DONE_EDIT.includes(st))n.editedOn="";
   if(st!==v.status)n.log=[...(v.log||[]),{s:st,at:Date.now(),by:S.me||""}].slice(-40);
+  if(st!==v.status&&(v.pauses||[]).some(p=>!p.b))n.pauses=v.pauses.map(p=>p.b?p:{...p,b:Date.now()});
   return n;
 }
 
@@ -2825,10 +2846,10 @@ function vOverview(){
     <div class="phead"><h2>${esc(niceW(t))}</h2>
       <div class="ovtoday">${(()=>{const g=shootGoalToday();return `<span>Shot today <b>${shotT}</b>/${g}</span><i style="--p:${Math.min(1,shotT/g)}"></i>`})()}${(()=>{const ep=editPlan();const goal=edT+ep.todayLeft;const s=editStreak();return `<span class="gwrap">${goalRing(edT,ep.todayOff?0:goal)}<span>${ep.todayOff?"Day off":`Edited <b>${edT}</b>/${goal||edT}`}${s>1?`<em class="streak">🔥 ${s}-day streak</em>`:""}</span></span>`})()}</div></div>
     <div class="ovk">
-      <div class="k1"><b>${inHand}</b><span>Videos in hand</span></div>
-      <div><b>${ready}</b><span>Ready to post</span></div>
-      <div><b>${toEditNow}</b><span>Waiting for edit</span></div>
-      <div class="${covDays<2?"warn":""}"><b>${covDays}</b><span>${covDays===1?"Day":"Days"} covered${cov?`, until ${esc(nice(cov))}`:""}</span></div>
+      <div class="k1 tap" data-act="ovGo" data-go="hand" title="Show these videos"><b>${inHand}</b><span>Videos in hand</span></div>
+      <div class="tap" data-act="ovGo" data-go="ready" title="Show these videos"><b>${ready}</b><span>Ready to post</span></div>
+      <div class="tap" data-act="ovGo" data-go="edit" title="Show these videos"><b>${toEditNow}</b><span>Waiting for edit</span></div>
+      <div class="tap ${covDays<2?"warn":""}" data-act="ovGo" data-go="cov" title="Open the posting schedule"><b>${covDays}</b><span>${covDays===1?"Day":"Days"} covered${cov?`, until ${esc(nice(cov))}`:""}</span></div>
     </div>
   </section>
   <div class="ovgrid">
@@ -2858,10 +2879,15 @@ function vOverview(){
   </section>`;
 }
 
+// the date a video belongs to: when it was posted, otherwise when it was shot, otherwise when it was added
+function vidPeriod(v){return (v.status==="Posted"&&v.postDate)?v.postDate:(v.shotDate||iso(new Date(v.createdAt||Date.now())))}
+const MONTHN=["January","February","March","April","May","June","July","August","September","October","November","December"];
+function periodLabel(k){return k.length===4?k:`${MONTHN[+k.slice(5)-1]} ${k.slice(0,4)}`}
 function filtered(){
   const f=S.filter;
   const L=vids().filter(v=>(!f.st.length||f.st.includes(v.status))&&(f.fmt==="all"||(v.format||"Reel")===f.fmt)&&(f.sched==="any"||(f.sched==="yes"?!!v.postDate:!v.postDate))&&(!f.noLink||!safeUrl(v.finalLink))&&(!f.noPil||(isReel(v)&&!v.pillar))&&(f.date==="all"||(f.date==="none"?!v.shotDate:v.shotDate===f.date))&&(!f.q||(v.title||"").toLowerCase().includes(f.q.toLowerCase())||(v.notes||"").toLowerCase().includes(f.q.toLowerCase())));
-  L.sort((a,b)=>{const pa=a.postDate?postKey(a):"~",pb=b.postDate?postKey(b):"~";return pa.localeCompare(pb)||(b.shotDate||"").localeCompare(a.shotDate||"")||((a.createdAt||0)-(b.createdAt||0))});
+  const per=f.period||"all";if(per!=="all"){for(let i=L.length-1;i>=0;i--)if(!vidPeriod(L[i]).startsWith(per))L.splice(i,1)}
+  L.sort((a,b)=>vidPeriod(b).localeCompare(vidPeriod(a))||((b.createdAt||0)-(a.createdAt||0)));
   return L;
 }
 function vVideos(){
@@ -2870,7 +2896,7 @@ function vVideos(){
   const dates=[...new Set(all.map(v=>v.shotDate).filter(Boolean))].sort().reverse();
   const L=filtered();
   const allSel=L.length&&L.every(v=>S.sel.has(v.id));
-  const nFilters=f.st.length+(f.fmt!=="all")+(f.sched!=="any")+(f.noLink?1:0)+(f.noPil?1:0)+(f.date!=="all")+(f.q?1:0);
+  const nFilters=f.st.length+(f.fmt!=="all")+(f.sched!=="any")+(f.noLink?1:0)+(f.noPil?1:0)+(f.date!=="all")+(f.q?1:0)+((f.period||"all")!=="all"?1:0);
   const chips=`<div class="filters">
     <div class="fgroup" role="group" aria-label="Status">${STATUSES.filter(s=>ST_MAIN.includes(s.k)||all.some(v=>v.status===s.k)||f.st.includes(s.k)).map(s=>`<button class="fchip" data-act="fst" data-s="${s.k}" aria-pressed="${f.st.includes(s.k)}"><i style="background:${s.c}"></i>${s.k}<em>${all.filter(v=>v.status===s.k).length}</em></button>`).join("")}</div>
     <div class="fgroup">
@@ -2887,7 +2913,9 @@ function vVideos(){
       <select id="bulkStatus" aria-label="Status for selected"><option value="">Set status to…</option>${STATUSES.map(s=>`<option>${s.k}</option>`).join("")}</select>
       <button class="btn danger" data-act="bulkDel">Delete ${n}</button>
       <button class="btn" data-act="clearSel">Clear selection</button></div>`:"";
-  const rows=L.map(v=>`<tr class="${S.sel.has(v.id)?"sel":""}${(S.moreRows||{})[v.id]?" open":""}" data-k="v-${v.id}">
+  const cm=today().slice(0,7),cy=today().slice(0,4),expandAll=nFilters>0,G={},main=[];
+  L.forEach(v=>{if(v.status!=="Posted"){main.push(v);return}const k=vidPeriod(v),key=k.slice(0,4)<cy?k.slice(0,4):k.slice(0,7);if(key===cm){main.push(v);return}(G[key]=G[key]||[]).push(v)});
+  const rowOf=v=>`<tr class="${S.sel.has(v.id)?"sel":""}${(S.moreRows||{})[v.id]?" open":""}" data-k="v-${v.id}">
     <td class="ck"><input type="checkbox" data-act-ck="${v.id}"${S.sel.has(v.id)?" checked":""} aria-label="Select ${esc(v.title)}"></td>
     <td class="title"><input type="text" value="${esc(v.title)}" data-f="title" data-id="${v.id}" aria-label="Title"><button class="mob-more" data-act="rowMore" data-id="${v.id}">${(S.moreRows||{})[v.id]?"Less":"Details"}</button>${(v.status==="Re-edit"||EDIT_POOL.includes(v.status))&&v.reviewNote?`<small class="rnote">Changes: ${esc(v.reviewNote)}</small>`:""}${v.status==="In review"?`<small class="rnote rv">With ${esc(reviewerName())} for review${v.round>1?`, round ${v.round}`:""}</small>`:""}</td>
     <td class="c-fmt" data-l="Format"><select data-f="format" data-id="${v.id}" aria-label="Format"><option${v.format!=="Carousel"?" selected":""}>Reel</option><option${v.format==="Carousel"?" selected":""}>Carousel</option></select></td>
@@ -2899,11 +2927,16 @@ function vVideos(){
     <td class="c-time" data-l="Time">${timeSelect(v)}</td>
     <td class="c-link" data-l="Final video">${linkChip(v)}</td>
     <td class="c-note" data-l="Notes"><input type="text" value="${esc(v.notes||"")}" data-f="notes" data-id="${v.id}" placeholder="Add note" aria-label="Notes" class="note-in"></td>
-    <td class="c-del"><button class="xbtn" data-act="del" data-id="${v.id}" title="Delete" aria-label="Delete">×</button></td></tr>`).join("");
+    <td class="c-del"><button class="xbtn" data-act="del" data-id="${v.id}" title="Delete" aria-label="Delete">×</button></td></tr>`;
+  const grpRow=(k,n)=>{const open=expandAll||(S.openGroups||{})[k];return `<tr class="grp${open?" open":""}" data-act="grpToggle" data-g="${k}"><td colspan="12"><span class="grp-ch">▸</span><b>${esc(periodLabel(k))}</b><em>${n} posted</em></td></tr>`};
+  const rows=main.map(rowOf).join("")+Object.keys(G).sort().reverse().map(k=>grpRow(k,G[k].length)+((expandAll||(S.openGroups||{})[k])?G[k].map(rowOf).join(""):"")).join("");
+
   return `<section class="panel">
     <div class="toolbar">
       <input type="search" placeholder="Search titles and notes" value="${esc(f.q)}" data-live="q" aria-label="Search">
       <select data-live="date" aria-label="Filter by shot date"><option value="all">Any shot date</option><option value="none"${f.date==="none"?" selected":""}>No shot date</option>${dates.map(d=>`<option value="${d}"${f.date===d?" selected":""}>${esc(niceW(d))}</option>`).join("")}</select>
+      <select data-live="period" aria-label="Month or year">${(()=>{const keys=new Set();all.forEach(v=>{const k=vidPeriod(v);keys.add(k.slice(0,7));keys.add(k.slice(0,4))});
+        const ks=[...keys].sort().reverse();return `<option value="all">All months</option>`+ks.map(k=>`<option value="${k}"${(f.period||"all")===k?" selected":""}>${k.length===4?"Year "+k:periodLabel(k)}</option>`).join("")})()}</select>
     </div>
     ${chips}
     ${bulk}
@@ -2925,7 +2958,7 @@ function vOrder(){
     const mix=g.items.map(x=>`<i style="background:${hue(x.v.shotDate)}" title="Shot ${esc(nice(x.v.shotDate)||"date unknown")}"></i>`).join("");
     const rows=g.items.map((x,k)=>{const idx=g.start+k;const v=x.v;const prev=idx>0?list[idx-1].v.shotDate:null;const clash=prev&&prev===v.shotDate;const late=v.postDate&&v.postDate<g.day;
       const pinned=S.queue.pins&&S.queue.pins[v.id]!=null;
-      const tags=(pinned?`<button class="tag pin" data-act="unpin" data-id="${v.id}" title="Unpin: let Shuffle move it again">Pinned ×</button>`:"")+(v.status==="Editing"?`<span class="tag">Stays put while editing</span>`:"")+(v.status==="Re-edit"||(EDIT_POOL.includes(v.status)&&v.reviewNote)?`<span class="tag warn">Changes: ${esc((v.reviewNote||"see notes").slice(0,90))}</span>`:"")+(v.round>1&&EDIT_POOL.includes(v.status)?`<span class="tag">Round ${v.round}</span>`:"")+(x.fresh?`<span class="tag new">New</span>`:"")+(clash?`<span class="tag warn">Same shoot as above</span>`:"")+(late?`<span class="tag warn">Due before this</span>`:"");
+      const tags=(pinned?`<button class="tag pin" data-act="unpin" data-id="${v.id}" title="Unpin: let Shuffle move it again">Pinned ×</button>`:"")+(v.status==="Editing"?editTimer(v):"")+(v.status==="Re-edit"||(EDIT_POOL.includes(v.status)&&v.reviewNote)?`<span class="tag warn">Changes: ${esc((v.reviewNote||"see notes").slice(0,90))}</span>`:"")+(v.round>1&&EDIT_POOL.includes(v.status)?`<span class="tag">Round ${v.round}</span>`:"")+(x.fresh?`<span class="tag new">New</span>`:"")+(clash?`<span class="tag warn">Same shoot as above</span>`:"")+(late?`<span class="tag warn">Due before this</span>`:"");
       return `<div class="erow${pinned?" pinned":""}" data-fid="${v.id}">
         <div class="num grip" title="Drag to reorder"><span class="n">${idx+1}</span><span class="g">⋮⋮</span></div>
         <div class="etitle"><span class="dot" style="background:${hue(v.shotDate)}"></span><div><b>${esc(v.title||"Untitled")}</b>${pillarTag(v)}<small>Shot ${esc(v.shotDate?nice(v.shotDate):"date unknown")}${v.postDate?`, posts ${esc(niceW(v.postDate))}${v.postTime?" "+fmtT(v.postTime):""}`:""}${tags}</small></div></div>
@@ -2938,7 +2971,7 @@ function vOrder(){
   const c=clashes(list);
   return `<section class="panel">
     <div class="phead"><h2>Edit order</h2>
-      <div class="pactions">${list.length?`<span class="stat">${list.length} in queue${c?`, ${c} same-day pair${c>1?"s":""}`:""}</span>${Object.keys(S.queue.pins||{}).length?`<button class="btn small ghost" data-act="unpinAll">Unpin all</button>`:""}`:""}<button class="shuffle" data-act="shuffle"${list.length<2?" disabled":""}>Shuffle</button></div></div>
+      <div class="pactions">${(()=>{const ed=vids().filter(v=>v.status==="Editing");if(!ed.length)return "";const run=ed.filter(v=>!isPausedV(v));return run.length?`<button class="btn small" data-act="pauseAll">⏸ Pause editing</button>`:`<button class="btn small primary" data-act="resumeAll">▶ Resume editing</button>`})()}${list.length?`<span class="stat">${list.length} in queue${c?`, ${c} same-day pair${c>1?"s":""}`:""}</span>${Object.keys(S.queue.pins||{}).length?`<button class="btn small ghost" data-act="unpinAll">Unpin all</button>`:""}`:""}<button class="shuffle" data-act="shuffle"${list.length<2?" disabled":""}>Shuffle</button></div></div>
     ${planPanel()}
     <div class="switches">
       ${toggle("data-opt","deadlineFirst",S.opts.deadlineFirst,"Scheduled first")}
@@ -3073,7 +3106,7 @@ function summaryData(){
   let reedits=0,sent=0;const reVids=new Set();
   all.forEach(v=>(v.reviewLog||[]).forEach(e=>{if(!e.at||!inR(dayOf(e.at)))return;if(e.what==="re-edit"){reedits++;reVids.add(v.id)}if(e.what==="sent for review")sent++}));
   // edit time: from starting Editing (or Re-edit) to the next finished status, per round
-  const spans=[];all.forEach(v=>{const L=v.log||[];let st=null;L.forEach(e=>{if(e.s==="Editing")st=e.at;else if(st&&DONE_EDIT.includes(e.s)){if(inR(dayOf(e.at)))spans.push(e.at-st);st=null}})});
+  const spans=[];all.forEach(v=>{const L=v.log||[];let st=null;L.forEach(e=>{if(e.s==="Editing")st=e.at;else if(st&&DONE_EDIT.includes(e.s)){if(inR(dayOf(e.at)))spans.push(Math.max(0,e.at-st-pausedMs(v,st,e.at)));st=null}})});
   const avgEdit=spans.length?spans.reduce((a,b)=>a+b,0)/spans.length:0;
   const turn=edited.filter(v=>v.shotDate&&v.editedOn>=v.shotDate).map(v=>daysBetween(v.shotDate,v.editedOn));
   const avgTurn=turn.length?turn.reduce((a,b)=>a+b,0)/turn.length:null;
@@ -4236,7 +4269,18 @@ function askEditorReedit(v,st){
     else render()},{once:true});
   openDlg(d);setTimeout(()=>box.focus(),80);
 }
+/* ---------- edit timer with pause: lunch breaks and switching to another video don't count as editing time ---------- */
+function editSession(v){const L=v.log||[];for(let i=L.length-1;i>=0;i--){if(L[i].s==="Editing")return L[i].at;if(L[i].s!==v.status||DONE_EDIT.includes(L[i].s))break}return null}
+function pausedMs(v,from,to){return (v.pauses||[]).reduce((s,p)=>{const a=Math.max(p.a,from),b=Math.min(p.b||Date.now(),to);return s+Math.max(0,b-a)},0)}
+function isPausedV(v){return (v.pauses||[]).some(p=>!p.b)}
+function editElapsed(v){const st=editSession(v);if(!st)return null;const now=Date.now();return Math.max(0,now-st-pausedMs(v,st,now))}
+function fmtClock(ms){if(ms==null)return "–";const m=Math.floor(ms/60000),hh=Math.floor(m/60);return hh?`${hh}h ${String(m%60).padStart(2,"0")}m`:`${m}m`}
+function pauseVideo(v,quiet){if(isPausedV(v))return;putVideo({...v,pauses:[...(v.pauses||[]),{a:Date.now(),b:null}].slice(-80)},quiet)}
+function resumeVideo(v,quiet){if(!isPausedV(v))return;putVideo({...v,pauses:(v.pauses||[]).map(p=>p.b?p:{...p,b:Date.now()})},quiet)}
+function editTimer(v){if(v.status!=="Editing")return "";const p=isPausedV(v),ms=editElapsed(v);
+  return `<span class="etimer${p?" paused":""}" data-id="${v.id}"><i class="et-dot"></i><b>${ms==null?"not timed yet":fmtClock(ms)}</b>${p?" paused":""}<button class="et-btn" data-act="${p?"resumeEdit":"pauseEdit"}" data-id="${v.id}" title="${p?"Resume the timer":"Pause the timer (lunch, other work)"}">${p?"▶ Resume":"⏸ Pause"}</button></span>`}
 function setStatusFlow(v,st){
+  if(st==="Editing"&&v.status!=="Editing"){const others=vids().filter(o=>o.id!==v.id&&o.status==="Editing"&&!isPausedV(o));if(others.length){others.forEach(o=>pauseVideo(o,true));setTimeout(()=>toast(`Paused the timer on “${others[0].title||"Untitled"}”${others.length>1?` and ${others.length-1} more`:""} while you work on this one`),600)}}
   if(!isReviewer()&&["Ready","Scheduled","Approved","In review"].includes(v.status)&&["Editing","Shot","Pending"].includes(st)){askEditorReedit(v,st);return}
   const wantsDone=["Ready","In review","Edited"].includes(st);
   if(st==="Approved"){if(!isReviewer()){toast(`Only ${reviewerName()} can approve`);render();return}approveVideo(v);return}
@@ -4320,6 +4364,7 @@ if(navigator.serviceWorker)navigator.serviceWorker.addEventListener("message",e=
   else showAlert(v,d.k);
 });
 
+setInterval(()=>{document.querySelectorAll(".etimer[data-id]").forEach(el=>{const v=S.videos[el.dataset.id];if(v&&!isPausedV(v)){const ms=editElapsed(v);if(ms!=null)el.querySelector("b").textContent=fmtClock(ms)}})},15000);
 // check the clock every minute so posting reminders arrive on time, and show a count in the window title
 setInterval(()=>{if(loaded)checkAlerts();const n=myAlerts().filter(x=>["now","late"].includes(x.k)).length;document.title=(n?`(${n}) Post now · `:"")+"Shoot & edit board"},60000);
 $("#bellBtn").addEventListener("click",()=>{const L=myAlerts();if(!L.length){toast("Nothing waiting for you");return}L.forEach((x,i)=>setTimeout(()=>showAlert(x.v,x.k),i*120))});
@@ -4598,6 +4643,15 @@ document.addEventListener("click",async e=>{
     if(!nw||nw.value.length<4){toast("Use at least 4 characters");return}
     b.disabled=true;call("changePassword",token,u,od?od.value:"",nw.value).then(()=>{toast(self?"Password changed":`Password reset for ${dispName(u)}`);nw.value="";if(od)od.value=""}).catch(err=>toast(String(err&&err.message||"Couldn’t change it").replace(/^Error: /,""))).finally(()=>{b.disabled=false})}
   else if(act==="addRaw"){askRaw(b.dataset.d)}
+  else if(act==="pauseEdit"){const v=S.videos[b.dataset.id];if(v){pauseVideo(v);toast("Timer paused")}}
+  else if(act==="resumeEdit"){const v=S.videos[b.dataset.id];if(v){vids().filter(o=>o.id!==v.id&&o.status==="Editing").forEach(o=>pauseVideo(o,true));resumeVideo(v);toast("Timer running again")}}
+  else if(act==="pauseAll"){vids().filter(v=>v.status==="Editing").forEach(v=>pauseVideo(v,true));render();toast("Editing paused. Enjoy your break")}
+  else if(act==="resumeAll"){const ed=vids().filter(v=>v.status==="Editing").sort((a,b)=>(editSession(b)||0)-(editSession(a)||0));if(ed[0])resumeVideo(ed[0],true);render();toast(ed[0]?`Resumed “${ed[0].title||"Untitled"}”`:"Nothing to resume")}
+  else if(act==="ovGo"){const g=b.dataset.go;if(g==="cov"){goTab("schedule");return}
+    const st=g==="ready"?["Ready"]:g==="edit"?[...EDIT_POOL]:STATUSES.map(s=>s.k).filter(k=>k!=="Posted"&&k!=="Not started");
+    S.filter={q:"",st,date:"all",fmt:"all",sched:"any",noLink:false,noPil:false,period:"all"};goTab("videos");
+    toast(g==="hand"?"Showing every video not posted yet":g==="ready"?"Showing videos ready to post":"Showing videos waiting for edit")}
+  else if(act==="grpToggle"){S.openGroups=S.openGroups||{};const g=b.dataset.g;S.openGroups[g]=!S.openGroups[g];render()}
   else if(act==="awayAdd"){const who=$("#awWho").value.trim()||"Time away";const a={id:"aw"+Date.now().toString(36),label:who,mode:"before",from:$("#awFrom").value,to:$("#awTo").value,reels:$("#awReels").value,cars:$("#awCars").value};
     if(!a.from||!a.to){toast("Pick both dates");return}if(a.to<a.from){const x=a.from;a.from=a.to;a.to=x}
     S.settings.away=[...(S.settings.away||[]),a];applyAway(a);Object.keys(AWF).forEach(k=>delete AWF[k]);putSettings();render();toast(`${a.label}: ${nice(a.from)} – ${nice(a.to)} added`)}
@@ -4747,6 +4801,7 @@ document.addEventListener("change",e=>{
     putSettings();render();return;
   }
   if(t.dataset.live==="date"){S.filter.date=t.value;render();return}
+  if(t.dataset.live==="period"){S.filter.period=t.value;render();return}
   if(t.dataset.live==="schedDays"){S.schedDays=+t.value;render();return}
   const id=t.dataset.id,f=t.dataset.f;if(!id||!f)return;
   const v=S.videos[id];if(!v)return;
