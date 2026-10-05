@@ -2010,6 +2010,14 @@ header.top{animation:headerPop .75s var(--spring) both}
 .fclear-btn:hover{background:rgba(208,105,74,.18)}
 .fclear-btn em{font-style:normal;display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#D0694A;color:#fff;font-size:11.5px}
 .fclear-btn.top{height:42px;flex:none}
+
+/* view-only (manager) */
+body.viewonly [data-act="openAdd"],body.viewonly .shuffle,body.viewonly [data-act="reshuffle"],body.viewonly [data-act="newShoot"],body.viewonly .addslot,
+body.viewonly .id-add,body.viewonly .away-form,body.viewonly [data-act="backupNow"],body.viewonly .imp,body.viewonly .grip,body.viewonly .mv2,body.viewonly td.c-del,body.viewonly .xbtn{display:none!important}
+body.viewonly #main input:not([data-live]):not([data-plr]):not([data-sumr]):not([data-ovr]):not([type=search]),body.viewonly #main textarea{pointer-events:none;background:transparent!important;border-color:transparent!important}
+body.viewonly .stsel{pointer-events:none}
+body.viewonly header.top h1::after{content:"View only";display:inline-block;margin-left:12px;vertical-align:middle;padding:4px 12px;border-radius:999px;background:rgba(12,14,8,.08);font-size:13px;font-weight:700;letter-spacing:0;color:#5f6459}
+body.viewonly #importBtn,body.viewonly [data-act="mImport"]{display:none!important}
 </style>
 </head>
 <body>
@@ -2017,7 +2025,7 @@ header.top{animation:headerPop .75s var(--spring) both}
   <form id="loginForm">
     <h1>Shoot & edit board</h1>
     <p>Sign in to continue</p>
-    <label>Username<input name="user" autocomplete="username" required></label>
+    <label>Email<input name="user" type="text" inputmode="email" autocomplete="username" placeholder="you@milele.com" spellcheck="false" autocapitalize="off" required></label>
     <label>Password<input name="pass" type="password" autocomplete="current-password" required></label>
     <p class="err" id="loginErr"></p>
     <button class="btn primary" type="submit">Sign in</button>
@@ -2225,6 +2233,9 @@ header.top{animation:headerPop .75s var(--spring) both}
 <div class="tabpop" id="tabPop" role="tooltip" aria-hidden="true"></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
 window.addEventListener("error",function(e){try{var s=document.getElementById("sync");if(s){s.style.color="#B8480A";s.style.fontWeight="600";s.textContent="Board error: "+(e.message||"unknown")+(e.lineno?" (line "+e.lineno+")":"")+". Send a screenshot of this to Claude."}}catch(_){}});
 </script>
@@ -2417,19 +2428,126 @@ async function copyText(t){
 const API="https://script.google.com/macros/s/AKfycbxVRxJ-FD50-KCdU3aD8bvJ3-HRbWNoda7NuVAeYUMMJrTGYYXvqW0HJsfZkyRIpjBmsA/exec";
 const GAS=true;
 let token=null,since=0,pending=new Map(),inflight=new Map(),flushT=null,pollT=null,loaded=false,FLUSHING=false;const SAVED_AT=new Map();
-async function call(fn,...args){
+/* ================= Firebase (Firestore + Authentication) ================= */
+const FB_CONFIG={apiKey:"AIzaSyAb6oX0GBaUyMrOg4gktH3bOxrCYXupMrs",authDomain:"shoot-edit-board.firebaseapp.com",projectId:"shoot-edit-board",
+  storageBucket:"shoot-edit-board.firebasestorage.app",messagingSenderId:"527953591815",appId:"1:527953591815:web:1bc8669fc95f109d7f34a2"};
+// sign-in email -> board username (keeps photos, reviewer, poster and all settings linked to the right person)
+const FB_TEAM={"muhammed.shibili@milele.com":"shibili","zain.ulabdin@milele.com":"zain","zain.nawaz@milele.com":"nawaz"};
+const VIEW_ONLY=["nawaz"];   // the manager: can see everything, can't change anything
+const ADMIN="shibili";
+const COLS=["videos","shoots","scripts","profiles","ideas","meta"];
+const OLD_API=API;   // the Google Sheet link, kept only for the one-time import
+let FBR=null;
+function fbBoot(){if(FBR)return FBR;FBR={buf:[],sys:{},listening:false};
+  if(!window.firebase)throw new Error("Can’t load Firebase. Check your internet and reopen the app.");
+  firebase.initializeApp(FB_CONFIG);FBR.auth=firebase.auth();FBR.db=firebase.firestore();
+  try{FBR.db.enablePersistence({synchronizeTabs:true}).catch(()=>{})}catch(e){}
+  FBR.ready=new Promise(res=>{FBR.auth.onAuthStateChanged(u=>res(u))});return FBR}
+function fbUser(u){const e=String(u&&u.email||"").toLowerCase();return FB_TEAM[e]||e.split("@")[0]}
+async function fbMe(){const F=fbBoot();await F.ready;const u=F.auth.currentUser;if(!u)throw new Error("SESSION");return u}
+function fbRow(c,doc){const v=doc.data()||{};let data=null;try{data=v.j?JSON.parse(v.j):null}catch(e){}return {collection:c,id:doc.id,deleted:!!v.x,data}}
+// live updates: anything a teammate saves arrives here within a second
+function fbListen(from){const F=fbBoot();if(F.listening)return;F.listening=true;
+  COLS.forEach(c=>F.db.collection(c).where("u",">",from).onSnapshot(snap=>{let n=0;
+    snap.docChanges().forEach(ch=>{if(ch.type==="removed"||ch.doc.metadata.hasPendingWrites)return;const r=fbRow(c,ch.doc);
+      if(c==="meta"&&r.id==="sys"){F.sys=r.data||{};return}F.buf.push(r);n++});
+    if(n&&typeof pollNow==="function")setTimeout(pollNow,0)},err=>console.warn("listen",c,err)))}
+async function fbWrite(ops,by){const F=fbBoot(),now=Date.now();
+  for(let i=0;i<ops.length;i+=400){const b=F.db.batch();
+    ops.slice(i,i+400).forEach(o=>{const ref=F.db.collection(o.collection).doc(String(o.id));
+      b.set(ref,o.op==="delete"?{j:"null",u:now,x:true,by}:{j:JSON.stringify(o.data||{}),u:now,x:false,by})});
+    const p=b.commit();p.catch(e=>console.warn("save",e));
+    // offline: Firestore keeps the write on this device and sends it when the connection is back
+    await Promise.race([p,new Promise(r=>setTimeout(r,8000))])}}
+async function fbSetSys(patch){const F=fbBoot();F.sys={...(F.sys||{}),...patch};await F.db.collection("meta").doc("sys").set({j:JSON.stringify(F.sys),u:Date.now(),x:false})}
+async function fbAllRows(){const F=fbBoot(),rows=[];for(const c of COLS){const s=await F.db.collection(c).get();
+  s.forEach(d=>{const v=d.data()||{};if(c==="meta"&&d.id==="sys"){try{F.sys=JSON.parse(v.j||"{}")}catch(e){}return}rows.push({c,id:d.id,j:v.j,x:!!v.x})})}return rows}
+function fbBkName(label){const d=new Date(),p=n=>String(n).padStart(2,"0");return `Backup ${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}.${p(d.getMinutes())}${label?" "+label:""}`}
+async function fbBackup(label){const F=fbBoot(),rows=(await fbAllRows()).filter(r=>!r.x),str=JSON.stringify(rows),name=fbBkName(label);
+  const id=name.replace(/[^\w.-]+/g,"_")+"_"+Math.random().toString(36).slice(2,6),ref=F.db.collection("backups").doc(id),CH=300000,parts=Math.max(1,Math.ceil(str.length/CH));
+  for(let i=0;i<parts;i++)await ref.collection("parts").doc(String(i)).set({s:str.slice(i*CH,(i+1)*CH)});
+  await ref.set({name,at:Date.now(),parts,rows:rows.length});await fbSetSys({lastBackup:Date.now()});
+  const all=await F.db.collection("backups").get(),L=[];all.forEach(d=>L.push({id:d.id,...d.data()}));L.sort((a,b)=>b.at-a.at);
+  for(const o of L.slice(12)){for(let i=0;i<(o.parts||1);i++)await F.db.collection("backups").doc(o.id).collection("parts").doc(String(i)).delete();await F.db.collection("backups").doc(o.id).delete()}
+  return name}
+async function fbRestore(name){const F=fbBoot(),all=await F.db.collection("backups").get();let hit=null;all.forEach(d=>{const v=d.data();if(v.name===name)hit={id:d.id,...v}});
+  if(!hit)throw new Error("Backup not found");
+  await fbBackup("before restore");
+  let str="";for(let i=0;i<(hit.parts||1);i++){const p=await F.db.collection("backups").doc(hit.id).collection("parts").doc(String(i)).get();str+=(p.data()||{}).s||""}
+  const rows=JSON.parse(str),keep=new Set(rows.map(r=>r.c+"/"+r.id)),now=Date.now();
+  const ops=rows.map(r=>({c:r.c,id:r.id,v:{j:r.j,u:now,x:false,by:"restore"}}));
+  (await fbAllRows()).forEach(r=>{if(!r.x&&!keep.has(r.c+"/"+r.id))ops.push({c:r.c,id:r.id,v:{j:"null",u:now,x:true,by:"restore"}})});
+  for(let i=0;i<ops.length;i+=300){const b=F.db.batch();ops.slice(i,i+300).forEach(o=>b.set(F.db.collection(o.c).doc(o.id),o.v));await b.commit()}
+  await fbSetSys({restoredAt:now});return {restoredAt:now,rows:rows.length}}
+async function call(fn,...a){
+  const F=fbBoot();
+  if(fn==="appUrl")return location.origin+location.pathname;
+  if(fn==="login"){let e=String(a[0]||"").trim().toLowerCase();if(!e.includes("@")){const hit=Object.entries(FB_TEAM).find(([k,v])=>v===e);if(hit)e=hit[0]}
+    try{const cr=await F.auth.signInWithEmailAndPassword(e,String(a[1]||""));return {token:cr.user.uid,user:fbUser(cr.user)}}
+    catch(err){const c=String(err&&err.code||"");throw new Error(/network/.test(c)?"No connection. Check your internet.":/too-many/.test(c)?"Too many tries. Wait a minute and try again.":"Wrong email or password.")}}
+  if(fn==="logout"){await F.auth.signOut();return true}
+  if(fn==="loginWithKey")throw new Error("SESSION");
+  if(fn==="makeDeviceKey"||fn==="revokeDeviceKeys")throw new Error("Not needed any more: the app keeps you signed in on each device.");
+  const me=await fbMe(),my=fbUser(me);
+  if(fn==="loadAll"){const rows=[];for(const c of COLS){const s=await F.db.collection(c).get();
+      s.forEach(d=>{const r=fbRow(c,d);if(c==="meta"&&r.id==="sys"){F.sys=r.data||{};return}if(!r.deleted)rows.push(r)})}
+    fbListen(Date.now()-60000);
+    if(!VIEW_ONLY.includes(my)&&Date.now()-Number(F.sys.lastBackup||0)>7*86400e3&&rows.length)setTimeout(()=>fbBackup("weekly").catch(()=>{}),20000);
+    return {rows,now:Date.now()}}
+  if(fn==="changes"){if(!F.listening){const since=Number(a[1]||0),rows=[];
+      for(const c of COLS){const s=await F.db.collection(c).where("u",">",since).get();s.forEach(d=>{const r=fbRow(c,d);if(c==="meta"&&r.id==="sys"){F.sys=r.data||{};return}rows.push(r)})}
+      fbListen(Date.now()-5000);return {rows,now:Date.now(),restoredAt:Number(F.sys.restoredAt||0)}}
+    return {rows:F.buf.splice(0),now:Date.now(),restoredAt:Number(F.sys.restoredAt||0)}}
+  if(fn==="save"){await fbWrite(a[1]||[],my);return {now:Date.now()}}
+  if(fn==="listUsers")return {me:my,admin:ADMIN,users:[...new Set(Object.values(FB_TEAM))]};
+  if(fn==="changePassword"){const target=String(a[1]||my).toLowerCase(),nw=String(a[3]||"");
+    if(target!==my){if(my!==ADMIN)throw new Error("Only the admin can reset someone else’s password");const em=Object.keys(FB_TEAM).find(k=>FB_TEAM[k]===target);if(!em)throw new Error("User not found");
+      await F.auth.sendPasswordResetEmail(em);return {sent:em}}
+    if(nw.length<6)throw new Error("Use at least 6 characters");
+    try{await me.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(me.email,String(a[2]||"")));await me.updatePassword(nw);return true}
+    catch(err){throw new Error(/wrong-password|invalid-credential/.test(String(err&&err.code))?"Current password is wrong":"Couldn’t change it. Sign out and in again, then retry.")}}
+  if(fn==="listBackups"){const all=await F.db.collection("backups").get(),items=[];all.forEach(d=>{const v=d.data();items.push({name:v.name,rows:v.rows||0,at:v.at||0})});
+    items.sort((x,y)=>y.at-x.at);return {last:Number(F.sys.lastBackup||0),items}}
+  if(fn==="backupNow")return fbBackup("manual");
+  if(fn==="restoreBackup")return fbRestore(a[1]);
+  if(fn==="testNotify")throw new Error("Email alerts aren’t set up on Firebase yet. Pop-ups and Windows notifications still work.");
+  throw new Error("Unknown action: "+fn);
+}
+/* one-time move from the Google Sheet */
+async function gasCall(fn,...args){
   let r;const ctl=new AbortController();const tm=setTimeout(()=>ctl.abort(),fn==="loadAll"?60000:30000);
-  try{r=await fetch(API,{method:"POST",redirect:"follow",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({fn,args}),signal:ctl.signal})}
+  try{r=await fetch(OLD_API,{method:"POST",redirect:"follow",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({fn,args}),signal:ctl.signal})}
   catch(e){throw new Error(e&&e.name==="AbortError"?"Google is taking too long to answer. Please try again.":"Can’t reach your Google Sheet. Check your internet, or make sure the Apps Script deployment is set to Anyone.")}
   finally{clearTimeout(tm)}
   let j;try{j=await r.json()}catch(e){throw new Error("The board’s server didn’t answer properly. Check the API link in index.html.")}
   if(!j.ok)throw new Error(j.error||"Something went wrong");return j.data;
 }
+async function importFromSheet(user,pass,step){
+  step("Signing in to the Google Sheet…");const l=await gasCall("login",user,pass);
+  step("Reading everything from the Sheet…");const r=await gasCall("loadAll",l.token);
+  const F=fbBoot();await fbMe();const now=Date.now(),rows=r.rows||[];let i=0,done=0;
+  while(i<rows.length){const b=F.db.batch();let size=0,n=0;
+    while(i<rows.length&&n<300){const x=rows[i],j=JSON.stringify(x.data||{});if(n&&size+j.length>3500000)break;
+      b.set(F.db.collection(x.collection).doc(String(x.id)),{j,u:now,x:false,by:"import"});size+=j.length;n++;i++}
+    await b.commit();done+=n;step(`Copied ${done} of ${rows.length}…`)}
+  await fbSetSys({importedAt:now,importedRows:rows.length});return rows.length}
 function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
 function lsSet(k,v){try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}}
 function saveLocal(){try{localStorage.setItem("seb-free-demo",JSON.stringify({videos:S.videos,settings:S.settings,queue:S.queue,shoots:S.shoots,scripts:S.scripts,profiles:S.profiles}))}catch(e){}}
 function loadLocal(){try{const r=JSON.parse(localStorage.getItem("seb-free-demo")||"null");if(r){S.videos=r.videos||{};S.shoots=r.shoots||{};S.scripts=r.scripts||{};S.profiles=r.profiles||{};Object.assign(S.settings,r.settings||{});S.queue=r.queue||S.queue}}catch(e){}}
+function viewOnly(){return VIEW_ONLY.includes(S.me||"")}
+let voT=0;function voNote(){if(Date.now()-voT<2500)return;voT=Date.now();toast("View only. Ask Shibli or Zain to make changes")}
+const VIEW_OK=new Set(["copy","days","dialBack","dialTry","dialType","dlBackup","fclear","ffmt","fnolink","fnopil","fsched","fst","goShoots","goTab","grpToggle","histView","hrange","ideaArch","ideaCopy","ideaPil","ideaType","mExport","mOut","mday","mnav","more","newWin","openCmd","osnOn","osnTest","ovGo","ovMode","ovStatus","plByDay","plMode","playWrapped","printSum","rowMore","schedToday","shView","sumMode","sview","testAlert","vaultLock","vaultOpen","vcopy","viewScript","vshow","clearSel","chpw"]);
+const VIEW_FIELDS=["live","plr","sumr","ovr","opt"];
+function isViewField(el){const d=el&&el.dataset||{};return VIEW_FIELDS.some(k=>k in d)||el.type==="search"||!!(el.closest&&el.closest("#login,#cmd,.tpw,.vault-form"))}
+document.addEventListener("click",e=>{if(!viewOnly())return;const t=e.target;if(!t.closest)return;
+  const g=t.closest(".gsel");if(g&&g._sel&&!isViewField(g._sel)){e.preventDefault();e.stopPropagation();voNote();return}
+  const b=t.closest("[data-act]");if(b&&!VIEW_OK.has(b.dataset.act)){e.preventDefault();e.stopPropagation();voNote()}},true);
+["change","input"].forEach(ev=>document.addEventListener(ev,e=>{if(!viewOnly())return;const t=e.target;if(!t||!t.closest||!t.closest("#main,#addDlg,#shootDlg"))return;if(isViewField(t))return;
+  e.stopPropagation();if(ev==="change"){voNote();render()}},true));
+document.addEventListener("pointerdown",e=>{if(viewOnly()&&e.target.closest&&e.target.closest("[data-drag-id],.erow")&&!e.target.closest("a,[data-act],.gsel"))e.stopPropagation()},true);
 function enqueue(op,collection,id,data){
+  if(viewOnly()){voNote();return}
   if(!GAS){saveLocal();return}
   pending.set(collection+"/"+id,{op,collection,id,data});savePendingLocal();cacheRow({collection,id,data,deleted:op==="delete"});
   $("#sync").textContent="Saving…";
@@ -2443,7 +2561,7 @@ async function flush(){
   if(FLUSHING){clearTimeout(flushT);flushT=setTimeout(flush,300);return}   // one save at a time, in order
   FLUSHING=true;
   const ops=[...pending.values()];ops.forEach(o=>inflight.set(o.collection+"/"+o.id,o));pending.clear();
-  try{FAST_UNTIL=Date.now()+45000;const res=await call("save",token,ops);const now=Date.now();ops.forEach(o=>SAVED_AT.set(o.collection+"/"+o.id,now));$("#sync").textContent="Saved to your Google Sheet. Changes appear for your team within a few seconds.";
+  try{FAST_UNTIL=Date.now()+45000;const res=await call("save",token,ops);const now=Date.now();ops.forEach(o=>SAVED_AT.set(o.collection+"/"+o.id,now));$("#sync").textContent="Saved. Your team sees it straight away.";
     if(res&&res.notified)toast(`Notified ${String(S.settings.notifyEmails||"").split(/[,;\s]+/).filter(Boolean)[0]||"poster"}${res.notified>1?` about ${res.notified} videos`:""}`)}
   catch(e){if(String(e&&e.message).includes("SESSION"))return sessionExpired();ops.forEach(o=>{const k=o.collection+"/"+o.id;if(!pending.has(k))pending.set(k,o)});$("#sync").textContent="Not saved yet, retrying…";clearTimeout(flushT);flushT=setTimeout(flush,4000)}
   finally{ops.forEach(o=>inflight.delete(o.collection+"/"+o.id));FLUSHING=false;savePendingLocal();if(pending.size&&!flushT){flushT=setTimeout(flush,150)}}
@@ -3314,6 +3432,12 @@ function askSlot(d){
   dl.addEventListener("close",()=>{if(dl.returnValue!=="ok")return;const tm=$("#slotTime").value;if(!tm)return;addExtraSlot(d,$("#slotKind").value,tm)},{once:true});
   openDlg(dl);
 }
+function importPanel(){const F=FBR||{};const sys=F.sys||{};
+  if(sys.importedAt&&!S.showImport)return `<section class="panel"><div class="phead"><h2>Data</h2><span class="stat">Moved from the Google Sheet on ${esc(nice(iso(new Date(sys.importedAt))))} (${sys.importedRows||0} items)</span></div><button class="btn small ghost" data-act="showImport">Import again</button></section>`;
+  return `<section class="panel imp"><div class="phead"><h2>Move your data from the Google Sheet</h2></div>
+    <p class="sub">One time only. Copies every video, shoot, script, idea, photo, setting and the account vault from your Google Sheet into Firebase. The Sheet itself isn’t changed. Use your <b>old board username and password</b>.</p>
+    <div class="vault-form"><input type="text" id="impUser" placeholder="Old username (e.g. shibili)" autocomplete="off"><input type="password" id="impPass" placeholder="Old password" autocomplete="off"><button class="btn primary" data-act="fbImport">Import now</button></div>
+    <p class="sub" id="impStep"></p></section>`}
 function vSettings(){
   const P=plans(),t=today(),cur=planFor(t);
   const maxPer=Math.max(...P.map(p=>p.times.length),0);
@@ -3324,7 +3448,7 @@ function vSettings(){
       <span class="cnt">${p.times.length} a day${p===cur?` <span class="tag">now</span>`:""}${p.to?` <span class="tag${p.to<t?"":" tmp"}">${p.to<t?"Ended":p.from===p.to?"One day":"Until "+esc(nice(p.to))}</span>`:""}</span>
       ${P.length>1?`<button class="btn small ghost" data-act="rmPlan" data-i="${i}">Remove</button>`:"<span></span>"}
     </div>`).join("");
-  return teamPanel()+vaultPanel()+`<section class="panel">
+  return importPanel()+teamPanel()+vaultPanel()+`<section class="panel">
     <h2>Reel plan</h2>
     <p class="sub">Reel times per day, separated by commas. Add an end date for a one-off change, such as an extra post on a single day. It replaces the regular plan only between those dates.</p>
     ${rows}
@@ -3404,6 +3528,7 @@ function vSettings(){
 function isTyping(){const a=document.activeElement;return a&&a.closest&&a.closest("#main")&&!a.dataset.live&&(a.tagName==="TEXTAREA"||(a.tagName==="INPUT"&&/^(text|number)$/.test(a.type)))}
 let VT_ON=false;
 function render(){
+  document.body.classList.toggle("viewonly",viewOnly());
   if(isTyping()||DIAL.busy||DIAL.trying||VT_ON||(typeof GX!=="undefined"&&GX.btn)||(typeof STM!=="undefined"&&STM.btn)){pendingRender=true;return}
   pendingRender=false;
   const a=document.activeElement,live=a&&a.dataset&&a.dataset.live,sel=live&&a.selectionStart;
@@ -3450,7 +3575,7 @@ function backupsPanel(){
   const list=d?(d.items.length?d.items.map(b=>`<div class="bkrow"><div><b>${esc(b.name.replace(/^Backup /,""))}</b><small>${b.rows} saved item${b.rows===1?"":"s"}</small></div><button class="btn small" data-act="restoreBk" data-n="${esc(b.name)}">Restore</button></div>`).join(""):`<p class="sub">No backups yet. The first one is made automatically, or click Back up now.</p>`):`<p class="sub">Loading backups…</p>`;
   return `<section class="panel">
     <div class="phead"><h2>Backups</h2><div class="pactions"><button class="btn" data-act="dlBackup">Download a backup file</button><button class="shuffle" data-act="backupNow"${BK.busy?" disabled":""}>${BK.busy?"Backing up…":"Back up now"}</button></div></div>
-    <p class="sub">A copy of all your data is saved automatically every 7 days inside your Google Sheet, and the newest 12 are kept. ${last?`Last backup: <b>${esc(last.toLocaleString([], {day:"numeric",month:"short",year:"numeric",hour:"numeric",minute:"2-digit"}))}</b>.`:""}</p>
+    <p class="sub">A copy of all your data is saved automatically every 7 days, and the newest 12 are kept. ${last?`Last backup: <b>${esc(last.toLocaleString([], {day:"numeric",month:"short",year:"numeric",hour:"numeric",minute:"2-digit"}))}</b>.`:""}</p>
     <div class="bklist">${list}</div>
   </section>`;
 }
@@ -3563,7 +3688,7 @@ function teamPanel(){
       </div></div>`}).join("");
   return `<section class="panel"><div class="phead"><h2>Team</h2><span class="stat">${d.users.length} member${d.users.length===1?"":"s"}</span></div>
     <div class="tgrid">${cards}</div>
-    <p class="ovnote">To add or remove someone, edit the Users tab in your Google Sheet. The first person listed there is the admin.</p></section>`;
+    <p class="ovnote">To add or remove someone, add their email in Firebase (Authentication → Users and the Firestore rules), then add them to the team list in index.html.</p></section>`;
 }
 /* photo reframing */
 let CR=null;const CV=260;
@@ -4760,6 +4885,11 @@ document.addEventListener("click",async e=>{
     if(!nw||nw.value.length<4){toast("Use at least 4 characters");return}
     b.disabled=true;call("changePassword",token,u,od?od.value:"",nw.value).then(()=>{toast(self?"Password changed":`Password reset for ${dispName(u)}`);nw.value="";if(od)od.value=""}).catch(err=>toast(String(err&&err.message||"Couldn’t change it").replace(/^Error: /,""))).finally(()=>{b.disabled=false})}
   else if(act==="addRaw"){askRaw(b.dataset.d)}
+  else if(act==="showImport"){S.showImport=true;render()}
+  else if(act==="fbImport"){const u=$("#impUser").value.trim(),p=$("#impPass").value;if(!u||!p){toast("Enter your old username and password");return}
+    if((FBR&&FBR.sys&&FBR.sys.importedAt)&&!await ask("Import again?","Items from the Sheet replace the same items here. Anything added only in Firebase stays.","Import",true))return;
+    b.disabled=true;const st=$("#impStep");try{const n=await importFromSheet(u,p,m=>{if(st)st.textContent=m});st.textContent=`Done: ${n} items copied. Reloading…`;toast("Import finished");setTimeout(()=>location.reload(),1500)}
+    catch(err){b.disabled=false;if(st)st.textContent="";toast(String(err&&err.message||"Import failed").replace(/^Error: /,""))}}
   else if(act==="pauseEdit"){const v=S.videos[b.dataset.id];if(v){pauseVideo(v);toast("Timer paused")}}
   else if(act==="resumeEdit"){const v=S.videos[b.dataset.id];if(v){vids().filter(o=>o.id!==v.id&&o.status==="Editing").forEach(o=>pauseVideo(o,true));resumeVideo(v);toast("Timer running again")}}
   else if(act==="pauseAll"){vids().filter(v=>v.status==="Editing").forEach(v=>pauseVideo(v,true));render();toast("Editing paused. Enjoy your break")}
@@ -5044,7 +5174,7 @@ async function startSession(t,user){
     loaded=true;restorePendingLocal();render();checkAlerts();cacheRow({collection:"_",id:"_",deleted:true});
     if(fresh)setTimeout(()=>{call("loadAll",token).then(f=>{f.rows.forEach(applyDoc);const ids=new Set(f.rows.map(x=>x.collection+"/"+x.id));
       ["videos","shoots","scripts","ideas"].forEach(c=>Object.keys(S[c]||{}).forEach(id=>{const k=c+"/"+id;if(!ids.has(k)&&!pending.has(k)&&!inflight.has(k)){delete S[c][id];CROWS.delete(k)}}));render()}).catch(()=>{})},20000);
-    $("#sync").textContent="Connected to your Google Sheet. Changes save automatically.";
+    $("#sync").textContent="Connected. Changes save automatically and reach your team instantly.";
     /* welcome burst: tiny lime particles from the header on first connect */
     if(!lsGet("seb-welcomed-today")||lsGet("seb-welcomed-today")!==today()){lsSet("seb-welcomed-today",today());
       if(!RM)setTimeout(()=>{const h=document.querySelector("header.top h1");if(h){const r=h.getBoundingClientRect();confetti({left:r.left+r.width/2,top:r.top+r.height/2,width:0,height:0},18)}},800)}
@@ -5058,8 +5188,7 @@ async function startSession(t,user){
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)pollNow()});
 addEventListener("focus",()=>pollNow());
 document.addEventListener("visibilitychange",()=>{if(document.hidden&&pending.size){clearTimeout(flushT);flush()}});
-addEventListener("pagehide",()=>{if(!pending.size||!token)return;const ops=[...pending.values()];
-  try{fetch(API,{method:"POST",keepalive:true,headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({fn:"save",args:[token,ops]})})}catch(e){}});
+addEventListener("pagehide",()=>{if(pending.size&&token)try{flush()}catch(e){}});
 window.addEventListener("beforeunload",e=>{if(pending.size||inflight.size){flush();e.preventDefault();e.returnValue=""}});
 $("#loginForm").addEventListener("submit",async e=>{
   e.preventDefault();const f=e.target;const btn=f.querySelector("button");$("#loginErr").textContent="Signing in…";btn.disabled=true;

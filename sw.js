@@ -1,6 +1,6 @@
 // Shoot & Edit Board: always loads the newest page when online, falls back to the saved copy when offline,
 // and handles Windows notification clicks.
-const CACHE = 'shoot-board-v47';
+const CACHE = 'shoot-board-v48';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 self.addEventListener('install', e => {
   // cache: 'reload' skips the browser's own cache, so a new version is really fetched fresh
@@ -12,10 +12,10 @@ self.addEventListener('activate', e => {
 });
 self.addEventListener('fetch', e => {
   const req = e.request;
-  if (req.method !== 'GET') return;                              // data calls go straight to your Google Sheet
+  if (req.method !== 'GET') return;                              // data calls go straight to Firebase
   const url = new URL(req.url);
   const same = url.origin === location.origin;
-  const fontsOrLibs = /fonts\.(googleapis|gstatic)\.com|cdn\.jsdelivr\.net/.test(url.host);
+  const fontsOrLibs = /fonts\.(googleapis|gstatic)\.com|cdn\.jsdelivr\.net|www\.gstatic\.com/.test(url.host);   // fonts, libraries and the Firebase code
   if (!same && !fontsOrLibs) return;
   // the page itself: newest version first, saved copy only when offline or very slow
   if (req.mode === 'navigate' || (same && /\/(index\.html)?$/.test(url.pathname))) {
