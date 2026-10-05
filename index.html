@@ -1839,6 +1839,29 @@ nav.tabs.stuck{background:rgba(255,255,255,.8)!important;box-shadow:0 16px 40px 
 .shoot-need .sn{display:inline-flex;align-items:baseline;gap:6px;padding:8px 14px;border-radius:14px;background:rgba(255,255,255,.75);border:1px solid rgba(255,255,255,.95);box-shadow:0 2px 8px rgba(20,24,10,.06),inset 0 1px 0 #fff;font-weight:700}
 .shoot-need .sn em{font-style:normal;font-size:24px;font-weight:900;letter-spacing:-.02em}
 .shoot-need small{flex-basis:100%;color:var(--muted);font-weight:500;font-size:12.5px}
+
+.fseg{display:inline-flex;background:rgba(12,14,8,.05);border-radius:999px;padding:3px;gap:2px;flex:none}
+.fseg button{border:0;background:transparent;border-radius:999px;padding:6px 11px;font:600 12.5px/1 inherit;color:#5f6459;cursor:pointer;transition:background .2s,color .2s}
+.fseg button[aria-pressed="true"]{background:#fff;color:#0B0B0C;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.prow{grid-template-columns:minmax(0,1fr) auto 170px!important}
+.pnone{font-size:12px;color:var(--muted);text-align:center}
+.pa-gap{width:10px}
+@media (max-width:600px){.prow{grid-template-columns:1fr auto!important}.prow>.gsel,.prow>.pnone,.prow>select{grid-column:1/-1}}
+
+/* time away */
+.away{display:flex;align-items:flex-start;gap:14px;padding:14px 16px;border-radius:18px;background:rgba(255,255,255,.72);border:1px solid rgba(255,255,255,.95);box-shadow:inset 0 1px 0 #fff;margin-bottom:10px}
+.aw-i{width:42px;height:42px;border-radius:14px;background:linear-gradient(180deg,#C2FF45,#AAFF00);display:grid;place-items:center;font-size:20px;flex:none;box-shadow:0 6px 16px rgba(150,230,0,.35)}
+.aw-m{flex:1;min-width:0;display:grid;gap:2px}
+.aw-m b{font-size:16px}.aw-m small{color:var(--muted);font-size:12.5px}
+.aw-m p{margin:6px 0 0;font-size:14px}
+.aw-m .tag{margin-left:0;margin-right:6px}
+.away-form{display:grid;grid-template-columns:1.3fr 1fr 1fr 1.3fr 1fr auto;gap:10px;align-items:end;margin-top:6px}
+.away-form label{display:grid;gap:6px;font-size:12.5px;font-weight:700;color:var(--muted)}
+.away-form input{border:1px solid rgba(12,14,8,.08);border-radius:12px;padding:9px 11px;background:rgba(255,255,255,.8)}
+.away-banner{display:flex;align-items:center;gap:12px;padding:12px 16px;margin:0 0 16px;border-radius:20px;background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.95);
+  -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);box-shadow:0 8px 24px rgba(20,24,10,.07),inset 0 1px 0 #fff;font-size:14.5px}
+.away-banner>span:nth-child(2){flex:1}
+@media (max-width:760px){.away-form{grid-template-columns:1fr 1fr}.away-form .btn{grid-column:1/-1}.away-banner{flex-wrap:wrap}}
 </style>
 </head>
 <body>
@@ -1906,7 +1929,7 @@ nav.tabs.stuck{background:rgba(255,255,255,.8)!important;box-shadow:0 16px 40px 
     <label class="rawin">Footage folder <span>(optional, press Ctrl + Shift + C on the folder in File Explorer, then paste)</span><input name="rawLink" type="text" placeholder="D:\Raw Footage\24-09-2026 Showroom" autocomplete="off" spellcheck="false"></label>
     <div class="foot">
       <button class="btn" value="cancel" formnovalidate>Cancel</button>
-      <button class="btn primary" id="addSubmit" value="ok">Add videos</button>
+      <button class="btn primary" id="addSubmit" value="ok">Add to board</button>
     </div>
   </form>
 </dialog>
@@ -2297,7 +2320,7 @@ function applyDoc(row){
   else if(row.collection==="meta"&&row.id==="vault"){if(row.deleted){S.vaultDoc=null;return}S.vaultDoc=row.data;vaultRefresh()}
   else if(row.collection==="scripts"){if(row.deleted)delete S.scripts[row.id];else S.scripts[row.id]=row.data}
   else if(row.deleted)return;
-  else if(row.collection==="meta"&&row.id==="settings"){const d=row.data||{};Object.assign(S.settings,d);if(Array.isArray(d.plans))S.settings.plans=d.plans.map(p=>({from:p.from,to:p.to||"",times:[...(p.times||[])]}));if(Array.isArray(d.cplans))S.settings.cplans=d.cplans.map(p=>({from:p.from,to:p.to||"",days:[...(p.days||[])],times:[...(p.times||[])]}))}
+  else if(row.collection==="meta"&&row.id==="settings"){const d=row.data||{};Object.assign(S.settings,d);if(Array.isArray(d.plans))S.settings.plans=d.plans.map(p=>({from:p.from,to:p.to||"",times:[...(p.times||[])],...(p.awayId?{awayId:p.awayId}:{})}));if(Array.isArray(d.cplans))S.settings.cplans=d.cplans.map(p=>({from:p.from,to:p.to||"",days:[...(p.days||[])],times:[...(p.times||[])],...(p.awayId?{awayId:p.awayId}:{})}))}
   else if(row.collection==="meta"&&row.id==="queue"){const d=row.data||{};S.queue={ids:[...(d.ids||[])],at:d.at||null,pins:{...(d.pins||{})}}}
 }
 let polling=false;
@@ -2750,7 +2773,7 @@ function vOverview(){
   const noScript=upcomingShoots().filter(s=>!S.scripts[s.id]&&!s.scriptLink).length;
   const shootLine=(lbl,s)=>`<div class="ovs"><span class="ovs-l">${lbl}</span>${s?`<span class="ovs-t"><b>${esc(s.title||"Untitled shoot")}</b><small>${esc(niceW(s.date))}${s.time?", "+fmtT(s.time):""}${(s.videos||[]).length?`, ${s.videos.length} video${s.videos.length===1?"":"s"}`:""}</small></span>${S.scripts[s.id]||s.scriptLink?`<button class="iconbtn" data-act="viewScript" data-id="${s.id}">Script</button>`:`<span class="tag warn">No script</span>`}`:`<span class="ovs-t muted">Nothing planned</span>`}</div>`;
   const shotT=all.filter(v=>v.shotDate===t).length,edT=editedToday();
-  return `
+  return `${awayBanner()}
   <section class="panel ov">
     <div class="phead"><h2>${esc(niceW(t))}</h2>
       <div class="ovtoday"><span>Shot today <b>${shotT}</b>/${S.settings.shootTarget}</span><i style="--p:${Math.min(1,shotT/S.settings.shootTarget)}"></i>${(()=>{const ep=editPlan();const goal=edT+ep.todayLeft;const s=editStreak();return `<span class="gwrap">${goalRing(edT,ep.todayOff?0:goal)}<span>${ep.todayOff?"Day off":`Edited <b>${edT}</b>/${goal||edT}`}${s>1?`<em class="streak">🔥 ${s}-day streak</em>`:""}</span></span>`})()}</div></div>
@@ -3632,7 +3655,7 @@ function calFx(v){sfx2("flip");const d=v&&v.postDate?new Date(v.postDate+"T00:00
 // 4. clapperboard
 function clapFx(n){fxShow(`<div class="clap"><svg viewBox="0 0 200 170"><g class="arm"><rect x="10" y="18" width="180" height="30" rx="6" fill="#0B0B0C"/>${[0,1,2,3,4,5].map(i=>`<path d="M${24+i*30} 18 l18 0 l-12 30 l-18 0z" fill="#AAFF00"/>`).join("")}</g>
   <rect x="10" y="52" width="180" height="108" rx="10" fill="#0B0B0C"/><rect x="10" y="52" width="180" height="16" fill="#1d1f18"/>
-  <text x="100" y="112" text-anchor="middle" fill="#AAFF00" font-size="30" font-weight="800">+${n}</text><text x="100" y="140" text-anchor="middle" fill="#fff" font-size="13" font-weight="600">${n===1?"video logged":"videos logged"}</text></svg></div>`,"fx-clap",1150);
+  <text x="100" y="112" text-anchor="middle" fill="#AAFF00" font-size="30" font-weight="800">+${n}</text><text x="100" y="140" text-anchor="middle" fill="#fff" font-size="13" font-weight="600">${"logged"}</text></svg></div>`,"fx-clap",1150);
   setTimeout(()=>sfx2("clap"),240)}
 // 5. daily edit target: ring, win moment and streak
 function editStreak(){const tgt=Math.max(1,S.settings.editTarget||4);const cnt={};vids().forEach(v=>{if(v.editedOn)cnt[v.editedOn]=(cnt[v.editedOn]||0)+1});
@@ -3780,6 +3803,42 @@ new MutationObserver(ms=>{let hit=false;for(const m of ms)for(const n of m.added
   if(hit)requestAnimationFrame(()=>gxEnhance(document))}).observe(document.body,{childList:true,subtree:true});
 requestAnimationFrame(()=>gxEnhance(document));
 
+
+/* ---------- time away: when Fahad can't shoot, lighten the plan for those days and show what to shoot before leaving ---------- */
+function awayList(){return [...(S.settings.away||[])].filter(a=>a.from&&a.to).sort((a,b)=>a.from.localeCompare(b.from))}
+function isAway(d){return awayList().find(a=>d>=a.from&&d<=a.to)}
+function pickTimes(T,n){T=[...T].sort();if(n>=T.length)return T;if(n<=0)return [];if(n===1)return [T[Math.floor((T.length-1)/2)]];return [...new Set(Array.from({length:n},(_,i)=>T[Math.round(i*(T.length-1)/(n-1))]))]}
+function applyAway(a){
+  S.settings.plans=plans().filter(p=>p.awayId!==a.id);S.settings.cplans=cplans().filter(p=>p.awayId!==a.id);
+  if(a.reels!==""&&a.reels!=null){const base=planFor(a.from).times||[];S.settings.plans.push({from:a.from,to:a.to,times:pickTimes(base,+a.reels),awayId:a.id})}
+  if(a.cars==="pause")S.settings.cplans.push({from:a.from,to:a.to,days:[],times:[],awayId:a.id});
+}
+function awayPrep(a){const t=today();if(a.to<t)return null;
+  const R=needFor("R",0,t,a.to),C=needFor("C",0,t,a.to);let days=0;for(let d=t;d<a.from;d=addDays(d,1))if(!isAway(d))days++;
+  return {reels:R.toShoot,cars:C.toShoot,days,started:a.from<=t}}
+function awaySummary(a){const r=a.reels===""||a.reels==null?"usual reels":+a.reels===0?"no reels":`${a.reels} reel${+a.reels===1?"":"s"} a day`;return `${r}, ${a.cars==="pause"?"carousels paused":"carousels as usual"}`}
+function awayCard(a){const P=awayPrep(a),days=daysBetween(a.from,a.to)+1;
+  const prep=!P?`<span class="tag">Finished</span>`:P.started?`<span class="tag new">Away now</span> Posting ${esc(awaySummary(a))} until ${esc(nice(a.to))}.`
+    :P.reels+P.cars?`Before <b>${esc(niceW(a.from))}</b>, shoot <b>${P.reels} reel${P.reels===1?"":"s"}</b>${P.cars?` + <b>${P.cars} carousel${P.cars===1?"":"s"}</b>`:""} to cover until ${esc(nice(a.to))}. ${P.days?`That’s about <b>${Math.ceil((P.reels+P.cars)/P.days)} a day</b> over the ${P.days} day${P.days===1?"":"s"} left.`:"<b>No shoot days left before it starts.</b>"}`
+    :`<span class="tag new">✓ Covered</span> You already have enough footage for these days.`;
+  return `<div class="away"><div class="aw-i">✈︎</div><div class="aw-m"><b>${esc(a.label||"Time away")}</b><small>${esc(niceW(a.from))} – ${esc(niceW(a.to))} · ${days} day${days===1?"":"s"} · ${esc(awaySummary(a))}</small><p>${prep}</p></div>
+    <button class="xbtn" data-act="awayDel" data-id="${a.id}" aria-label="Remove" title="Remove">×</button></div>`}
+function awayPanel(){
+  const L=awayList().filter(a=>a.to>=today()),base=planFor(addDays(today(),1)).times||[],mx=Math.max(4,base.length);
+  return `<section class="panel"><div class="phead"><h2>Time away</h2><span class="stat">Plan ahead for days Fahad can’t shoot</span></div>
+    ${L.map(awayCard).join("")||`<p class="sub">No time away planned.</p>`}
+    <div class="away-form">
+      <label>What<input type="text" id="awLabel" placeholder="Fahad on vacation"></label>
+      <label>From<input type="date" id="awFrom" value="${addDays(today(),7)}"></label>
+      <label>To<input type="date" id="awTo" value="${addDays(today(),13)}"></label>
+      <label>Reels on those days<select id="awReels"><option value="">Keep the usual (${base.length} a day)</option>${Array.from({length:mx+1},(_,n)=>n).filter(n=>n<base.length).map(n=>`<option value="${n}">${n===0?"Pause reels":`${n} a day`}</option>`).join("")}</select></label>
+      <label>Carousels<select id="awCars"><option value="keep">Keep as usual</option><option value="pause">Pause</option></select></label>
+      <button class="btn primary" data-act="awayAdd">Add time away</button>
+    </div>
+    <p class="hint">Posting on those days is lightened automatically, and the reshuffle fills the remaining slots. The panel shows how much to shoot before leaving.</p></section>`}
+function awayBanner(){const t=today();const a=awayList().find(x=>x.to>=t&&x.from<=addDays(t,45));if(!a)return "";const P=awayPrep(a);if(!P)return "";
+  return `<div class="away-banner"><span class="aw-i">✈︎</span><span><b>${esc(a.label||"Time away")}</b> ${esc(nice(a.from))} – ${esc(nice(a.to))}. ${P.started?`Away now, posting ${esc(awaySummary(a))}.`:P.reels+P.cars?`Shoot <b>${P.reels} reels${P.cars?` + ${P.cars} carousel${P.cars===1?"":"s"}`:""}</b> before ${esc(niceW(a.from))}${P.days?`, about ${Math.ceil((P.reels+P.cars)/P.days)} a day`:""}.`:`✓ Already covered.`}</span><button class="btn small" data-act="goShoots">Plan shoots</button></div>`}
+
 /* ---------- shoot plan ---------- */
 const SH_ST=[{k:"Planned",c:"#AAFF00"},{k:"Done",c:"#0B0B0C"},{k:"Cancelled",c:"#A1A1A6"}];
 function shoots(){return Object.values(S.shoots||{})}
@@ -3841,7 +3900,7 @@ function vShoots(){
   const keys=Object.keys(groups).sort();if(view!=="upcoming")keys.reverse();
   const list=keys.map(k=>{const [y,m]=k.split("-").map(Number);return `<div class="card"><header><h3>${MONL[m-1]} ${y}</h3><span class="count">${groups[k].length}</span></header>${groups[k].map(shootRow).join("")}</div>`}).join("");
   const up=upcomingShoots().length,done=shoots().filter(s=>s.status==="Done").length,withScript=upcomingShoots().filter(s=>S.scripts[s.id]||s.scriptLink).length;
-  return `<section class="panel">
+  return awayPanel()+`<section class="panel">
     <div class="phead"><h2>Shoot plan</h2><div class="pactions"><button class="shuffle" data-act="newShoot">Plan a shoot</button></div></div>
     <div class="hstats">
       <div><b>${up}</b><span>Coming up</span></div>
@@ -4432,6 +4491,12 @@ document.addEventListener("click",async e=>{
     if(!nw||nw.value.length<4){toast("Use at least 4 characters");return}
     b.disabled=true;call("changePassword",token,u,od?od.value:"",nw.value).then(()=>{toast(self?"Password changed":`Password reset for ${dispName(u)}`);nw.value="";if(od)od.value=""}).catch(err=>toast(String(err&&err.message||"Couldn’t change it").replace(/^Error: /,""))).finally(()=>{b.disabled=false})}
   else if(act==="addRaw"){askRaw(b.dataset.d)}
+  else if(act==="awayAdd"){const a={id:"aw"+Date.now().toString(36),label:$("#awLabel").value.trim()||"Fahad on vacation",from:$("#awFrom").value,to:$("#awTo").value,reels:$("#awReels").value,cars:$("#awCars").value};
+    if(!a.from||!a.to){toast("Pick both dates");return}if(a.to<a.from){const x=a.from;a.from=a.to;a.to=x}
+    S.settings.away=[...(S.settings.away||[]),a];applyAway(a);putSettings();render();toast(`Added. ${awaySummary(a)} from ${nice(a.from)} to ${nice(a.to)}`)}
+  else if(act==="awayDel"){const a=(S.settings.away||[]).find(x=>x.id===b.dataset.id);if(!a)return;if(!await ask(`Remove “${a.label}”?`,"Those days go back to the usual posting plan.","Remove"))return;
+    S.settings.away=(S.settings.away||[]).filter(x=>x.id!==a.id);S.settings.plans=plans().filter(p=>p.awayId!==a.id);S.settings.cplans=cplans().filter(p=>p.awayId!==a.id);putSettings();render()}
+  else if(act==="goShoots"){goTab("shoots")}
   else if(act==="ovMode"){const m=b.dataset.m;S.ovRange={...(S.ovRange||{}),mode:m};if(m==="custom"&&!S.ovRange.from){S.ovRange.from=today();S.ovRange.to=addDays(today(),6)}render()}
   else if(act==="stMenu"){openStMenu(b)}
   else if(act==="editLink"){S.editLinks=S.editLinks||{};S.editLinks[b.dataset.id]=true;render();setTimeout(()=>{const i=document.querySelector(`.link-in[data-id="${b.dataset.id}"]`);if(i){i.focus();i.select()}},30)}
@@ -4589,17 +4654,25 @@ document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.matches("td
 /* add dialog */
 const dlg=$("#addDlg"),form=$("#addForm");
 form.elements.status.innerHTML=STATUSES.map(s=>`<option${s.k==="Shot"?" selected":""}>${s.k}</option>`).join("");
-function openAdd(){form.elements.shotDate.value=today();form.elements.titles.value="";form.elements.rawLink.value="";ADDP=[];updAdd();dlg.returnValue="";openDlg(dlg)}
+function openAdd(){form.elements.shotDate.value=today();form.elements.titles.value="";form.elements.rawLink.value="";ADDP=[];ADDF=[];updAdd();dlg.returnValue="";openDlg(dlg)}
 function lines(){return form.elements.titles.value.split(/\r?\n/).map(s=>s.trim()).filter(Boolean)}
 let ADDP=[];
-function updAdd(){const L=lines(),n=L.length;$("#addSubmit").textContent=n?`Add ${n} video${n>1?"s":""}`:"Add videos";
-  const show=pillars().length&&form.elements.format.value==="Reel";
-  $("#pillarAll").innerHTML=show?`<span>Pillar</span>${pillars().map(p=>`<button type="button" class="pbtn" data-pall="${esc(p)}" style="--pc:${pillarColor(p)}">All ${esc(p)}</button>`).join("")}`:"";
-  $("#pillarRows").innerHTML=show&&n?L.map((t,i)=>`<div class="prow"><span class="pt">${esc(t)}</span>${pillarSelect(`data-prow="${i}" aria-label="Pillar for ${esc(t)}"`,ADDP[i]||"")}</div>`).join(""):"";
+let ADDF=[];
+function addCountLabel(){const L=lines(),def=form.elements.format.value;let r=0,c=0;L.forEach((_,i)=>((ADDF[i]||def)==="Carousel"?c++:r++));
+  if(!L.length)return "Add to board";return "Add "+[r?`${r} reel${r>1?"s":""}`:"",c?`${c} carousel${c>1?"s":""}`:""].filter(Boolean).join(" + ")}
+function updAdd(){const L=lines(),n=L.length,def=form.elements.format.value;$("#addSubmit").textContent=addCountLabel();
+  $("#pillarAll").innerHTML=n?`<span>All</span><button type="button" class="pbtn" data-fall="Reel" style="--pc:#5B7FD1">Reels</button><button type="button" class="pbtn" data-fall="Carousel" style="--pc:#7DAF1F">Carousels</button>${pillars().length?`<span class="pa-gap"></span>${pillars().map(p=>`<button type="button" class="pbtn" data-pall="${esc(p)}" style="--pc:${pillarColor(p)}">${esc(p)}</button>`).join("")}`:""}`:"";
+  $("#pillarRows").innerHTML=n?L.map((t,i)=>{const f=ADDF[i]||def;return `<div class="prow"><span class="pt">${esc(t)}</span>
+    <span class="fseg" role="group" aria-label="Format for ${esc(t)}"><button type="button" data-frow="${i}" data-fv="Reel" aria-pressed="${f==="Reel"}">Reel</button><button type="button" data-frow="${i}" data-fv="Carousel" aria-pressed="${f==="Carousel"}">Carousel</button></span>
+    ${f==="Reel"&&pillars().length?pillarSelect(`data-prow="${i}" aria-label="Pillar for ${esc(t)}"`,ADDP[i]||""):`<span class="pnone">${f==="Reel"?"":"No pillar needed"}</span>`}</div>`}).join(""):"";
 }
 document.addEventListener("change",e=>{const s=e.target.closest&&e.target.closest("[data-prow]");if(s){ADDP[+s.dataset.prow]=s.value;return}
-  if(e.target===form.elements.format)updAdd()});
-document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-pall]");if(!b)return;const p=b.dataset.pall;ADDP=lines().map(()=>p);updAdd()});
+  if(e.target===form.elements.format){ADDF=[];updAdd()}});
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-pall],[data-fall],[data-frow]");if(!b)return;
+  if(b.dataset.pall){const p=b.dataset.pall;ADDP=lines().map((_,i)=>(ADDF[i]||form.elements.format.value)==="Reel"?p:(ADDP[i]||""))}
+  else if(b.dataset.fall){ADDF=lines().map(()=>b.dataset.fall)}
+  else{ADDF[+b.dataset.frow]=b.dataset.fv;if(!ADDF.length)ADDF=[]}
+  updAdd()});
 form.elements.titles.addEventListener("input",updAdd);
 dlg.addEventListener("close",()=>{
   if(dlg.returnValue!=="ok")return;
@@ -4608,8 +4681,8 @@ dlg.addEventListener("close",()=>{
   const now=Date.now(),st=form.elements.status.value,sd=form.elements.shotDate.value;
   const rawIn=cleanPath(form.elements.rawLink.value);
   const link=safeUrl(rawIn)||rawLinkFor(sd)||"",pth=(rawIn&&!safeUrl(rawIn))?rawIn:rawPathFor(sd);
-  const fmt=form.elements.format.value;
-  L.forEach((title,i)=>putVideo({id:uid(),title,format:fmt,pillar:fmt==="Reel"?(ADDP[i]||""):"",shotDate:sd,status:st,postDate:"",postTime:"",notes:"",editedOn:DONE_EDIT.includes(st)?today():"",createdAt:now+i,rawLink:link,rawPath:pth||""},true));
+  const def=form.elements.format.value;
+  L.forEach((title,i)=>{const fmt=ADDF[i]||def;putVideo({id:uid(),title,format:fmt,pillar:fmt==="Reel"?(ADDP[i]||""):"",shotDate:sd,status:st,postDate:"",postTime:"",notes:"",editedOn:DONE_EDIT.includes(st)?today():"",createdAt:now+i,rawLink:link,rawPath:pth||""},true)});
   if(rawIn)setTimeout(()=>{safeUrl(rawIn)?setRawLink(sd,link):setRawPath(sd,rawIn)},0);
   if(!pth&&!link&&S.settings.askFolder!==false)setTimeout(()=>askRaw(sd,vids().filter(v=>v.shotDate===sd).length),450);
   if(S.settings.autoOnLog&&L.length){
