@@ -3503,7 +3503,7 @@ function askSlot(d){
 // the move from the Google Sheet is done; only the "load fresh" button stays
 function importPanel(){return `<section class="panel"><div class="phead"><h2>Data</h2><span class="stat">Saved in Firebase · syncs instantly</span></div>
   <p class="sub">If this device ever looks out of date, load everything fresh from the cloud.</p><button class="btn small" data-act="freshLoad">Reload everything from the cloud</button>
-  <p class="sub diag">Speed check (this open): signed in ${TIMES.signin!=null?(TIMES.signin/1000).toFixed(1)+"s":"–"} · board shown ${TIMES.data!=null?(TIMES.data/1000).toFixed(1)+"s":"–"} from ${TIMES.src||"–"} · cloud up to date ${TIMES.cloud!=null?(TIMES.cloud/1000).toFixed(1)+"s":"–"}${IOS?" · iPhone mode":""}${TIMES.err?" · error: "+esc(TIMES.err):""}</p></section>`}
+  <p class="sub diag">Speed check (this open): page ${(T0/1000).toFixed(1)}s · signed in ${TIMES.signin!=null?(TIMES.signin/1000).toFixed(1)+"s":"–"} · board shown ${TIMES.data!=null?(TIMES.data/1000).toFixed(1)+"s":"–"} from ${TIMES.src||"–"} · cloud up to date ${TIMES.cloud!=null?(TIMES.cloud/1000).toFixed(1)+"s":"–"}${IOS?" · iPhone mode":""}${TIMES.err?" · error: "+esc(TIMES.err):""}</p></section>`}
 function vSettings(){
   const P=plans(),t=today(),cur=planFor(t);
   const maxPer=Math.max(...P.map(p=>p.times.length),0);
@@ -5232,7 +5232,8 @@ function keyLogin(key){
 }
 function sessionExpired(){token=null;lsSet("seb-token",null);clearInterval(pollT);if(QKEY&&!keyTried){keyLogin(QKEY);return}showLogin("Your session ended. Please sign in again.")}
 async function startSession(t,user){
-  if(!loaded){document.body.classList.add("fbloading");clearTimeout(window.__slowT);window.__slowT=setTimeout(()=>{const n=document.getElementById("fbLoadNote");if(n)n.textContent="Still loading… a slow connection. It will finish on its own."},9000)}
+  const hasCopy=(()=>{try{const c=JSON.parse(lsGet("seb-cache")||"null");return !!(c&&c.rows&&c.rows.length)}catch(e){return false}})();
+  if(!loaded&&!hasCopy){document.body.classList.add("fbloading");clearTimeout(window.__slowT);window.__slowT=setTimeout(()=>{const n=document.getElementById("fbLoadNote");if(n)n.textContent="Still loading… a slow connection. It will finish on its own."},9000)}
   token=t;$("#login").hidden=true;S.me=String(user||"").toLowerCase();updateMe();$("#sync").textContent="Loading…";
   S.me=String(user||"").toLowerCase();
   let cached=null;try{cached=JSON.parse(lsGet("seb-cache")||"null")}catch(e){}
