@@ -1,6 +1,6 @@
 // Shoot & Edit Board: always loads the newest page when online, falls back to the saved copy when offline,
 // and handles Windows notification clicks.
-const CACHE = 'shoot-board-v35';
+const CACHE = 'shoot-board-v36';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 self.addEventListener('install', e => {
   // cache: 'reload' skips the browser's own cache, so a new version is really fetched fresh
