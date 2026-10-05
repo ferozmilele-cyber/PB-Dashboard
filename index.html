@@ -3842,6 +3842,23 @@ function awayBanner(){const t=today();const a=awayList().find(x=>x.to>=t&&x.from
 /* ---------- shoot plan ---------- */
 const SH_ST=[{k:"Planned",c:"#AAFF00"},{k:"Done",c:"#0B0B0C"},{k:"Cancelled",c:"#A1A1A6"}];
 function shoots(){return Object.values(S.shoots||{})}
+/* every day footage is logged counts as a shoot day: planned shoots on that day are marked Done, otherwise an "Unplanned shoot" is added */
+function recordShootDay(d,titles,quiet){
+  if(!d||d>today())return null;titles=titles||[];
+  const planned=shoots().filter(s=>s.date===d&&s.status!=="Cancelled"&&!s.auto);
+  const merge=s=>[...new Set([...(s.videos||[]),...titles])];
+  if(planned.length){planned.forEach(s=>putShoot({...s,status:"Done",videos:merge(s)},true));return "planned"}
+  const id="auto-"+d,ex=S.shoots[id]||{videos:[]};
+  const cast=[...new Set(titles.flatMap(t=>castOf({title:t})))].map(n=>n.charAt(0).toUpperCase()+n.slice(1)).join(", ");
+  putShoot({...ex,id,date:d,time:ex.time||"",title:ex.title||"Unplanned shoot",location:ex.location||"",cast:ex.cast||cast,videos:merge(ex),notes:ex.notes||"Added automatically when footage was logged.",status:"Done",scriptLink:ex.scriptLink||"",auto:true},true);
+  return "auto";
+}
+// one pass over past footage, so earlier unplanned shoot days are counted too (same id on every device, so no duplicates)
+function backfillShoots(){
+  const by={};vids().forEach(v=>{if(v.shotDate&&v.shotDate<=today()&&v.status!=="Not started")(by[v.shotDate]=by[v.shotDate]||[]).push(v.title||"Untitled")});
+  let n=0;Object.entries(by).forEach(([d,T])=>{if(shoots().some(s=>s.date===d&&s.status==="Done"))return;recordShootDay(d,T,true);n++});
+  if(n){render();toast(`Added ${n} past shoot day${n>1?"s":""} to the shoot history`)}
+}
 function putShoot(s,quiet){s.updatedAt=Date.now();S.shoots[s.id]=s;if(!quiet)render();const body={...s};delete body.id;if(GAS)enqueue("set","shoots",s.id,body);else saveLocal()}
 function delShoot(id){delete S.shoots[id];delete S.scripts[id];if(GAS){enqueue("delete","shoots",id,null);enqueue("delete","scripts",id,null)}else saveLocal();render()}
 function putScript(id,sc){if(sc){S.scripts[id]=sc;if(GAS)enqueue("set","scripts",id,sc);else saveLocal()}else{delete S.scripts[id];if(GAS)enqueue("delete","scripts",id,null);else saveLocal()}}
@@ -3866,7 +3883,7 @@ function shootCard(s,label){
     <header><h3>${label}</h3>${shootStatusSel(s)}</header>
     <div class="shero-b">
       <div class="sh-time">${s.time?fmtT(s.time):"Time not set"}</div>
-      <b class="sh-title">${esc(s.title||"Untitled shoot")}</b>
+      <b class="sh-title">${esc(s.title||"Untitled shoot")}${s.auto?' <span class="tag">Auto-added</span>':""}</b>
       <div class="sh-meta">${s.location?`<span>📍 ${esc(s.location)}</span>`:""}${s.cast?`<span>🎬 ${esc(s.cast)}</span>`:""}<span>${n} video${n===1?"":"s"} planned${logged?`, ${logged} logged`:""}</span></div>
       ${n?`<ul class="sh-vids">${s.videos.slice(0,6).map(x=>`<li>${esc(x)}</li>`).join("")}${n>6?`<li class="more">and ${n-6} more</li>`:""}</ul>`:""}
       <div class="sh-actions">
@@ -3882,7 +3899,7 @@ function shootRow(s){
   const overdue=s.status==="Planned"&&s.date<today();
   return `<div class="hrow srow" data-act="editShoot" data-id="${s.id}">
     <div class="hdate"><b>${d.getDate()}</b><span>${MON[d.getMonth()]}</span></div>
-    <div class="etitle"><span class="dot" style="background:${hue(s.date)}"></span><div><b>${esc(s.title||"Untitled shoot")}</b>
+    <div class="etitle"><span class="dot" style="background:${hue(s.date)}"></span><div><b>${esc(s.title||"Untitled shoot")}</b>${s.auto?'<span class="tag">Auto-added</span>':""}
       <small>${WD[d.getDay()]}${s.time?", "+fmtT(s.time):""}${s.location?", "+esc(s.location):""}${s.cast?", "+esc(s.cast):""}
       <span class="tag">${n} planned</span>${logged?`<span class="tag">${logged} logged</span>`:""}${sc||s.scriptLink?`<span class="tag new">Script</span>`:""}${overdue?`<span class="tag warn">Not marked done</span>`:s.status!=="Planned"?`<span class="tag">${s.status}</span>`:""}</small></div></div>
     <div class="srow-a">${shootStatusSel(s)}${sc||s.scriptLink?`<button class="iconbtn" data-act="viewScript" data-id="${s.id}">Script</button>`:""}</div>
@@ -4683,7 +4700,9 @@ dlg.addEventListener("close",()=>{
   const link=safeUrl(rawIn)||rawLinkFor(sd)||"",pth=(rawIn&&!safeUrl(rawIn))?rawIn:rawPathFor(sd);
   const def=form.elements.format.value;
   L.forEach((title,i)=>{const fmt=ADDF[i]||def;putVideo({id:uid(),title,format:fmt,pillar:fmt==="Reel"?(ADDP[i]||""):"",shotDate:sd,status:st,postDate:"",postTime:"",notes:"",editedOn:DONE_EDIT.includes(st)?today():"",createdAt:now+i,rawLink:link,rawPath:pth||""},true)});
+  const rec=recordShootDay(sd,L);
   if(rawIn)setTimeout(()=>{safeUrl(rawIn)?setRawLink(sd,link):setRawPath(sd,rawIn)},0);
+  if(rec==="auto")setTimeout(()=>toast(`${niceW(sd)} added to the shoot history as an unplanned shoot`),1800);
   if(!pth&&!link&&S.settings.askFolder!==false)setTimeout(()=>askRaw(sd,vids().filter(v=>v.shotDate===sd).length),450);
   if(S.settings.autoOnLog&&L.length){
     const r=planReshuffle();
@@ -4758,6 +4777,7 @@ async function startSession(t,user){
       ["videos","shoots","scripts","ideas"].forEach(c=>Object.keys(S[c]||{}).forEach(id=>{const k=c+"/"+id;if(!ids.has(k)&&!pending.has(k)&&!inflight.has(k)){delete S[c][id];CROWS.delete(k)}}));render()}).catch(()=>{})},20000);
     $("#sync").textContent="Connected to your Google Sheet. Changes save automatically.";
     wrappedOffer();
+    setTimeout(backfillShoots,4000);
     setTimeout(()=>{loadTeam(true);loadBackups(true)},1500);
     if(OSN&&Notification.permission==="default"&&!lsGet("seb-asked-osn")&&!PHONE()){lsSet("seb-asked-osn","1");setTimeout(()=>toast("Get Windows notifications for reviews and posting times?","Turn on",askNotif),2500)}
     clearTimeout(pollT);schedulePoll();
