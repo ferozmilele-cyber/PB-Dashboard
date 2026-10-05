@@ -1888,6 +1888,11 @@ nav.tabs.stuck{background:rgba(255,255,255,.8)!important;box-shadow:0 16px 40px 
 .aw-t{height:36px;border:1px solid rgba(12,14,8,.08);border-radius:10px;padding:0 10px;background:rgba(255,255,255,.8);min-width:160px}
 .away-form{grid-template-columns:1.3fr 1fr 1fr .8fr 1.6fr .9fr auto!important}
 @media (max-width:760px){.away-form{grid-template-columns:1fr 1fr!important}.aw-cov .gsel{min-width:0;width:100%}}
+
+.aw-acts{display:flex;align-items:center;gap:4px;flex:none}
+.away.editing{border-color:rgba(123,209,0,.5)!important;box-shadow:0 0 0 4px rgba(170,255,0,.18),inset 0 1px 0 #fff!important}
+.aw-edit{grid-template-columns:1.4fr 1fr 1fr 1fr 1fr auto!important;margin-top:10px}
+.aw-eb{display:flex;gap:6px;align-self:end}
 </style>
 </head>
 <body>
@@ -3870,16 +3875,26 @@ function awayCard(a){const N=awayNumbers(a),R=ROLES[roleOf(a)],len=daysBetween(a
     ${m==="partial"?`<label class="aw-n">Per day<input type="number" min="0" max="20" value="${+a.perDay||0}" data-awc="perDay" data-id="${a.id}"></label>`:""}
     ${m==="partial"||m==="team"?`<input type="text" class="aw-t" placeholder="Teammate name" value="${esc(a.teammate||"")}" data-awc="teammate" data-id="${a.id}">`:""}</div>`;
   return `<div class="away"><div class="aw-i">✈︎</div><div class="aw-m"><b>${esc(a.label||R.who+" away")}</b><small>${esc(niceW(a.from))} – ${esc(niceW(a.to))} · posting ${esc(posting)}</small>${body}${cover?`<p class="aw-cv">${cover}</p>`:""}${ed}</div>
-    <button class="xbtn" data-act="awayDel" data-id="${a.id}" aria-label="Remove" title="Remove">×</button></div>`}
-const AWF={};
-document.addEventListener("input",e=>{const k=e.target&&e.target.dataset&&e.target.dataset.awf;if(k)AWF[k]=e.target.value},true);
-document.addEventListener("change",e=>{const k=e.target&&e.target.dataset&&e.target.dataset.awf;if(k)AWF[k]=e.target.value;
+    <div class="aw-acts"><button class="btn small ghost" data-act="awayEdit" data-id="${a.id}">Edit</button><button class="xbtn" data-act="awayDel" data-id="${a.id}" aria-label="Remove" title="Remove">×</button></div></div>`}
+function awayEditCard(a0){const a={...a0,...AWE},base=planFor(a.from).times||[],mx=Math.max(base.length,4);
+  return `<div class="away editing"><div class="aw-i">✎</div><div class="aw-m"><b>Edit trip</b>
+    <div class="away-form aw-edit">
+      <label>Who / reason<input type="text" id="aeWho" data-aef="label" value="${esc(a.label||"")}" autocomplete="off"></label>
+      <label>From<input type="date" id="aeFrom" data-aef="from" value="${a.from}"></label>
+      <label>To<input type="date" id="aeTo" data-aef="to" value="${a.to}"></label>
+      <label>Reels per day<select id="aeReels" data-aef="reels"><option value="">Same as usual</option>${Array.from({length:mx},(_,n)=>n).map(n=>`<option value="${n}"${String(a.reels)===String(n)?" selected":""}>${n===0?"None":n}</option>`).join("")}</select></label>
+      <label>Carousels<select id="aeCars" data-aef="cars"><option value="keep">Same</option><option value="pause"${a.cars==="pause"?" selected":""}>None</option></select></label>
+      <span class="aw-eb"><button class="btn small" data-act="awayEditCancel">Cancel</button><button class="btn small primary" data-act="awayEditSave" data-id="${a.id}">Save</button></span>
+    </div></div></div>`}
+const AWF={},AWE={};
+document.addEventListener("input",e=>{const d=e.target&&e.target.dataset;if(!d)return;if(d.awf)AWF[d.awf]=e.target.value;if(d.aef)AWE[d.aef]=e.target.value},true);
+document.addEventListener("change",e=>{const k=e.target&&e.target.dataset&&e.target.dataset.awf;if(k)AWF[k]=e.target.value;if(e.target&&e.target.dataset&&e.target.dataset.aef)AWE[e.target.dataset.aef]=e.target.value;
   const c=e.target&&e.target.dataset&&e.target.dataset.awc;if(c){const id=e.target.dataset.id;S.settings.away=(S.settings.away||[]).map(a=>a.id===id?{...a,[c]:c==="perDay"?Math.max(0,+e.target.value||0):e.target.value.trim?e.target.value.trim():e.target.value}:a);
     putSettings();render();toast("Coverage updated. Targets adjusted")}},true);
 function awayPanel(){
   const L=awayList().filter(a=>a.to>=today()),base=planFor(addDays(today(),1)).times||[];
   return `<section class="panel"><div class="phead"><h2>Time away</h2></div>
-    ${L.map(awayCard).join("")||`<p class="sub">No one is away. Add a trip below.</p>`}
+    ${L.map(a=>S.awayEdit===a.id?awayEditCard(a):awayCard(a)).join("")||`<p class="sub">No one is away. Add a trip below.</p>`}
     <div class="away-form">
       <label>Who / reason<input type="text" id="awWho" data-awf="who" value="${esc(AWF.who||"")}" placeholder="e.g. Fahad, vacation" autocomplete="off"></label>
       <label>From<input type="date" id="awFrom" data-awf="from" value="${AWF.from||addDays(today(),7)}"></label>
@@ -4567,6 +4582,12 @@ document.addEventListener("click",async e=>{
   else if(act==="awayDel"){const a=(S.settings.away||[]).find(x=>x.id===b.dataset.id);if(!a)return;if(!await ask(`Remove “${a.label}”?`,"Those days go back to the usual posting plan.","Remove"))return;
     S.settings.away=(S.settings.away||[]).filter(x=>x.id!==a.id);S.settings.plans=plans().filter(p=>p.awayId!==a.id);S.settings.cplans=cplans().filter(p=>p.awayId!==a.id);putSettings();render()}
   else if(act==="goShoots"){goTab("shoots")}
+  else if(act==="awayEdit"){Object.keys(AWE).forEach(k=>delete AWE[k]);S.awayEdit=b.dataset.id;render()}
+  else if(act==="awayEditCancel"){Object.keys(AWE).forEach(k=>delete AWE[k]);S.awayEdit=null;render()}
+  else if(act==="awayEditSave"){const id=b.dataset.id;let from=$("#aeFrom").value,to=$("#aeTo").value;if(!from||!to){toast("Pick both dates");return}if(to<from){const x=from;from=to;to=x}
+    const old=(S.settings.away||[]).find(x=>x.id===id);if(!old)return;
+    const a={...old,label:$("#aeWho").value.trim()||old.label,from,to,reels:$("#aeReels").value,cars:$("#aeCars").value};
+    S.settings.away=(S.settings.away||[]).map(x=>x.id===id?a:x);applyAway(a);S.awayEdit=null;Object.keys(AWE).forEach(k=>delete AWE[k]);putSettings();render();toast(`Trip updated: ${nice(a.from)} – ${nice(a.to)}. Targets adjusted`)}
   else if(act==="ovMode"){const m=b.dataset.m;S.ovRange={...(S.ovRange||{}),mode:m};if(m==="custom"&&!S.ovRange.from){S.ovRange.from=today();S.ovRange.to=addDays(today(),6)}render()}
   else if(act==="stMenu"){openStMenu(b)}
   else if(act==="editLink"){S.editLinks=S.editLinks||{};S.editLinks[b.dataset.id]=true;render();setTimeout(()=>{const i=document.querySelector(`.link-in[data-id="${b.dataset.id}"]`);if(i){i.focus();i.select()}},30)}
