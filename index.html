@@ -2645,9 +2645,12 @@ function putVideo(v,quiet){
 function delVideos(ids){ids.forEach(id=>{delete S.videos[id];S.sel.delete(id);enqueue("delete","videos",id,null)});render()}
 function putSettings(){enqueue("set","meta","settings",JSON.parse(JSON.stringify(S.settings)))}
 function putQueue(){enqueue("set","meta","queue",{ids:[...S.queue.ids],at:S.queue.at,pins:{...(S.queue.pins||{})}})}
+const IDB={p:null,open(){return this.p||(this.p=new Promise((res,rej)=>{const r=indexedDB.open("seb-board",1);r.onupgradeneeded=()=>r.result.createObjectStore("kv");r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}))},
+  get(k){return Promise.race([this.open().then(d=>new Promise(res=>{const q=d.transaction("kv").objectStore("kv").get(k);q.onsuccess=()=>res(q.result||null);q.onerror=()=>res(null)})).catch(()=>null),new Promise(r=>setTimeout(()=>r(null),2500))])},
+  set(k,v){return this.open().then(d=>new Promise(res=>{const t=d.transaction("kv","readwrite");v==null?t.objectStore("kv").delete(k):t.objectStore("kv").put(v,k);t.oncomplete=t.onerror=()=>res()})).catch(()=>{})}};
 const CROWS=new Map();let crT=0;
 function cacheRow(row){const k=row.collection+"/"+row.id;if(row.deleted)CROWS.delete(k);else CROWS.set(k,{collection:row.collection,id:row.id,data:row.data});
-  clearTimeout(crT);crT=setTimeout(()=>{try{lsSet("seb-cache",JSON.stringify({user:S.me,since,savedAt:Date.now(),rows:[...CROWS.values()]}))}catch(e){}},900)}
+  clearTimeout(crT);crT=setTimeout(()=>{IDB.set("cache",{user:S.me,since,savedAt:Date.now(),rows:[...CROWS.values()]})},900)}
 function applyDoc(row){
   const k=row.collection+"/"+row.id;if(pending.has(k)||inflight.has(k))return;cacheRow(row);
   if(row.collection==="videos"){if(row.deleted)delete S.videos[row.id];else{const d={...row.data,id:row.id};if(d.status==="Edited")d.status="In review";S.videos[row.id]=d}}
@@ -3503,7 +3506,7 @@ function askSlot(d){
 // the move from the Google Sheet is done; only the "load fresh" button stays
 function importPanel(){return `<section class="panel"><div class="phead"><h2>Data</h2><span class="stat">Saved in Firebase · syncs instantly</span></div>
   <p class="sub">If this device ever looks out of date, load everything fresh from the cloud.</p><button class="btn small" data-act="freshLoad">Reload everything from the cloud</button>
-  <p class="sub diag">Speed check (this open): page ${(T0/1000).toFixed(1)}s · signed in ${TIMES.signin!=null?(TIMES.signin/1000).toFixed(1)+"s":"–"} · board shown ${TIMES.data!=null?(TIMES.data/1000).toFixed(1)+"s":"–"} from ${TIMES.src||"–"} · cloud up to date ${TIMES.cloud!=null?(TIMES.cloud/1000).toFixed(1)+"s":"–"}${IOS?" · iPhone mode":""}${TIMES.err?" · error: "+esc(TIMES.err):""}</p></section>`}
+  <p class="sub diag">Speed check (this open): page ${(T0/1000).toFixed(1)}s · saved copy ${TIMES.copy!=null?(TIMES.copy/1000).toFixed(1)+"s":"–"} · signed in ${TIMES.signin!=null?(TIMES.signin/1000).toFixed(1)+"s":"–"} · board shown ${TIMES.data!=null?(TIMES.data/1000).toFixed(1)+"s":"–"} from ${TIMES.src||"–"} · cloud up to date ${TIMES.cloud!=null?(TIMES.cloud/1000).toFixed(1)+"s":"–"}${IOS?" · iPhone mode":""}${TIMES.err?" · error: "+esc(TIMES.err):""}</p></section>`}
 function vSettings(){
   const P=plans(),t=today(),cur=planFor(t);
   const maxPer=Math.max(...P.map(p=>p.times.length),0);
@@ -4958,7 +4961,7 @@ document.addEventListener("click",async e=>{
     b.disabled=true;call("changePassword",token,u,od?od.value:"",nw.value).then(()=>{toast(self?"Password changed":`Password reset for ${dispName(u)}`);nw.value="";if(od)od.value=""}).catch(err=>toast(String(err&&err.message||"Couldn’t change it").replace(/^Error: /,""))).finally(()=>{b.disabled=false})}
   else if(act==="addRaw"){askRaw(b.dataset.d)}
   else if(act==="showImport"){S.showImport=true;render()}
-  else if(act==="freshLoad"){await flush();["seb-cache","seb-pending"].forEach(k=>lsSet(k,null));toast("Loading everything fresh…");setTimeout(()=>location.reload(),400)}
+  else if(act==="freshLoad"){await flush();["seb-cache","seb-pending"].forEach(k=>lsSet(k,null));await IDB.set("cache",null);toast("Loading everything fresh…");setTimeout(()=>location.reload(),400)}
   else if(act==="fbImportFile"){const f=$("#impFile").files[0];if(!f){toast("Choose the CSV file first");return}b.disabled=true;const st=$("#impStep");
     try{const text=await f.text();const rows=rowsFromFile(f.name,text);st.textContent=`Found ${rows.length} items. Copying…`;const n=await fbImportRows(rows,m=>{st.textContent=m});
       st.textContent=`Done: ${n} items copied. Reloading…`;toast("Import finished");setTimeout(()=>location.reload(),1500)}
@@ -5232,11 +5235,12 @@ function keyLogin(key){
 }
 function sessionExpired(){token=null;lsSet("seb-token",null);clearInterval(pollT);if(QKEY&&!keyTried){keyLogin(QKEY);return}showLogin("Your session ended. Please sign in again.")}
 async function startSession(t,user){
-  const hasCopy=(()=>{try{const c=JSON.parse(lsGet("seb-cache")||"null");return !!(c&&c.rows&&c.rows.length)}catch(e){return false}})();
+  let cached=await IDB.get("cache");mark("copy");
+  const hasCopy=!!(cached&&cached.rows&&cached.rows.length);
   if(!loaded&&!hasCopy){document.body.classList.add("fbloading");clearTimeout(window.__slowT);window.__slowT=setTimeout(()=>{const n=document.getElementById("fbLoadNote");if(n)n.textContent="Still loading… a slow connection. It will finish on its own."},9000)}
   token=t;$("#login").hidden=true;S.me=String(user||"").toLowerCase();updateMe();$("#sync").textContent="Loading…";
   S.me=String(user||"").toLowerCase();
-  let cached=null;try{cached=JSON.parse(lsGet("seb-cache")||"null")}catch(e){}
+
   const fresh=cached&&cached.user===S.me&&cached.since&&Date.now()-(cached.savedAt||0)<5*86400e3;
   if(cached&&cached.user===S.me&&!loaded){S.videos={};S.shoots={};S.scripts={};S.profiles={};S.ideas={};CROWS.clear();cached.rows.forEach(applyDoc);restorePendingLocal();render();$("#sync").textContent="Updating…"}
   try{
@@ -5277,7 +5281,7 @@ $("#loginForm").addEventListener("submit",async e=>{
   catch(err){const m=String(err&&err.message||"");$("#loginErr").textContent=/wrong username|password/i.test(m)?"Wrong username or password.":m||"Couldn’t sign in. Please try again."}
   finally{clearTimeout(slow);btn.disabled=false}
 });
-$("#logoutBtn").addEventListener("click",async()=>{await flush();if(token)try{await call("logout",token)}catch(e){}token=null;lsSet("seb-token",null);lsSet("seb-cache",null);lsSet("seb-team",null);lsSet("seb-bk",null);lsSet("seb-pending",null);location.replace(location.origin+location.pathname)});
+$("#logoutBtn").addEventListener("click",async()=>{await flush();if(token)try{await call("logout",token)}catch(e){}token=null;lsSet("seb-token",null);lsSet("seb-cache",null);await IDB.set("cache",null);lsSet("seb-team",null);lsSet("seb-bk",null);lsSet("seb-pending",null);location.replace(location.origin+location.pathname)});
 
 if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
 render();
