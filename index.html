@@ -2018,6 +2018,13 @@ body.viewonly #main input:not([data-live]):not([data-plr]):not([data-sumr]):not(
 body.viewonly .stsel{pointer-events:none}
 body.viewonly header.top h1::after{content:"View only";display:inline-block;margin-left:12px;vertical-align:middle;padding:4px 12px;border-radius:999px;background:rgba(12,14,8,.08);font-size:13px;font-weight:700;letter-spacing:0;color:#5f6459}
 body.viewonly #importBtn,body.viewonly [data-act="mImport"]{display:none!important}
+
+/* the ⋯ menu sits above the glass panels */
+header.top{position:relative;z-index:80}
+.moremenu{z-index:90!important;background:rgba(255,255,255,.985)!important;-webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);
+  border:1px solid rgba(255,255,255,.95)!important;box-shadow:0 20px 50px rgba(20,24,10,.2),inset 0 1px 0 #fff!important}
+.moremenu button{color:#0B0B0C!important;opacity:1!important}
+.moremenu button.danger{color:#C2412D!important}
 </style>
 </head>
 <body>
