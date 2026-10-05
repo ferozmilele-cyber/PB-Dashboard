@@ -2523,9 +2523,27 @@ async function gasCall(fn,...args){
   if(!j.ok)throw new Error(j.error||"Something went wrong");return j.data;
 }
 async function importFromSheet(user,pass,step){
-  step("Signing in to the Google Sheet…");const l=await gasCall("login",user,pass);
-  step("Reading everything from the Sheet…");const r=await gasCall("loadAll",l.token);
-  const F=fbBoot();await fbMe();const now=Date.now(),rows=r.rows||[];let i=0,done=0;
+  step("Signing in to the Google Sheet…");let l;
+  try{l=await gasCall("login",user,pass)}catch(e){throw new Error("Couldn’t sign in to the Google Sheet: "+String(e&&e.message||e).replace(/^Error: /,"")+" Try the file import below instead.")}
+  step("Reading everything from the Sheet…");let r;
+  try{r=await gasCall("loadAll",l.token)}catch(e){throw new Error("Couldn’t read the Google Sheet: "+String(e&&e.message||e).replace(/^Error: /,"")+" Try the file import below instead.")}
+  return fbImportRows(r.rows||[],step);
+}
+// the Sheet's Data tab downloaded as CSV: collection, id, data, updated, deleted, …
+function parseCSV(t){const rows=[];let row=[],f="",q=false;for(let i=0;i<t.length;i++){const c=t[i];
+    if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++}else q=false}else f+=c}
+    else if(c==='"')q=true;else if(c===","){row.push(f);f=""}else if(c==="\n"||c==="\r"){if(c==="\r"&&t[i+1]==="\n")i++;row.push(f);rows.push(row);row=[];f=""}else f+=c}
+  if(f!==""||row.length){row.push(f);rows.push(row)}return rows}
+function rowsFromFile(name,text){
+  if(/\.json$/i.test(name)||text.trim().startsWith("{")){const d=JSON.parse(text),out=[];
+    ["videos","shoots","scripts","profiles","ideas"].forEach(c=>Object.entries(d[c]||{}).forEach(([id,v])=>out.push({collection:c,id,data:v})));
+    if(d.settings)out.push({collection:"meta",id:"settings",data:d.settings});if(d.queue)out.push({collection:"meta",id:"queue",data:d.queue});return out}
+  const R=parseCSV(text);const head=(R[0]||[]).map(x=>x.trim().toLowerCase());const ci=head.indexOf("collection")>=0?head.indexOf("collection"):0,ii=head.indexOf("id")>=0?head.indexOf("id"):1,di=head.indexOf("data")>=0?head.indexOf("data"):2,xi=head.indexOf("deleted")>=0?head.indexOf("deleted"):4;
+  const out=[];R.slice(head[0]==="collection"?1:0).forEach(r=>{if(!r[ci]||!r[ii])return;const del=String(r[xi]||"").trim().toLowerCase();if(del==="true"||del==="1")return;
+    let data;try{data=JSON.parse(r[di]||"{}")}catch(e){return}out.push({collection:r[ci].trim(),id:String(r[ii]).trim(),data})});
+  if(!out.length)throw new Error("No board data found in that file. Download the Data tab of the Google Sheet as CSV.");return out}
+async function fbImportRows(rows,step){
+  const F=fbBoot();await fbMe();const now=Date.now();let i=0,done=0;
   while(i<rows.length){const b=F.db.batch();let size=0,n=0;
     while(i<rows.length&&n<300){const x=rows[i],j=JSON.stringify(x.data||{});if(n&&size+j.length>3500000)break;
       b.set(F.db.collection(x.collection).doc(String(x.id)),{j,u:now,x:false,by:"import"});size+=j.length;n++;i++}
@@ -3437,6 +3455,8 @@ function importPanel(){const F=FBR||{};const sys=F.sys||{};
   return `<section class="panel imp"><div class="phead"><h2>Move your data from the Google Sheet</h2></div>
     <p class="sub">One time only. Copies every video, shoot, script, idea, photo, setting and the account vault from your Google Sheet into Firebase. The Sheet itself isn’t changed. Use your <b>old board username and password</b>.</p>
     <div class="vault-form"><input type="text" id="impUser" placeholder="Old username (e.g. shibili)" autocomplete="off"><input type="password" id="impPass" placeholder="Old password" autocomplete="off"><button class="btn primary" data-act="fbImport">Import now</button></div>
+    <p class="sub" style="margin-top:14px"><b>Or import from a file</b> (works even if the Sheet link doesn’t answer): open your Google Sheet, click the <b>Data</b> tab at the bottom, then <b>File → Download → Comma-separated values (.csv)</b>, and choose that file here.</p>
+    <div class="vault-form"><input type="file" id="impFile" accept=".csv,.json,text/csv,application/json"><button class="btn primary" data-act="fbImportFile">Import file</button></div>
     <p class="sub" id="impStep"></p></section>`}
 function vSettings(){
   const P=plans(),t=today(),cur=planFor(t);
@@ -4886,6 +4906,10 @@ document.addEventListener("click",async e=>{
     b.disabled=true;call("changePassword",token,u,od?od.value:"",nw.value).then(()=>{toast(self?"Password changed":`Password reset for ${dispName(u)}`);nw.value="";if(od)od.value=""}).catch(err=>toast(String(err&&err.message||"Couldn’t change it").replace(/^Error: /,""))).finally(()=>{b.disabled=false})}
   else if(act==="addRaw"){askRaw(b.dataset.d)}
   else if(act==="showImport"){S.showImport=true;render()}
+  else if(act==="fbImportFile"){const f=$("#impFile").files[0];if(!f){toast("Choose the CSV file first");return}b.disabled=true;const st=$("#impStep");
+    try{const text=await f.text();const rows=rowsFromFile(f.name,text);st.textContent=`Found ${rows.length} items. Copying…`;const n=await fbImportRows(rows,m=>{st.textContent=m});
+      st.textContent=`Done: ${n} items copied. Reloading…`;toast("Import finished");setTimeout(()=>location.reload(),1500)}
+    catch(err){b.disabled=false;st.textContent="";toast(String(err&&err.message||"Import failed").replace(/^Error: /,""))}}
   else if(act==="fbImport"){const u=$("#impUser").value.trim(),p=$("#impPass").value;if(!u||!p){toast("Enter your old username and password");return}
     if((FBR&&FBR.sys&&FBR.sys.importedAt)&&!await ask("Import again?","Items from the Sheet replace the same items here. Anything added only in Firebase stays.","Import",true))return;
     b.disabled=true;const st=$("#impStep");try{const n=await importFromSheet(u,p,m=>{if(st)st.textContent=m});st.textContent=`Done: ${n} items copied. Reloading…`;toast("Import finished");setTimeout(()=>location.reload(),1500)}
