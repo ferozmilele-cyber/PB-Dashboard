@@ -1874,6 +1874,20 @@ nav.tabs.stuck{background:rgba(255,255,255,.8)!important;box-shadow:0 16px 40px 
 .aw-box.hi small,.aw-box.hi span{color:#2c4a00}
 .away-form{grid-template-columns:1.4fr 1fr 1fr 1fr 1fr auto!important}
 @media (max-width:760px){.aw-boxes{grid-template-columns:1fr}.away-form{grid-template-columns:1fr 1fr!important}}
+
+.away-form{align-items:end!important}
+.away-form label{align-self:end}
+.away-form input,.away-form .gsel{height:42px!important;box-sizing:border-box}
+.away-form .btn{height:42px}
+
+.aw-cv{margin:10px 0 0;font-size:14px}
+.aw-cov{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:10px;font-size:12.5px;font-weight:700;color:var(--muted)}
+.aw-cov .gsel{height:36px;min-width:280px}
+.aw-n{display:inline-flex;align-items:center;gap:6px}
+.aw-n input{width:64px;height:36px;border:1px solid rgba(12,14,8,.08);border-radius:10px;padding:0 8px;background:rgba(255,255,255,.8)}
+.aw-t{height:36px;border:1px solid rgba(12,14,8,.08);border-radius:10px;padding:0 10px;background:rgba(255,255,255,.8);min-width:160px}
+.away-form{grid-template-columns:1.3fr 1fr 1fr .8fr 1.6fr .9fr auto!important}
+@media (max-width:760px){.away-form{grid-template-columns:1fr 1fr!important}.aw-cov .gsel{min-width:0;width:100%}}
 </style>
 </head>
 <body>
@@ -2457,7 +2471,7 @@ function editedToday(){return vids().filter(v=>v.editedOn===today()).length}
 /* ---------- smart edit plan: spreads the edits evenly over your work days so the week never piles up ---------- */
 const FIN=["Edited","In review","Approved","Ready","Scheduled","Posted"];
 function workDaysSet(){return Array.isArray(S.settings.workDays)?S.settings.workDays:[1,2,3,4,5,6]}
-function isWorkDay(d){if(typeof isAway==="function"&&isAway(d,"edit"))return false;const on=(S.settings.daysOn||[]).includes(d),off=(S.settings.daysOff||[]).includes(d);
+function isWorkDay(d){if(typeof isAway==="function"){const a=isAway(d,"edit");if(a&&["before","team"].includes(a.mode||"before"))return false}const on=(S.settings.daysOn||[]).includes(d),off=(S.settings.daysOff||[]).includes(d);
   return !off&&(on||workDaysSet().includes(new Date(d+"T00:00:00").getDay()))}
 function editPlan(){
   const t=today(),H=14,hm=nowHM(),lead=S.settings.editLead==null?1:+S.settings.editLead;
@@ -2469,6 +2483,7 @@ function editPlan(){
       const v=vids().find(x=>kindOf(x)===k&&x.postDate===P&&x.postTime===tm);
       if(v&&FIN.includes(v.status))return;if(!v&&stock>0){stock--;return}n++}));
     vids().forEach(v=>{if(v.postDate===P&&kinds.includes(kindOf(v))&&!slotsK(P,kindOf(v)).includes(v.postTime)&&!FIN.includes(v.status)&&!(P===t&&(v.postTime||"99")<=hm))n++});
+    if(typeof isAway==="function"){const a=isAway(P,"edit");if(a){const m=a.mode||"before";if(m==="team")n=0;else if(m==="partial")n=Math.min(n,Math.max(0,+a.perDay||0))}}
     if(n)due[P]=n}
   const work=[];for(let i=0;i<H;i++){const d=addDays(t,i);if(isWorkDay(d))work.push(d)}
   const need=work.map(()=>0),covers=work.map(()=>[]);let late=0;
@@ -3827,13 +3842,18 @@ function applyAway(a){
   if(a.reels!==""&&a.reels!=null){const base=planFor(a.from).times||[];S.settings.plans.push({from:a.from,to:a.to,times:pickTimes(base,+a.reels),awayId:a.id})}
   if(a.cars==="pause")S.settings.cplans.push({from:a.from,to:a.to,days:[],times:[],awayId:a.id});
 }
-function awayNumbers(a){const t=today();if(a.to<t)return null;const role=roleOf(a),started=a.from<=t;
-  const pre=started?{r:0,c:0}:{r:needFor("R",0,t,addDays(a.from,-1)).total,c:needFor("C",0,t,addDays(a.from,-1)).total};
-  const R=needFor("R",0,a.from,a.to),C=needFor("C",0,a.from,a.to);const dur={r:R.total,c:C.total};
-  const allR=needFor("R",0,t,a.to),allC=needFor("C",0,t,a.to);
-  const todo=role==="shoot"?allR.toShoot+allC.toShoot:role==="edit"?(allR.total-allR.ready)+(allC.total-allC.ready):dur.r+dur.c;
+const MODES={before:"{Act} everything before leaving",remote:"Keep {verb}ing while away",partial:"{Act} some each day, a teammate does the rest",team:"A teammate covers it"};
+function modeLabel(m,role){const R=ROLES[role]||ROLES.shoot;const act=R.act,verb=R.verb==="schedule"?"schedul":R.verb==="shoot"?"shoot":"edit";
+  return MODES[m||"before"].replace("{Act}",act).replace("{verb}",verb)}
+function awayNumbers(a){const t=today();if(a.to<t)return null;const role=roleOf(a),mode=a.mode||"before",started=a.from<=t,len=daysBetween(a.from,a.to)+1;
+  const range=(f,to)=>({R:needFor("R",0,f,to),C:needFor("C",0,f,to)});
+  const needOf=x=>role==="shoot"?x.R.toShoot+x.C.toShoot:role==="edit"?(x.R.total-x.R.ready)+(x.C.total-x.C.ready):x.R.total+x.C.total;
+  const preR=started?null:range(t,addDays(a.from,-1)),durR=range(a.from,a.to),allR=range(t,a.to);
+  const pre=preR?{r:preR.R.total,c:preR.C.total}:{r:0,c:0},dur={r:durR.R.total,c:durR.C.total},durN=dur.r+dur.c;
+  const todo=mode==="before"?needOf(allR):(preR?needOf(preR):0);
+  const you=mode==="remote"?durN:mode==="partial"?Math.min(durN,(+a.perDay||0)*len):0,team=mode==="team"?durN:mode==="partial"?Math.max(0,durN-you):0;
   let days=0;for(let d=t;d<a.from;d=addDays(d,1))if(!isAway(d,role))days++;
-  return {pre,dur,todo,days,started,pace:days?Math.ceil(todo/days):todo}}
+  return {pre,dur,todo,days,started,len,mode,you,team,pace:days?Math.ceil(todo/days):todo}}
 function plural(n,w){return `${n} ${w}${n===1?"":"s"}`}
 function awayCard(a){const N=awayNumbers(a),R=ROLES[roleOf(a)],len=daysBetween(a.from,a.to)+1;
   const posting=(a.reels===""||a.reels==null?"usual reels":+a.reels===0?"no reels":plural(+a.reels,"reel")+" a day")+(a.cars==="pause"?", no carousels":"");
@@ -3842,22 +3862,35 @@ function awayCard(a){const N=awayNumbers(a),R=ROLES[roleOf(a)],len=daysBetween(a
     ${N.started?box("Before leaving","Away now",""):box(`Posts until ${esc(nice(addDays(a.from,-1)))}`,`${N.pre.r} reels`,N.pre.c?`+ ${plural(N.pre.c,"carousel")}`:"")}
     ${box(`Posts while away (${len} days)`,`${N.dur.r} reels`,N.dur.c?`+ ${plural(N.dur.c,"carousel")}`:"no carousels")}
     ${box(`${R.act} before ${esc(nice(a.from))}`,N.todo?String(N.todo):"✓ Done",N.started||!N.todo?"":`reels + carousels${N.days?` · about ${N.pace} a day`:" · no days left"}`,true)}</div>`;
-  return `<div class="away"><div class="aw-i">✈︎</div><div class="aw-m"><b>${esc(R.who)} away</b><small>${esc(niceW(a.from))} – ${esc(niceW(a.to))} · posting ${esc(posting)}</small>${body}</div>
+  const m=a.mode||"before",tm=a.teammate?esc(a.teammate):"a teammate";
+  const cover=!N?"":m==="before"?`Everything is done before leaving.`:m==="remote"?`While away: <b>you</b> keep going, about <b>${Math.ceil(N.you/N.len)} a day</b> (${N.you} in total).`
+    :m==="partial"?`While away: <b>you ${+a.perDay||0} a day</b> (${N.you}), <b>${tm}</b> covers the other <b>${N.team}</b> (about ${Math.ceil(N.team/N.len)} a day).`
+    :`While away: <b>${tm}</b> covers all <b>${N.team}</b> (about ${Math.ceil(N.team/N.len)} a day).`;
+  const ed=`<div class="aw-cov"><span>Coverage</span><select data-awc="mode" data-id="${a.id}">${Object.keys(MODES).map(k=>`<option value="${k}"${k===m?" selected":""}>${esc(modeLabel(k,roleOf(a)))}</option>`).join("")}</select>
+    ${m==="partial"?`<label class="aw-n">Per day<input type="number" min="0" max="20" value="${+a.perDay||0}" data-awc="perDay" data-id="${a.id}"></label>`:""}
+    ${m==="partial"||m==="team"?`<input type="text" class="aw-t" placeholder="Teammate name" value="${esc(a.teammate||"")}" data-awc="teammate" data-id="${a.id}">`:""}</div>`;
+  return `<div class="away"><div class="aw-i">✈︎</div><div class="aw-m"><b>${esc(a.label||R.who+" away")}</b><small>${esc(niceW(a.from))} – ${esc(niceW(a.to))} · posting ${esc(posting)}</small>${body}${cover?`<p class="aw-cv">${cover}</p>`:""}${ed}</div>
     <button class="xbtn" data-act="awayDel" data-id="${a.id}" aria-label="Remove" title="Remove">×</button></div>`}
+const AWF={};
+document.addEventListener("input",e=>{const k=e.target&&e.target.dataset&&e.target.dataset.awf;if(k)AWF[k]=e.target.value},true);
+document.addEventListener("change",e=>{const k=e.target&&e.target.dataset&&e.target.dataset.awf;if(k)AWF[k]=e.target.value;
+  const c=e.target&&e.target.dataset&&e.target.dataset.awc;if(c){const id=e.target.dataset.id;S.settings.away=(S.settings.away||[]).map(a=>a.id===id?{...a,[c]:c==="perDay"?Math.max(0,+e.target.value||0):e.target.value.trim?e.target.value.trim():e.target.value}:a);
+    putSettings();render();toast("Coverage updated. Targets adjusted")}},true);
 function awayPanel(){
   const L=awayList().filter(a=>a.to>=today()),base=planFor(addDays(today(),1)).times||[];
   return `<section class="panel"><div class="phead"><h2>Time away</h2></div>
     ${L.map(awayCard).join("")||`<p class="sub">No one is away. Add a trip below.</p>`}
     <div class="away-form">
-      <label>Who<select id="awRole"><option value="shoot">Fahad (no shooting)</option><option value="edit">Shibli (no editing)</option><option value="post">Zain (no posting)</option></select></label>
-      <label>From<input type="date" id="awFrom" value="${addDays(today(),7)}"></label>
-      <label>To<input type="date" id="awTo" value="${addDays(today(),13)}"></label>
-      <label>Reels per day<select id="awReels"><option value="">Same (${base.length})</option>${Array.from({length:base.length},(_,n)=>n).map(n=>`<option value="${n}">${n===0?"None":n}</option>`).join("")}</select></label>
-      <label>Carousels<select id="awCars"><option value="keep">Same</option><option value="pause">None</option></select></label>
+      <label>Who / reason<input type="text" id="awWho" data-awf="who" value="${esc(AWF.who||"")}" placeholder="e.g. Fahad, vacation" autocomplete="off"></label>
+      <label>From<input type="date" id="awFrom" data-awf="from" value="${AWF.from||addDays(today(),7)}"></label>
+      <label>To<input type="date" id="awTo" data-awf="to" value="${AWF.to||addDays(today(),13)}"></label>
+      <label>Reels per day<select id="awReels" data-awf="reels"><option value="">Same (${base.length})</option>${Array.from({length:base.length},(_,n)=>n).map(n=>`<option value="${n}"${AWF.reels===String(n)?" selected":""}>${n===0?"None":n}</option>`).join("")}</select></label>
+      <label>Coverage<select id="awMode" data-awf="mode">${Object.keys(MODES).map(k=>`<option value="${k}"${(AWF.mode||"before")===k?" selected":""}>${esc(modeLabel(k,"edit").replace("Edit","Do").replace("editing","working"))}</option>`).join("")}</select></label>
+      <label>Carousels<select id="awCars" data-awf="cars"><option value="keep">Same</option><option value="pause"${AWF.cars==="pause"?" selected":""}>None</option></select></label>
       <button class="btn primary" data-act="awayAdd">Add</button>
     </div></section>`}
 function awayBanner(){const t=today();const a=awayList().find(x=>x.to>=t&&x.from<=addDays(t,45));if(!a)return "";const N=awayNumbers(a),R=ROLES[roleOf(a)];if(!N)return "";
-  return `<div class="away-banner"><span class="aw-i">✈︎</span><span><b>${esc(R.who)} away ${esc(nice(a.from))} – ${esc(nice(a.to))}.</b> ${N.started?"Away now.":N.todo?`${R.act} <b>${N.todo} reels + carousels</b> before ${esc(niceW(a.from))}${N.days?`, about ${N.pace} a day`:""}.`:"✓ All covered."}</span><button class="btn small" data-act="goShoots">Details</button></div>`}
+  return `<div class="away-banner"><span class="aw-i">✈︎</span><span><b>${esc(a.label||R.who+" away")}, ${esc(nice(a.from))} – ${esc(nice(a.to))}.</b> ${N.started?"Away now.":N.todo?`${R.act} <b>${N.todo} reels + carousels</b> before ${esc(niceW(a.from))}${N.days?`, about ${N.pace} a day`:""}.`:"✓ All covered."}</span><button class="btn small" data-act="goShoots">Details</button></div>`}
 function shootGoalToday(){const base=S.settings.shootTarget||10;const a=awayList().find(x=>roleOf(x)==="shoot"&&x.from>today()&&x.from<=addDays(today(),45));if(!a)return base;const N=awayNumbers(a);return N?Math.max(base,N.pace):base}
 /* ---------- shoot plan ---------- */
 const SH_ST=[{k:"Planned",c:"#AAFF00"},{k:"Done",c:"#0B0B0C"},{k:"Cancelled",c:"#A1A1A6"}];
@@ -4528,9 +4561,9 @@ document.addEventListener("click",async e=>{
     if(!nw||nw.value.length<4){toast("Use at least 4 characters");return}
     b.disabled=true;call("changePassword",token,u,od?od.value:"",nw.value).then(()=>{toast(self?"Password changed":`Password reset for ${dispName(u)}`);nw.value="";if(od)od.value=""}).catch(err=>toast(String(err&&err.message||"Couldn’t change it").replace(/^Error: /,""))).finally(()=>{b.disabled=false})}
   else if(act==="addRaw"){askRaw(b.dataset.d)}
-  else if(act==="awayAdd"){const role=$("#awRole").value;const a={id:"aw"+Date.now().toString(36),role,label:ROLES[role].who+" away",from:$("#awFrom").value,to:$("#awTo").value,reels:$("#awReels").value,cars:$("#awCars").value};
+  else if(act==="awayAdd"){const who=$("#awWho").value.trim()||"Time away";const a={id:"aw"+Date.now().toString(36),label:who,mode:$("#awMode").value||"before",from:$("#awFrom").value,to:$("#awTo").value,reels:$("#awReels").value,cars:$("#awCars").value};
     if(!a.from||!a.to){toast("Pick both dates");return}if(a.to<a.from){const x=a.from;a.from=a.to;a.to=x}
-    S.settings.away=[...(S.settings.away||[]),a];applyAway(a);putSettings();render();toast(`${a.label}: ${nice(a.from)} – ${nice(a.to)} added`)}
+    S.settings.away=[...(S.settings.away||[]),a];applyAway(a);Object.keys(AWF).forEach(k=>delete AWF[k]);putSettings();render();toast(`${a.label}: ${nice(a.from)} – ${nice(a.to)} added`)}
   else if(act==="awayDel"){const a=(S.settings.away||[]).find(x=>x.id===b.dataset.id);if(!a)return;if(!await ask(`Remove “${a.label}”?`,"Those days go back to the usual posting plan.","Remove"))return;
     S.settings.away=(S.settings.away||[]).filter(x=>x.id!==a.id);S.settings.plans=plans().filter(p=>p.awayId!==a.id);S.settings.cplans=cplans().filter(p=>p.awayId!==a.id);putSettings();render()}
   else if(act==="goShoots"){goTab("shoots")}
