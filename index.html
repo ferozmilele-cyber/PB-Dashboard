@@ -2438,6 +2438,7 @@ const ADMIN="shibili";
 const COLS=["videos","shoots","scripts","profiles","ideas","meta"];
 const OLD_API=API;   // the Google Sheet link, kept only for the one-time import
 let FBR=null;
+try{if(localStorage.getItem("seb-backend")!=="firebase"){["seb-cache","seb-pending","seb-team","seb-bk"].forEach(k=>localStorage.removeItem(k));localStorage.setItem("seb-backend","firebase")}}catch(e){}
 function fbBoot(){if(FBR)return FBR;FBR={buf:[],sys:{},listening:false};
   if(!window.firebase)throw new Error("Can’t load Firebase. Check your internet and reopen the app.");
   firebase.initializeApp(FB_CONFIG);FBR.auth=firebase.auth();FBR.db=firebase.firestore();
@@ -2555,7 +2556,7 @@ function saveLocal(){try{localStorage.setItem("seb-free-demo",JSON.stringify({vi
 function loadLocal(){try{const r=JSON.parse(localStorage.getItem("seb-free-demo")||"null");if(r){S.videos=r.videos||{};S.shoots=r.shoots||{};S.scripts=r.scripts||{};S.profiles=r.profiles||{};Object.assign(S.settings,r.settings||{});S.queue=r.queue||S.queue}}catch(e){}}
 function viewOnly(){return VIEW_ONLY.includes(S.me||"")}
 let voT=0;function voNote(){if(Date.now()-voT<2500)return;voT=Date.now();toast("View only. Ask Shibli or Zain to make changes")}
-const VIEW_OK=new Set(["copy","days","dialBack","dialTry","dialType","dlBackup","fclear","ffmt","fnolink","fnopil","fsched","fst","goShoots","goTab","grpToggle","histView","hrange","ideaArch","ideaCopy","ideaPil","ideaType","mExport","mOut","mday","mnav","more","newWin","openCmd","osnOn","osnTest","ovGo","ovMode","ovStatus","plByDay","plMode","playWrapped","printSum","rowMore","schedToday","shView","sumMode","sview","testAlert","vaultLock","vaultOpen","vcopy","viewScript","vshow","clearSel","chpw"]);
+const VIEW_OK=new Set(["copy","days","dialBack","dialTry","dialType","dlBackup","fclear","ffmt","fnolink","fnopil","fsched","fst","goShoots","goTab","grpToggle","histView","hrange","ideaArch","ideaCopy","ideaPil","ideaType","mExport","mOut","mday","mnav","more","newWin","openCmd","osnOn","osnTest","ovGo","ovMode","ovStatus","plByDay","plMode","playWrapped","printSum","rowMore","schedToday","shView","sumMode","sview","testAlert","vaultLock","vaultOpen","vcopy","viewScript","vshow","clearSel","chpw","freshLoad"]);
 const VIEW_FIELDS=["live","plr","sumr","ovr","opt"];
 function isViewField(el){const d=el&&el.dataset||{};return VIEW_FIELDS.some(k=>k in d)||el.type==="search"||!!(el.closest&&el.closest("#login,#cmd,.tpw,.vault-form"))}
 document.addEventListener("click",e=>{if(!viewOnly())return;const t=e.target;if(!t.closest)return;
@@ -3450,14 +3451,9 @@ function askSlot(d){
   dl.addEventListener("close",()=>{if(dl.returnValue!=="ok")return;const tm=$("#slotTime").value;if(!tm)return;addExtraSlot(d,$("#slotKind").value,tm)},{once:true});
   openDlg(dl);
 }
-function importPanel(){const F=FBR||{};const sys=F.sys||{};
-  if(sys.importedAt&&!S.showImport)return `<section class="panel"><div class="phead"><h2>Data</h2><span class="stat">Moved from the Google Sheet on ${esc(nice(iso(new Date(sys.importedAt))))} (${sys.importedRows||0} items)</span></div><button class="btn small ghost" data-act="showImport">Import again</button></section>`;
-  return `<section class="panel imp"><div class="phead"><h2>Move your data from the Google Sheet</h2></div>
-    <p class="sub">One time only. Copies every video, shoot, script, idea, photo, setting and the account vault from your Google Sheet into Firebase. The Sheet itself isn’t changed. Use your <b>old board username and password</b>.</p>
-    <div class="vault-form"><input type="text" id="impUser" placeholder="Old username (e.g. shibili)" autocomplete="off"><input type="password" id="impPass" placeholder="Old password" autocomplete="off"><button class="btn primary" data-act="fbImport">Import now</button></div>
-    <p class="sub" style="margin-top:14px"><b>Or import from a file</b> (works even if the Sheet link doesn’t answer): open your Google Sheet, click the <b>Data</b> tab at the bottom, then <b>File → Download → Comma-separated values (.csv)</b>, and choose that file here.</p>
-    <div class="vault-form"><input type="file" id="impFile" accept=".csv,.json,text/csv,application/json"><button class="btn primary" data-act="fbImportFile">Import file</button></div>
-    <p class="sub" id="impStep"></p></section>`}
+// the move from the Google Sheet is done; only the "load fresh" button stays
+function importPanel(){return `<section class="panel"><div class="phead"><h2>Data</h2><span class="stat">Saved in Firebase · syncs instantly</span></div>
+  <p class="sub">If this device ever looks out of date, load everything fresh from the cloud.</p><button class="btn small" data-act="freshLoad">Reload everything from the cloud</button></section>`}
 function vSettings(){
   const P=plans(),t=today(),cur=planFor(t);
   const maxPer=Math.max(...P.map(p=>p.times.length),0);
@@ -4906,6 +4902,7 @@ document.addEventListener("click",async e=>{
     b.disabled=true;call("changePassword",token,u,od?od.value:"",nw.value).then(()=>{toast(self?"Password changed":`Password reset for ${dispName(u)}`);nw.value="";if(od)od.value=""}).catch(err=>toast(String(err&&err.message||"Couldn’t change it").replace(/^Error: /,""))).finally(()=>{b.disabled=false})}
   else if(act==="addRaw"){askRaw(b.dataset.d)}
   else if(act==="showImport"){S.showImport=true;render()}
+  else if(act==="freshLoad"){await flush();["seb-cache","seb-pending"].forEach(k=>lsSet(k,null));toast("Loading everything fresh…");setTimeout(()=>location.reload(),400)}
   else if(act==="fbImportFile"){const f=$("#impFile").files[0];if(!f){toast("Choose the CSV file first");return}b.disabled=true;const st=$("#impStep");
     try{const text=await f.text();const rows=rowsFromFile(f.name,text);st.textContent=`Found ${rows.length} items. Copying…`;const n=await fbImportRows(rows,m=>{st.textContent=m});
       st.textContent=`Done: ${n} items copied. Reloading…`;toast("Import finished");setTimeout(()=>location.reload(),1500)}
