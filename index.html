@@ -5055,7 +5055,13 @@ async function startSession(t,user){
     setTimeout(()=>{loadTeam(true);loadBackups(true)},1500);
     if(OSN&&Notification.permission==="default"&&!lsGet("seb-asked-osn")&&!PHONE()){lsSet("seb-asked-osn","1");setTimeout(()=>toast("Get Windows notifications for reviews and posting times?","Turn on",askNotif),2500)}
     clearTimeout(pollT);schedulePoll();
-  }catch(e){if(String(e&&e.message).includes("SESSION"))return sessionExpired();$("#sync").textContent="Couldn’t load: "+(e&&e.message||e)}
+  }catch(e){
+    const msg=String(e&&e.message||"");
+    if(msg.includes("SESSION"))return sessionExpired();
+    /* Any other load failure: clear the bad token and show login so the user isn’t stuck */
+    token=null;lsSet("seb-token",null);clearInterval(pollT);
+    showLogin(msg||"Couldn’t connect. Please sign in again.");
+  }
 }
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)pollNow()});
 addEventListener("focus",()=>pollNow());
