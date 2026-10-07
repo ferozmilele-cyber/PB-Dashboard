@@ -2425,7 +2425,8 @@ function folderChip(s){
 }
 function linkChip(v){
   const u=safeUrl(v.finalLink),ed=(S.editLinks||{})[v.id];
-  if(u&&!ed)return `<span class="chipset"><a class="gchip play" href="${esc(u)}" target="_blank" rel="noopener noreferrer" title="${esc(u)}">${ICO_P}<span>Open video</span></a><button class="gchip ic" data-act="editLink" data-id="${v.id}" title="Change link">${ICO_E}</button></span>`;
+  const lbl=isCar(v)?"Open post":"Open video";
+  if(u&&!ed)return `<span class="chipset"><a class="gchip play" href="${esc(u)}" target="_blank" rel="noopener noreferrer" title="${esc(u)}">${ICO_P}<span>${lbl}</span></a><button class="gchip ic" data-act="editLink" data-id="${v.id}" title="Change link">${ICO_E}</button></span>`;
   return `<input type="text" class="link-in" value="${esc(v.finalLink||"")}" data-f="finalLink" data-id="${v.id}" placeholder="Paste link" aria-label="Final video link"${ed?" autofocus":""}>`;
 }
 function folderCell(s){
@@ -3470,7 +3471,7 @@ function vHistory(){
   const groups={};L.forEach(v=>{const k=v.postDate.slice(0,7);(groups[k]=groups[k]||[]).push(v)});
   const row=v=>`<div class="hrow" data-k="h-${v.id}"><div class="hdate"><b>${+v.postDate.slice(8)}</b><span>${WD[new Date(v.postDate+"T00:00:00").getDay()]}</span></div>
       <div class="etitle"><span class="dot" style="background:${hue(v.shotDate)}"></span><div><b>${esc(v.title||"Untitled")}</b><small>${v.postTime?fmtT(v.postTime):"No time"}, ${esc(v.format||"Reel")}${v.shotDate?`, shot ${esc(nice(v.shotDate))}`:""}</small></div></div>
-      <div>${openLink(v,"Open video")||`<span class="tag">No link</span>`}</div></div>`;
+      <div>${openLink(v,isCar(v)?"Open post":"Open video")||`<span class="tag">No link</span>`}</div></div>`;
   const body=Object.keys(groups).sort().reverse().map(k=>{const [y,m]=k.split("-").map(Number);
     return `<div class="card"><header><h3>${MONL[m-1]} ${y}</h3><span class="count">${groups[k].length}</span></header>${groups[k].map(row).join("")}</div>`}).join("");
   return `<section class="panel">
@@ -3701,7 +3702,7 @@ function cmdRender(){
   const q=$("#cmdIn").value;CMD.items=cmdFilter(q);if(CMD.idx>=CMD.items.length)CMD.idx=0;
   const ico={video:"▶",shoot:"🎬",tab:"↗",act:"＋"};
   $("#cmdList").innerHTML=CMD.items.length?CMD.items.map((it,i)=>{
-    const quick=it.type==="video"?`${it.v.shotDate?`<button class="cq" data-cq="copy" data-i="${i}" title="Copy the footage folder path">Copy path</button>`:""}${safeUrl(it.v.finalLink)?`<button class="cq" data-cq="open" data-i="${i}">Open video</button>`:""}`:it.type==="shoot"&&(S.scripts[it.id]||it.s.scriptLink)?`<button class="cq" data-cq="script" data-i="${i}">Script</button>`:"";
+    const quick=it.type==="video"?`${it.v.shotDate?`<button class="cq" data-cq="copy" data-i="${i}" title="Copy the footage folder path">Copy path</button>`:""}${safeUrl(it.v.finalLink)?`<button class="cq" data-cq="open" data-i="${i}">${isCar(it.v)?"Open post":"Open video"}</button>`:""}`:it.type==="shoot"&&(S.scripts[it.id]||it.s.scriptLink)?`<button class="cq" data-cq="script" data-i="${i}">Script</button>`:"";
     return `<li class="ci${i===CMD.idx?" on":""}" data-i="${i}" role="option" aria-selected="${i===CMD.idx}"><span class="cico"${it.dot?` style="--d:${it.dot}"`:""}>${ico[it.type]}</span><span class="ctx"><b>${hl(it.title,q)}</b><small>${esc(it.sub)}</small></span><span class="cqs">${quick}</span></li>`}).join("")
     :`<li class="cempty">No matches for “${esc(q)}”</li>`;
   const on=$("#cmdList .ci.on");if(on)on.scrollIntoView({block:"nearest"});
@@ -4513,16 +4514,16 @@ function showAlert(v,kind){
     <p class="al-note">${esc(v.reviewNote||"No notes added.")}</p><div class="al-btns"><button class="al-done" data-al="x">Later</button><button class="al-open" data-al="startedit">Start re-edit</button></div>`;
   else if(kind==="soon"||kind==="now"||(kind==="late"&&isPoster())){const lnk=safeUrl(v.finalLink);
     body=`<div class="al-top"><span class="al-pill${kind==="late"?" warn":kind==="now"?" pulse":""}">${kind==="soon"?"Posting in 15 min":kind==="now"?"Post now":"Not posted yet"}</span>${x}</div>${title}<small>${isCar(v)?"Carousel":"Reel"}, ${kind==="late"?"was due ":""}${when}</small>
-    <div class="al-btns">${lnk?`<a class="al-done" href="${esc(lnk)}" target="_blank" rel="noopener noreferrer">Open video</a>`:""}${slideHTML(v.id,"Slide to post")}</div>`}
+    <div class="al-btns">${lnk?`<a class="al-done" href="${esc(lnk)}" target="_blank" rel="noopener noreferrer">${isCar(v)?"Open post":"Open video"}</a>`:""}${slideHTML(v.id,"Slide to post")}</div>`}
   else if(kind==="late")body=`<div class="al-top"><span class="al-pill warn">Not posted yet</span>${x}</div>${title}<small>Was due ${when}. ${esc(posterName())} hasn’t marked it posted.</small>
     <div class="al-btns"><button class="al-done" data-al="x">OK</button><button class="al-open" data-al="posted">It’s posted</button></div>`;
   else if(kind==="posted"){const lnk=safeUrl(v.finalLink);
     body=`<div class="al-top"><span class="al-pill">✓ Posted</span>${x}</div>${title}<small>${kindName(v)}, went live ${when} as scheduled.</small>
-    <div class="al-btns">${lnk?`<a class="al-done" href="${esc(lnk)}" target="_blank" rel="noopener noreferrer">Open video</a>`:""}<button class="al-open" data-al="x">OK</button></div>`}
+    <div class="al-btns">${lnk?`<a class="al-done" href="${esc(lnk)}" target="_blank" rel="noopener noreferrer">${isCar(v)?"Open post":"Open video"}</a>`:""}<button class="al-open" data-al="x">OK</button></div>`}
   else if(kind==="notready")body=`<div class="al-top"><span class="al-pill warn">Due soon, not ready</span>${x}</div>${title}<small>Posts ${when}, still ${esc(v.status)}.</small>
     <div class="al-btns"><button class="al-done" data-al="x">OK</button></div>`;
   else body=`<div class="al-top"><span class="al-pill">Ready to post</span>${x}</div>${title}<small>${isCar(v)?"Carousel":"Reel"}, ${when}</small>
-    <div class="al-btns"><a class="al-open" href="${esc(safeUrl(v.finalLink))}" target="_blank" rel="noopener noreferrer" data-al="open">Open video</a><button class="al-done" data-al="scheduled">Scheduled</button></div><div class="al-slide">${slideHTML(v.id,"Slide to post")}</div>`;
+    <div class="al-btns"><a class="al-open" href="${esc(safeUrl(v.finalLink))}" target="_blank" rel="noopener noreferrer" data-al="open">${isCar(v)?"Open post":"Open video"}</a><button class="al-done" data-al="scheduled">Scheduled</button></div><div class="al-slide">${slideHTML(v.id,"Slide to post")}</div>`;
   el.innerHTML=body;el.dataset.id=v.id;el.dataset.key=alertKey(v,kind);box.prepend(el);
   if(RM||!el.animate)return;
   const hgt=el.offsetHeight;el.style.overflow="hidden";
