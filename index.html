@@ -506,7 +506,8 @@ nav.tabs{background:rgba(255,255,255,.7)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) nav.tabs{background:rgba(20,25,30,.7)}}
 nav.tabs button{color:var(--muted)}
 nav.tabs button[aria-selected="true"]{color:#0B0B0C}
-[data-theme="dark"] nav.tabs button[aria-selected="true"]{color:#0B0B0C}
+[data-theme="dark"] nav.tabs button[aria-selected="true"]{color:var(--ink)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:var(--ink)}}
 .tab-ind{background:var(--lime);box-shadow:0 4px 14px rgba(140,210,0,.45),inset 0 1px 0 rgba(255,255,255,.6)}
 
 /* buttons */
@@ -2045,6 +2046,7 @@ body.fbloading #fbLoading{display:grid}
 @media (hover:none),(max-width:760px){
   #bubbles,body::after{display:none!important}
   section.panel{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;background:rgba(255,255,255,.9)!important}
+  [data-theme="dark"] section.panel{background:rgba(18,24,32,.97)!important}
   section.panel::before,section.panel::after{display:none!important}
   .ovk>div,.pl-row,.tcard,.acct,.idea,.bkrow,.eplan,.ep-day,.hstats div,.card,.btn,.gchip,.gsel,.stsel,.me,.searchbtn,.morebtn,.away-banner,.fchip{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
   .btn::after,.gchip::after,.fchip::after,.ovk>div::after,.pl-row::after,.tcard::after,.idea::after,.acct::after,.ep-day::after,.bkrow::after,.searchbtn::after,.me::after,.morebtn::after,.shuffle::after,.idea::after{display:none!important}
@@ -2059,6 +2061,542 @@ body.fbloading #fbLoading{display:grid}
 .pl-filter .seg::-webkit-scrollbar{display:none}
 .pl-filter .seg button{flex:none}
 @media (max-width:760px){.shoot-need small{flex-basis:100%;white-space:normal}.wrap{overflow-x:clip}}
+
+/* ================================================================
+   DARK MODE COMPREHENSIVE OVERRIDES  — injected after all other CSS
+   Covers every hard-coded rgba(255,255,255,…) / #fff in Glass pass
+   ================================================================ */
+
+/* --- CSS Glass variable overrides for dark --- */
+[data-theme="dark"],
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  /* intentionally left blank — see below */
+}}
+
+[data-theme="dark"]{
+  --g-bg:rgba(20,25,30,.72)!important;
+  --g-bg2:rgba(25,31,36,.82)!important;
+  --g-line:rgba(255,255,255,.10)!important;
+  --g-edge:rgba(255,255,255,.06)!important;
+  --g-shadow:0 4px 16px rgba(0,0,0,.45),0 1px 3px rgba(0,0,0,.35)!important;
+  --g-shadow-h:0 8px 28px rgba(0,0,0,.55),0 2px 6px rgba(0,0,0,.40)!important;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --g-bg:rgba(20,25,30,.72)!important;
+  --g-bg2:rgba(25,31,36,.82)!important;
+  --g-line:rgba(255,255,255,.10)!important;
+  --g-edge:rgba(255,255,255,.06)!important;
+  --g-shadow:0 4px 16px rgba(0,0,0,.45),0 1px 3px rgba(0,0,0,.35)!important;
+  --g-shadow-h:0 8px 28px rgba(0,0,0,.55),0 2px 6px rgba(0,0,0,.40)!important;
+}}
+
+/* --- Panels and body background --- */
+[data-theme="dark"] section.panel,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) section.panel}{
+  background:linear-gradient(180deg,rgba(22,28,35,.82),rgba(18,23,29,.72))!important;
+  border-color:rgba(255,255,255,.08)!important;
+}
+[data-theme="dark"] body::before{opacity:.5}
+
+/* --- Nav tabs --- */
+[data-theme="dark"] nav.tabs,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) nav.tabs}{
+  background:rgba(16,20,25,.78)!important;
+  box-shadow:0 1px 0 rgba(255,255,255,.06),inset 0 1px 0 rgba(255,255,255,.04)!important;
+}
+[data-theme="dark"] nav.tabs button[aria-selected="true"]{color:var(--ink)!important}
+[data-theme="dark"] nav.tabs.stuck{background:rgba(16,20,25,.92)!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:var(--ink)!important}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) nav.tabs.stuck{background:rgba(16,20,25,.92)!important}}
+
+/* --- Generic buttons --- */
+[data-theme="dark"] .btn,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn}{
+  background:rgba(30,37,46,.82)!important;
+  border-color:rgba(255,255,255,.12)!important;
+  box-shadow:0 1px 2px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.07)!important;
+  color:var(--ink)!important;
+}
+[data-theme="dark"] .btn:hover,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn:hover}{
+  background:rgba(38,46,56,.9)!important;
+  box-shadow:0 6px 18px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.07)!important;
+}
+
+/* --- Seg indicator --- */
+[data-theme="dark"] .seg-ind,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .seg-ind}{
+  background:linear-gradient(180deg,rgba(35,43,54,.95),rgba(28,35,44,.88))!important;
+  box-shadow:0 2px 8px rgba(0,0,0,.4)!important;
+}
+
+/* --- Overview KPI cards (.ovk>div) --- */
+[data-theme="dark"] .ovk>div,
+[data-theme="dark"] .card,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ovk>div},
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .card}{
+  background:rgba(22,28,36,.82)!important;
+  border-color:rgba(255,255,255,.08)!important;
+  box-shadow:0 2px 8px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.06)!important;
+}
+[data-theme="dark"] .ovk>div:hover,
+[data-theme="dark"] .card:hover,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ovk>div:hover},
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .card:hover}{
+  background:rgba(28,35,44,.9)!important;
+  box-shadow:0 6px 20px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.07)!important;
+}
+
+/* --- All generic inputs, selects, textareas --- */
+[data-theme="dark"] input:not([type=checkbox]):not([type=radio]):not([type=range]),
+[data-theme="dark"] select,
+[data-theme="dark"] textarea,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) input:not([type=checkbox]):not([type=radio]):not([type=range])},
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) select},
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) textarea}{
+  background:rgba(18,23,30,.78)!important;
+  border-color:rgba(255,255,255,.12)!important;
+  color:var(--ink)!important;
+}
+[data-theme="dark"] input:focus,
+[data-theme="dark"] select:focus,
+[data-theme="dark"] textarea:focus,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) input:focus},
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) select:focus},
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) textarea:focus}{
+  background:rgba(22,28,36,.9)!important;
+  border-color:rgba(255,255,255,.22)!important;
+}
+[data-theme="dark"] td input:focus,
+[data-theme="dark"] td select:focus,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) td input:focus},
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) td select:focus}{
+  background:rgba(22,28,36,.9)!important;
+}
+
+/* --- Table rows --- */
+[data-theme="dark"] thead th,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) thead th}{
+  background:rgba(16,20,26,.88)!important;
+  color:var(--muted)!important;
+}
+[data-theme="dark"] tbody tr:nth-child(even) td,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) tbody tr:nth-child(even) td}{
+  background:rgba(255,255,255,.03)!important;
+}
+[data-theme="dark"] tbody tr:hover td,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) tbody tr:hover td}{
+  background:rgba(30,38,48,.72)!important;
+}
+[data-theme="dark"] tbody tr,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) tbody tr}{
+  background:transparent!important;
+}
+
+/* --- Row hovers (erow, slot, hrow) --- */
+[data-theme="dark"] .erow:hover,
+[data-theme="dark"] .slot:hover,
+[data-theme="dark"] .hrow:hover,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .erow:hover},
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .slot:hover},
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .hrow:hover}{
+  background:rgba(28,36,46,.82)!important;
+  box-shadow:0 2px 10px rgba(0,0,0,.3),inset 3px 0 0 var(--lime)!important;
+}
+[data-theme="dark"] .slot.filled:hover,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .slot.filled:hover}{
+  background:rgba(28,36,46,.82)!important;
+}
+
+/* --- Status chips --- */
+[data-theme="dark"] td .status,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) td .status}{
+  background-color:rgba(22,28,36,.7)!important;
+}
+[data-theme="dark"] .status,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .status}{
+  background-color:rgba(22,28,36,.7)!important;
+}
+
+/* --- Glass select dropdowns (stsel, stpop, gsel) --- */
+[data-theme="dark"] .stsel,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .stsel}{
+  background:rgba(20,26,34,.82)!important;
+  color:var(--ink)!important;
+  border-color:rgba(255,255,255,.12)!important;
+}
+[data-theme="dark"] .stsel:hover,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .stsel:hover}{
+  background:rgba(28,36,46,.9)!important;
+}
+[data-theme="dark"] .stpop,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .stpop}{
+  background:rgba(18,23,30,.96)!important;
+  border-color:rgba(255,255,255,.12)!important;
+  box-shadow:0 12px 40px rgba(0,0,0,.6)!important;
+}
+[data-theme="dark"] .stpop button,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .stpop button}{
+  color:var(--ink)!important;
+}
+[data-theme="dark"] .stpop button:hover,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .stpop button:hover}{
+  background:rgba(255,255,255,.08)!important;
+}
+[data-theme="dark"] .gsel,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gsel}{
+  background:rgba(20,26,34,.82)!important;
+  color:var(--ink)!important;
+  border-color:rgba(255,255,255,.10)!important;
+}
+[data-theme="dark"] .gsel:hover,
+[data-theme="dark"] td .gsel:hover,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gsel:hover},
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) td .gsel:hover}{
+  background:rgba(28,36,46,.9)!important;
+}
+
+/* --- G chips --- */
+[data-theme="dark"] .gchip,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gchip}{
+  background:rgba(22,28,36,.78)!important;
+  border-color:rgba(255,255,255,.10)!important;
+  color:var(--ink)!important;
+}
+[data-theme="dark"] .gchip:hover,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gchip:hover}{
+  background:rgba(30,38,48,.9)!important;
+}
+
+/* --- Pillar chips and slots --- */
+[data-theme="dark"] .pl-chip,
+[data-theme="dark"] .pl-slot,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pl-chip},
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pl-slot}{
+  background:rgba(22,28,36,.82)!important;
+  border-color:rgba(255,255,255,.10)!important;
+  color:var(--ink)!important;
+}
+
+/* --- Plan settings hover --- */
+[data-theme="dark"] .plan:hover,
+[data-theme="dark"] .cplan:hover,
+[data-theme="dark"] #main .field:hover,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .plan:hover},
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cplan:hover},
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #main .field:hover}{
+  background:rgba(28,36,46,.7)!important;
+}
+[data-theme="dark"] .cplan input,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cplan input}{
+  background:rgba(18,23,30,.78)!important;
+}
+
+/* --- Icon buttons, copy buttons --- */
+[data-theme="dark"] .iconbtn,
+[data-theme="dark"] .copy,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .iconbtn},
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .copy}{
+  background:rgba(22,28,36,.78)!important;
+  border-color:rgba(255,255,255,.10)!important;
+}
+[data-theme="dark"] .mv2 button,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .mv2 button}{
+  background:rgba(22,28,36,.78)!important;
+}
+[data-theme="dark"] .lockbtn,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .lockbtn}{
+  background:rgba(22,28,36,.78)!important;
+}
+
+/* --- Bell notification --- */
+[data-theme="dark"] .bell:not(.has),
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .bell:not(.has)}{
+  background:rgba(22,28,36,.78)!important;
+  box-shadow:0 1px 2px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.07)!important;
+}
+[data-theme="dark"] .bell-n,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .bell-n}{
+  box-shadow:0 0 0 2px rgba(20,24,30,1)!important;
+}
+
+/* --- Alerts / notifications --- */
+[data-theme="dark"] .alert,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .alert}{
+  background:rgba(18,24,32,.92)!important;
+  border-color:rgba(255,255,255,.10)!important;
+  box-shadow:0 16px 48px rgba(0,0,0,.6)!important;
+}
+[data-theme="dark"] .al-t,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .al-t}{
+  color:var(--ink)!important;
+}
+[data-theme="dark"] .al-done,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .al-done}{
+  background:rgba(28,36,46,.85)!important;
+  border-color:rgba(255,255,255,.12)!important;
+  color:var(--ink)!important;
+}
+
+/* --- Search button, me button, more button --- */
+[data-theme="dark"] .searchbtn,
+[data-theme="dark"] .me,
+[data-theme="dark"] .morebtn,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .searchbtn},
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .me},
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .morebtn}{
+  background:rgba(22,28,36,.78)!important;
+  border-color:rgba(255,255,255,.10)!important;
+  box-shadow:0 1px 2px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.07)!important;
+}
+
+/* --- More menu popup --- */
+[data-theme="dark"] .moremenu,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .moremenu}{
+  background:rgba(16,20,26,.97)!important;
+  border-color:rgba(255,255,255,.12)!important;
+  box-shadow:0 20px 50px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.06)!important;
+}
+[data-theme="dark"] .moremenu button,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .moremenu button}{
+  color:var(--ink)!important;
+}
+[data-theme="dark"] .moremenu button:hover,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .moremenu button:hover}{
+  background:rgba(255,255,255,.07)!important;
+}
+
+/* --- Command palette --- */
+[data-theme="dark"] dialog.cmdk,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) dialog.cmdk}{
+  background:rgba(16,20,26,.97)!important;
+  border-color:rgba(255,255,255,.10)!important;
+}
+[data-theme="dark"] .cico,
+[data-theme="dark"] .cq,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cico},
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cq}{
+  background:rgba(22,28,36,.9)!important;
+  border-color:rgba(255,255,255,.12)!important;
+  color:var(--ink)!important;
+}
+
+/* --- Shoot dialog / script --- */
+[data-theme="dark"] .sgrid input,
+[data-theme="dark"] .sgrid select,
+[data-theme="dark"] .sgrid textarea,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .sgrid input},
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .sgrid select},
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .sgrid textarea}{
+  background:rgba(18,23,30,.82)!important;
+}
+[data-theme="dark"] .scriptdoc,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .scriptdoc}{
+  background:rgba(18,23,30,.88)!important;
+  border-color:rgba(255,255,255,.10)!important;
+}
+[data-theme="dark"] .rawin input,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .rawin input}{
+  background:rgba(18,23,30,.82)!important;
+}
+[data-theme="dark"] #reDlg textarea,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #reDlg textarea}{
+  background:rgba(18,23,30,.82)!important;
+}
+
+/* --- Shoot needs --- */
+[data-theme="dark"] .shoot-need .sn,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .shoot-need .sn}{
+  background:rgba(22,28,36,.78)!important;
+  border-color:rgba(255,255,255,.10)!important;
+}
+
+/* --- Calendar cells --- */
+[data-theme="dark"] .mcell,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .mcell}{
+  background:rgba(20,26,34,.82)!important;
+  border-color:rgba(255,255,255,.08)!important;
+}
+[data-theme="dark"] .mw,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .mw}{
+  background:rgba(16,20,26,.85)!important;
+}
+[data-theme="dark"] .navb,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .navb}{
+  background:rgba(22,28,36,.78)!important;
+  border-color:rgba(255,255,255,.10)!important;
+}
+
+/* --- History stats --- */
+[data-theme="dark"] .hstats div,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .hstats div}{
+  background:rgba(20,26,34,.78)!important;
+  border-color:rgba(255,255,255,.08)!important;
+}
+[data-theme="dark"] .hrow:hover,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .hrow:hover}{
+  background:rgba(28,36,46,.72)!important;
+}
+
+/* --- Backup rows --- */
+[data-theme="dark"] .bkrow,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .bkrow}{
+  background:rgba(20,26,34,.72)!important;
+  border-color:rgba(255,255,255,.08)!important;
+}
+
+/* --- Team cards & inputs --- */
+[data-theme="dark"] .tcard,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tcard}{
+  background:rgba(20,26,34,.78)!important;
+  border-color:rgba(255,255,255,.08)!important;
+}
+[data-theme="dark"] .tf input,
+[data-theme="dark"] .tpw input,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tf input},
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tpw input}{
+  background:rgba(18,23,30,.82)!important;
+}
+
+/* --- Mobile bar --- */
+[data-theme="dark"] .mbar,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .mbar}{
+  background:rgba(14,18,24,.88)!important;
+  border-color:rgba(255,255,255,.08)!important;
+  box-shadow:0 -8px 30px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.06)!important;
+}
+[data-theme="dark"] .morebtn,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .morebtn}{
+  background:rgba(22,28,36,.78)!important;
+}
+[data-theme="dark"] .mob-more,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .mob-more}{
+  background:rgba(22,28,36,.78)!important;
+  border-color:rgba(255,255,255,.10)!important;
+}
+
+/* --- Smart edit plan --- */
+[data-theme="dark"] .eplan,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .eplan}{
+  background:rgba(20,26,34,.82)!important;
+  border-color:rgba(255,255,255,.08)!important;
+}
+[data-theme="dark"] .ep-day,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ep-day}{
+  background:rgba(22,28,36,.82)!important;
+  border-color:rgba(255,255,255,.10)!important;
+}
+
+/* --- Pillar rows, pbtn, pl-cust, pl-row, pl-day --- */
+[data-theme="dark"] .pbtn,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pbtn}{
+  background:rgba(22,28,36,.78)!important;
+  border-color:rgba(255,255,255,.10)!important;
+}
+[data-theme="dark"] .prow select,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .prow select}{
+  background:rgba(18,23,30,.78)!important;
+}
+[data-theme="dark"] .pl-cust input,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pl-cust input}{
+  background:rgba(18,23,30,.78)!important;
+}
+[data-theme="dark"] .pl-day,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pl-day}{
+  background:rgba(22,28,36,.72)!important;
+  border-color:rgba(255,255,255,.08)!important;
+}
+[data-theme="dark"] .pl-row,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pl-row}{
+  background:rgba(20,26,34,.7)!important;
+  border-color:rgba(255,255,255,.08)!important;
+}
+
+/* --- Summary chart --- */
+[data-theme="dark"] .sum-chart,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .sum-chart}{
+  background:rgba(20,26,34,.72)!important;
+  border-color:rgba(255,255,255,.08)!important;
+}
+
+/* --- Content bank / ideas / accounts --- */
+[data-theme="dark"] .id-add select,
+[data-theme="dark"] .id-add textarea,
+[data-theme="dark"] .id-add input,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .id-add select},
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .id-add textarea},
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .id-add input}{
+  background:rgba(18,23,30,.82)!important;
+}
+[data-theme="dark"] .idea,
+[data-theme="dark"] .acct,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .idea},
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .acct}{
+  background:rgba(20,26,34,.82)!important;
+  border-color:rgba(255,255,255,.08)!important;
+}
+
+/* --- Vault form --- */
+[data-theme="dark"] .vault-form input,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .vault-form input}{
+  background:rgba(18,23,30,.82)!important;
+}
+
+/* --- Posting tp hover --- */
+[data-theme="dark"] .tp:hover,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tp:hover}{
+  background:rgba(28,36,46,.78)!important;
+}
+
+/* --- Away / time-off --- */
+[data-theme="dark"] .away,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .away}{
+  background:rgba(20,26,34,.72)!important;
+  border-color:rgba(255,255,255,.08)!important;
+}
+[data-theme="dark"] .away-form input,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .away-form input}{
+  background:rgba(18,23,30,.82)!important;
+}
+[data-theme="dark"] .away-banner,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .away-banner}{
+  background:rgba(20,26,34,.72)!important;
+  border-color:rgba(255,255,255,.08)!important;
+}
+
+/* --- Top scrim --- */
+[data-theme="dark"] #topScrim,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #topScrim}{
+  background:linear-gradient(180deg,rgba(14,18,24,.96) 0%,rgba(14,18,24,.82) 60%,rgba(14,18,24,0) 100%)!important;
+}
+
+/* --- FB loading overlay --- */
+[data-theme="dark"] #fbLoading,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #fbLoading}{
+  background:rgba(14,18,24,.72)!important;
+}
+[data-theme="dark"] .fbl-card,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fbl-card}{
+  background:rgba(20,26,34,.96)!important;
+  border-color:rgba(255,255,255,.10)!important;
+}
+
+/* --- Mobile performance pass: dark panels on mobile --- */
+@media (hover:none),(max-width:760px){
+  [data-theme="dark"] section.panel{background:rgba(18,24,32,.95)!important}
+  [data-theme="dark"] tbody tr{background:rgba(20,26,34,.82)!important}
+}
+@media (prefers-color-scheme:dark) and (hover:none),(prefers-color-scheme:dark) and (max-width:760px){
+  :root:not([data-theme="light"]) section.panel{background:rgba(18,24,32,.95)!important}
+  :root:not([data-theme="light"]) tbody tr{background:rgba(20,26,34,.82)!important}
+}
+
+/* --- fchip --- */
+[data-theme="dark"] .fchip,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fchip}{
+  background:rgba(22,28,36,.78)!important;
+  border-color:rgba(255,255,255,.10)!important;
+}
 </style>
 </head>
 <body>
