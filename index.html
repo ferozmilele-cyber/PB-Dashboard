@@ -470,25 +470,29 @@ dialog[open]::backdrop{animation:fadeOnly .3s var(--ease) both}
     --film:#0B0B0C; --film-hole:rgba(255,255,255,.2);
     --shadow:0 1px 2px rgba(20,24,10,.04),0 12px 36px rgba(20,24,10,.07);
     --blob1:rgba(170,255,0,.30); --blob2:#E9EDE4; --blob3:rgba(170,255,0,.16); --blob4:#EEF0EA;}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:light;
-    --bg:#F6F7F2; --ink:#0B0B0C; --muted:#6A6E64; --line:rgba(12,14,8,.08);
-    --surface:rgba(255,255,255,.82); --surface-2:rgba(255,255,255,.62); --glass:rgba(255,255,255,.66);
-    --glass-border:rgba(255,255,255,.95); --glass-hi:#FFFFFF;
-    --accent:#AAFF00; --accent-ink:#0B0B0C; --warn:#B8480A; --pop:rgba(255,255,255,.86);
-    --film:#0B0B0C; --film-hole:rgba(255,255,255,.2);
-    --shadow:0 1px 2px rgba(20,24,10,.04),0 12px 36px rgba(20,24,10,.07);
-    --blob1:rgba(170,255,0,.30); --blob2:#E9EDE4; --blob3:rgba(170,255,0,.16); --blob4:#EEF0EA;}}
-:root[data-theme="dark"]{color-scheme:light;--bg:#F6F7F2; --ink:#0B0B0C; --muted:#6A6E64; --line:rgba(12,14,8,.08);
-    --surface:rgba(255,255,255,.82); --surface-2:rgba(255,255,255,.62); --glass:rgba(255,255,255,.66);
-    --glass-border:rgba(255,255,255,.95); --glass-hi:#FFFFFF;
-    --accent:#AAFF00; --accent-ink:#0B0B0C; --warn:#B8480A; --pop:rgba(255,255,255,.86);
-    --film:#0B0B0C; --film-hole:rgba(255,255,255,.2);
-    --shadow:0 1px 2px rgba(20,24,10,.04),0 12px 36px rgba(20,24,10,.07);
-    --blob1:rgba(170,255,0,.30); --blob2:#E9EDE4; --blob3:rgba(170,255,0,.16); --blob4:#EEF0EA;}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;
+    --bg:#14181C; --ink:#E6EAED; --muted:#8A939C; --line:rgba(255,255,255,.10);
+    --surface:rgba(20,25,30,.88); --surface-2:rgba(25,31,36,.75); --glass:rgba(20,25,30,.72);
+    --glass-border:rgba(255,255,255,.12); --glass-hi:rgba(255,255,255,.08);
+    --accent:#AAFF00; --accent-ink:#0B0B0C; --warn:#E0623A; --pop:rgba(20,25,30,.92);
+    --film:#E6EAED; --film-hole:rgba(0,0,0,.35);
+    --shadow:0 1px 2px rgba(0,0,0,.25),0 12px 36px rgba(0,0,0,.45);
+    --blob1:rgba(170,255,0,.18); --blob2:#1C2128; --blob3:rgba(170,255,0,.10); --blob4:#1A1F25;}}
+:root[data-theme="dark"]{color-scheme:dark;
+    --bg:#14181C; --ink:#E6EAED; --muted:#8A939C; --line:rgba(255,255,255,.10);
+    --surface:rgba(20,25,30,.88); --surface-2:rgba(25,31,36,.75); --glass:rgba(20,25,30,.72);
+    --glass-border:rgba(255,255,255,.12); --glass-hi:rgba(255,255,255,.08);
+    --accent:#AAFF00; --accent-ink:#0B0B0C; --warn:#E0623A; --pop:rgba(20,25,30,.92);
+    --film:#E6EAED; --film-hole:rgba(0,0,0,.35);
+    --shadow:0 1px 2px rgba(0,0,0,.25),0 12px 36px rgba(0,0,0,.45);
+    --blob1:rgba(170,255,0,.18); --blob2:#1C2128; --blob3:rgba(170,255,0,.10); --blob4:#1A1F25;}
 body::before{opacity:1;filter:blur(40px)}
 select option{color:#0B0B0C;background:#FFFFFF}
+[data-theme="dark"] select option{color:#E6EAED;background:#1C2128}
 :focus-visible{outline:2px solid var(--lime-deep);outline-offset:2px}
 input[type=checkbox]{accent-color:#0B0B0C}
+[data-theme="dark"] input[type=checkbox]{accent-color:var(--lime)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) select option{color:#E6EAED;background:#1C2128}}
 
 header.top h1{font-size:32px;letter-spacing:-.03em}
 header.top p{color:var(--muted)}
@@ -498,8 +502,11 @@ section.panel h2{font-size:24px;letter-spacing:-.025em;margin:0}
 
 /* tabs */
 nav.tabs{background:rgba(255,255,255,.7)}
+[data-theme="dark"] nav.tabs{background:rgba(20,25,30,.7)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) nav.tabs{background:rgba(20,25,30,.7)}}
 nav.tabs button{color:var(--muted)}
 nav.tabs button[aria-selected="true"]{color:#0B0B0C}
+[data-theme="dark"] nav.tabs button[aria-selected="true"]{color:#0B0B0C}
 .tab-ind{background:var(--lime);box-shadow:0 4px 14px rgba(140,210,0,.45),inset 0 1px 0 rgba(255,255,255,.6)}
 
 /* buttons */
@@ -753,7 +760,7 @@ section.panel.stag{animation-name:panelIn;animation-duration:.8s}
 #main.enter>section.panel{animation:none}
 /* liquid tab indicator */
 .tab-ind{right:auto}
-.tab-ind.ready{transition:left var(--dl,.5s) var(--spring),right var(--dr,.5s) var(--spring),width .5s var(--spring),box-shadow .3s}
+.tab-ind.ready{transition:left var(--dl,.32s) var(--spring),right var(--dr,.32s) var(--spring),width .32s var(--spring),box-shadow .3s}
 nav.tabs button{transition:color .35s var(--ease)}
 /* ticks fill in sequence */
 .ticks span{transition:background .5s var(--ease),box-shadow .5s var(--ease),transform .5s var(--spring)}
@@ -4856,9 +4863,17 @@ function moveInd(){
   if(!ind||!b)return;
   const L=b.offsetLeft,R=nav.scrollWidth-(b.offsetLeft+b.offsetWidth);
   const prevL=parseFloat(ind.dataset.l||L);
-  // leading edge moves first, trailing edge follows: a soft "liquid" stretch
-  if(L>prevL){ind.style.setProperty("--dl",".62s");ind.style.setProperty("--dr",".38s")}
-  else{ind.style.setProperty("--dl",".38s");ind.style.setProperty("--dr",".62s")}
+  const now=Date.now(),rapid=(now-(ind.dataset.t||0))<220;
+  ind.dataset.t=now;
+  if(rapid){
+    // rapid click: jump instantly, no spring lag
+    ind.classList.remove("ready");
+    ind.style.setProperty("--dl","0s");ind.style.setProperty("--dr","0s");
+  }else{
+    // normal navigation: liquid stretch — leading edge first, trailing follows
+    if(L>prevL){ind.style.setProperty("--dl",".32s");ind.style.setProperty("--dr",".22s")}
+    else{ind.style.setProperty("--dl",".22s");ind.style.setProperty("--dr",".32s")}
+  }
   ind.style.left=L+"px";ind.style.right=R+"px";ind.style.width="auto";ind.style.transform="none";ind.dataset.l=L;
   if(!ind.classList.contains("ready"))requestAnimationFrame(()=>requestAnimationFrame(()=>ind.classList.add("ready")));
 }
