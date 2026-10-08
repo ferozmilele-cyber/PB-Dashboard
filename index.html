@@ -3680,12 +3680,11 @@ function vSchedule(){
     const isReady=v.status==="Ready";
     const hasLink=!!safeUrl(v.finalLink);
     const editing=(S.editLinks||{})[v.id];
+    const showInput=!hasLink||editing;
     const tags=(isReady&&!hasLink&&!editing?`<span class="tag warn">No final link</span>`:"")+(v.status!=="Ready"&&v.status!=="Scheduled"&&v.status!=="Posted"?`<span class="tag">Not ready</span>`:"")+(extraTags||"");
     const linkArea=(hasLink&&!editing)?
-      `${openLink(v,"Open")}${isReady?`<button class="hlink-edit" data-act="editLink" data-id="${v.id}" title="Change link">Edit link</button>`:""}`:
-      isReady?
-        `<span class="hlink-add"><input type="text" class="link-in" placeholder="Paste final link…" data-id="${v.id}" value="${esc(v.finalLink||"")}"><button class="iconbtn" data-act="savehlink" data-id="${v.id}">Save</button>${hasLink?`<button class="hlink-edit" data-act="cancelEditLink" data-id="${v.id}">Cancel</button>`:""}</span>`
-        :"";
+      `${openLink(v,"Open")}<button class="hlink-edit" data-act="editLink" data-id="${v.id}" title="Change link">Edit link</button>`:
+      `<span class="hlink-add"><input type="text" class="link-in" placeholder="Paste final link…" data-id="${v.id}" value="${esc(v.finalLink||"")}"><button class="iconbtn" data-act="savehlink" data-id="${v.id}">Save</button>${hasLink?`<button class="hlink-edit" data-act="cancelEditLink" data-id="${v.id}">Cancel</button>`:""}</span>`;
     const sl=d?`${d}|${tm}|${k}`:"";
     return `<div class="slot filled${k==="C"?" car":""}"${d?` data-slot="${sl}"`:""} data-drag-id="${v.id}"><div class="grip" title="Drag to move">⋮⋮</div><div class="tm">${label}${k==="C"?`<span class="kind">Carousel</span>`:(d&&slotPillar(d,tm))?`<span class="kind pk" style="--pc:${pillarColor(slotPillar(d,tm))}">${esc(slotPillar(d,tm))}</span>`:""}</div><div class="ttl"><b>${esc(v.title||"Untitled")}</b>${pillarTag(v)}${linkArea}<small>${v.shotDate?"Shot "+esc(nice(v.shotDate)):"No shot date"}${tags}</small></div><div>${statusSelect(v)}</div><div>${lockCtl(v)}</div><div class="mv2">${d?`<button data-act="slotMove" data-dir="-1" data-slot="${sl}" aria-label="Move up">↑</button><button data-act="slotMove" data-dir="1" data-slot="${sl}" aria-label="Move down">↓</button>`:""}</div><div><button class="xbtn" data-act="unassign" data-id="${v.id}" aria-label="Remove from schedule" title="Remove">×</button></div></div>`;
   };
