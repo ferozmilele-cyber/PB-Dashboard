@@ -578,6 +578,10 @@ nav.tabs button[aria-selected="true"]{color:#0B0B0C}
 .slot select.assign:hover{border-color:var(--lime-deep);color:var(--ink)}
 .openlink{margin-left:8px;border:0;background:#0B0B0C;color:var(--lime);padding:2px 9px;font-size:11px;vertical-align:2px}
 .openlink:hover{background:var(--lime);color:#0B0B0C}
+.openlink.add-lnk{background:transparent;border:1.5px dashed var(--lime);color:var(--lime);opacity:.75}
+.openlink.add-lnk:hover{background:var(--lime);color:#0B0B0C;opacity:1;border-style:solid}
+.openlink.edit-lnk{background:transparent;border:1px solid var(--line);color:var(--ink);opacity:.55;font-weight:500}
+.openlink.edit-lnk:hover{opacity:1;background:var(--surface-2);color:var(--ink)}
 .lockbtn{border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 12px;font-size:12px;font-weight:600}
 .lockbtn.on{background:#0B0B0C;color:var(--lime);border-color:#0B0B0C}
 .lockd{font-size:12px;color:var(--muted);font-weight:500}
@@ -2429,12 +2433,16 @@ body.fbloading #fbLoading{display:grid}
   border-color:rgba(170,255,0,.4)!important;
 }
 [data-theme="dark"] .openlink:hover{background:var(--lime)!important;color:#0B0B0C!important;border-color:transparent!important}
+[data-theme="dark"] .openlink.add-lnk{background:transparent!important;border-color:var(--lime)!important;color:var(--lime)!important}
+[data-theme="dark"] .openlink.edit-lnk{background:transparent!important;border-color:rgba(255,255,255,.2)!important;color:var(--ink)!important}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .openlink{
   background:#1a2636!important;color:var(--lime)!important;border-color:rgba(170,255,0,.4)!important;
 }}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .openlink:hover{
   background:var(--lime)!important;color:#0B0B0C!important;border-color:transparent!important;
 }}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .openlink.add-lnk{background:transparent!important;border-color:var(--lime)!important;color:var(--lime)!important}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .openlink.edit-lnk{background:transparent!important;border-color:rgba(255,255,255,.2)!important;color:var(--ink)!important}}
 
 /* 37 ── Posting schedule segment control & toggles in dark ───── */
 [data-theme="dark"] .switches label{color:var(--ink)!important}
@@ -2649,6 +2657,14 @@ body.fbloading #fbLoading{display:grid}
     <div id="scriptHead"></div>
     <article id="scriptBody" class="scriptdoc"></article>
     <div class="foot"><a class="btn" id="scriptOpen" target="_blank" rel="noopener noreferrer" hidden>Open original</a><span style="flex:1"></span><button class="btn primary" value="ok">Close</button></div>
+  </form>
+</dialog>
+<dialog id="linkDlg">
+  <form method="dialog">
+    <span class="al-pill">Final link</span>
+    <h2 style="margin-top:10px">Paste the final video link</h2>
+    <input id="linkDlgInp" class="copybox" type="url" placeholder="https://…" autocomplete="off" style="margin-top:8px">
+    <div class="foot"><button class="btn ghost" value="cancel" type="submit" formnovalidate>Cancel</button><span style="flex:1"></span><button class="btn primary" type="button" id="linkDlgSave">Save link</button></div>
   </form>
 </dialog>
 <div id="topScrim" aria-hidden="true"></div>
@@ -3680,11 +3696,10 @@ function vSchedule(){
     const isReady=v.status==="Ready";
     const hasLink=!!safeUrl(v.finalLink);
     const editing=(S.editLinks||{})[v.id];
-    const showInput=!hasLink||editing;
-    const tags=(isReady&&!hasLink&&!editing?`<span class="tag warn">No final link</span>`:"")+(v.status!=="Ready"&&v.status!=="Scheduled"&&v.status!=="Posted"?`<span class="tag">Not ready</span>`:"")+(extraTags||"");
-    const linkArea=(hasLink&&!editing)?
-      `${openLink(v,"Open")}<button class="hlink-edit" data-act="editLink" data-id="${v.id}" title="Change link">Edit link</button>`:
-      `<span class="hlink-add"><input type="text" class="link-in" placeholder="Paste final link…" data-id="${v.id}" value="${esc(v.finalLink||"")}"><button class="iconbtn" data-act="savehlink" data-id="${v.id}">Save</button>${hasLink?`<button class="hlink-edit" data-act="cancelEditLink" data-id="${v.id}">Cancel</button>`:""}</span>`;
+    const tags=(isReady&&!hasLink?`<span class="tag warn">No final link</span>`:"")+(v.status!=="Ready"&&v.status!=="Scheduled"&&v.status!=="Posted"?`<span class="tag">Not ready</span>`:"")+(extraTags||"");
+    const linkArea=hasLink?
+      `${openLink(v,"Open")}<button class="openlink edit-lnk" data-act="openLinkDlg" data-id="${v.id}" title="Change link">Edit link</button>`:
+      `<button class="openlink add-lnk" data-act="openLinkDlg" data-id="${v.id}">+ Add link</button>`;
     const sl=d?`${d}|${tm}|${k}`:"";
     return `<div class="slot filled${k==="C"?" car":""}"${d?` data-slot="${sl}"`:""} data-drag-id="${v.id}"><div class="grip" title="Drag to move">⋮⋮</div><div class="tm">${label}${k==="C"?`<span class="kind">Carousel</span>`:(d&&slotPillar(d,tm))?`<span class="kind pk" style="--pc:${pillarColor(slotPillar(d,tm))}">${esc(slotPillar(d,tm))}</span>`:""}</div><div class="ttl"><b>${esc(v.title||"Untitled")}</b>${pillarTag(v)}${linkArea}<small>${v.shotDate?"Shot "+esc(nice(v.shotDate)):"No shot date"}${tags}</small></div><div>${statusSelect(v)}</div><div>${lockCtl(v)}</div><div class="mv2">${d?`<button data-act="slotMove" data-dir="-1" data-slot="${sl}" aria-label="Move up">↑</button><button data-act="slotMove" data-dir="1" data-slot="${sl}" aria-label="Move down">↓</button>`:""}</div><div><button class="xbtn" data-act="unassign" data-id="${v.id}" aria-label="Remove from schedule" title="Remove">×</button></div></div>`;
   };
@@ -5412,6 +5427,17 @@ document.addEventListener("click",async e=>{
   else if(act==="stMenu"){openStMenu(b)}
   else if(act==="editLink"){S.editLinks=S.editLinks||{};S.editLinks[b.dataset.id]=true;render();setTimeout(()=>{const i=document.querySelector(`.link-in[data-id="${b.dataset.id}"]`);if(i){i.focus();i.select()}},30)}
   else if(act==="cancelEditLink"){if(S.editLinks)delete S.editLinks[b.dataset.id];render()}
+  else if(act==="openLinkDlg"){
+    const id=b.dataset.id;const dlg=document.getElementById("linkDlg");const inp=document.getElementById("linkDlgInp");
+    if(!dlg||!inp)return;
+    inp.value=S.videos[id]?.finalLink||"";dlg.dataset.id=id;
+    openDlg(dlg);inp.focus();inp.select();
+    document.getElementById("linkDlgSave").onclick=()=>{
+      const u=safeUrl(inp.value.trim());if(!u){toast("Paste a link that starts with http");return}
+      const vv=S.videos[id];if(vv){putVideo(["Approved","Ready"].includes(vv.status)?{...withStatus(vv,"Ready"),finalLink:u}:{...vv,finalLink:u});if(["Approved","Ready"].includes(vv.status)){celebrate(id,"Ready");toast("Link saved — ready to post")}else toast("Link saved")}
+      dlg.close();
+    };
+  }
   else if(act==="savehlink"){const id=b.dataset.id;const inp=b.closest(".hlink-add,.hrow-link")?.querySelector(".link-in");const u=inp?safeUrl(inp.value.trim()):"";if(!u){toast("Paste a link that starts with http");return}const vv=S.videos[id];if(vv){putVideo(["Approved","Ready"].includes(vv.status)?{...withStatus(vv,"Ready"),finalLink:u}:{...vv,finalLink:u});if(["Approved","Ready"].includes(vv.status)){celebrate(id,"Ready");toast("Link saved — ready to post")}else toast("Link saved")}}
   else if(act==="rowMore"){S.moreRows=S.moreRows||{};S.moreRows[b.dataset.id]=!S.moreRows[b.dataset.id];render()}
   else if(act==="dialBack"){DIAL.code=DIAL.code.slice(0,-1);const el=document.getElementById("dialDots");if(el)el.innerHTML=dialDotsHTML();sfx("tick")}
