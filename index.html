@@ -897,6 +897,11 @@ dialog.reader{width:min(820px,calc(100vw - 24px))}
 .folder code.own{color:var(--ink);font-weight:600}
 .copy.addraw:hover{color:#0B0B0C}
 .eacts{display:inline-flex;gap:6px;align-items:center}
+.hrow-link{display:flex;align-items:center;gap:6px;min-width:0}
+.hlink-add{display:inline-flex;align-items:center;gap:6px;min-width:0}
+.hlink-add .link-in{width:160px;min-width:0;font-size:12px;padding:4px 10px;border-radius:999px;border:1px dashed var(--line);background:var(--surface-2);color:var(--ink)}
+.hlink-edit{font-size:11px;padding:2px 8px;opacity:.6}
+.hlink-edit:hover{opacity:1}
 #rawDlg{width:min(520px,calc(100vw - 24px))}
 
 /* search button + palette */
@@ -2376,6 +2381,65 @@ body.fbloading #fbLoading{display:grid}
   :root:not([data-theme="light"]) tbody tr{background:rgba(18,24,34,.82)!important}
 }
 
+/* 33 ── iconbtn / copy buttons ───────────────────────────────── */
+[data-theme="dark"] .iconbtn,[data-theme="dark"] .copy{
+  background:rgba(28,36,48,.82)!important;border-color:rgba(255,255,255,.14)!important;
+  color:var(--ink)!important;
+}
+[data-theme="dark"] .iconbtn:hover,[data-theme="dark"] .copy:hover{
+  background:var(--lime)!important;border-color:transparent!important;color:#0B0B0C!important;
+}
+[data-theme="dark"] .copy.addraw{border-color:rgba(255,255,255,.15)!important;color:var(--muted)!important}
+[data-theme="dark"] .copy.addraw:hover{color:#0B0B0C!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .iconbtn,:root:not([data-theme="light"]) .copy{
+  background:rgba(28,36,48,.82)!important;border-color:rgba(255,255,255,.14)!important;color:var(--ink)!important;
+}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .iconbtn:hover,:root:not([data-theme="light"]) .copy:hover{
+  background:var(--lime)!important;border-color:transparent!important;color:#0B0B0C!important;
+}}
+
+/* 34 ── erow / hrow hover in dark ────────────────────────────── */
+[data-theme="dark"] .erow:hover,[data-theme="dark"] .hrow:hover{
+  background:rgba(30,38,52,.90)!important;border-radius:14px;border-top-color:transparent;
+  box-shadow:0 8px 24px rgba(0,0,0,.45),0 1px 4px rgba(0,0,0,.3)!important;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .erow:hover,
+  :root:not([data-theme="light"]) .hrow:hover{
+    background:rgba(30,38,52,.90)!important;border-radius:14px;border-top-color:transparent;
+    box-shadow:0 8px 24px rgba(0,0,0,.45),0 1px 4px rgba(0,0,0,.3)!important;
+  }
+}
+
+/* 35 ── hlink-add input in dark ──────────────────────────────── */
+[data-theme="dark"] .hlink-add .link-in{
+  background:rgba(20,26,36,.85)!important;border-color:rgba(255,255,255,.14)!important;
+  color:var(--ink)!important;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .hlink-add .link-in{
+  background:rgba(20,26,36,.85)!important;border-color:rgba(255,255,255,.14)!important;color:var(--ink)!important;
+}}
+
+/* 36 ── openlink in dark (edit order + history) ─────────────── */
+[data-theme="dark"] .openlink{
+  background:#1a2636!important;color:var(--lime)!important;
+  border-color:rgba(170,255,0,.4)!important;
+}
+[data-theme="dark"] .openlink:hover{background:var(--lime)!important;color:#0B0B0C!important;border-color:transparent!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .openlink{
+  background:#1a2636!important;color:var(--lime)!important;border-color:rgba(170,255,0,.4)!important;
+}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .openlink:hover{
+  background:var(--lime)!important;color:#0B0B0C!important;border-color:transparent!important;
+}}
+
+/* 37 ── Posting schedule segment control & toggles in dark ───── */
+[data-theme="dark"] .switches label{color:var(--ink)!important}
+[data-theme="dark"] .switches .sw{background:rgba(255,255,255,.08)!important;border-color:rgba(255,255,255,.14)!important}
+[data-theme="dark"] .switches .sw[aria-checked="true"],[data-theme="dark"] .switches input:checked+span.sw{background:var(--lime)!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .switches label{color:var(--ink)!important}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .switches .sw{background:rgba(255,255,255,.08)!important;border-color:rgba(255,255,255,.14)!important}}
+
 </style>
 </head>
 <body>
@@ -3788,7 +3852,7 @@ function vHistory(){
   const groups={};L.forEach(v=>{const k=v.postDate.slice(0,7);(groups[k]=groups[k]||[]).push(v)});
   const row=v=>`<div class="hrow" data-k="h-${v.id}"><div class="hdate"><b>${+v.postDate.slice(8)}</b><span>${WD[new Date(v.postDate+"T00:00:00").getDay()]}</span></div>
       <div class="etitle"><span class="dot" style="background:${hue(v.shotDate)}"></span><div><b>${esc(v.title||"Untitled")}</b><small>${v.postTime?fmtT(v.postTime):"No time"}, ${esc(v.format||"Reel")}${v.shotDate?`, shot ${esc(nice(v.shotDate))}`:""}</small></div></div>
-      <div>${openLink(v,isCar(v)?"Open post":"Open video")||`<span class="tag">No link</span>`}</div></div>`;
+      <div class="hrow-link">${openLink(v,isCar(v)?"Open post":"Open video")?`${openLink(v,isCar(v)?"Open post":"Open video")}<button class="iconbtn hlink-edit" data-act="editLink" data-id="${v.id}" title="Change link" style="margin-left:6px">Edit</button>`:`<span class="hlink-add"><input type="text" class="link-in" value="${esc(v.finalLink||"")}" data-f="finalLink" data-id="${v.id}" placeholder="Paste link…" aria-label="Final video link"><button class="iconbtn" data-act="savehlink" data-id="${v.id}">Save</button></span>`}</div></div>`;
   const body=Object.keys(groups).sort().reverse().map(k=>{const [y,m]=k.split("-").map(Number);
     return `<div class="card"><header><h3>${MONL[m-1]} ${y}</h3><span class="count">${groups[k].length}</span></header>${groups[k].map(row).join("")}</div>`}).join("");
   return `<section class="panel">
@@ -5329,6 +5393,7 @@ document.addEventListener("click",async e=>{
   else if(act==="ovMode"){const m=b.dataset.m;S.ovRange={...(S.ovRange||{}),mode:m};if(m==="custom"&&!S.ovRange.from){S.ovRange.from=today();S.ovRange.to=addDays(today(),6)}render()}
   else if(act==="stMenu"){openStMenu(b)}
   else if(act==="editLink"){S.editLinks=S.editLinks||{};S.editLinks[b.dataset.id]=true;render();setTimeout(()=>{const i=document.querySelector(`.link-in[data-id="${b.dataset.id}"]`);if(i){i.focus();i.select()}},30)}
+  else if(act==="savehlink"){const id=b.dataset.id;const inp=b.closest(".hlink-add,.hrow-link")?.querySelector(".link-in");const u=inp?safeUrl(inp.value.trim()):"";if(!u){toast("Paste a link that starts with http");return}const vv=S.videos[id];if(vv){putVideo(["Approved","Ready"].includes(vv.status)?{...withStatus(vv,"Ready"),finalLink:u}:{...vv,finalLink:u});if(["Approved","Ready"].includes(vv.status)){celebrate(id,"Ready");toast("Link saved — ready to post")}else toast("Link saved")}}
   else if(act==="rowMore"){S.moreRows=S.moreRows||{};S.moreRows[b.dataset.id]=!S.moreRows[b.dataset.id];render()}
   else if(act==="dialBack"){DIAL.code=DIAL.code.slice(0,-1);const el=document.getElementById("dialDots");if(el)el.innerHTML=dialDotsHTML();sfx("tick")}
   else if(act==="dialTry"){if(!DIAL.code){toast("Dial the code first");return}dialAutoTry(true)}
