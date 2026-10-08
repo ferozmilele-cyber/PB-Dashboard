@@ -2318,7 +2318,10 @@ body.fbloading #fbLoading{display:grid}
 [data-theme="dark"] .navb{background:rgba(22,28,38,.80)!important;border-color:rgba(255,255,255,.10)!important}
 
 /* 20 ── Shoot needs ───────────────────────────────────────────── */
-[data-theme="dark"] .shoot-need .sn{background:rgba(22,28,38,.80)!important;border-color:rgba(255,255,255,.10)!important}
+[data-theme="dark"] .shoot-need .sn{background:rgba(22,28,38,.80)!important;border-color:rgba(255,255,255,.10)!important;color:var(--ink)!important}
+[data-theme="dark"] .shoot-need .sn em{color:var(--lime)!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .shoot-need .sn{background:rgba(22,28,38,.80)!important;border-color:rgba(255,255,255,.10)!important;color:var(--ink)!important}
+:root:not([data-theme="light"]) .shoot-need .sn em{color:var(--lime)!important}}
 
 /* 21 ── Team cards ────────────────────────────────────────────── */
 [data-theme="dark"] .tcard{background:rgba(18,24,34,.80)!important;border-color:rgba(255,255,255,.08)!important}
@@ -3674,9 +3677,17 @@ function vSchedule(){
   const optsOf=(L,k)=>`<option value="">${k==="C"?"Add a carousel…":"Add a reel…"}</option>`+L.map(v=>`<option value="${v.id}">${esc(v.title||"Untitled")} (${v.status})</option>`).join("");
   const optsR=optsOf(freeR,"R"),optsC=optsOf(freeC,"C");
   const row=(v,d,tm,label,k,extraTags)=>{
-    const tags=(v.status==="Ready"&&!safeUrl(v.finalLink)?`<span class="tag warn">No final link</span>`:"")+(v.status!=="Ready"&&v.status!=="Scheduled"&&v.status!=="Posted"?`<span class="tag">Not ready</span>`:"")+(extraTags||"");
+    const isReady=v.status==="Ready";
+    const hasLink=!!safeUrl(v.finalLink);
+    const editing=(S.editLinks||{})[v.id];
+    const tags=(isReady&&!hasLink&&!editing?`<span class="tag warn">No final link</span>`:"")+(v.status!=="Ready"&&v.status!=="Scheduled"&&v.status!=="Posted"?`<span class="tag">Not ready</span>`:"")+(extraTags||"");
+    const linkArea=isReady?(
+      (hasLink&&!editing)?
+        `${openLink(v,"Open")}<button class="hlink-edit" data-act="editLink" data-id="${v.id}" title="Change link">Edit link</button>`:
+        `<span class="hlink-add"><input type="text" class="link-in" placeholder="Paste final link…" data-id="${v.id}" value="${esc(v.finalLink||"")}"><button class="iconbtn" data-act="savehlink" data-id="${v.id}">Save</button>${hasLink?`<button class="hlink-edit" data-act="cancelEditLink" data-id="${v.id}">Cancel</button>`:""}</span>`
+    ):"";
     const sl=d?`${d}|${tm}|${k}`:"";
-    return `<div class="slot filled${k==="C"?" car":""}"${d?` data-slot="${sl}"`:""} data-drag-id="${v.id}"><div class="grip" title="Drag to move">⋮⋮</div><div class="tm">${label}${k==="C"?`<span class="kind">Carousel</span>`:(d&&slotPillar(d,tm))?`<span class="kind pk" style="--pc:${pillarColor(slotPillar(d,tm))}">${esc(slotPillar(d,tm))}</span>`:""}</div><div class="ttl"><b>${esc(v.title||"Untitled")}</b>${pillarTag(v)}${openLink(v,"Open")}<small>${v.shotDate?"Shot "+esc(nice(v.shotDate)):"No shot date"}${tags}</small></div><div>${statusSelect(v)}</div><div>${lockCtl(v)}</div><div class="mv2">${d?`<button data-act="slotMove" data-dir="-1" data-slot="${sl}" aria-label="Move up">↑</button><button data-act="slotMove" data-dir="1" data-slot="${sl}" aria-label="Move down">↓</button>`:""}</div><div><button class="xbtn" data-act="unassign" data-id="${v.id}" aria-label="Remove from schedule" title="Remove">×</button></div></div>`;
+    return `<div class="slot filled${k==="C"?" car":""}"${d?` data-slot="${sl}"`:""} data-drag-id="${v.id}"><div class="grip" title="Drag to move">⋮⋮</div><div class="tm">${label}${k==="C"?`<span class="kind">Carousel</span>`:(d&&slotPillar(d,tm))?`<span class="kind pk" style="--pc:${pillarColor(slotPillar(d,tm))}">${esc(slotPillar(d,tm))}</span>`:""}</div><div class="ttl"><b>${esc(v.title||"Untitled")}</b>${pillarTag(v)}${linkArea}<small>${v.shotDate?"Shot "+esc(nice(v.shotDate)):"No shot date"}${tags}</small></div><div>${statusSelect(v)}</div><div>${lockCtl(v)}</div><div class="mv2">${d?`<button data-act="slotMove" data-dir="-1" data-slot="${sl}" aria-label="Move up">↑</button><button data-act="slotMove" data-dir="1" data-slot="${sl}" aria-label="Move down">↓</button>`:""}</div><div><button class="xbtn" data-act="unassign" data-id="${v.id}" aria-label="Remove from schedule" title="Remove">×</button></div></div>`;
   };
   const optsP=req=>{const a=freeR.filter(v=>v.pillar===req),b=freeR.filter(v=>v.pillar!==req);
     return `<option value="">Add ${esc(req)}…</option>`+a.map(v=>`<option value="${v.id}">${esc(v.title||"Untitled")} (${v.status})</option>`).join("")+(b.length?`<optgroup label="Other pillars">${b.map(v=>`<option value="${v.id}">${esc(v.title||"Untitled")} · ${esc(v.pillar||"no pillar")}</option>`).join("")}</optgroup>`:"")};
@@ -4020,13 +4031,21 @@ document.querySelector("nav.tabs").addEventListener("click",e=>{const b=e.target
   const prevTab=$("#main").dataset.tab||"overview";
   if(PHONE()&&!RM){phoneSwap();return}
   if(document.startViewTransition&&!RM){
-    if(window.__curVT){try{window.__curVT.skipTransition()}catch(_){}VT_ON=false}
-    document.documentElement.dataset.vt=order.indexOf(S.tab)>order.indexOf(prevTab)?"fwd":"back";
-    S.animate="vt";
-    const vt=document.startViewTransition(()=>{window.scrollTo(0,0);VT_ON=false;render();VT_ON=true});window.__curVT=vt;
-    vt.finished.finally(()=>{if(window.__curVT!==vt)return;window.__curVT=null;delete document.documentElement.dataset.vt;VT_ON=false;if(pendingRender||$("#main").dataset.tab!==S.tab)render()});
-    // safety net: whatever happened in between, the page always ends up on the tab you picked last
-    clearTimeout(window.__tabFix);window.__tabFix=setTimeout(()=>{if($("#main").dataset.tab!==S.tab){VT_ON=false;render()}},700);
+    // if a transition is already running, skip it and render directly — fast clicks must never wait
+    if(window.__curVT){
+      try{window.__curVT.skipTransition()}catch(_){}
+      window.__curVT=null;VT_ON=false;
+      clearTimeout(window.__tabFix);
+      delete document.documentElement.dataset.vt;
+      window.scrollTo(0,0);render();
+    }else{
+      document.documentElement.dataset.vt=order.indexOf(S.tab)>order.indexOf(prevTab)?"fwd":"back";
+      S.animate="vt";
+      const vt=document.startViewTransition(()=>{window.scrollTo(0,0);VT_ON=false;render();VT_ON=true});window.__curVT=vt;
+      vt.finished.finally(()=>{if(window.__curVT!==vt)return;window.__curVT=null;delete document.documentElement.dataset.vt;VT_ON=false;if(pendingRender||$("#main").dataset.tab!==S.tab)render()});
+      // safety net: fast-follow clicks that land while transition is finishing
+      clearTimeout(window.__tabFix);window.__tabFix=setTimeout(()=>{if($("#main").dataset.tab!==S.tab){VT_ON=false;render()}},150);
+    }
   }else leaveThen(()=>{window.scrollTo({top:0,behavior:"smooth"});render()})}});
 
 /* ---------- backups (Settings) ---------- */
@@ -5393,6 +5412,7 @@ document.addEventListener("click",async e=>{
   else if(act==="ovMode"){const m=b.dataset.m;S.ovRange={...(S.ovRange||{}),mode:m};if(m==="custom"&&!S.ovRange.from){S.ovRange.from=today();S.ovRange.to=addDays(today(),6)}render()}
   else if(act==="stMenu"){openStMenu(b)}
   else if(act==="editLink"){S.editLinks=S.editLinks||{};S.editLinks[b.dataset.id]=true;render();setTimeout(()=>{const i=document.querySelector(`.link-in[data-id="${b.dataset.id}"]`);if(i){i.focus();i.select()}},30)}
+  else if(act==="cancelEditLink"){if(S.editLinks)delete S.editLinks[b.dataset.id];render()}
   else if(act==="savehlink"){const id=b.dataset.id;const inp=b.closest(".hlink-add,.hrow-link")?.querySelector(".link-in");const u=inp?safeUrl(inp.value.trim()):"";if(!u){toast("Paste a link that starts with http");return}const vv=S.videos[id];if(vv){putVideo(["Approved","Ready"].includes(vv.status)?{...withStatus(vv,"Ready"),finalLink:u}:{...vv,finalLink:u});if(["Approved","Ready"].includes(vv.status)){celebrate(id,"Ready");toast("Link saved — ready to post")}else toast("Link saved")}}
   else if(act==="rowMore"){S.moreRows=S.moreRows||{};S.moreRows[b.dataset.id]=!S.moreRows[b.dataset.id];render()}
   else if(act==="dialBack"){DIAL.code=DIAL.code.slice(0,-1);const el=document.getElementById("dialDots");if(el)el.innerHTML=dialDotsHTML();sfx("tick")}
