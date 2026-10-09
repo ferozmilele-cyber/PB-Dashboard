@@ -3285,16 +3285,20 @@ function rangeFrom(R,def){R=R||{mode:def||"7d"};const t=today(),d0=new Date(t+"T
   return {from:t,to:addDays(t,6),label:"the next 7 days"};
 }
 function needFor(k,H,from,to){
-  const t=today(),hm=nowHM();let total=0,ready=0,prog=0,empty=0;
+  const t=today(),hm=nowHM();let total=0,ready=0,prog=0,empty=0;const booked=[];
   const days=[];if(from&&to){for(let d=from>t?from:t,g=0;d<=to&&g<400;d=addDays(d,1),g++)days.push(d)}else for(let i=0;i<H;i++)days.push(addDays(t,i));
   for(const d of days){for(const tm of slotsK(d,k)){if(d===t&&tm<=hm)continue;total++;
     const v=vids().find(x=>kindOf(x)===k&&x.postDate===d&&x.postTime===tm);
-    if(!v)empty++;else if(v.status==="Ready"||v.status==="Scheduled"||v.status==="Posted")ready++;else prog++}}
-  const pool=vids().filter(v=>kindOf(v)===k&&!v.postDate&&v.status in TIER);
-  const availReady=pool.filter(v=>v.status==="Ready"||v.status==="Approved").length,avail=pool.length;
-  const fromStock=Math.min(empty,avail),toShoot=Math.max(0,empty-avail);
-  const toEdit=prog+Math.max(0,fromStock-Math.min(fromStock,availReady));
-  return {total,ready,prog,empty,fromStock,toShoot,toEdit};
+    if(!v)empty++;else if(v.status==="Ready"||v.status==="Scheduled"||v.status==="Posted")ready++;else{prog++;booked.push(v)}}}
+  // unscheduled footage fills the empty slots, the most finished videos first
+  const pool=vids().filter(v=>kindOf(v)===k&&!v.postDate&&v.status in TIER).sort((a,b)=>TIER[a.status]-TIER[b.status]);
+  const avail=pool.length,fromStock=Math.min(empty,avail),toShoot=Math.max(0,empty-avail);
+  const used=[...booked,...pool.slice(0,fromStock)];
+  // only videos that still need editing count as "edit"; In review and Approved are already edited
+  const toEdit=used.filter(v=>EDIT_POOL.includes(v.status)).length;
+  const review=used.filter(v=>v.status==="In review"||v.status==="Edited").length;
+  const link=used.filter(v=>v.status==="Approved").length;
+  return {total,ready,prog,empty,fromStock,toShoot,toEdit,review,link};
 }
 function coveredUntil(){
   const t=today(),hm=nowHM();let d=t,last=null;
@@ -3387,11 +3391,15 @@ function vOverview(){
   const R=needFor("R",0,OR.from,OR.to),C=needFor("C",0,OR.from,OR.to);
   const toShoot=R.toShoot+C.toShoot,toEdit=R.toEdit+C.toEdit,empty=R.empty+C.empty;
   // verdict line
+  const review=R.review+C.review,link=R.link+C.link;
+  const shootTxt=[R.toShoot?`<b>${R.toShoot}</b> reel${R.toShoot===1?"":"s"}`:"",C.toShoot?`<b>${C.toShoot}</b> carousel${C.toShoot===1?"":"s"}`:""].filter(Boolean).join(" and ");
+  const todo=[toEdit?`edit <b>${toEdit}</b>`:"",toShoot?`shoot ${shootTxt} more`:""].filter(Boolean);
   const verdict=!R.total&&!C.total?"No posting slots in this period."
     :empty===0&&R.prog+C.prog===0?`Everything for ${OR.label} is ready. 🎉`
-    :[toEdit?`edit <b>${toEdit}</b>`:"",toShoot?`shoot <b>${toShoot}</b> more`:""].filter(Boolean).length
-      ?`To cover ${OR.label}: ${[toEdit?`edit <b>${toEdit}</b>`:"",toShoot?`shoot <b>${toShoot}</b> more`:""].filter(Boolean).join(" and ")}.`
-      :`Assign your ${empty} ready video${empty===1?"":"s"} to the empty slots, or press Reshuffle.`;
+    :todo.length?`To cover ${OR.label}: ${todo.join(" and ")}.`
+    :empty?`Assign your ${empty} ready video${empty===1?"":"s"} to the empty slots, or press Reshuffle.`
+    :`Nothing left to edit or shoot for ${OR.label}.`;
+  const waitNote=[review?`<b>${review}</b> ${review===1?"is":"are"} with ${esc(reviewerName())} for review`:"",link?`<b>${link}</b> ${link===1?"needs its":"need their"} final link`:""].filter(Boolean).join(" and ");
   // pipeline
   const counts=STATUSES.map(s=>({...s,n:all.filter(v=>v.status===s.k).length})).filter(c=>c.n);
   const tot=all.length||1;
@@ -3420,8 +3428,9 @@ function vOverview(){
         ${(S.ovRange||{}).mode==="custom"?`<span class="pl-cust"><input type="date" value="${esc(S.ovRange.from||t)}" data-ovr="from" aria-label="From"><span>to</span><input type="date" value="${esc(S.ovRange.to||addDays(t,6))}" data-ovr="to" aria-label="To"></span>`:""}</div>
       <div class="shoot-need"><span>Shoot next</span><b class="sn"><em>${R.toShoot}</em> reel${R.toShoot===1?"":"s"}</b><b class="sn"><em>${C.toShoot}</em> carousel${C.toShoot===1?"":"s"}</b><small>${R.total} reel slot${R.total===1?"":"s"} and ${C.total} carousel slot${C.total===1?"":"s"} in this range</small></div>
       <p class="ovverdict">${verdict}</p>
+      ${waitNote?`<p class="ovnote" style="margin:-8px 0 16px">Already edited: ${waitNote}.</p>`:""}
       ${needBar(R,"Reels")}${needBar(C,"Carousels")}
-      ${empty?`<p class="ovnote">${R.fromStock+C.fromStock} empty slot${R.fromStock+C.fromStock===1?"":"s"} can be filled with footage you already have.</p>`:""}
+      ${R.fromStock+C.fromStock?`<p class="ovnote">${R.fromStock+C.fromStock} empty slot${R.fromStock+C.fromStock===1?"":"s"} can be filled with footage you already have.</p>`:empty?`<p class="ovnote">No spare footage: every video you have is already on the schedule.</p>`:""}
     </section>
     <section class="panel">
       <div class="phead"><h2>Shoot plan</h2><button class="btn small" data-act="goTab" data-tab-go="shoots">Open</button></div>
