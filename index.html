@@ -3908,29 +3908,26 @@ function render(){
 
 /* ---------- events ---------- */
 document.addEventListener("focusout",()=>setTimeout(()=>{if(pendingRender)render()},0));
-document.querySelector("nav.tabs").addEventListener("click",e=>{const b=e.target.closest("button[data-tab]");if(b){hidePop(true);if(S.tab===b.dataset.tab)return;S.animate=true;S.tab=b.dataset.tab;
+/* tab switch: the lime pill moves on the click itself, then the page is built in the next task.
+   Fast clicks are merged, so the last tab clicked is the one that shows, with no waiting on animations. */
+let tabQueued=false;
+document.querySelector("nav.tabs").addEventListener("click",e=>{const b=e.target.closest("button[data-tab]");if(!b)return;
+  hidePop(true);if(S.tab===b.dataset.tab&&!tabQueued)return;
+  S.tab=b.dataset.tab;
   document.querySelectorAll("nav.tabs button").forEach(x=>x.setAttribute("aria-selected",x===b));moveInd();
   if(S.tab!=="settings"&&VAULT.items)vaultLock();
-  const order=[...document.querySelectorAll("nav.tabs button[data-tab]")].map(x=>x.dataset.tab);
-  const prevTab=$("#main").dataset.tab||"overview";
-  if(PHONE()&&!RM){phoneSwap();return}
-  if(document.startViewTransition&&!RM){
-    // if a transition is already running, skip it and render directly — fast clicks must never wait
-    if(window.__curVT){
-      try{window.__curVT.skipTransition()}catch(_){}
-      window.__curVT=null;VT_ON=false;
-      clearTimeout(window.__tabFix);
-      delete document.documentElement.dataset.vt;
-      window.scrollTo(0,0);render();
-    }else{
-      document.documentElement.dataset.vt=order.indexOf(S.tab)>order.indexOf(prevTab)?"fwd":"back";
-      S.animate="vt";
-      const vt=document.startViewTransition(()=>{window.scrollTo(0,0);VT_ON=false;render();VT_ON=true});window.__curVT=vt;
-      vt.finished.finally(()=>{if(window.__curVT!==vt)return;window.__curVT=null;delete document.documentElement.dataset.vt;VT_ON=false;if(pendingRender||$("#main").dataset.tab!==S.tab)render()});
-      // safety net: fast-follow clicks that land while transition is finishing
-      clearTimeout(window.__tabFix);window.__tabFix=setTimeout(()=>{if($("#main").dataset.tab!==S.tab){VT_ON=false;render()}},150);
-    }
-  }else leaveThen(()=>{window.scrollTo({top:0,behavior:"smooth"});render()})}});
+  if(PHONE()&&!RM){S.animate=true;phoneSwap();return}
+  if(tabQueued)return;
+  tabQueued=true;
+  requestAnimationFrame(()=>setTimeout(()=>{tabQueued=false;
+    const m=$("#main"),from=m.dataset.tab||"overview";if(from===S.tab)return;
+    const order=[...document.querySelectorAll("nav.tabs button[data-tab]")].map(x=>x.dataset.tab);
+    const back=order.indexOf(S.tab)<order.indexOf(from);
+    S.animate="vt";window.scrollTo(0,0);render();
+    if(!RM&&m.animate){if(window.__tabAnim)window.__tabAnim.cancel();
+      window.__tabAnim=m.animate([{opacity:0,transform:`translateX(${back?-16:16}px)`},{opacity:1,transform:"none"}],{duration:320,easing:"cubic-bezier(.22,1,.36,1)"})}
+  },0));
+});
 
 /* ---------- backups (Settings) ---------- */
 let BK={at:0,data:(()=>{try{return JSON.parse(lsGet("seb-bk")||"null")}catch(e){return null}})(),busy:false};
@@ -5002,19 +4999,21 @@ function leaveThen(fn){
 function enterMotion(m,lite){
   if(RM)return;
   if(lite){setTimeout(()=>countUp(m),120);m.querySelectorAll(".ticks").forEach(tk=>[...tk.children].forEach((s,i)=>{s.style.transitionDelay=s.style.animationDelay=(260+i*45)+"ms"}));
-    const vh=innerHeight;m.querySelectorAll(".card, tbody tr, .hrow, .erow, .mcell").forEach(el=>{if(el.getBoundingClientRect().top>vh+40){el.classList.add("reveal");io.observe(el)}});return}
+    // rows below the screen fade in when scrolled to; an observer finds them, so nothing forces an extra layout here
+    m.querySelectorAll(".card, tbody tr, .hrow, .erow, .mcell").forEach(el=>firstSeen.observe(el));return}
   const sel="section.panel, .phead, .switches, .filters, .toolbar, .today .rail, .facts>div, .hstats>div, .pipe, .card, .erow, .slot, .hrow, tbody tr, .mcell, .plan, .cplan, #main .field, .empty";
   const els=[...m.querySelectorAll(sel)];
   const vh=innerHeight;let n=0;
-  els.forEach(el=>{
-    const r=el.getBoundingClientRect();
-    if(r.top<vh+40){el.style.animationDelay=Math.min(n++,26)*26+"ms";el.classList.add("stag")}
+  const tops=els.map(el=>el.getBoundingClientRect().top);   // read all positions first, then change classes (no layout thrashing)
+  els.forEach((el,i)=>{
+    if(tops[i]<vh+40){el.style.animationDelay=Math.min(n++,26)*26+"ms";el.classList.add("stag")}
     else if(el.matches(".card, tbody tr, .hrow, .erow, .slot, .mcell")){el.classList.add("reveal");io.observe(el)}
   });
   setTimeout(()=>countUp(m),60);
   m.querySelectorAll(".ticks").forEach(tk=>[...tk.children].forEach((s,i)=>{s.style.transitionDelay=s.style.animationDelay=(200+i*45)+"ms"}));
 }
 const io=("IntersectionObserver" in window)?new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){const el=e.target;el.classList.add("in");io.unobserve(el);setTimeout(()=>el.classList.remove("reveal","in"),900)}}),{rootMargin:"0px 0px -30px 0px"}):{observe:el=>el.classList.add("in"),unobserve(){}};
+const firstSeen=("IntersectionObserver" in window)?new IntersectionObserver(es=>es.forEach(e=>{const el=e.target;firstSeen.unobserve(el);if(!e.isIntersecting){el.classList.add("reveal");io.observe(el)}}),{rootMargin:"0px 0px 40px 0px"}):{observe(){},unobserve(){}};
 function countUp(root){
   root.querySelectorAll(".facts b, .hstats b, .rail h3 b, .ovk b").forEach(b=>{
     const tn=[...b.childNodes].find(n=>n.nodeType===3&&/\d/.test(n.nodeValue));if(!tn)return;
