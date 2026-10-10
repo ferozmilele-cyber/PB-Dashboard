@@ -2075,6 +2075,9 @@ body.fbloading #fbLoading{display:grid}
 @media (max-width:760px){.shoot-need small{flex-basis:100%;white-space:normal}.wrap{overflow-x:clip}}
 
 
+/* quiet text link inside the extra-slot dialog */
+.slot-alt{display:inline-block;margin:10px 0 0;padding:0;border:0;background:none;font:inherit;font-size:12.5px;color:var(--muted);text-decoration:underline;text-decoration-color:rgba(127,127,127,.35);text-underline-offset:3px;cursor:pointer}
+.slot-alt:hover{color:var(--ink);text-decoration-color:currentColor}
 /* ================================================================
    DARK MODE — final layer (v73)
    One place for every dark rule. The theme script in <head> always sets
@@ -2458,14 +2461,19 @@ body.fbloading #fbLoading{display:grid}
 </dialog>
 <dialog id="slotDlg">
   <form method="dialog">
-    <span class="al-pill">Extra slot</span>
-    <h2 style="margin-top:10px">Add a post to this day</h2>
+    <span class="al-pill" id="slotPill">Extra slot</span>
+    <h2 style="margin-top:10px" id="slotTitle">Add a post to this day</h2>
     <p class="sub" id="slotFor"></p>
-    <div class="row3" style="grid-template-columns:1fr 1fr">
-      <label>Time<input type="time" id="slotTime" value="21:00" required></label>
+    <div class="row3" id="slotAddRow" style="grid-template-columns:1fr 1fr">
+      <label>Time<input type="time" id="slotTime" value="21:00"></label>
       <label>Type<select id="slotKind"><option value="R">Reel</option><option value="C">Carousel</option></select></label>
     </div>
-    <div class="foot"><button class="btn" value="cancel" formnovalidate>Cancel</button><button class="btn primary" value="ok">Add slot</button></div>
+    <div class="row3" id="slotMoveRow" style="grid-template-columns:1fr 1fr;display:none">
+      <label>Slot<select id="slotPick"></select></label>
+      <label>New time<input type="time" id="slotNewTime"></label>
+    </div>
+    <button type="button" class="slot-alt" id="slotAlt" data-act="slotAlt">Change an existing slot’s time</button>
+    <div class="foot"><button class="btn" value="cancel" formnovalidate>Cancel</button><button class="btn primary" value="ok" id="slotOk">Add slot</button></div>
   </form>
 </dialog>
 <dialog id="acctDlg">
@@ -3816,9 +3824,35 @@ function removeSlot(d,kind,tm){
   toast(`${kind==="C"?"Carousel":"Reel"} slot removed: ${niceW(d)}, ${fmtT(tm)}`,"Undo",()=>{S.settings.plans=undo.plans;S.settings.cplans=undo.cplans;putSettings();render()});
 }
 function askSlot(d){
-  const dl=$("#slotDlg");$("#slotFor").textContent=`${niceW(d)}. This adds one more slot on this day only. Your regular plan doesn’t change.`;dl.returnValue="";
-  dl.addEventListener("close",()=>{if(dl.returnValue!=="ok")return;const tm=$("#slotTime").value;if(!tm)return;addExtraSlot(d,$("#slotKind").value,tm)},{once:true});
+  const dl=$("#slotDlg");dl.dataset.d=d;slotMode("add");dl.returnValue="";
+  dl.addEventListener("close",()=>{if(dl.returnValue!=="ok")return;
+    if(dl.dataset.mode==="move"){const [k,old]=($("#slotPick").value||"").split("|"),nw=$("#slotNewTime").value;if(k&&old&&nw)changeSlotTime(d,k,old,nw);return}
+    const tm=$("#slotTime").value;if(!tm)return;addExtraSlot(d,$("#slotKind").value,tm)},{once:true});
   openDlg(dl);
+}
+// the same dialog quietly doubles as "change a slot's time" (link at the bottom)
+function slotMode(m){const dl=$("#slotDlg"),d=dl.dataset.d,move=m==="move";dl.dataset.mode=m;
+  $("#slotAddRow").style.display=move?"none":"";$("#slotMoveRow").style.display=move?"":"none";
+  $("#slotPill").textContent=move?"Slot time":"Extra slot";$("#slotTitle").textContent=move?"Change a slot’s time":"Add a post to this day";
+  $("#slotOk").textContent=move?"Change time":"Add slot";$("#slotAlt").textContent=move?"Add a new slot instead":"Change an existing slot’s time";
+  $("#slotFor").textContent=move?`${niceW(d)}. Moves this slot, and the video in it, on this day only. Your regular plan doesn’t change.`:`${niceW(d)}. This adds one more slot on this day only. Your regular plan doesn’t change.`;
+  if(move){const L=[...slotsFor(d).map(tm=>["R",tm]),...cslotsFor(d).map(tm=>["C",tm])].sort((a,b)=>a[1].localeCompare(b[1]));
+    $("#slotPick").innerHTML=L.map(([k,tm])=>{const v=vids().find(x=>kindOf(x)===k&&x.postDate===d&&x.postTime===tm);const p=k==="R"?slotPillar(d,tm):null;
+      return `<option value="${k}|${tm}">${fmtT(tm)} · ${k==="C"?"Carousel":"Reel"}${p?" ("+esc(p)+")":""}${v?" – "+esc((v.title||"Untitled").slice(0,22)):""}</option>`}).join("");
+    const first=L[0];$("#slotNewTime").value=first?first[1]:"";$("#slotPick").onchange=()=>{$("#slotNewTime").value=($("#slotPick").value||"|").split("|")[1]}}
+  if(typeof gxSyncAll==="function")gxSyncAll(dl);
+}
+function changeSlotTime(d,k,old,nw){
+  if(old===nw)return;
+  const cur=k==="C"?cslotsFor(d):slotsFor(d);if(cur.includes(nw)){toast(`There’s already a ${k==="C"?"carousel":"reel"} slot at ${fmtT(nw)}`);return}
+  const undo={plans:JSON.parse(JSON.stringify(S.settings.plans||[])),cplans:JSON.parse(JSON.stringify(S.settings.cplans||[]))};
+  const times=[...cur.filter(x=>x!==old),nw].sort();
+  if(k==="C"){const P=cplans();let ex=P.find(p=>p.from===d&&p.to===d);if(ex){ex.days=[0,1,2,3,4,5,6];ex.times=times}else P.push({from:d,to:d,days:[0,1,2,3,4,5,6],times});S.settings.cplans=P}
+  else{const P=plans();let ex=P.find(p=>p.from===d&&p.to===d);if(ex)ex.times=times;else P.push({from:d,to:d,times});S.settings.plans=P}
+  const moved=vids().filter(v=>kindOf(v)===k&&v.postDate===d&&v.postTime===old);
+  moved.forEach(v=>putVideo({...v,postTime:nw},true));
+  putSettings();render();
+  toast(`${fmtT(old)} moved to ${fmtT(nw)} on ${niceW(d)}`,"Undo",()=>{S.settings.plans=undo.plans;S.settings.cplans=undo.cplans;moved.forEach(v=>{const c=S.videos[v.id];if(c)putVideo({...c,postTime:old},true)});putSettings();render()});
 }
 // the move from the Google Sheet is done; only the "load fresh" button stays
 function importPanel(){return `<section class="panel"><div class="phead"><h2>Data</h2><span class="stat">Saved in Firebase · syncs instantly</span></div>
@@ -5386,6 +5420,7 @@ document.addEventListener("click",async e=>{
     else{if(usual)off=off.filter(x=>x!==d);else on.push(d);toast(`${niceW(d)} is now a work day`)}
     S.settings.daysOff=off;S.settings.daysOn=on;putSettings();render()}
   else if(act==="addSlot"){askSlot(b.dataset.d)}
+  else if(act==="slotAlt"){slotMode($("#slotDlg").dataset.mode==="move"?"add":"move")}
   else if(act==="rmSlot"){const [d,tm,k]=b.dataset.slot.split("|");if(vids().some(v=>kindOf(v)===k&&v.postDate===d&&v.postTime===tm)){toast("Move or remove the video in this slot first");return}removeSlot(d,k,tm)}
   else if(act==="osnOn"){askNotif()}
   else if(act==="osnTest"){osTest()}
