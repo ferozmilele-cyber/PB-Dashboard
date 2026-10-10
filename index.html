@@ -2622,6 +2622,9 @@ function pillars(){return (S.settings.pillars||[]).filter(Boolean)}
 function pillarOrder(){return (S.settings.pillarOrder||[]).filter(p=>pillars().includes(p))}
 function pillarOn(d){return pillarOrder().length>0&&d>=(S.settings.pillarFrom||"2000-01-01")}
 function slotPillar(d,tm){if(!pillarOn(d))return null;const i=slotsFor(d).indexOf(tm);if(i<0)return null;const O=pillarOrder();return O[i%O.length]}
+// a reel can only go in a slot of its own pillar, unless "Any pillar in any slot" is on
+function pillarBlock(v,d,tm){if(!v||!isReel(v)||S.settings.pillarForce||!v.pillar)return null;const req=slotPillar(d,tm);return req&&v.pillar!==req?req:null}
+function pillarBlockMsg(v,req){return `That’s a ${req} slot and “${v.title||"Untitled"}” is ${v.pillar}. Turn on “Any pillar in any slot” to place it anyway.`}
 function pillarColor(p){const i=pillars().indexOf(p);return i<0?"#8A939B":PCOL[i%PCOL.length]}
 function pillarTag(v){return v&&v.pillar?`<span class="ptag" style="--pc:${pillarColor(v.pillar)}">${esc(v.pillar)}</span>`:""}
 function pillarSelect(attrs,val,withNone){return `<select ${attrs}>${withNone!==false?`<option value="">No pillar</option>`:""}${pillars().map(p=>`<option${p===val?" selected":""}>${esc(p)}</option>`).join("")}${val&&!pillars().includes(val)?`<option selected>${esc(val)}</option>`:""}</select>`}
@@ -3027,7 +3030,7 @@ function planKind(isK,slotsF){
       if(!future(d,tm))continue;
       if(!cands.length)break;
       const req=reelKind?slotPillar(d,tm):null;
-      const pm=v=>!req||v.pillar===req||(S.settings.pillarLoose&&!v.pillar);
+      const pm=v=>!req||S.settings.pillarForce||v.pillar===req||(S.settings.pillarLoose&&!v.pillar);
       const ok=v=>pm(v)&&(!v.shotDate||!dayShots.has(v.shotDate));
       const hits=(v,set)=>castOf(v).filter(n=>set.has(n)).length;
       // lowest score wins: the same person twice in a day costs most, then readiness, then back-to-back repeats
@@ -3183,6 +3186,8 @@ function swapInto(id,target){
   if(k&&k!==kindOf(a)){toast(k==="C"?"Only carousels can go in carousel slots":"Only reels can go in reel slots");return}
   if(a.postDate===d&&a.postTime===tm)return;
   const b=vids().find(v=>v.id!==id&&kindOf(v)===kindOf(a)&&v.postDate===d&&v.postTime===tm);
+  const ra=pillarBlock(a,d,tm);if(ra){toast(pillarBlockMsg(a,ra));render();return}
+  const rb=b&&a.postDate?pillarBlock(b,a.postDate,a.postTime):null;if(rb){toast(pillarBlockMsg(b,rb));render();return}
   const undo=[{id:a.id,d:a.postDate||"",tm:a.postTime||"",p:!!a.pinned}];
   if(b)undo.push({id:b.id,d:b.postDate||"",tm:b.postTime||"",p:!!b.pinned});
   if(b)putVideo({...b,postDate:a.postDate||"",postTime:a.postTime||"",pinned:true},true);
@@ -3585,8 +3590,8 @@ function vSchedule(){
     return `<div class="slot filled${k==="C"?" car":""}"${d?` data-slot="${sl}"`:""} data-drag-id="${v.id}"><div class="grip" title="Drag to move">⋮⋮</div><div class="tm">${label}${k==="C"?`<span class="kind">Carousel</span>`:(d&&slotPillar(d,tm))?`<span class="kind pk" style="--pc:${pillarColor(slotPillar(d,tm))}">${esc(slotPillar(d,tm))}</span>`:""}</div><div class="ttl"><b>${esc(v.title||"Untitled")}</b>${pillarTag(v)}${linkArea}<small>${v.shotDate?"Shot "+esc(nice(v.shotDate)):"No shot date"}${tags}</small></div><div>${statusSelect(v)}</div><div>${lockCtl(v)}</div><div class="mv2">${d?`<button data-act="slotMove" data-dir="-1" data-slot="${sl}" aria-label="Move up">↑</button><button data-act="slotMove" data-dir="1" data-slot="${sl}" aria-label="Move down">↓</button>`:""}</div><div><button class="xbtn" data-act="unassign" data-id="${v.id}" aria-label="Remove from schedule" title="Remove">×</button></div></div>`;
   };
   const optsP=req=>{const a=freeR.filter(v=>v.pillar===req),b=freeR.filter(v=>v.pillar!==req);
-    return `<option value="">Add ${esc(req)}…</option>`+a.map(v=>`<option value="${v.id}">${esc(v.title||"Untitled")} (${v.status})</option>`).join("")+(b.length?`<optgroup label="Other pillars">${b.map(v=>`<option value="${v.id}">${esc(v.title||"Untitled")} · ${esc(v.pillar||"no pillar")}</option>`).join("")}</optgroup>`:"")};
-  const emptyRow=(d,tm,k)=>{const req=k==="R"?slotPillar(d,tm):null;return `<div class="slot empty${k==="C"?" car":""}" data-slot="${d}|${tm}|${k}"><div class="grip" aria-hidden="true"></div><div class="tm">${fmtT(tm)}${k==="C"?`<span class="kind">Carousel</span>`:req?`<span class="kind pk" style="--pc:${pillarColor(req)}">${esc(req)}</span>`:""}</div><div><select class="assign" data-assign="${d}|${tm}" aria-label="Add at ${fmtT(tm)}">${k==="C"?optsC:req?optsP(req):optsR}</select></div><div></div><div></div><div></div><div></div></div>`};
+    return `<option value="">Add ${esc(req)}…</option>`+a.map(v=>`<option value="${v.id}">${esc(v.title||"Untitled")} (${v.status})</option>`).join("")+(b.length&&S.settings.pillarForce?`<optgroup label="Other pillars">${b.map(v=>`<option value="${v.id}">${esc(v.title||"Untitled")} · ${esc(v.pillar||"no pillar")}</option>`).join("")}</optgroup>`:"")};
+  const emptyRow=(d,tm,k)=>{const req=k==="R"?slotPillar(d,tm):null;return `<div class="slot empty${k==="C"?" car":""}" data-slot="${d}|${tm}|${k}"><div class="grip" aria-hidden="true"></div><div class="tm">${fmtT(tm)}${k==="C"?`<span class="kind">Carousel</span>`:req?`<span class="kind pk" style="--pc:${pillarColor(req)}">${esc(req)}</span>`:""}</div><div><select class="assign" data-assign="${d}|${tm}" aria-label="Add at ${fmtT(tm)}">${k==="C"?optsC:req?optsP(req):optsR}</select></div><div></div><div></div><div></div><div>${d>=today()?`<button class="xbtn" data-act="rmSlot" data-slot="${d}|${tm}|${k}" aria-label="Remove this slot" title="Remove this slot">×</button>`:""}</div></div>`};
   const free=[...freeR,...freeC];
   if(S.schedView==="month")return schedShell(free,monthView());
   let html="";
@@ -3629,11 +3634,16 @@ function schedShell(free,body){
       ${toggle("data-sset","allowSame",S.settings.allowSame,"Fill gaps with same shoot day")}
       ${toggle("data-opt","readyOnly",S.opts.readyOnly,"Only finished videos")}
       ${toggle("data-sset","autoPostScheduled",S.settings.autoPostScheduled===true,"Scheduled posts become Posted at their time")}
+      ${pillars().length?toggle("data-sset","pillarForce",!!S.settings.pillarForce,"Any pillar in any slot"):""}
       ${free.length?`<span class="stat">${free.length} unscheduled</span>`:""}
     </div>
-    ${body}
+    ${pillarHint()}${body}
   </section>`;
 }
+// slots only know their pillar once the daily reel order is set in Settings
+function pillarHint(){if(!pillars().length)return "";const t=schedFrom();
+  if(!pillarOrder().length)return `<p class="ovnote pl-hint">Reel slots don’t have a pillar yet, so any pillar can land in any slot. Set the daily reel order in Settings, Content pillars. <button class="btn small" data-act="goTab" data-tab-go="settings">Open Settings</button></p>`;
+  const from=S.settings.pillarFrom||"";if(from&&from>addDays(t,S.schedDays-1))return `<p class="ovnote pl-hint">The daily pillar order starts ${esc(niceW(from))}. Slots before that take any pillar.</p>`;return ""}
 function monthView(){
   const t=today();const cur=S.monthCursor||t.slice(0,7);
   const [Y,M]=cur.split("-").map(Number);
@@ -3794,6 +3804,16 @@ function addExtraSlot(d,kind,tm){
   else{const P=plans();let ex=P.find(p=>p.from===d&&p.to===d);const times=[...new Set([...slotsFor(d),tm])].sort();
     if(ex)ex.times=times;else P.push({from:d,to:d,times});S.settings.plans=P}
   putSettings();render();toast(`Extra ${kind==="C"?"carousel":"reel"} slot added: ${niceW(d)}, ${fmtT(tm)}`);
+}
+// removes one empty slot on one day only (a one-day plan, like Extra slot); the regular plan doesn’t change
+function removeSlot(d,kind,tm){
+  const undo={plans:JSON.parse(JSON.stringify(S.settings.plans||[])),cplans:JSON.parse(JSON.stringify(S.settings.cplans||[]))};
+  if(kind==="C"){const P=cplans();let ex=P.find(p=>p.from===d&&p.to===d);const times=cslotsFor(d).filter(x=>x!==tm);
+    if(ex){ex.days=[0,1,2,3,4,5,6];ex.times=times}else P.push({from:d,to:d,days:[0,1,2,3,4,5,6],times});S.settings.cplans=P}
+  else{const P=plans();let ex=P.find(p=>p.from===d&&p.to===d);const times=slotsFor(d).filter(x=>x!==tm);
+    if(ex)ex.times=times;else P.push({from:d,to:d,times});S.settings.plans=P}
+  putSettings();render();
+  toast(`${kind==="C"?"Carousel":"Reel"} slot removed: ${niceW(d)}, ${fmtT(tm)}`,"Undo",()=>{S.settings.plans=undo.plans;S.settings.cplans=undo.cplans;putSettings();render()});
 }
 function askSlot(d){
   const dl=$("#slotDlg");$("#slotFor").textContent=`${niceW(d)}. This adds one more slot on this day only. Your regular plan doesn’t change.`;dl.returnValue="";
@@ -5366,6 +5386,7 @@ document.addEventListener("click",async e=>{
     else{if(usual)off=off.filter(x=>x!==d);else on.push(d);toast(`${niceW(d)} is now a work day`)}
     S.settings.daysOff=off;S.settings.daysOn=on;putSettings();render()}
   else if(act==="addSlot"){askSlot(b.dataset.d)}
+  else if(act==="rmSlot"){const [d,tm,k]=b.dataset.slot.split("|");if(vids().some(v=>kindOf(v)===k&&v.postDate===d&&v.postTime===tm)){toast("Move or remove the video in this slot first");return}removeSlot(d,k,tm)}
   else if(act==="osnOn"){askNotif()}
   else if(act==="osnTest"){osTest()}
   else if(act==="qlink"){b.disabled=true;flush().then(()=>call("makeDeviceKey",token)).then(r=>{const link=location.origin+location.pathname+"?key="+r.key;$("#qlBox").value=link;$("#qlOpen").href=link;openDlg($("#qlDlg"));setTimeout(()=>$("#qlBox").select(),80)}).catch(err=>toast(String(err&&err.message||"Couldn’t make the link").replace(/^Error: /,""))).finally(()=>{b.disabled=false})}
@@ -5387,8 +5408,9 @@ document.addEventListener("click",async e=>{
   else if(act==="markPosted"){const v=S.videos[b.dataset.id];if(v)putVideo(withStatus(v,"Posted"))}
   else if(act==="markAllPosted"){const t=today();const L=vids().filter(v=>v.postDate&&v.postDate<t&&v.status!=="Posted");L.forEach(v=>putVideo(withStatus(v,"Posted"),true));render();toast(`${L.length} marked as posted`)}
   else if(act==="slotMove"){
-    const k=b.dataset.slot.split("|")[2]||"R";const L=slotList(k),i=L.indexOf(b.dataset.slot),j=i+(+b.dataset.dir);
+    const k=b.dataset.slot.split("|")[2]||"R";const L=slotList(k),i=L.indexOf(b.dataset.slot),dir=+b.dataset.dir;
     const [d,tm]=b.dataset.slot.split("|");const v=vids().find(x=>kindOf(x)===k&&x.postDate===d&&x.postTime===tm);
+    let j=i+dir;while(v&&j>=0&&j<L.length){const [d2,t2]=L[j].split("|");if(!pillarBlock(v,d2,t2))break;j+=dir}   // skip slots of another pillar
     if(v&&j>=0&&j<L.length){const before=rowRects();swapInto(v.id,L[j]);flip(before,v.id,before[v.id])}
   }
   else if(act==="pin"){const v=S.videos[b.dataset.id];if(v)putVideo({...v,pinned:!v.pinned})}
@@ -5415,7 +5437,7 @@ document.addEventListener("change",e=>{
   if(t.dataset.osn){lsSet("seb-osnotif",t.checked?null:"off");toast(t.checked?"Windows notifications on":"Windows notifications off");return}
   if(t.dataset.snd){lsSet("seb-sound",t.checked?null:"off");if(t.checked)chime();return}
   if(t.dataset.opt){S.opts[t.dataset.opt]=t.checked;if(t.dataset.opt==="readyOnly")render();return}
-  if(t.dataset.assign){const [d,tm]=t.dataset.assign.split("|");const v=S.videos[t.value];if(v){const req=isReel(v)?slotPillar(d,tm):null,tag=req&&!v.pillar;
+  if(t.dataset.assign){const [d,tm]=t.dataset.assign.split("|");const v=S.videos[t.value];const blk=pillarBlock(v,d,tm);if(blk){toast(pillarBlockMsg(v,blk));render();return}if(v){const req=isReel(v)?slotPillar(d,tm):null,tag=req&&!v.pillar;
     putVideo({...v,postDate:d,postTime:tm,pinned:true,...(tag?{pillar:req}:{})});toast(tag?`Placed and tagged as ${req}`:"Placed and locked. Unlock it if a reshuffle may move it.")}return}
   if(t.dataset.pillar!=null){const i=+t.dataset.pillar,P=[...pillars()],old=P[i],nw=t.value.trim();if(!nw||P.includes(nw)&&nw!==old){toast("Use a new, unique name");render();return}
     P[i]=nw;S.settings.pillars=P;S.settings.pillarOrder=(S.settings.pillarOrder||[]).map(x=>x===old?nw:x);
