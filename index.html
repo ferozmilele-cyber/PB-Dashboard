@@ -2075,6 +2075,28 @@ body.fbloading #fbLoading{display:grid}
 @media (max-width:760px){.shoot-need small{flex-basis:100%;white-space:normal}.wrap{overflow-x:clip}}
 
 
+.tagbtn{border:0;cursor:pointer;font:inherit;font-size:11px;font-weight:700}
+.tagbtn:hover{filter:brightness(.95)}
+/* away plan (Edit order) */
+.tplan{margin:0 0 18px;padding:18px 20px;border-radius:22px;background:rgba(255,255,255,.8);border:1px solid var(--glass-border);box-shadow:0 10px 30px rgba(20,30,8,.07)}
+.tp-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
+.tp-head b{font-size:18px;letter-spacing:-.02em;display:block}.tp-head small{color:var(--muted);font-size:13px}
+.tp-set{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 14px;margin-bottom:12px}
+.tp-set label{display:grid;gap:4px;font-size:12px;font-weight:700;color:var(--muted)}
+.tp-set select,.tp-set input{height:36px;border:1px solid var(--line);border-radius:12px;padding:0 10px;background:rgba(255,255,255,.85);font:inherit;font-size:13.5px;color:var(--ink)}
+.tp-team input{min-width:240px}.tp-n input{width:72px}
+.tp-chips{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 14px}
+.tp-day{margin-top:10px}
+.tp-day h4{display:flex;align-items:center;gap:8px;margin:0 0 6px;font-size:13px;font-weight:800;letter-spacing:.01em}
+.tp-day h4 span{font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;background:rgba(12,14,8,.07);color:var(--muted)}
+.tp-row{display:grid;grid-template-columns:150px minmax(0,1fr) 190px;align-items:center;gap:12px;padding:9px 12px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.7);margin-bottom:6px}
+.tp-row.done{opacity:.6}
+.tp-when b{display:block;font-size:14px}.tp-when small,.tp-what small{display:block;font-size:12px;color:var(--muted)}
+.tp-what b{font-size:14px;margin-right:4px}.tp-what .tag{margin-left:4px}
+.tp-empty{color:var(--muted);font-weight:600}
+.tp-who{width:100%;height:34px;border:1px solid var(--line);border-radius:999px;padding:0 12px;background:#fff;font:inherit;font-size:13px;font-weight:600;color:var(--ink)}
+.tag.tp-to{background:rgba(139,114,207,.14);color:#5a45a0}
+@media (max-width:760px){.tp-row{grid-template-columns:1fr;gap:6px}.tp-team input{min-width:0;width:100%}.tp-head{flex-direction:column}}
 /* quiet text link inside the extra-slot dialog */
 .slot-alt{display:inline-block;margin:10px 0 0;padding:0;border:0;background:none;font:inherit;font-size:12.5px;color:var(--muted);text-decoration:underline;text-decoration-color:rgba(127,127,127,.35);text-underline-offset:3px;cursor:pointer}
 .slot-alt:hover{color:var(--ink);text-decoration-color:currentColor}
@@ -2285,6 +2307,13 @@ body.fbloading #fbLoading{display:grid}
 :root[data-theme="dark"] .openlink.add-lnk:hover{background:var(--lime)!important;border-color:transparent!important;color:#0B0B0C!important}
 :root[data-theme="dark"] .openlink.edit-lnk{background:transparent!important;border:1px solid var(--d-line2)!important;color:var(--muted)!important;opacity:1!important}
 :root[data-theme="dark"] .openlink.edit-lnk:hover{background:var(--d-ctl-h)!important;color:var(--ink)!important}
+
+/* away plan (Edit order) */
+:root[data-theme="dark"] .tplan{background:var(--d-card)!important;border-color:var(--line)!important;box-shadow:0 1px 0 rgba(255,255,255,.035) inset,0 1px 2px rgba(0,0,0,.3)!important}
+:root[data-theme="dark"] .tp-row{background:rgba(255,255,255,.03)!important;border-color:var(--line)!important}
+:root[data-theme="dark"] .tp-set select,:root[data-theme="dark"] .tp-set input,:root[data-theme="dark"] .tp-who{background:var(--d-field)!important;border-color:var(--d-line2)!important;color:var(--ink)!important}
+:root[data-theme="dark"] .tp-day h4 span{background:rgba(255,255,255,.08)!important;color:var(--muted)!important}
+:root[data-theme="dark"] .tag.tp-to{background:rgba(139,114,207,.2)!important;color:#C3B3F5!important}
 
 /* 11 ── Tags & status text ───────────────────────────────────── */
 :root[data-theme="dark"] .tag{background:rgba(255,255,255,.07)!important;color:#B4BDC6!important;border-color:rgba(255,255,255,.08)!important}
@@ -3079,7 +3108,7 @@ function editedToday(){return vids().filter(v=>v.editedOn===today()).length}
 /* ---------- smart edit plan: spreads the edits evenly over your work days so the week never piles up ---------- */
 const FIN=["Edited","In review","Approved","Ready","Scheduled","Posted"];
 function workDaysSet(){return Array.isArray(S.settings.workDays)?S.settings.workDays:[1,2,3,4,5,6]}
-function isWorkDay(d){if(typeof isAway==="function"){const a=isAway(d,"edit");if(a&&["before","team"].includes(a.mode||"before"))return false}const on=(S.settings.daysOn||[]).includes(d),off=(S.settings.daysOff||[]).includes(d);
+function isWorkDay(d){if(typeof isAway==="function"){const a=isAway(d,"edit");if(a&&tripHasPlan(a))return tripWorkDay(a,d);if(a&&["before","team"].includes(a.mode||"before"))return false}const on=(S.settings.daysOn||[]).includes(d),off=(S.settings.daysOff||[]).includes(d);
   return !off&&(on||workDaysSet().includes(new Date(d+"T00:00:00").getDay()))}
 function editPlan(){
   const t=today(),H=14,hm=nowHM(),lead=S.settings.editLead==null?1:+S.settings.editLead;
@@ -3091,7 +3120,7 @@ function editPlan(){
       const v=vids().find(x=>kindOf(x)===k&&x.postDate===P&&x.postTime===tm);
       if(v&&FIN.includes(v.status))return;if(!v&&stock>0){stock--;return}n++}));
     vids().forEach(v=>{if(v.postDate===P&&kinds.includes(kindOf(v))&&!slotsK(P,kindOf(v)).includes(v.postTime)&&!FIN.includes(v.status)&&!(P===t&&(v.postTime||"99")<=hm))n++});
-    if(typeof isAway==="function"){const a=isAway(P,"edit");if(a){const m=a.mode||"before";if(m==="team")n=0;else if(m==="partial")n=Math.min(n,Math.max(0,+a.perDay||0))}}
+    if(typeof isAway==="function"){const a=awayList().find(x=>roleOf(x)==="edit"&&P>=addDays(x.from,tripLead())&&P<=addDays(x.to,tripLead()));if(a&&tripHasPlan(a))n=Math.min(n,tripMineOn(a,P));else{const b=isAway(P,"edit");if(b){const m=b.mode||"before";if(m==="team")n=0;else if(m==="partial")n=Math.min(n,Math.max(0,+b.perDay||0))}}}
     if(n)due[P]=n}
   const work=[];for(let i=0;i<H;i++){const d=addDays(t,i);if(isWorkDay(d))work.push(d)}
   const need=work.map(()=>0),covers=work.map(()=>[]);let late=0;
@@ -3543,11 +3572,12 @@ function vOrder(){
   const groups=[];let i=0;
   slotsE.forEach(s=>{if(i>=list.length)return;groups.push({day:s.day,items:list.slice(i,i+s.n),start:i});i+=s.n});
   const dayLabel=d=>d===today()?"Today":d===addDays(today(),1)?"Tomorrow":niceW(d);
+  const tw={};{const a=editTrip();if(a&&tripHasPlan(a))tripRows(a).forEach(r=>{if(r.v&&r.who!=="me"&&r.who!=="before"&&r.who!=="open")tw[r.v.id]=r.who})}
   const body=groups.map(g=>{
     const mix=g.items.map(x=>`<i style="background:${hue(x.v.shotDate)}" title="Shot ${esc(nice(x.v.shotDate)||"date unknown")}"></i>`).join("");
     const rows=g.items.map((x,k)=>{const idx=g.start+k;const v=x.v;const prev=idx>0?list[idx-1].v.shotDate:null;const clash=prev&&prev===v.shotDate;const late=v.postDate&&v.postDate<g.day;
       const pinned=S.queue.pins&&S.queue.pins[v.id]!=null;
-      const tags=(pinned?`<button class="tag pin" data-act="unpin" data-id="${v.id}" title="Unpin: let Shuffle move it again">Pinned ×</button>`:"")+(v.status==="Editing"?editTimer(v):"")+(v.status==="Re-edit"||(EDIT_POOL.includes(v.status)&&v.reviewNote)?`<span class="tag warn">Changes: ${esc((v.reviewNote||"see notes").slice(0,90))}</span>`:"")+(v.round>1&&EDIT_POOL.includes(v.status)?`<span class="tag">Round ${v.round}</span>`:"")+(x.fresh?`<span class="tag new">New</span>`:"")+(clash?`<span class="tag warn">Same shoot as above</span>`:"")+(late?`<span class="tag warn">Due before this</span>`:"");
+      const tags=(pinned?`<button class="tag pin" data-act="unpin" data-id="${v.id}" title="Unpin: let Shuffle move it again">Pinned ×</button>`:"")+(v.status==="Editing"?editTimer(v):"")+(v.status==="Re-edit"||(EDIT_POOL.includes(v.status)&&v.reviewNote)?`<span class="tag warn">Changes: ${esc((v.reviewNote||"see notes").slice(0,90))}</span>`:"")+(v.round>1&&EDIT_POOL.includes(v.status)?`<span class="tag">Round ${v.round}</span>`:"")+(tw[v.id]?`<span class="tag tp-to" title="Assigned while you’re away">→ ${esc(tw[v.id])}</span>`:"")+(x.fresh?`<span class="tag new">New</span>`:"")+(clash?`<span class="tag warn">Same shoot as above</span>`:"")+(late?`<span class="tag warn">Due before this</span>`:"");
       return `<div class="erow${pinned?" pinned":""}" data-fid="${v.id}">
         <div class="num grip" title="Drag to reorder"><span class="n">${idx+1}</span><span class="g">⋮⋮</span></div>
         <div class="etitle"><span class="dot" style="background:${hue(v.shotDate)}"></span><div><b>${esc(v.title||"Untitled")}</b>${pillarTag(v)}<small>Shot ${esc(v.shotDate?nice(v.shotDate):"date unknown")}${v.postDate?`, posts ${esc(niceW(v.postDate))}${v.postTime?" "+fmtT(v.postTime):""}`:""}${tags}</small></div></div>
@@ -3557,10 +3587,11 @@ function vOrder(){
       </div>`}).join("");
     return `<div class="card eday"><header><h3>${esc(dayLabel(g.day))}</h3><span class="count">${g.items.length}</span><div class="mix" aria-label="Shoot day mix">${mix}</div></header>${rows}</div>`;
   }).join("");
-  const c=clashes(list);
+  const c=clashes(list),trip=editTrip();
   return `<section class="panel">
     <div class="phead"><h2>Edit order</h2>
-      <div class="pactions">${(()=>{const ed=vids().filter(v=>v.status==="Editing");if(!ed.length)return "";const run=ed.filter(v=>!isPausedV(v));return run.length?`<button class="btn small" data-act="pauseAll">⏸ Pause editing</button>`:`<button class="btn small primary" data-act="resumeAll">▶ Resume editing</button>`})()}${list.length?`<span class="stat">${list.length} in queue${c?`, ${c} same-day pair${c>1?"s":""}`:""}</span>${Object.keys(S.queue.pins||{}).length?`<button class="btn small ghost" data-act="unpinAll">Unpin all</button>`:""}`:""}<button class="shuffle" data-act="shuffle"${list.length<2?" disabled":""}>Shuffle</button></div></div>
+      <div class="pactions">${trip?`<button class="btn small ghost tp-toggle" data-act="tripOpen" aria-pressed="${!!S.tripOpen}" title="Who edits what while you’re away">✈︎ ${S.tripOpen?"Hide away plan":"Away plan"}</button>`:""}${(()=>{const ed=vids().filter(v=>v.status==="Editing");if(!ed.length)return "";const run=ed.filter(v=>!isPausedV(v));return run.length?`<button class="btn small" data-act="pauseAll">⏸ Pause editing</button>`:`<button class="btn small primary" data-act="resumeAll">▶ Resume editing</button>`})()}${list.length?`<span class="stat">${list.length} in queue${c?`, ${c} same-day pair${c>1?"s":""}`:""}</span>${Object.keys(S.queue.pins||{}).length?`<button class="btn small ghost" data-act="unpinAll">Unpin all</button>`:""}`:""}<button class="shuffle" data-act="shuffle"${list.length<2?" disabled":""}>Shuffle</button></div></div>
+    ${S.tripOpen&&trip?tripPanel():""}
     ${planPanel()}
     <div class="switches">
       ${toggle("data-opt","deadlineFirst",S.opts.deadlineFirst,"Scheduled first")}
@@ -4599,6 +4630,66 @@ document.addEventListener("input",e=>{const d=e.target&&e.target.dataset;if(!d)r
 document.addEventListener("change",e=>{const k=e.target&&e.target.dataset&&e.target.dataset.awf;if(k)AWF[k]=e.target.value;if(e.target&&e.target.dataset&&e.target.dataset.aef)AWE[e.target.dataset.aef]=e.target.value;
   const c=e.target&&e.target.dataset&&e.target.dataset.awc;if(c){const id=e.target.dataset.id;S.settings.away=(S.settings.away||[]).map(a=>a.id===id?{...a,[c]:c==="perDay"?Math.max(0,+e.target.value||0):e.target.value.trim?e.target.value.trim():e.target.value}:a);
     putSettings();render();toast("Coverage updated. Targets adjusted")}},true);
+/* ---------- editing while away: who edits each post during a trip ---------- */
+function editTrip(){const L=awayList().filter(a=>a.to>=today());return L.find(a=>roleOf(a)==="edit")||L[0]||null}
+function tripTeam(a){const T=Array.isArray(a.team)?a.team:String(a.teammate||"").split(/,|&|\band\b/i);return [...new Set(T.map(x=>String(x).trim()).filter(Boolean))]}
+function tripHasPlan(a){return !!a&&(tripTeam(a).length>0||Object.keys(a.assign||{}).length>0)}
+function editorName(){const n=dispName(ADMIN)||ROLES.edit.who;return n.charAt(0).toUpperCase()+n.slice(1)}
+function tripLead(){return S.settings.editLead==null?1:+S.settings.editLead}
+// every post whose edit is due during the trip, with the person editing it
+function tripRows(a){
+  const lead=tripLead(),kinds=S.settings.editCountAll===false?["R"]:["R","C"],t=today(),hm=nowHM(),rows=[];
+  for(let P=addDays(a.from,lead),g=0;P<=addDays(a.to,lead)&&g<120;P=addDays(P,1),g++){
+    kinds.forEach(k=>{slotsK(P,k).forEach(tm=>{if(P<t||(P===t&&tm<=hm))return;
+      const v=vids().find(x=>kindOf(x)===k&&x.postDate===P&&x.postTime===tm);rows.push({P,tm,k,key:P+"|"+tm+"|"+k,v})});
+      vids().filter(v=>v.postDate===P&&kindOf(v)===k&&!slotsK(P,k).includes(v.postTime)&&!(P===t&&(v.postTime||"99")<=hm)).forEach(v=>rows.push({P,tm:v.postTime||"",k,key:P+"|"+(v.postTime||"")+"|"+k,v,off:true}))})}
+  rows.sort((x,y)=>(x.P+x.tm).localeCompare(y.P+y.tm));
+  const team=tripTeam(a),mode=a.mode||"before",per=Math.max(0,+a.perDay||0),mine={};let rr=0;
+  rows.forEach(r=>{r.by=addDays(r.P,-lead);r.done=!!(r.v&&FIN.includes(r.v.status));
+    let def;if(mode==="before")def="before";else if(mode==="remote")def="me";
+    else if(mode==="partial"&&(mine[r.by]||0)<per){def="me";mine[r.by]=(mine[r.by]||0)+1}
+    else def=team.length?team[rr++%team.length]:"open";
+    const set=(a.assign||{})[r.key];r.who=set&&(set==="me"||set==="before"||team.includes(set))?set:def;r.picked=!!set&&r.who===set});
+  return rows;
+}
+function whoLabel(w){return w==="me"?editorName():w==="before"?"Before you leave":w==="open"?"Not assigned":w}
+function tripMineOn(a,P){return tripRows(a).filter(r=>r.P===P&&!r.done&&(r.who==="me"||r.who==="before")).length}
+function tripWorkDay(a,d){return tripRows(a).some(r=>!r.done&&r.who==="me"&&r.by===d)}
+function tripPanel(){
+  const a=editTrip();if(!a)return "";
+  const rows=tripRows(a),team=tripTeam(a),lead=tripLead(),f=S.tripWho||"all";
+  const people=["me",...team,"before",...(rows.some(r=>r.who==="open")?["open"]:[])];
+  const cnt=w=>rows.filter(r=>!r.done&&r.who===w).length,doneN=rows.filter(r=>r.done).length,todo=rows.length-doneN;
+  const chip=(k,l,n)=>`<button class="fchip" data-act="tripWho" data-w="${esc(k)}" aria-pressed="${f===k}">${esc(l)} <em>${n}</em></button>`;
+  const chips=chip("all","All",todo)+people.filter(w=>w!=="before"||cnt("before")||(a.mode||"before")==="before").map(w=>chip(w,whoLabel(w),cnt(w))).join("")+(doneN?chip("done","Already edited",doneN):"");
+  const show=rows.filter(r=>f==="all"?!r.done:f==="done"?r.done:(!r.done&&r.who===f));
+  const leaveBy=addDays(a.from,-1);
+  const groups={};show.forEach(r=>{const g=r.who==="before"&&!r.done?leaveBy:r.by;(groups[g]=groups[g]||[]).push(r)});
+  const opt=(r)=>`<select class="tp-who" data-tripwho="${esc(r.key)}" data-trip="${a.id}" aria-label="Who edits this">${people.filter(w=>w!=="open").map(w=>`<option value="${esc(w)}"${r.who===w?" selected":""}>${esc(whoLabel(w))}</option>`).join("")}${r.who==="open"?`<option value="open" selected>Not assigned</option>`:""}</select>`;
+  const row=r=>{const v=r.v,p=r.k==="R"?slotPillar(r.P,r.tm):null;
+    return `<div class="tp-row${r.done?" done":""}"><span class="tp-when"><b>${esc(fmtT(r.tm)||"No time")}</b><small>posts ${esc(niceW(r.P))}</small></span>
+      <span class="tp-what">${v?`<b>${esc(v.title||"Untitled")}</b>${pillarTag(v)}${r.k==="C"?'<span class="tag">Carousel</span>':""}<small>${esc(v.status)}${v.shotDate?", shot "+esc(nice(v.shotDate)):""}</small>`:`<b class="tp-empty">Empty ${r.k==="C"?"carousel":"reel"} slot${p?" · "+esc(p):""}</b><small>Nothing scheduled yet. Reshuffle fills it.</small>`}</span>
+      <span class="tp-a">${r.done?`<span class="lockd sched">Edited ✓</span>`:opt(r)}</span></div>`};
+  const days=Object.keys(groups).sort().map(g=>`<div class="tp-day"><h4>${g===leaveBy&&groups[g].some(r=>r.who==="before")?`Before you leave · by ${esc(niceW(g))}`:`Edit by ${esc(niceW(g))}`}<span>${groups[g].length}</span></h4>${groups[g].map(row).join("")}</div>`).join("");
+  const m=a.mode||"before";
+  return `<div class="tplan" id="tripPlan">
+    <div class="tp-head"><div><b>✈︎ ${esc(a.label||"Time away")}</b><small>${esc(niceW(a.from))} – ${esc(niceW(a.to))} · ${plural(rows.length,"post")} go out while you’re away${lead?", each edited a day before it posts":""}</small></div>
+      <button class="btn small ghost" data-act="tripCopy" title="Copy the list shown below">Copy list</button></div>
+    <div class="tp-set">
+      <label>Editing while away<select data-awc="mode" data-id="${a.id}">${[["before","I edit everything before I leave"],["remote","I edit from home"],["partial","I edit some each day, the team does the rest"],["team","The team edits"]].map(([k,l])=>`<option value="${k}"${k===m?" selected":""}>${l}</option>`).join("")}</select></label>
+      ${m==="partial"?`<label class="tp-n">Mine per day<input type="number" min="0" max="20" value="${+a.perDay||0}" data-awc="perDay" data-id="${a.id}"></label>`:""}
+      <label class="tp-team">Team<input type="text" value="${esc(team.join(", "))}" placeholder="Names, separated by commas" data-tripteam="${a.id}" autocomplete="off"></label>
+      ${Object.keys(a.assign||{}).length?`<button class="btn small ghost" data-act="tripReset" data-id="${a.id}" title="Forget the changes you made by hand and split evenly again">Split evenly again</button>`:""}
+    </div>
+    ${!team.length&&m!=="before"&&m!=="remote"?`<p class="ovnote">Add your teammates’ names above and the posts are split between them.</p>`:""}
+    <div class="tp-chips">${chips}</div>
+    ${days||`<div class="empty"><b>Nothing here</b>${f==="all"?"No posts need editing during this trip.":"No posts for this filter."}</div>`}
+  </div>`;
+}
+function tripListText(){const a=editTrip();if(!a)return "";const f=S.tripWho||"all",rows=tripRows(a).filter(r=>f==="all"?!r.done:f==="done"?r.done:(!r.done&&r.who===f));
+  const by={};rows.forEach(r=>{const g=r.who==="before"?addDays(a.from,-1):r.by;(by[g]=by[g]||[]).push(r)});
+  const head=`${a.label||"Time away"}: ${nice(a.from)} – ${nice(a.to)}${f!=="all"&&f!=="done"?` · ${whoLabel(f)}`:""}`;
+  return head+"\n"+Object.keys(by).sort().map(g=>`\nEdit by ${niceW(g)}\n`+by[g].map(r=>`• ${fmtT(r.tm)} ${niceW(r.P)}: ${r.v?(r.v.title||"Untitled")+(r.v.pillar?" ("+r.v.pillar+")":""):"empty slot"}${f==="all"?" → "+whoLabel(r.who):""}`).join("\n")).join("\n")}
 function awayPanel(){
   const L=awayList().filter(a=>a.to>=today()),base=planFor(addDays(today(),1)).times||[];
   return `<section class="panel"><div class="phead"><h2>Time away</h2></div>
@@ -4677,7 +4768,7 @@ function shootRow(s){
     <div class="hdate"><b>${d.getDate()}</b><span>${MON[d.getMonth()]}</span></div>
     <div class="etitle"><span class="dot" style="background:${hue(s.date)}"></span><div><b>${esc(s.title||"Untitled shoot")}</b>${s.auto?'<span class="tag">Auto-added</span>':""}
       <small>${WD[d.getDay()]}${s.time?", "+fmtT(s.time):""}${s.location?", "+esc(s.location):""}${s.cast?", "+esc(s.cast):""}
-      <span class="tag">${n} planned</span>${logged?`<span class="tag">${logged} logged</span>`:""}${sc||s.scriptLink?`<span class="tag new">Script</span>`:""}${overdue?`<span class="tag warn">Not marked done</span>`:s.status!=="Planned"?`<span class="tag">${s.status}</span>`:""}</small></div></div>
+      <span class="tag">${n} planned</span>${logged?`<span class="tag">${logged} logged</span>`:""}${(()=>{const m=missingFor(s);return m.length?`<button class="tag warn tagbtn" data-act="logMissing" data-id="${s.id}" title="${esc(m.join(", "))}">${m.length} not logged · Log now</button>`:""})()}${sc||s.scriptLink?`<span class="tag new">Script</span>`:""}${overdue?`<span class="tag warn">Not marked done</span>`:s.status!=="Planned"?`<span class="tag">${s.status}</span>`:""}</small></div></div>
     <div class="srow-a">${shootStatusSel(s)}${sc||s.scriptLink?`<button class="iconbtn" data-act="viewScript" data-id="${s.id}">Script</button>`:""}</div>
   </div>`;
 }
@@ -4749,8 +4840,36 @@ function saveShootFromForm(){
     videos:f.svids.value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean),notes:f.snotes.value.trim(),status:f.sstatus.value,scriptLink:safeUrl(link)||""};
   if(link&&!safeUrl(link))toast("The script link should start with http");
   if(SD.script)putScript(id,SD.script);else if(SD.script===null)putScript(id,null);
-  putShoot(s);return true;
+  const before={...prev,videos:[...(prev.videos||[])]};
+  putShoot(s);setTimeout(()=>syncShootVideos(before,s),0);return true;
 }
+/* editing a shoot that already happened keeps the board in step: renamed lines rename the video,
+   new lines get logged, removed lines can be taken off the board, and a new date moves the footage */
+const normT=t=>String(t||"").trim().toLowerCase().replace(/\s+/g," ");
+function missingFor(s){if(!s||s.status!=="Done"||!s.date||s.date>today())return [];
+  const have=new Set(vids().filter(v=>v.shotDate===s.date).map(v=>normT(v.title)));
+  const miss=(s.videos||[]).filter(t=>!have.has(normT(t)));
+  return miss.slice(0,Math.max(0,(s.videos||[]).length-loggedFor(s)))}
+async function syncShootVideos(prev,s){
+  if(s.status!=="Done"||!s.date||s.date>today())return;
+  if(prev.date&&prev.date!==s.date){const T=new Set((s.videos||[]).map(normT));
+    const mv=vids().filter(v=>v.shotDate===prev.date&&T.has(normT(v.title)));
+    mv.forEach(v=>putVideo({...v,shotDate:s.date},true));if(mv.length)toast(`${plural(mv.length,"video")} moved to ${niceW(s.date)}`)}
+  const onDay=()=>vids().filter(v=>v.shotDate===s.date);
+  const now=new Set((s.videos||[]).map(normT)),was=new Set((prev.videos||[]).map(normT));
+  const gone=(prev.videos||[]).filter(t=>!now.has(normT(t))&&onDay().some(v=>normT(v.title)===normT(t)));
+  let fresh=(s.videos||[]).filter(t=>!was.has(normT(t))&&!onDay().some(v=>normT(v.title)===normT(t)));
+  const n=Math.min(gone.length,fresh.length);
+  for(let i=0;i<n;i++){const v=onDay().find(x=>normT(x.title)===normT(gone[i]));if(v)putVideo({...v,title:fresh[i]},true)}
+  const left=gone.slice(n);fresh=fresh.slice(n);
+  if(n){render();toast(`Renamed ${plural(n,"video")} on the board`)}
+  if(left.length){const L=onDay().filter(v=>left.map(normT).includes(normT(v.title))&&!v.postDate&&["Not started","Shot","Pending"].includes(v.status));
+    if(L.length&&await ask(`Remove ${plural(L.length,"video")} from the board?`,`${L.map(v=>"“"+(v.title||"Untitled")+"”").join(", ")} ${L.length===1?"is":"are"} no longer in this shoot. Nothing has been edited or scheduled yet.`,"Remove"))delVideos(L.map(v=>v.id))}
+  if(fresh.length)logTitles(s.date,fresh);
+}
+// opens "Log a shoot" for these titles, so format and pillar can be picked as usual
+function logTitles(d,titles){openAdd();const f=$("#addForm").elements;f.shotDate.value=d;f.titles.value=titles.join("\n");f.status.value="Shot";f.titles.dispatchEvent(new Event("input"));
+  toast(`Log ${titles.length===1?"the new video":`the ${titles.length} new videos`} from ${niceW(d)} so ${titles.length===1?"it counts":"they count"} everywhere`)}
 function autoLink(root){
   const re=/(https?:\/\/[^\s<>"]+|www\.[^\s<>"]+)/gi;
   const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);const nodes=[];
@@ -5435,6 +5554,11 @@ document.addEventListener("click",async e=>{
   else if(act==="editShoot"){if(e.target.closest(".iconbtn[data-act=viewScript],select"))return;openShoot(b.dataset.id)}
   else if(act==="viewScript"){e.stopPropagation();viewScript(b.dataset.id)}
   else if(act==="logShoot"){logShootVideos(b.dataset.id)}
+  else if(act==="tripOpen"){S.tripOpen=!S.tripOpen;render();if(S.tripOpen)setTimeout(()=>{const el=$("#tripPlan");if(el)el.scrollIntoView({behavior:"smooth",block:"start"})},60)}
+  else if(act==="tripWho"){S.tripWho=b.dataset.w;render()}
+  else if(act==="tripReset"){S.settings.away=(S.settings.away||[]).map(x=>x.id===b.dataset.id?{...x,assign:{}}:x);putSettings();render();toast("Split evenly again")}
+  else if(act==="tripCopy"){const txt=tripListText();try{await navigator.clipboard.writeText(txt);toast("List copied. Paste it in WhatsApp or email")}catch(_){copyText(txt)}}
+  else if(act==="logMissing"){const s=S.shoots[b.dataset.id];const m=missingFor(s);if(m.length)logTitles(s.date,m)}
   else if(act==="shView"){S.shootView=b.dataset.v;render()}
   else if(act==="rmScript"){SD.script=null;scriptState()}
   else if(act==="delShoot"){const id=SD.id;if(!id)return;$("#shootDlg").close("cancel");if(await ask("Delete this shoot?","Its plan and script will be removed from the board.","Delete"))delShoot(id)}
@@ -5472,6 +5596,8 @@ document.addEventListener("change",e=>{
   if(t.dataset.osn){lsSet("seb-osnotif",t.checked?null:"off");toast(t.checked?"Windows notifications on":"Windows notifications off");return}
   if(t.dataset.snd){lsSet("seb-sound",t.checked?null:"off");if(t.checked)chime();return}
   if(t.dataset.opt){S.opts[t.dataset.opt]=t.checked;if(t.dataset.opt==="readyOnly")render();return}
+  if(t.dataset.tripwho){const id=t.dataset.trip,k=t.dataset.tripwho,w=t.value;S.settings.away=(S.settings.away||[]).map(x=>x.id===id?{...x,assign:{...(x.assign||{}),[k]:w}}:x);putSettings();render();toast(`Assigned to ${whoLabel(w)}`);return}
+  if(t.dataset.tripteam){const id=t.dataset.tripteam,T=t.value.split(",").map(x=>x.trim()).filter(Boolean);S.settings.away=(S.settings.away||[]).map(x=>x.id===id?{...x,team:T,teammate:T.join(", ")}:x);putSettings();render();toast(T.length?`Team: ${T.join(", ")}`:"Team cleared");return}
   if(t.dataset.assign){const [d,tm]=t.dataset.assign.split("|");const v=S.videos[t.value];const blk=pillarBlock(v,d,tm);if(blk){toast(pillarBlockMsg(v,blk));render();return}if(v){const req=isReel(v)?slotPillar(d,tm):null,tag=req&&!v.pillar;
     putVideo({...v,postDate:d,postTime:tm,pinned:true,...(tag?{pillar:req}:{})});toast(tag?`Placed and tagged as ${req}`:"Placed and locked. Unlock it if a reshuffle may move it.")}return}
   if(t.dataset.pillar!=null){const i=+t.dataset.pillar,P=[...pillars()],old=P[i],nw=t.value.trim();if(!nw||P.includes(nw)&&nw!==old){toast("Use a new, unique name");render();return}
