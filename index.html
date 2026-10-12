@@ -2077,6 +2077,13 @@ body.fbloading #fbLoading{display:grid}
 
 .tagbtn{border:0;cursor:pointer;font:inherit;font-size:11px;font-weight:700}
 .tagbtn:hover{filter:brightness(.95)}
+/* members: status pill works on their own videos only */
+body.viewonly .stsel.mine{pointer-events:auto;box-shadow:0 0 0 2px rgba(170,255,0,.55)}
+body.viewonly.member header.top h1::after{content:"Member"}
+body.viewonly [data-act="pauseAll"],body.viewonly [data-act="resumeAll"],body.viewonly [data-act="tripReset"]{display:none!important}
+.tp-set[hidden]{display:none!important}
+.tp-whotxt{display:inline-block;padding:6px 12px;border-radius:999px;background:rgba(12,14,8,.05);font-size:13px;font-weight:700}
+.tp-a .stsel{width:100%}
 /* away plan (Edit order) */
 .tplan{margin:0 0 18px;padding:18px 20px;border-radius:22px;background:rgba(255,255,255,.8);border:1px solid var(--glass-border);box-shadow:0 10px 30px rgba(20,30,8,.07)}
 .tp-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
@@ -2313,6 +2320,7 @@ body.fbloading #fbLoading{display:grid}
 :root[data-theme="dark"] .tp-row{background:rgba(255,255,255,.03)!important;border-color:var(--line)!important}
 :root[data-theme="dark"] .tp-set select,:root[data-theme="dark"] .tp-set input,:root[data-theme="dark"] .tp-who{background:var(--d-field)!important;border-color:var(--d-line2)!important;color:var(--ink)!important}
 :root[data-theme="dark"] .tp-day h4 span{background:rgba(255,255,255,.08)!important;color:var(--muted)!important}
+:root[data-theme="dark"] .tp-whotxt{background:rgba(255,255,255,.07)!important;color:var(--ink)!important}
 :root[data-theme="dark"] .tag.tp-to{background:rgba(139,114,207,.2)!important;color:#C3B3F5!important}
 
 /* 11 ── Tags & status text ───────────────────────────────────── */
@@ -2846,7 +2854,7 @@ function folder(s){
 function slate(s){return s?`<span class="slate" style="--h:${hue(s)}"><span>${esc(niceW(s))}</span></span>`:`<span class="slate none"><span>No shot date</span></span>`}
 const ST_MAIN=["Shot","Editing","In review","Ready","Scheduled","Posted"];
 function statusSelect(v){
-  return `<button type="button" class="status stsel" data-act="stMenu" data-id="${v.id}" data-stsel="${v.id}" style="--c:${SC[v.status]||"#888"}" aria-haspopup="listbox" aria-label="Status: ${esc(v.status)}"><i></i><span>${esc(v.status)}</span><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;
+  return `<button type="button" class="status stsel${mayEdit(v.id)?" mine":""}" data-act="stMenu" data-id="${v.id}" data-stsel="${v.id}" style="--c:${SC[v.status]||"#888"}" aria-haspopup="listbox" aria-label="Status: ${esc(v.status)}"><i></i><span>${esc(v.status)}</span><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;
 }
 function stMenuItems(v){
   const out=[];
@@ -2964,6 +2972,7 @@ const FB_CONFIG={apiKey:"AIzaSyAb6oX0GBaUyMrOg4gktH3bOxrCYXupMrs",authDomain:"sh
 // sign-in email -> board username (keeps photos, reviewer, poster and all settings linked to the right person)
 const FB_TEAM={"muhammed.shibili@milele.com":"shibili","zain.ulabdin@milele.com":"zain","zain.nawaz@milele.com":"nawaz"};
 const VIEW_ONLY=["nawaz"];   // the manager: can see everything, can't change anything
+const MEMBERS=["waleed"];    // editors helping out: see everything, change only the videos assigned to them in the Away plan
 const ADMIN="shibili";
 const COLS=["videos","shoots","scripts","profiles","ideas","meta"];
 const OLD_API=API;   // the Google Sheet link, kept only for the one-time import
@@ -3092,19 +3101,30 @@ function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
 function lsSet(k,v){try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}}
 function saveLocal(){try{localStorage.setItem("seb-free-demo",JSON.stringify({videos:S.videos,settings:S.settings,queue:S.queue,shoots:S.shoots,scripts:S.scripts,profiles:S.profiles}))}catch(e){}}
 function loadLocal(){try{const r=JSON.parse(localStorage.getItem("seb-free-demo")||"null");if(r){S.videos=r.videos||{};S.shoots=r.shoots||{};S.scripts=r.scripts||{};S.profiles=r.profiles||{};Object.assign(S.settings,r.settings||{});S.queue=r.queue||S.queue}}catch(e){}}
-function viewOnly(){return VIEW_ONLY.includes(S.me||"")}
-let voT=0;function voNote(){if(Date.now()-voT<2500)return;voT=Date.now();toast("View only. Ask Shibli or Zain to make changes")}
-const VIEW_OK=new Set(["copy","days","dialBack","dialTry","dialType","dlBackup","fclear","ffmt","fnolink","fnopil","fsched","fst","goShoots","goTab","grpToggle","histView","hrange","ideaArch","ideaCopy","ideaPil","ideaType","mExport","mOut","mday","mnav","more","newWin","openCmd","osnOn","osnTest","ovGo","ovMode","ovStatus","plByDay","plMode","playWrapped","printSum","rowMore","schedToday","shView","sumMode","sview","testAlert","vaultLock","vaultOpen","vcopy","viewScript","vshow","clearSel","chpw","freshLoad"]);
+function isMember(u){u=String(u==null?S.me:u||"").toLowerCase();return !!u&&MEMBERS.some(n=>u===n||u.includes(n))}
+function viewOnly(){return VIEW_ONLY.includes(S.me||"")||isMember()}
+// the name this member goes by in the Away plan team list
+function memberName(){const T=new Set();awayList().forEach(a=>tripTeam(a).forEach(n=>T.add(n)));const me=String(S.me||"").toLowerCase(),dn=String(dispName(S.me)||"").toLowerCase();
+  return [...T].find(n=>{const l=n.toLowerCase();return l===dn||l===me||me.includes(l)||MEMBERS.some(m=>me.includes(m)&&l.includes(m))})||""}
+// videos a member may change: the ones assigned to them in a current or upcoming trip
+function myVideos(){const out=new Set();if(!isMember())return out;const nm=memberName();if(!nm)return out;
+  awayList().filter(a=>a.to>=addDays(today(),-1)).forEach(a=>tripRows(a).forEach(r=>{if(r.v&&r.who===nm)out.add(r.v.id)}));return out}
+// videos a teammate edits during a trip (so your own timer never pauses theirs)
+function teamOwned(){const out=new Set();awayList().filter(a=>a.to>=addDays(today(),-1)).forEach(a=>tripRows(a).forEach(r=>{if(r.v&&!["me","before","open"].includes(r.who))out.add(r.v.id)}));return out}
+function mayEdit(id){return isMember()&&myVideos().has(id)}
+let voT=0;function voNote(){if(Date.now()-voT<2500)return;voT=Date.now();toast(isMember()?"You can change the status of the videos assigned to you":"View only. Ask Shibli or Zain to make changes")}
+const VIEW_OK=new Set(["tripOpen","tripWho","tripCopy","copy","days","dialBack","dialTry","dialType","dlBackup","fclear","ffmt","fnolink","fnopil","fsched","fst","goShoots","goTab","grpToggle","histView","hrange","ideaArch","ideaCopy","ideaPil","ideaType","mExport","mOut","mday","mnav","more","newWin","openCmd","osnOn","osnTest","ovGo","ovMode","ovStatus","plByDay","plMode","playWrapped","printSum","rowMore","schedToday","shView","sumMode","sview","testAlert","vaultLock","vaultOpen","vcopy","viewScript","vshow","clearSel","chpw","freshLoad"]);
 const VIEW_FIELDS=["live","plr","sumr","ovr","opt"];
 function isViewField(el){const d=el&&el.dataset||{};return VIEW_FIELDS.some(k=>k in d)||el.type==="search"||!!(el.closest&&el.closest("#login,#cmd,.tpw,.vault-form"))}
 document.addEventListener("click",e=>{if(!viewOnly())return;const t=e.target;if(!t.closest)return;
   const g=t.closest(".gsel");if(g&&g._sel&&!isViewField(g._sel)){e.preventDefault();e.stopPropagation();voNote();return}
-  const b=t.closest("[data-act]");if(b&&!VIEW_OK.has(b.dataset.act)){e.preventDefault();e.stopPropagation();voNote()}},true);
+  const b=t.closest("[data-act]");if(b&&b.dataset.act==="stMenu"&&mayEdit(b.dataset.id))return;
+  if(b&&!VIEW_OK.has(b.dataset.act)){e.preventDefault();e.stopPropagation();voNote()}},true);
 ["change","input"].forEach(ev=>document.addEventListener(ev,e=>{if(!viewOnly())return;const t=e.target;if(!t||!t.closest||!t.closest("#main,#addDlg,#shootDlg"))return;if(isViewField(t))return;
   e.stopPropagation();if(ev==="change"){voNote();render()}},true));
 document.addEventListener("pointerdown",e=>{if(viewOnly()&&e.target.closest&&e.target.closest("[data-drag-id],.erow")&&!e.target.closest("a,[data-act],.gsel"))e.stopPropagation()},true);
 function enqueue(op,collection,id,data){
-  if(viewOnly()){voNote();return}
+  if(viewOnly()&&!(isMember()&&((collection==="videos"&&op==="set"&&mayEdit(id))||(collection==="profiles"&&id===S.me)))){voNote();return}
   if(!GAS){saveLocal();return}
   pending.set(collection+"/"+id,{op,collection,id,data});savePendingLocal();cacheRow({collection,id,data,deleted:op==="delete"});
   $("#sync").textContent="Saving…";
@@ -4146,7 +4166,7 @@ function vSettings(){
 function isTyping(){const a=document.activeElement;return a&&a.closest&&a.closest("#main")&&!a.dataset.live&&(a.tagName==="TEXTAREA"||(a.tagName==="INPUT"&&/^(text|number)$/.test(a.type)))}
 let VT_ON=false;
 function render(){
-  document.body.classList.toggle("viewonly",viewOnly());
+  document.body.classList.toggle("viewonly",viewOnly());document.body.classList.toggle("member",isMember());
   if(isTyping()||DIAL.busy||DIAL.trying||VT_ON||(typeof GX!=="undefined"&&GX.btn)||(typeof STM!=="undefined"&&STM.btn)){pendingRender=true;return}
   pendingRender=false;
   const a=document.activeElement,live=a&&a.dataset&&a.dataset.live,sel=live&&a.selectionStart;
@@ -4836,13 +4856,13 @@ function tripPanel(){
   const row=r=>{const v=r.v,p=r.k==="R"?slotPillar(r.P,r.tm):null;
     return `<div class="tp-row${r.done?" done":""}"><span class="tp-when"><b>${esc(fmtT(r.tm)||"No time")}</b><small>posts ${esc(niceW(r.P))}</small></span>
       <span class="tp-what">${v?`<b>${esc(v.title||"Untitled")}</b>${pillarTag(v)}${r.k==="C"?'<span class="tag">Carousel</span>':""}<small>${esc(v.status)}${v.shotDate?", shot "+esc(nice(v.shotDate)):""}</small>`:`<b class="tp-empty">Empty ${r.k==="C"?"carousel":"reel"} slot${p?" · "+esc(p):""}</b><small>Nothing scheduled yet. Reshuffle fills it.</small>`}</span>
-      <span class="tp-a">${r.done?`<span class="lockd sched">Edited ✓</span>`:opt(r)}</span></div>`};
+      <span class="tp-a">${r.done?`<span class="lockd sched">Edited ✓</span>`:viewOnly()?(v&&mayEdit(v.id)?statusSelect(v):`<span class="tp-whotxt">${esc(whoLabel(r.who))}</span>`):opt(r)}</span></div>`};
   const days=Object.keys(groups).sort().map(g=>`<div class="tp-day"><h4>${g===leaveBy&&groups[g].some(r=>r.who==="before")?`Before you leave · by ${esc(niceW(g))}`:`Edit by ${esc(niceW(g))}`}<span>${groups[g].length}</span></h4>${groups[g].map(row).join("")}</div>`).join("");
   const m=a.mode||"before";
   return `<div class="tplan" id="tripPlan">
     <div class="tp-head"><div><b>✈︎ ${esc(a.label||"Time away")}</b><small>${esc(niceW(a.from))} – ${esc(niceW(a.to))} · ${plural(rows.length,"post")} go out while you’re away${lead?", each edited a day before it posts":""}</small></div>
       <button class="btn small ghost" data-act="tripCopy" title="Copy the list shown below">Copy list</button></div>
-    <div class="tp-set">
+    <div class="tp-set"${viewOnly()?" hidden":""}>
       <label>Editing while away<select data-awc="mode" data-id="${a.id}">${[["before","I edit everything before I leave"],["remote","I edit from home"],["partial","I edit some each day, the team does the rest"],["team","The team edits"]].map(([k,l])=>`<option value="${k}"${k===m?" selected":""}>${l}</option>`).join("")}</select></label>
       ${m==="partial"?`<label class="tp-n">Mine per day<input type="number" min="0" max="20" value="${+a.perDay||0}" data-awc="perDay" data-id="${a.id}"></label>`:""}
       <label class="tp-team">Team<input type="text" value="${esc(team.join(", "))}" placeholder="Names, separated by commas" data-tripteam="${a.id}" autocomplete="off"></label>
@@ -4889,6 +4909,7 @@ function recordShootDay(d,titles,quiet){
 }
 // one pass over past footage, so earlier unplanned shoot days are counted too (same id on every device, so no duplicates)
 function backfillShoots(){
+  if(viewOnly())return;   // view-only and member accounts never write on their own
   const by={};vids().forEach(v=>{if(v.shotDate&&v.shotDate<=today()&&v.status!=="Not started")(by[v.shotDate]=by[v.shotDate]||[]).push(v.title||"Untitled")});
   let n=0;Object.entries(by).forEach(([d,T])=>{if(shoots().some(s=>s.date===d&&s.status==="Done"))return;recordShootDay(d,T,true);n++});
   if(n){render();toast(`Added ${n} past shoot day${n>1?"s":""} to the shoot history`)}
@@ -5220,7 +5241,7 @@ function editTimer(v){if(v.status!=="Editing")return "";const p=isPausedV(v),ms=
   const arcSvg=`<span class="et-arc"><svg viewBox="0 0 22 22" width="22" height="22" aria-hidden="true"><circle class="et-arc-bg" cx="11" cy="11" r="9"/><circle class="et-arc-fg" cx="11" cy="11" r="9"/></svg><i class="et-arc-dot"></i></span>`;
   return `<span class="etimer${p?" paused":""}" data-id="${v.id}">${arcSvg}<b>${ms==null?"–":fmtClock(ms)}</b>${p?`<span style="font-size:11px;opacity:.7">paused</span>`:""}<button class="et-btn" data-act="${p?"resumeEdit":"pauseEdit"}" data-id="${v.id}" title="${p?"Resume":"Pause"}">${p?"▶":"⏸"}</button></span>`}
 function setStatusFlow(v,st){
-  if(st==="Editing"&&v.status!=="Editing"){const others=vids().filter(o=>o.id!==v.id&&o.status==="Editing"&&!isPausedV(o));if(others.length){others.forEach(o=>pauseVideo(o,true));setTimeout(()=>toast(`Paused the timer on “${others[0].title||"Untitled"}”${others.length>1?` and ${others.length-1} more`:""} while you work on this one`),600)}}
+  if(st==="Editing"&&v.status!=="Editing"){const mine=o=>isMember()?mayEdit(o.id):!teamOwned().has(o.id);const others=vids().filter(o=>o.id!==v.id&&o.status==="Editing"&&!isPausedV(o)&&mine(o));if(others.length){others.forEach(o=>pauseVideo(o,true));setTimeout(()=>toast(`Paused the timer on “${others[0].title||"Untitled"}”${others.length>1?` and ${others.length-1} more`:""} while you work on this one`),600)}}
   if(!isReviewer()&&["Ready","Scheduled","Approved","In review"].includes(v.status)&&["Editing","Shot","Pending"].includes(st)){askEditorReedit(v,st);return}
   const wantsDone=["Ready","In review","Edited"].includes(st);
   if(st==="Approved"){if(!isReviewer()){toast(`Only ${reviewerName()} can approve`);render();return}approveVideo(v);return}
@@ -5911,7 +5932,8 @@ async function startSession(t,user){
   let cached=await IDB.get("cache");mark("copy");
   const hasCopy=!!(cached&&cached.rows&&cached.rows.length);
   if(!loaded&&!hasCopy){document.body.classList.add("fbloading");clearTimeout(window.__slowT);window.__slowT=setTimeout(()=>{const n=document.getElementById("fbLoadNote");if(n)n.textContent="Still loading… a slow connection. It will finish on its own."},9000)}
-  token=t;$("#login").hidden=true;S.me=String(user||"").toLowerCase();updateMe();$("#sync").textContent="Loading…";
+  token=t;$("#login").hidden=true;S.me=String(user||"").toLowerCase();updateMe();
+  if(isMember()&&!S.memberStart){S.memberStart=1;S.tab="order";S.tripOpen=true;setTimeout(()=>{const nm=memberName();if(nm){S.tripWho=nm;render()}},1500)}$("#sync").textContent="Loading…";
   S.me=String(user||"").toLowerCase();
 
   const fresh=cached&&cached.user===S.me&&cached.since&&Date.now()-(cached.savedAt||0)<5*86400e3;
