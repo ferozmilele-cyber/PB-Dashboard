@@ -2363,6 +2363,173 @@ body.fbloading #fbLoading{display:grid}
   :root[data-theme="dark"] tbody tr{background:var(--d-card)!important}
 }
 
+/* ================================================================
+   iPHONE — minimal layer (v82)
+   Phones get the essentials only: titles, times, status and the main
+   action on each row. Helper text, warning tags and desktop-only tools
+   are hidden here; the desktop layout is not touched.
+   ================================================================ */
+@media (max-width:600px){
+  /* ── everywhere ─────────────────────────────────────────────── */
+  header.top p{display:none}
+  #sync{display:none!important}
+  header.top h1{font-size:24px}
+  #main .ovnote,#main .pl-hint,#main .ep-note,#main .ep-s,#main .ep-w,#main .aw-note,#main .aw-cv,#main p.sub,#main .diag,#main .field small{display:none!important}
+  #main .phead{flex-wrap:wrap;gap:10px;align-items:center}
+  #main .phead h2{font-size:22px}
+  #main section.panel{padding:18px 16px;border-radius:24px}
+  #main .card{border-radius:20px}
+  #main .card>header{padding:12px 14px}
+  #main .tag{white-space:nowrap}
+  /* page switches are kept for the computer; phones use what is already set */
+  #main[data-tab="schedule"] .switches,#main[data-tab="order"] .switches{display:none!important}
+  #main[data-tab="schedule"] .phead .stat,#main[data-tab="order"] .phead .stat,#main[data-tab="videos"] .fsum{display:none!important}
+
+  /* ── Overview ───────────────────────────────────────────────── */
+  #main[data-tab="overview"] section.panel:has(.pl-grid),
+  #main[data-tab="overview"] section.panel:has(.pipe){display:none!important}
+  #main[data-tab="overview"] .pl-filter{display:none!important}
+  #main[data-tab="overview"] .shoot-need{flex-wrap:wrap;gap:8px}
+  #main[data-tab="overview"] .shoot-need small{display:none!important}
+  #main[data-tab="overview"] .ovverdict{font-size:16px;line-height:1.45;margin:4px 0 14px}
+  #main[data-tab="overview"] .need-l{gap:4px 12px;font-size:12px}
+  #main[data-tab="overview"] .ovs{grid-template-columns:84px minmax(0,1fr) auto;gap:10px}
+  #main[data-tab="overview"] .ovs-t small{white-space:normal}
+  #main[data-tab="overview"] .phead .stat{font-size:12px}
+  #main[data-tab="overview"] .tp{grid-template-columns:62px minmax(0,1fr)!important;gap:4px 12px!important;align-items:start}
+  #main[data-tab="overview"] .tp-t{font-size:14px;white-space:nowrap}
+  #main[data-tab="overview"] .tp-n b{font-size:15px;line-height:1.3}
+  #main[data-tab="overview"] .tp-n small .tag,#main[data-tab="overview"] .tp-n small .post-clock{display:none!important}
+  #main[data-tab="overview"] .tp-a{grid-column:2;justify-content:flex-start;flex-wrap:wrap;gap:8px;margin-top:4px}
+  #main[data-tab="overview"] .tp-a:empty,#main[data-tab="overview"] .tp-a:has(>.tp-ok:only-child){display:none}
+  #main[data-tab="overview"] .tp-ok{display:none}
+  #main[data-tab="overview"] .tp-a .slide{flex:1 1 100%;min-width:0}
+
+  /* ── Posting schedule ───────────────────────────────────────── */
+  #main[data-tab="schedule"] .pactions{width:100%;display:flex;flex-wrap:nowrap;gap:8px;align-items:center}
+  #main[data-tab="schedule"] .pactions .seg[aria-label="Days shown"]{display:none!important}
+  #main[data-tab="schedule"] .pactions .shuffle{margin-left:auto;padding:9px 18px;font-size:14px}
+  #main .sday header{gap:8px;flex-wrap:wrap}
+  #main .sday header h3{font-size:17px;margin-right:auto}
+  #main .sday header .addslot{padding:4px 10px;font-size:12px}
+  /* filled slot: time | title / status | remove */
+  #main .sday .slot.filled{display:grid!important;grid-template-columns:62px minmax(0,1fr) 30px!important;grid-template-areas:"tm ttl ttl" "tm st x";gap:8px 10px!important;align-items:center;padding:12px 12px!important}
+  #main .sday .slot.filled>*{grid-column:auto!important;min-width:0}
+  #main .sday .slot.filled>.grip,
+  #main .sday .slot.filled>:nth-child(5),
+  #main .sday .slot.filled>.mv2{display:none!important}
+  #main .sday .slot.filled>.tm{grid-area:tm;align-self:start;font-size:14px;line-height:1.2}
+  #main .sday .slot.filled>.ttl{grid-area:ttl}
+  #main .sday .slot.filled>:nth-child(4){grid-area:st}
+  #main .sday .slot.filled>:nth-child(7){grid-area:x;justify-self:end}
+  #main .sday .slot .ttl b{display:inline;font-size:15px;line-height:1.35;white-space:normal;overflow-wrap:anywhere}
+  #main .sday .slot .ttl .ptag,#main .sday .slot .ttl small,#main .sday .slot .ttl .edit-lnk{display:none!important}
+  #main .sday .slot .ttl .openlink{display:inline-flex;margin:0 0 0 6px;font-size:11px;padding:2px 9px;vertical-align:2px}
+  #main .sday .slot .tm .kind{font-size:9.5px;margin-top:3px}
+  #main .sday .slot .stsel{width:100%;min-width:0!important;height:36px}
+  #main .sday .slot .stsel span{overflow:visible;text-overflow:clip}
+  #main .sday .slot .xbtn{width:30px;height:30px}
+  /* empty slot: time | add… | remove */
+  #main .sday .slot.empty{display:grid!important;grid-template-columns:62px minmax(0,1fr) 30px!important;grid-template-areas:"tm sel x";gap:10px!important;align-items:center;padding:10px 12px!important}
+  #main .sday .slot.empty>*{grid-column:auto!important;min-width:0}
+  #main .sday .slot.empty>.grip,#main .sday .slot.empty>:nth-child(4),#main .sday .slot.empty>:nth-child(5),#main .sday .slot.empty>:nth-child(6){display:none!important}
+  #main .sday .slot.empty>.tm{grid-area:tm;font-size:14px}
+  #main .sday .slot.empty>:nth-child(3){grid-area:sel}
+  #main .sday .slot.empty>:nth-child(7){grid-area:x;justify-self:end}
+  #main .sday .slot.empty .gsel{width:100%;min-width:0}
+
+  /* ── Edit order ─────────────────────────────────────────────── */
+  #main[data-tab="order"] .pactions{width:100%;display:flex;flex-wrap:nowrap;gap:6px;align-items:center}
+  #main[data-tab="order"] .pactions .btn{padding:7px 11px;font-size:13px;white-space:nowrap}
+  #main[data-tab="order"] .pactions .shuffle{margin-left:auto;padding:9px 16px;font-size:14px}
+  #main .tp-head small{display:none}
+  #main .eplan{padding:14px;margin-bottom:14px}
+  #main .ep-h{font-size:19px;margin-bottom:10px}
+  #main .ep-days{display:flex!important;grid-template-columns:none!important;overflow-x:auto;gap:8px;padding-bottom:2px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  #main .ep-days::-webkit-scrollbar{display:none}
+  #main .ep-day{flex:0 0 78px;padding:8px 10px}
+  #main .ep-day small{white-space:nowrap}
+  #main .erow{display:grid!important;grid-template-columns:28px minmax(0,1fr) auto!important;grid-template-areas:"num ttl ttl" "num st mv";gap:8px 10px!important;align-items:center;padding:12px!important}
+  #main .erow>*{min-width:0;grid-column:auto!important}
+  #main .erow>.num{grid-area:num;align-self:start}
+  #main .erow>.num .g{display:none}
+  #main .erow>.etitle{grid-area:ttl}
+  #main .erow>.eacts{display:none!important}
+  #main .erow>:nth-child(4){grid-area:st}
+  #main .erow>.mv2{grid-area:mv;display:flex;gap:6px}
+  #main .erow .etitle .dot,#main .erow .etitle .ptag{display:none!important}
+  #main .erow .etitle b{display:block;font-size:15px;line-height:1.3;white-space:normal}
+  #main .erow .etitle small{font-size:0!important;display:block;margin-top:4px}
+  #main .erow .etitle small .etimer{font-size:12.5px;margin-left:0}
+  #main .erow .etitle small .tag{display:none!important}
+  #main .erow .stsel{width:100%;min-width:0!important;height:36px}
+  #main .eday header .mix{display:none}
+  /* away plan */
+  #main .tplan{padding:14px}
+  #main .tp-set{display:grid;grid-template-columns:1fr;gap:10px}
+  #main .tp-set label{width:100%}
+  #main .tp-set select,#main .tp-set input,#main .tp-team input{width:100%;min-width:0}
+  #main .tp-chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  #main .tp-chips::-webkit-scrollbar{display:none}
+  #main .tp-chips .fchip{flex:none}
+  #main .tp-row{grid-template-columns:62px minmax(0,1fr)!important;grid-template-areas:"when what" "a a";gap:8px 10px!important}
+  #main .tp-row>.tp-when{grid-area:when}#main .tp-row>.tp-what{grid-area:what}#main .tp-row>.tp-a{grid-area:a}
+  #main .tp-when small,#main .tp-what small,#main .tp-what .ptag{display:none!important}
+
+  /* ── All videos ─────────────────────────────────────────────── */
+  #main[data-tab="videos"] .toolbar{display:block}
+  #main[data-tab="videos"] .toolbar>.gsel,#main[data-tab="videos"] .toolbar>select{display:none!important}
+  #main[data-tab="videos"] .toolbar input{width:100%}
+  #main[data-tab="videos"] .filters .fgroup:not(:first-child){display:none!important}
+  #main[data-tab="videos"] .filters .fgroup:first-child{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:8px;padding-bottom:2px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  #main[data-tab="videos"] .filters .fgroup:first-child::-webkit-scrollbar{display:none}
+  #main[data-tab="videos"] .filters .fchip{flex:none}
+  #main[data-tab="videos"] td.ck{display:none!important}
+  #main[data-tab="videos"] td.title .rnote{display:none!important}
+  #main[data-tab="videos"] td.title{padding-right:52px!important}
+  #main[data-tab="videos"] td.title input{font-size:16px!important;font-weight:700;text-overflow:ellipsis}
+  #main[data-tab="videos"] .mob-more{top:12px!important;right:12px!important;font-size:0!important;width:36px;height:30px;padding:0!important;display:grid!important;place-items:center}
+  #main[data-tab="videos"] .mob-more::after{content:"•••";font-size:11px;letter-spacing:1px}
+  #main[data-tab="videos"] tbody tr.open .mob-more::after{content:"✕";font-size:12px}
+  #main[data-tab="videos"] tbody tr:not(.open) td.c-post,#main[data-tab="videos"] tbody tr:not(.open) td.c-time{display:none!important}
+
+  /* ── Shoot plan & time away ─────────────────────────────────── */
+  #main .away{display:block!important;position:relative;padding:16px!important}
+  #main .away .aw-i{display:none}
+  #main .away .aw-m{min-width:0}
+  #main .away .aw-m>b,#main .away .aw-m>small{display:block;padding-right:76px}
+  #main .aw-cov .gsel span{white-space:normal;line-height:1.25;text-align:left}
+  #main .aw-cov .gsel{height:auto;min-height:40px;padding-top:8px;padding-bottom:8px}
+  #main .away .aw-acts{position:absolute;top:12px;right:10px;display:flex;gap:4px}
+  #main .aw-boxes,#main .aw-boxes.two{grid-template-columns:1fr!important}
+  #main .aw-bigs{flex-wrap:wrap}
+  #main .aw-box>span{display:none!important}
+  #main .aw-big b{font-size:34px!important}
+  #main .aw-cov{display:grid;gap:8px}
+  #main .aw-cov .aw-n{display:flex;white-space:nowrap}
+  #main .aw-cov select,#main .aw-cov .gsel,#main .aw-cov input{width:100%;min-width:0}
+  #main .away-form{display:none!important}
+  #main .shero .sh-acts .btn{flex:1 1 auto}
+  #main .srow .etitle small .tag:not(.warn){display:none}
+
+  /* ── Content bank ───────────────────────────────────────────── */
+  #main .id-add{grid-template-columns:1fr!important}
+  #main .id-tools .fgroup{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  #main .id-tools .fgroup::-webkit-scrollbar{display:none}
+  #main .id-tools .fchip{flex:none}
+
+  /* ── History ────────────────────────────────────────────────── */
+  #main[data-tab="history"] .hrow{grid-template-columns:44px minmax(0,1fr)!important;gap:6px 12px!important}
+  #main[data-tab="history"] .hrow>:nth-child(3){grid-column:2!important}
+  #main[data-tab="history"] .hrow .etitle .dot{display:none}
+
+  /* ── Settings ───────────────────────────────────────────────── */
+
+  /* ── dialogs ────────────────────────────────────────────────── */
+  #addDlg .rawin,#addDlg label:has(.rawin){display:none!important}
+  dialog .sub{font-size:13px}
+}
+
 </style>
 </head>
 <body>
