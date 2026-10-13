@@ -821,7 +821,16 @@ body.is-dragging .sday .slot:not(.drop-target):not(.drag-src){transition:filter 
 .bell-n[hidden]{display:none!important}
 .bell-n{position:absolute;top:-4px;right:-4px;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:#0B0B0C;color:var(--lime);font-size:11px;font-weight:800;display:grid;place-items:center;box-shadow:0 0 0 2px #fff}
 /* alert pop-ups */
-.alerts{position:fixed;top:calc(16px + env(safe-area-inset-top,0px));right:16px;z-index:110;display:flex;flex-direction:column;gap:10px;width:min(340px,calc(100vw - 32px));pointer-events:none}
+.alerts{position:fixed;top:var(--al-top,calc(10px + env(safe-area-inset-top,0px)));right:-6px;z-index:110;display:flex;flex-direction:column;gap:10px;width:calc(min(340px,100vw - 32px) + 44px);pointer-events:none;
+  /* a long stack scrolls inside itself; the side padding keeps the card shadows from being cut off */
+  max-height:calc(100dvh - var(--al-top,calc(10px + env(safe-area-inset-top,0px))) - 6px);overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;padding:6px 22px 34px}
+.alerts::-webkit-scrollbar{display:none}
+.alerts>*{flex:none}
+.al-bar{display:none;position:sticky;top:0;z-index:3;justify-content:flex-end;margin-bottom:-2px}
+.alerts.multi .al-bar{display:flex}
+.al-all{pointer-events:auto;border:0;cursor:pointer;background:#0B0B0C;color:var(--lime);font:inherit;font-size:12px;font-weight:800;letter-spacing:.01em;padding:7px 14px;border-radius:999px;box-shadow:0 8px 22px rgba(0,0,0,.22),0 0 0 1.5px rgba(170,255,0,.7);transition:transform .4s var(--spring)}
+.al-all:hover{transform:translateY(-1px)}
+.al-all:active{transform:scale(.96)}
 .alert{pointer-events:auto;padding:16px 16px 14px;border-radius:22px;background:rgba(255,255,255,.88);-webkit-backdrop-filter:blur(28px) saturate(190%);backdrop-filter:blur(28px) saturate(190%);
   border:1px solid rgba(255,255,255,.95);box-shadow:0 24px 60px rgba(20,30,8,.20),0 0 0 1.5px rgba(170,255,0,.7),inset 0 1px 0 #fff;
   opacity:0;transform:translateX(40px) scale(.94);filter:blur(6px);transition:opacity .45s var(--ease),transform .7s var(--spring),filter .45s var(--ease)}
@@ -1190,7 +1199,7 @@ dialog.cropdlg{width:min(420px,calc(100vw - 24px))}
   dialog.cmdk[open]{animation:cmdIn .45s var(--spring) both}
   .cropview{width:240px;height:240px}
   /* pop-ups and messages clear the Dynamic Island and the bottom bar */
-  .alerts{top:calc(10px + env(safe-area-inset-top,0px));right:10px;left:10px;width:auto}
+  .alerts{right:-12px;left:-12px;width:auto;max-height:calc(100dvh - var(--al-top,calc(10px + env(safe-area-inset-top,0px))) - 64px - env(safe-area-inset-bottom,0px))}
   .toast{bottom:calc(96px + env(safe-area-inset-bottom,0px));max-width:calc(100% - 24px)}
   .bulk{top:calc(6px + env(safe-area-inset-top,0px))}
   /* overview */
@@ -2753,7 +2762,7 @@ body.viewonly [data-act="pauseAll"],body.viewonly [data-act="resumeAll"],body.vi
 </dialog>
 <div id="topScrim" aria-hidden="true"></div>
 <div id="bubbles" aria-hidden="true"><i class="bb b1"></i><i class="bb b2"></i><i class="bb b3"></i><i class="bb b4"></i><i class="bb b5"></i><i class="bb b6"></i><i class="bb b7"></i></div>
-<div class="alerts" id="alerts" aria-live="polite"></div>
+<div class="alerts" id="alerts" aria-live="polite"><div class="al-bar"><button class="al-all" data-alall type="button">Close all</button></div></div>
 <div id="stPop" class="stpop" role="listbox" aria-label="Choose a status" popover="manual"></div>
 <div id="gsPop" class="stpop" role="listbox" aria-label="Choose an option" popover="manual"></div>
 <div class="tabpop" id="tabPop" role="tooltip" aria-hidden="true"></div>
@@ -5177,7 +5186,7 @@ function showAlert(v,kind){
     <div class="al-btns"><button class="al-done" data-al="x">OK</button></div>`;
   else body=`<div class="al-top"><span class="al-pill">Ready to post</span>${x}</div>${title}<small>${isCar(v)?"Carousel":"Reel"}, ${when}</small>
     <div class="al-btns"><a class="al-open" href="${esc(safeUrl(v.finalLink))}" target="_blank" rel="noopener noreferrer" data-al="open">${isCar(v)?"Open post":"Open video"}</a><button class="al-done" data-al="scheduled">Scheduled</button></div><div class="al-slide">${slideHTML(v.id,"Slide to post")}</div>`;
-  el.innerHTML=body;el.dataset.id=v.id;el.dataset.key=alertKey(v,kind);box.prepend(el);
+  el.innerHTML=body;el.dataset.id=v.id;el.dataset.key=alertKey(v,kind);const bar=box.querySelector(".al-bar");if(bar)bar.after(el);else box.prepend(el);box.scrollTop=0;alertsLayout();
   if(RM||!el.animate)return;
   const hgt=el.offsetHeight;el.style.overflow="hidden";
   const a=el.animate([
@@ -5197,8 +5206,13 @@ function closeAlert(el){
     {height:hgt+"px",paddingTop:"16px",paddingBottom:"14px",marginBottom:"0px",opacity:.6,transform:"translateX(60px) scale(.96)",filter:"blur(2px)",offset:.35},
     {height:"0px",paddingTop:"0px",paddingBottom:"0px",marginBottom:"-10px",opacity:0,transform:"translateX(90px) scale(.9)",filter:"blur(8px)"}
   ],{duration:560,easing:"cubic-bezier(.4,0,.2,1)",fill:"forwards"});
-  a.onfinish=()=>el.remove();
+  a.onfinish=()=>{el.remove();alertsLayout()};
 }
+// keeps the stack below the bell on phones (so tapping the bell closes them) and shows "Close all" when 2 or more are open
+function alertsLayout(){const box=$("#alerts");if(!box)return;const n=box.querySelectorAll(".alert:not([data-closing])").length;box.classList.toggle("multi",n>1);
+  const b=$("#bellBtn"),r=b&&b.getBoundingClientRect();
+  if(innerWidth<=600&&r&&r.height&&r.bottom>0&&n)box.style.setProperty("--al-top",Math.round(r.bottom+8)+"px");else if(!n||innerWidth>600)box.style.removeProperty("--al-top")}
+document.addEventListener("click",e=>{if(e.target.closest&&e.target.closest("[data-alall]")){e.preventDefault();closeAllAlerts();setTimeout(alertsLayout,0)}});
 /* status changes go through the review flow */
 function nextRound(v){return v.submittedAt&&v.status!=="In review"?(v.round||1)+1:(v.round||1)}
 function hist(v,what,note){return [...(v.reviewLog||[]),{what,by:S.me||"",at:Date.now(),round:v.round||1,note:note||""}].slice(-20)}
@@ -5342,7 +5356,7 @@ setInterval(()=>{
 },1000);
 // check the clock every minute so posting reminders arrive on time, and show a count in the window title
 setInterval(()=>{if(loaded)checkAlerts();const n=myAlerts().filter(x=>["now","late"].includes(x.k)).length;document.title=(n?`(${n}) Post now · `:"")+"Shoot & edit board"},60000);
-function closeAllAlerts(){const box=$("#alerts");if(!box)return 0;const A=[...box.querySelectorAll(".alert:not([data-closing])")];A.forEach((el,i)=>setTimeout(()=>closeAlert(el),i*40));return A.length}
+function closeAllAlerts(){const box=$("#alerts");if(!box)return 0;const A=[...box.querySelectorAll(".alert:not([data-closing])")];box.classList.remove("multi");A.forEach((el,i)=>setTimeout(()=>closeAlert(el),i*40));return A.length}
 document.addEventListener("pointerdown",e=>{const t=e.target;if(!t.closest)return;if(t.closest("#alerts,#bellBtn,dialog,.stpop,#toast"))return;
   const box=$("#alerts");if(box&&box.querySelector(".alert:not([data-closing])"))closeAllAlerts()},true);
 $("#bellBtn").addEventListener("click",()=>{if(closeAllAlerts())return;const L=myAlerts();if(!L.length){toast("Nothing waiting for you");return}L.forEach((x,i)=>setTimeout(()=>showAlert(x.v,x.k),i*120))});
