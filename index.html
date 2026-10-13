@@ -825,6 +825,9 @@ body.is-dragging .sday .slot:not(.drop-target):not(.drag-src){transition:filter 
   /* a long stack scrolls inside itself; the side padding keeps the card shadows from being cut off */
   max-height:calc(100dvh - var(--al-top,calc(10px + env(safe-area-inset-top,0px))) - 6px);overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;padding:6px 22px 34px}
 .alerts::-webkit-scrollbar{display:none}
+/* iPhone Safari only scrolls a box that can be touched, so the stack takes touches while it's open */
+.alerts.open{pointer-events:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y}
+.alerts.open .alert{touch-action:pan-y}
 .alerts>*{flex:none}
 .al-bar{display:none;position:sticky;top:0;z-index:3;justify-content:flex-end;margin-bottom:-2px}
 .alerts.multi .al-bar{display:flex}
@@ -5209,10 +5212,12 @@ function closeAlert(el){
   a.onfinish=()=>{el.remove();alertsLayout()};
 }
 // keeps the stack below the bell on phones (so tapping the bell closes them) and shows "Close all" when 2 or more are open
-function alertsLayout(){const box=$("#alerts");if(!box)return;const n=box.querySelectorAll(".alert:not([data-closing])").length;box.classList.toggle("multi",n>1);
+function alertsLayout(){const box=$("#alerts");if(!box)return;const n=box.querySelectorAll(".alert:not([data-closing])").length;box.classList.toggle("multi",n>1);box.classList.toggle("open",n>0);
   const b=$("#bellBtn"),r=b&&b.getBoundingClientRect();
   if(innerWidth<=600&&r&&r.height&&r.bottom>0&&n)box.style.setProperty("--al-top",Math.round(r.bottom+8)+"px");else if(!n||innerWidth>600)box.style.removeProperty("--al-top")}
-document.addEventListener("click",e=>{if(e.target.closest&&e.target.closest("[data-alall]")){e.preventDefault();closeAllAlerts();setTimeout(alertsLayout,0)}});
+document.addEventListener("click",e=>{if(!e.target.closest)return;
+  // "Close all", or a tap on the empty space between the cards (a scroll doesn't count as a tap)
+  if(e.target.closest("[data-alall]")||e.target.id==="alerts"){e.preventDefault();closeAllAlerts();setTimeout(alertsLayout,0)}});
 /* status changes go through the review flow */
 function nextRound(v){return v.submittedAt&&v.status!=="In review"?(v.round||1)+1:(v.round||1)}
 function hist(v,what,note){return [...(v.reviewLog||[]),{what,by:S.me||"",at:Date.now(),round:v.round||1,note:note||""}].slice(-20)}
@@ -5356,7 +5361,7 @@ setInterval(()=>{
 },1000);
 // check the clock every minute so posting reminders arrive on time, and show a count in the window title
 setInterval(()=>{if(loaded)checkAlerts();const n=myAlerts().filter(x=>["now","late"].includes(x.k)).length;document.title=(n?`(${n}) Post now · `:"")+"Shoot & edit board"},60000);
-function closeAllAlerts(){const box=$("#alerts");if(!box)return 0;const A=[...box.querySelectorAll(".alert:not([data-closing])")];box.classList.remove("multi");A.forEach((el,i)=>setTimeout(()=>closeAlert(el),i*40));return A.length}
+function closeAllAlerts(){const box=$("#alerts");if(!box)return 0;const A=[...box.querySelectorAll(".alert:not([data-closing])")];box.classList.remove("multi","open");A.forEach((el,i)=>setTimeout(()=>closeAlert(el),i*40));return A.length}
 document.addEventListener("pointerdown",e=>{const t=e.target;if(!t.closest)return;if(t.closest("#alerts,#bellBtn,dialog,.stpop,#toast"))return;
   const box=$("#alerts");if(box&&box.querySelector(".alert:not([data-closing])"))closeAllAlerts()},true);
 $("#bellBtn").addEventListener("click",()=>{if(closeAllAlerts())return;const L=myAlerts();if(!L.length){toast("Nothing waiting for you");return}L.forEach((x,i)=>setTimeout(()=>showAlert(x.v,x.k),i*120))});
