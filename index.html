@@ -4281,9 +4281,9 @@ function vSettings(){
     </div>
     ${GAS?`<button class="btn" data-act="testNotify">Send a test email</button>`:""}
     <h3 class="subh" id="spSet">SharePoint uploads</h3>
-    <p class="hint sp-intro">Drafts and finals upload straight from the board into SharePoint, a folder for each month. Your IT adds the two IDs below once; after that everyone signs in with their Milele Microsoft account.</p>
-    <div class="field"><label for="spcid">Application (client) ID</label><input id="spcid" type="text" value="${esc(S.settings.spClientId||"")}" data-set="spClientId" placeholder="From IT, e.g. 1a2b3c4d-…" spellcheck="false"${S.me===ADMIN?"":" readonly"}></div>
-    <div class="field"><label for="sptid">Directory (tenant) ID</label><input id="sptid" type="text" value="${esc(S.settings.spTenantId||"")}" data-set="spTenantId" placeholder="From IT, e.g. 9f8e7d6c-…" spellcheck="false"${S.me===ADMIN?"":" readonly"}></div>
+    <p class="hint sp-intro">Drafts and finals upload straight from the board into SharePoint, a folder for each month. Everyone signs in once with their Milele Microsoft account.</p>
+    <div class="field"><label for="spcid">Application (client) ID</label><input id="spcid" type="text" value="${esc(S.settings.spClientId||SP_DEF.clientId)}" data-set="spClientId" placeholder="From IT, e.g. 1a2b3c4d-…" spellcheck="false"${S.me===ADMIN?"":" readonly"}></div>
+    <div class="field"><label for="sptid">Directory (tenant) ID</label><input id="sptid" type="text" value="${esc(S.settings.spTenantId||SP_DEF.tenantId)}" data-set="spTenantId" placeholder="From IT, e.g. 9f8e7d6c-…" spellcheck="false"${S.me===ADMIN?"":" readonly"}></div>
     <details class="sp-more"><summary>Folders</summary>
       <div class="field"><label for="spsite">SharePoint site</label><input id="spsite" type="text" value="${esc(S.settings.spSite||SP_DEF.site)}" data-set="spSite" spellcheck="false"${S.me===ADMIN?"":" readonly"}></div>
       <div class="field"><label for="spbase">Videos folder</label><input id="spbase" type="text" value="${esc(S.settings.spBase||SP_DEF.base)}" data-set="spBase" spellcheck="false"${S.me===ADMIN?"":" readonly"}><span class="hint">Inside Documents. Each month gets its own folder here, like Oct.</span></div>
@@ -4419,12 +4419,12 @@ document.addEventListener("paste",e=>{if(S.tab!=="downloader")return;const a=e.t
   const t=(e.clipboardData||window.clipboardData).getData("text");if(dlUrls(t).length){e.preventDefault();dlAdd(t)}});
 
 /* ---------- SharePoint: drafts and finals upload from the board, Zain reviews here ---------- */
-const SP_DEF={site:"https://milelemotors.sharepoint.com/sites/milelecentralhub-Milele-MarketingDepartment",base:"Milele - Marketing Department/Fahad's Personal Branding/Videos",drafts:"Drafts",final:"Final"};
+const SP_DEF={clientId:"0f1dd982-835d-4264-9955-a1a675188a46",tenantId:"fd7d97ec-46e1-4519-ab4e-0e4708b9a3cf",site:"https://milelemotors.sharepoint.com/sites/milelecentralhub-Milele-MarketingDepartment",base:"Milele - Marketing Department/Fahad's Personal Branding/Videos",drafts:"Drafts",final:"Final"};
 const SP_MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const SP_SCOPES=["Files.ReadWrite.All","Sites.Read.All"];
 const MSAL_URL="https://cdn.jsdelivr.net/npm/@azure/msal-browser@3.28.1/lib/msal-browser.min.js";
 function spCfg(){const g=k=>String(S.settings[k]||"").trim();
-  return {clientId:g("spClientId"),tenantId:g("spTenantId"),site:(g("spSite")||SP_DEF.site).replace(/\/+$/,""),base:(g("spBase")||SP_DEF.base).replace(/^\/+|\/+$/g,""),drafts:g("spDrafts")||SP_DEF.drafts,final:g("spFinal")||SP_DEF.final}}
+  return {clientId:g("spClientId")||SP_DEF.clientId,tenantId:g("spTenantId")||SP_DEF.tenantId,site:(g("spSite")||SP_DEF.site).replace(/\/+$/,""),base:(g("spBase")||SP_DEF.base).replace(/^\/+|\/+$/g,""),drafts:g("spDrafts")||SP_DEF.drafts,final:g("spFinal")||SP_DEF.final}}
 const spOn=()=>{const c=spCfg();return !!(c.clientId&&c.tenantId)};
 const canUp=v=>!!v&&(!viewOnly()||mayEdit(v.id));
 const MS={app:null,key:"",loading:null,drive:null,driveFor:"",made:new Set()};
