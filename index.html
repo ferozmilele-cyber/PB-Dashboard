@@ -652,6 +652,10 @@ nav.tabs button[aria-selected="true"]{color:#0B0B0C}
 .up-j{padding:12px 14px;border-radius:18px;background:rgba(255,255,255,.92);-webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);box-shadow:0 18px 44px rgba(20,30,8,.18),0 0 0 1.5px rgba(170,255,0,.6);animation:dlIn .5s var(--spring) both}
 .up-h{display:flex;justify-content:space-between;gap:8px;align-items:baseline}.up-h b{font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.up-h span{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
 .up-l{font-size:12.5px;color:var(--muted);margin-top:3px;font-variant-numeric:tabular-nums;min-height:1.4em}.up-p{color:var(--ink);font-weight:800}
+.up-pill[hidden]{display:none!important}
+.up-bar.busy i{width:35%!important;animation:dlSlide 1.2s ease-in-out infinite;position:relative}
+.up-j{position:relative}.up-x{position:absolute;right:8px;top:8px;width:22px;height:22px;border-radius:50%;border:0;background:rgba(12,14,8,.06);color:var(--muted);font-size:14px;line-height:1;cursor:pointer}.up-x:hover{background:rgba(12,14,8,.12);color:var(--ink)}.up-x[hidden]{display:none}
+:root[data-theme="dark"] .up-x{background:rgba(255,255,255,.08)}
 .up-j.bye{animation:upBye .3s var(--ease) forwards}@keyframes upBye{to{opacity:0;transform:translateX(-12px) scale(.97)}}
 .up-bar[hidden],.up-a:empty{display:none}
 .up-bar i{transition:width .45s cubic-bezier(.22,1,.36,1)!important}.up-ok{color:#2c7a00;font-weight:700}.up-bad{color:#c0392b;font-weight:600}
@@ -3135,7 +3139,9 @@ function stMenuItems(v){
     const C=isCar(v);
     if(EDIT_POOL.includes(v.status))out.push({v:"__updraft",label:C?"Upload photos…":"Upload draft…",c:"#D1A23A",hint:`Goes to ${reviewerName()} for review`});
     if(v.status==="In review")out.push({v:"__updraft",label:C?"Replace photos…":"Replace draft…",c:"#D1A23A",hint:"Upload a newer version"});
-    if((v.status==="Approved"||(v.status==="Ready"&&v.approvedAt))&&!safeUrl(v.finalLink))out.push({v:"__upfinal",label:C?"Upload photos…":"Upload final…",c:"#3E9C5E",hint:"Becomes ready to post"});
+    if((v.status==="Approved"||(v.status==="Ready"&&v.approvedAt))&&!safeUrl(v.finalLink)){
+      if(!C&&v.draft&&v.draft.itemId)out.push({v:"__usedraft",label:"Use approved draft",c:"#3E9C5E",hint:"Saved as the final, ready to post"});
+      out.push({v:"__upfinal",label:C?"Upload photos…":"Upload final…",c:"#3E9C5E",hint:"Becomes ready to post"})}
   }
   if(hasReview(v)&&spOn())out.push({v:"__watch",label:isCar(v)&&v.car?"▶ View photos":"▶ Watch draft",c:"#0B0B0C"});
   if(!ST_MAIN.includes(v.status))out.push({v:v.status,label:v.status,c:SC[v.status]||"#888",cur:true});
@@ -3164,6 +3170,7 @@ document.addEventListener("click",e=>{const o=e.target.closest&&e.target.closest
     if(val==="__watch"){openReview(v.id);return}
     if(val==="__updraft"){openUp(v.id,"draft");return}
     if(val==="__upfinal"){openUp(v.id,"final");return}
+    if(val==="__usedraft"){spPromoteDraft(v.id);return}
     // with SharePoint set up, sending for review means uploading the draft
     if(val==="In review"&&spOn()&&canUp(v)&&!isReviewer()&&EDIT_POOL.includes(v.status)){openUp(v.id,"draft");return}
     if(val==="__logre"){askEditorReedit(v,v.status);return}if(val===v.status)return;setStatusFlow(v,val);return}
@@ -4608,7 +4615,7 @@ function spErr(st,m){return st===401?"Microsoft sign-in expired. Sign in again":
 async function gjson(path,opt){opt=opt||{};const tok=await msToken();
   const r=await fetch(/^https:/.test(path)?path:"https://graph.microsoft.com/v1.0"+path,{method:opt.method||"GET",headers:Object.assign({Authorization:"Bearer "+tok},opt.body?{"Content-Type":"application/json"}:{}),body:opt.body?JSON.stringify(opt.body):undefined});
   if(!r.ok){let m="";try{const j=await r.json();m=j.error&&j.error.message}catch(_){}const e=new Error(spErr(r.status,m));e.status=r.status;if(r.status===401)e.signin=true;throw e}
-  return r.status===204?{}:r.json()}
+  if(r.status===204||r.status===202)return {};const tx=await r.text();return tx?JSON.parse(tx):{}}
 const encP=p=>p.split("/").filter(Boolean).map(s=>encodeURIComponent(s).replace(/'/g,"%27")).join("/");
 async function spDrive(){const c=spCfg();if(MS.drive&&MS.driveFor===c.site)return MS.drive;const u=new URL(c.site);
   const site=await gjson(`/sites/${u.hostname}:${u.pathname.replace(/\/+$/,"")}?$select=id`);const d=await gjson(`/sites/${site.id}/drive?$select=id`);
@@ -4659,10 +4666,34 @@ async function spUpload(id,kind,file,job){
   }catch(e){job.state="Failed";job.error=e.message||"Upload failed";job.signin=!!e.signin;
     toast(`Upload of “${job.title}” failed: ${job.error}`,e.signin?"Sign in":"Retry",e.signin?()=>msSignIn(()=>spUpload(id,kind,file,job)):()=>spUpload(id,kind,file,job))}
   upPaint()}
+async function spPromoteDraft(id){
+  const v0=S.videos[id];if(!v0||!v0.draft||!v0.draft.itemId)return;
+  const job={id:"u"+Date.now()+Math.random().toString(36).slice(2,6),vid:id,kind:"final",file:null,title:v0.title||"Untitled",sent:0,state:"Saving",msg:""};UP.list.push(job);upPaint();
+  try{
+    await msApp();if(!msAccount())throw spSignErr("Sign in to Microsoft to save the final");
+    const dr=v0.draft,drive=dr.driveId||await spDrive(),folder=spFolder(v0,"final");await spEnsure(drive,folder);
+    const fo=await gjson(`/drives/${drive}/root:/${encP(folder)}?$select=id`);
+    const ext=((String(dr.name||"").match(/\.[a-z0-9]{2,5}$/i)||[".mp4"])[0]).toLowerCase(),name=spName(v0.title)+ext;
+    // SharePoint copies the file itself, so nothing is uploaded again
+    await gjson(`/drives/${drive}/items/${dr.itemId}/copy?@microsoft.graph.conflictBehavior=replace`,{method:"POST",body:{parentReference:{driveId:drive,id:fo.id},name}});
+    let item=null;
+    for(let i=0;i<60&&!item;i++){await new Promise(r=>setTimeout(r,i<5?800:1500));
+      try{const it=await gjson(`/drives/${drive}/root:/${encP(folder+"/"+name)}?$select=id,name,size,webUrl`);if(it&&it.id&&(!dr.size||!it.size||it.size>=dr.size))item=it}catch(e){if(e.status!==404)throw e}}
+    if(!item)throw new Error("SharePoint is still copying. Try Use approved draft again in a minute");
+    let link=item.webUrl;try{const l=await gjson(`/drives/${drive}/items/${item.id}/createLink`,{method:"POST",body:{type:"view",scope:"organization"}});link=(l.link&&l.link.webUrl)||link}catch(_){}
+    const cur=S.videos[id];if(!cur)throw new Error("The video was deleted from the board");
+    const ok=["Approved","Ready"].includes(cur.status);
+    putVideo({...(ok?withStatus(cur,"Ready"):cur),finalLink:link,finalPending:0,final:{itemId:item.id,driveId:drive,name:item.name,size:item.size||dr.size,webUrl:item.webUrl,at:Date.now(),by:S.me||"",round:dr.round||cur.round||1,fromDraft:true}});
+    job.state="Sent";job.msg=ok?"Final saved · ready to post":"Final saved";toast(`“${cur.title||"Untitled"}” is ready to post. The approved draft is in the Final folder`);
+    setTimeout(()=>{UP.list=UP.list.filter(j=>j!==job);upPaint()},7000);
+  }catch(e){job.state="Failed";job.error=e.message||"Couldn’t save the final";job.signin=!!e.signin;job.promote=true;
+    const cur=S.videos[id];if(cur&&cur.finalPending)putVideo({...cur,finalPending:0});   // so the editor is asked to finish it instead
+    toast(`Couldn’t save the final of “${job.title}”: ${job.error}`,e.signin?"Sign in":"Retry",e.signin?()=>msSignIn(()=>{UP.list=UP.list.filter(j=>j!==job);spPromoteDraft(id)}):()=>{UP.list=UP.list.filter(j=>j!==job);spPromoteDraft(id)})}
+  upPaint()}
 let upT=null;function upPaintSoon(){if(!upT)upT=setTimeout(()=>{upT=null;upPaint()},200)}
 const fmtMB=n=>n>=1073741824?(n/1073741824).toFixed(1)+" GB":Math.max(0.1,n/1048576).toFixed(n<10485760?1:0)+" MB";
 function upPaint(){let el=document.getElementById("upPill");
-  if(!UP.list.length){if(el)el.hidden=true;return}
+  if(!UP.list.length){if(el){el.querySelectorAll(".up-j:not(.bye)").forEach(c=>{c.classList.add("bye");setTimeout(()=>c.remove(),320)});setTimeout(()=>{if(!UP.list.length)el.hidden=true},340)}return}
   if(!el){el=document.createElement("div");el.id="upPill";el.className="up-pill";el.setAttribute("aria-live","polite");document.body.appendChild(el)}
   el.hidden=false;
   // each card is made once and then only its words and bar change, so nothing jumps while the numbers climb
@@ -4674,12 +4705,15 @@ function upPaint(){let el=document.getElementById("upPill");
     const cls="up-j "+j.state.toLowerCase();if(c.className!==cls)c.className=cls;
     const set=(sel,prop,val)=>{const x=c.querySelector(sel);if(x[prop]!==val)x[prop]=val;return x};
     set(".up-h b","textContent",j.title);set(".up-h span","textContent",j.kind==="final"?"final":j.kind==="carousel"?"photos":"draft");
-    set(".up-l","innerHTML",j.state==="Failed"?`<span class="up-bad">${esc(j.error)}</span>`:j.state==="Sent"?`<span class="up-ok">✓ ${esc(j.msg||"Uploaded")}</span>`:j.state==="Uploading"?`<b class="up-p">${p}%</b> · ${fmtMB(j.sent)} of ${fmtMB(total)}`:j.state==="Saving"?"Finishing…":"Starting…");
-    const bar=c.querySelector(".up-bar");bar.hidden=!busy;const w=(j.state==="Starting"?3:j.state==="Saving"?100:p)+"%";if(bar.firstChild.style.width!==w)bar.firstChild.style.width=w;
+    set(".up-l","innerHTML",j.state==="Failed"?`<span class="up-bad">${esc(j.error)}</span>`:j.state==="Sent"?`<span class="up-ok">✓ ${esc(j.msg||"Uploaded")}</span>`:j.state==="Uploading"?`<b class="up-p">${p}%</b> · ${fmtMB(j.sent)} of ${fmtMB(total)}`:j.state==="Saving"?(j.file?"Finishing…":"Saving the approved draft as the final…"):"Starting…");
+    const bar=c.querySelector(".up-bar");bar.hidden=!busy;bar.classList.toggle("busy",busy&&!j.file);const w=(j.state==="Starting"?3:j.state==="Saving"?100:p)+"%";if(bar.firstChild.style.width!==w)bar.firstChild.style.width=w;
+    if(!c.querySelector(".up-x")){const x=document.createElement("button");x.type="button";x.className="up-x";x.dataset.upa="drop";x.dataset.j=j.id;x.setAttribute("aria-label","Close");x.textContent="×";c.appendChild(x)}
+    c.querySelector(".up-x").hidden=busy;
     set(".up-a","innerHTML",j.state==="Failed"?`<button data-upa="${j.signin?"signin":"retry"}" data-j="${j.id}">${j.signin?"Sign in and retry":"Retry"}</button><button data-upa="drop" data-j="${j.id}">Dismiss</button>`:"");
   })}
 document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-upa]");if(!b)return;const j=UP.list.find(x=>x.id===b.dataset.j);if(!j)return;
   if(b.dataset.upa==="drop"){UP.list=UP.list.filter(x=>x!==j);upPaint()}
+  else if(j.promote){UP.list=UP.list.filter(x=>x!==j);b.dataset.upa==="signin"?msSignIn(()=>spPromoteDraft(j.vid)):spPromoteDraft(j.vid)}
   else if(b.dataset.upa==="signin")msSignIn(()=>spUpload(j.vid,j.kind,j.file,j));
   else spUpload(j.vid,j.kind,j.file,j)});
 window.addEventListener("beforeunload",e=>{if(UP.list.some(j=>["Starting","Uploading","Saving"].includes(j.state))){e.preventDefault();e.returnValue=""}});
@@ -6166,7 +6200,7 @@ function alertKind(v){
   // a scheduled post that went live on its own in the last 12 hours: tell everyone once
   if(v.status==="Posted"&&v.autoPosted&&v.autoPostedAt&&Date.now()-v.autoPostedAt<12*3600e3)return "posted";
   if(v.status==="In review"&&isReviewer())return "review";
-  if((v.status==="Approved"||(v.status==="Ready"&&v.approvedAt))&&!safeUrl(v.finalLink)&&isEditor())return "approved";
+  if((v.status==="Approved"||(v.status==="Ready"&&v.approvedAt))&&!safeUrl(v.finalLink)&&isEditor()&&!(v.finalPending&&Date.now()-v.finalPending<180000))return "approved";
   if(v.status==="Re-edit"&&isEditor())return "reedit";
   if(isReadyPost(v)&&isPoster())return "ready";
   return null;
@@ -6223,7 +6257,7 @@ function showAlert(v,kind){
     ${hasReview(v)&&spOn()?`<div class="al-btns"><button class="al-open al-watch" data-al="watch">${isCar(v)&&v.car?`▶ View ${v.car.count} photos`:"▶ Watch draft"}</button></div>`:""}
     <div class="al-btns"><button class="al-done" data-al="reedit">Re-edit</button><button class="al-open" data-al="approve">Approve</button></div>`;
   else if(kind==="approved"&&spOn())body=`<div class="al-top"><span class="al-pill">Approved</span>${x}</div>${title}<small>${esc(reviewerName())} approved it. ${isCar(v)?"Upload the photos":"Upload the final version"} and it becomes ready to post.</small>
-    <div class="al-btns"><button class="al-done" data-al="x">Later</button><button class="al-open" data-al="upfinal">${isCar(v)?"Upload photos":"Upload final"}</button></div>`;
+    <div class="al-btns">${!isCar(v)&&v.draft&&v.draft.itemId?`<button class="al-done" data-al="usedraft">Use approved draft</button>`:`<button class="al-done" data-al="x">Later</button>`}<button class="al-open" data-al="upfinal">${isCar(v)?"Upload photos":"Upload final"}</button></div>`;
   else if(kind==="approved")body=`<div class="al-top"><span class="al-pill">Approved</span>${x}</div>${title}<small>${esc(reviewerName())} approved it. Add the final link to make it ready to post.</small>
     <div class="al-link"><input class="al-in" type="text" placeholder="Paste the final video link" autocomplete="off"><button class="al-open" data-al="savelink">Save</button></div>`;
   else if(kind==="reedit")body=`<div class="al-top"><span class="al-pill warn">Re-edit</span>${x}</div>${title}<small>${esc(reviewerName())} asked for changes${v.round>1?`, round ${v.round}`:""}:</small>
@@ -6276,7 +6310,10 @@ function approveVideo(v){
   stampFx();
   const base={...v,reviewNote:"",approvedBy:S.me||"",approvedAt:Date.now(),reviewLog:hist(v,"approved")};
   if(!safeUrl(base.finalLink)&&isCar(v)&&v.car&&safeUrl(v.car.link))base.finalLink=v.car.link;   // the photos folder is the final
+  const promote=!isCar(v)&&!safeUrl(base.finalLink)&&spOn()&&v.draft&&v.draft.itemId;            // the approved draft becomes the final video
+  if(promote)base.finalPending=Date.now();
   putVideo(withStatus(base,"Ready"));celebrate(v.id,"Ready");
+  if(promote){spPromoteDraft(v.id);toast("Approved. Saving the draft as the final video");return}
   toast(safeUrl(base.finalLink)?"Approved. It’s ready to post":`Approved and Ready. ${dispName(v.editedBy||"")||"The editor"} will add the final link`)
 }
 function askReedit(v){
@@ -6336,6 +6373,7 @@ document.addEventListener("click",e=>{
   else if(k==="approve"&&v)approveVideo(v);
   else if(k==="watch"&&v){openReview(v.id);return}
   else if(k==="upfinal"&&v)openUp(v.id,"final");
+  else if(k==="usedraft"&&v)spPromoteDraft(v.id);
   else if(k==="reedit"&&v)askReedit(v);
   else if(k==="startedit"&&v){putVideo(withStatus(v,"Editing"));toast("Moved to Editing. The notes stay on the video")}
   else if(k==="savelink"&&v){const u=safeUrl(el.querySelector(".al-in").value);if(!u){toast("Paste a link that starts with http");return}
