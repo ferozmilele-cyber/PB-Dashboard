@@ -669,6 +669,29 @@ nav.tabs button[aria-selected="true"]{color:#0B0B0C}
 :root[data-theme="dark"] .up-ok{color:var(--lime)}:root[data-theme="dark"] .up-bad{color:#ff8a80}:root[data-theme="dark"] .up-bar{background:rgba(255,255,255,.1)}
 :root[data-theme="dark"] .up-a button{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.14);color:var(--ink)}:root[data-theme="dark"] .up-a button:first-child{background:var(--lime);color:#0B0B0C}
 :root[data-theme="dark"] .linkbtn{color:var(--ink)}
+.car-drop{padding:20px 18px}.car-drop.has{padding:14px 18px;flex-direction:row;gap:12px;justify-content:center}.car-drop.has .up-ic{width:36px;height:36px;margin:0;border-radius:12px}.car-drop.has .up-ic svg{width:20px;height:20px}
+.car-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px;margin-top:12px;max-height:46vh;overflow:auto;padding:2px}
+.car-grid:empty{display:none}
+.car-t{position:relative;aspect-ratio:4/5;border-radius:14px;overflow:hidden;background:rgba(12,14,8,.06);cursor:grab;transition:transform .25s var(--spring),box-shadow .2s,opacity .2s}
+.car-t img,.car-t video{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+.car-t.drag{opacity:.35}.car-t.tgt{box-shadow:0 0 0 3px var(--lime);transform:scale(1.04)}
+.car-n{position:absolute;left:6px;top:6px;min-width:22px;height:22px;padding:0 6px;border-radius:999px;background:rgba(11,11,12,.82);color:var(--lime);font-size:11.5px;font-weight:800;display:grid;place-items:center}
+.car-x{position:absolute;right:5px;top:5px;width:24px;height:24px;border-radius:50%;border:0;background:rgba(255,255,255,.92);color:#0B0B0C;font-size:15px;line-height:1;cursor:pointer;opacity:0;transition:opacity .15s}
+.car-t:hover .car-x,.car-t:focus-within .car-x{opacity:1}
+@media (hover:none){.car-x{opacity:1}}
+.gal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;max-height:62vh;overflow:auto;padding:2px}
+.gal-grid .dr-msg{grid-column:1/-1;color:var(--muted)}
+.gal-grid[hidden],.gal-big[hidden],.car-grid[hidden]{display:none!important}
+.gal-t{position:relative;aspect-ratio:4/5;border:0;padding:0;border-radius:14px;overflow:hidden;background:rgba(12,14,8,.06);cursor:zoom-in;transition:transform .3s var(--spring),box-shadow .2s}
+.gal-t:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,.14)}
+.gal-t img{width:100%;height:100%;object-fit:cover;display:block}
+.gal-f{display:grid;place-items:center;height:100%;font-size:11px;color:var(--muted);padding:8px;word-break:break-all}
+.gal-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;font-size:13px;font-weight:700;color:var(--muted)}
+.gal-stage{position:relative;background:#0B0B0C;border-radius:18px;display:grid;place-items:center;min-height:300px;overflow:hidden}
+.gal-stage img,.gal-stage video{display:block;max-width:100%;max-height:min(62vh,640px)}
+.gal-nav{position:absolute;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.9);color:#0B0B0C;font-size:22px;line-height:1;cursor:pointer;z-index:2}
+.gal-nav[data-gv="prev"]{left:10px}.gal-nav[data-gv="next"]{right:10px}.gal-nav:disabled{opacity:.25;cursor:default}
+:root[data-theme="dark"] .car-t,:root[data-theme="dark"] .gal-t{background:rgba(255,255,255,.06)}
 .dl-lnk{display:inline-flex!important;align-items:center;justify-content:center;vertical-align:middle;cursor:pointer}
 .openlink.dl-lnk{margin-left:6px;padding:0;width:22px;height:20px;border:0;border-radius:999px;vertical-align:1px}
 .iconbtn.dl-lnk{padding-left:0!important;padding-right:0!important;min-width:32px}
@@ -2852,6 +2875,28 @@ body.viewonly [data-act="pauseAll"],body.viewonly [data-act="resumeAll"],body.vi
     <div class="foot dr-foot"><a class="btn dis" id="drDl">Download</a><a class="btn ghost" id="drSp" target="_blank" rel="noopener noreferrer">Open in SharePoint</a><span class="dr-sp"></span><button class="btn" value="cancel">Close</button><button class="btn" value="reedit" id="drRe">Re-edit…</button><button class="btn primary" value="approve" id="drOk">Approve</button></div>
   </form>
 </dialog>
+<dialog id="carDlg" class="wide">
+  <form method="dialog">
+    <h2>Upload carousel photos</h2>
+    <p class="sub" id="carFor"></p>
+    <div id="carMs"></div>
+    <label class="up-drop car-drop" id="carDrop"><input type="file" id="carFile" accept="image/*,video/*,.heic,.heif" multiple hidden>
+      <span class="up-ic"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="14" height="14" rx="2.5"/><path d="M7 3h12a2 2 0 0 1 2 2v12M7 15l3-3 3 3 2-2 2 2"/></svg></span>
+      <b>Drop all the photos here</b><span>or click to choose them. You can add more after.</span></label>
+    <div class="car-grid" id="carGrid"></div>
+    <p class="up-where"><span id="carCount"></span><br><span id="carWhere"></span></p>
+    <div class="foot"><button class="btn" value="cancel">Cancel</button><button class="btn ghost" value="nofile" title="Send for review without uploading photos">Send without photos</button><button class="btn primary" value="upload" id="carGo" disabled>Upload</button></div>
+  </form>
+</dialog>
+<dialog id="galDlg" class="wide">
+  <form method="dialog">
+    <h2 id="galTitle">Carousel</h2>
+    <p class="sub" id="galSub"></p>
+    <div class="gal-grid" id="galGrid"></div>
+    <div class="gal-big" id="galBig" hidden></div>
+    <div class="foot dr-foot"><a class="btn ghost" id="galSp" target="_blank" rel="noopener noreferrer">Open in SharePoint</a><span class="dr-sp"></span><button class="btn" value="cancel">Close</button><button class="btn" value="reedit" id="galRe">Re-edit…</button><button class="btn primary" value="approve" id="galOk">Approve</button></div>
+  </form>
+</dialog>
 <dialog id="shootDlg" class="wide">
   <form method="dialog" id="shootForm">
     <h2 id="shootTitle">Plan a shoot</h2>
@@ -2990,7 +3035,7 @@ function stMenuItems(v){
   const out=[];
   if(isReviewer()){   // Zain only needs the decisions; the editing steps are Shibli's
     out.push({v:v.status,label:v.status==="In review"?"In review (now)":v.status,c:SC[v.status]||"#888",cur:true});
-    if(v.draft&&spOn())out.push({v:"__watch",label:"▶ Watch draft",c:"#0B0B0C",hint:v.draft.round>1?"Round "+v.draft.round:"Watch or download"});
+    if(hasReview(v)&&spOn())out.push({v:"__watch",label:isCar(v)&&v.car?"▶ View photos":"▶ Watch draft",c:"#0B0B0C",hint:isCar(v)&&v.car?v.car.count+" photos":v.draft.round>1?"Round "+v.draft.round:"Watch or download"});
     if(!["Ready","Scheduled","Posted"].includes(v.status))out.push({v:"__approve",label:"Approve",c:"#3E9C5E",hint:"Goes to Ready"});
     out.push({v:"Re-edit",label:"Re-edit…",c:SC["Re-edit"],hint:"Send back with notes"});
     ["Scheduled","Posted"].forEach(k=>{if(k!==v.status)out.push({v:k,label:k,c:SC[k]})});
@@ -3001,11 +3046,12 @@ function stMenuItems(v){
   // the editor can record a re-edit Zain asked for in person, after the fact
   if(!isReviewer()&&["Shot","Editing","Pending"].includes(v.status)&&(v.submittedAt||v.approvedAt))out.push({v:"__logre",label:"Log as re-edit…",c:SC["Re-edit"],hint:"If Zain asked for changes"});
   if(spOn()&&canUp(v)){
-    if(EDIT_POOL.includes(v.status))out.push({v:"__updraft",label:"Upload draft…",c:"#D1A23A",hint:`Goes to ${reviewerName()} for review`});
-    if(v.status==="In review")out.push({v:"__updraft",label:"Replace draft…",c:"#D1A23A",hint:"Upload a newer version"});
-    if((v.status==="Approved"||(v.status==="Ready"&&v.approvedAt))&&!safeUrl(v.finalLink))out.push({v:"__upfinal",label:"Upload final…",c:"#3E9C5E",hint:"Becomes ready to post"});
+    const C=isCar(v);
+    if(EDIT_POOL.includes(v.status))out.push({v:"__updraft",label:C?"Upload photos…":"Upload draft…",c:"#D1A23A",hint:`Goes to ${reviewerName()} for review`});
+    if(v.status==="In review")out.push({v:"__updraft",label:C?"Replace photos…":"Replace draft…",c:"#D1A23A",hint:"Upload a newer version"});
+    if((v.status==="Approved"||(v.status==="Ready"&&v.approvedAt))&&!safeUrl(v.finalLink))out.push({v:"__upfinal",label:C?"Upload photos…":"Upload final…",c:"#3E9C5E",hint:"Becomes ready to post"});
   }
-  if(v.draft&&spOn())out.push({v:"__watch",label:"▶ Watch draft",c:"#0B0B0C"});
+  if(hasReview(v)&&spOn())out.push({v:"__watch",label:isCar(v)&&v.car?"▶ View photos":"▶ Watch draft",c:"#0B0B0C"});
   if(!ST_MAIN.includes(v.status))out.push({v:v.status,label:v.status,c:SC[v.status]||"#888",cur:true});
   ST_MAIN.forEach(k=>out.push({v:k,label:k==="In review"&&v.status!=="In review"?"Send for review":k,c:SC[k],cur:k===v.status}));
   return out;
@@ -3029,11 +3075,11 @@ function closeStMenu(){const pop=$("#stPop");pop.classList.remove("show");popHid
 document.addEventListener("click",e=>{const o=e.target.closest&&e.target.closest("#stPop [data-stv]");
   if(o){const v=S.videos[$("#stPop").dataset.id],val=o.dataset.stv;closeStMenu();if(!v)return;
     if(val==="__approve"){approveVideo(v);return}
-    if(val==="__watch"){openDraft(v.id);return}
-    if(val==="__updraft"){openUpload(v.id,"draft");return}
-    if(val==="__upfinal"){openUpload(v.id,"final");return}
+    if(val==="__watch"){openReview(v.id);return}
+    if(val==="__updraft"){openUp(v.id,"draft");return}
+    if(val==="__upfinal"){openUp(v.id,"final");return}
     // with SharePoint set up, sending for review means uploading the draft
-    if(val==="In review"&&spOn()&&canUp(v)&&!isReviewer()&&EDIT_POOL.includes(v.status)){openUpload(v.id,"draft");return}
+    if(val==="In review"&&spOn()&&canUp(v)&&!isReviewer()&&EDIT_POOL.includes(v.status)){openUp(v.id,"draft");return}
     if(val==="__logre"){askEditorReedit(v,v.status);return}if(val===v.status)return;setStatusFlow(v,val);return}
   if(!(e.target.closest&&e.target.closest("#stPop,.stsel")))closeStMenu()});
 document.addEventListener("keydown",e=>{const pop=$("#stPop");if(!pop||!pop.classList.contains("show"))return;
@@ -3928,7 +3974,7 @@ function vOrder(){
       return `<div class="erow${pinned?" pinned":""}" data-fid="${v.id}">
         <div class="num grip" title="Drag to reorder"><span class="n">${idx+1}</span><span class="g">⋮⋮</span></div>
         <div class="etitle"><span class="dot" style="background:${hue(v.shotDate)}"></span><div><b>${esc(v.title||"Untitled")}</b>${pillarTag(v)}<small>Shot ${esc(v.shotDate?nice(v.shotDate):"date unknown")}${v.postDate?`, posts ${esc(niceW(v.postDate))}${v.postTime?" "+fmtT(v.postTime):""}`:""}${tags}</small></div></div>
-        ${v.shotDate||(spOn()&&canUp(v))?`<span class="eacts">${spOn()&&canUp(v)?`<button class="iconbtn up-b" data-act="upDraft" data-id="${v.id}" title="Upload the draft. It goes to ${esc(reviewerName())} for review"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V9M7 13.5l5-5 5 5M5 4h14"/></svg>Draft</button>`:""}${!v.shotDate?"":`<button class="iconbtn" data-act="copy" data-text="${esc(folder(v.shotDate))}" title="${esc(folder(v.shotDate))}">Copy path</button>${rawLinkFor(v.shotDate)?`<a class="openlink" href="${esc(rawLinkFor(v.shotDate))}" target="_blank" rel="noopener noreferrer">Open folder</a>`:`<button class="iconbtn" data-act="addRaw" data-d="${v.shotDate}">+ Link</button>`}`}</span>`:"<span></span>"}
+        ${v.shotDate||(spOn()&&canUp(v))?`<span class="eacts">${spOn()&&canUp(v)?`<button class="iconbtn up-b" data-act="upDraft" data-id="${v.id}" title="${isCar(v)?"Upload the photos":"Upload the draft"}. It goes to ${esc(reviewerName())} for review">${isCar(v)?`<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="14" height="14" rx="2.5"/><path d="M7 3h12a2 2 0 0 1 2 2v12"/></svg>Photos`:`<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V9M7 13.5l5-5 5 5M5 4h14"/></svg>Draft`}</button>`:""}${!v.shotDate?"":`<button class="iconbtn" data-act="copy" data-text="${esc(folder(v.shotDate))}" title="${esc(folder(v.shotDate))}">Copy path</button>${rawLinkFor(v.shotDate)?`<a class="openlink" href="${esc(rawLinkFor(v.shotDate))}" target="_blank" rel="noopener noreferrer">Open folder</a>`:`<button class="iconbtn" data-act="addRaw" data-d="${v.shotDate}">+ Link</button>`}`}</span>`:"<span></span>"}
         <div>${statusSelect(v)}</div>
         <div class="mv2"><button data-act="up" data-i="${idx}" aria-label="Move up"${idx===0?" disabled":""}>↑</button><button data-act="down" data-i="${idx}" aria-label="Move down"${idx===list.length-1?" disabled":""}>↓</button></div>
       </div>`}).join("");
@@ -4287,6 +4333,7 @@ function vSettings(){
     <details class="sp-more"><summary>Folders</summary>
       <div class="field"><label for="spsite">SharePoint site</label><input id="spsite" type="text" value="${esc(S.settings.spSite||SP_DEF.site)}" data-set="spSite" spellcheck="false"${S.me===ADMIN?"":" readonly"}></div>
       <div class="field"><label for="spbase">Videos folder</label><input id="spbase" type="text" value="${esc(S.settings.spBase||SP_DEF.base)}" data-set="spBase" spellcheck="false"${S.me===ADMIN?"":" readonly"}><span class="hint">Inside Documents. Each month gets its own folder here, like Oct.</span></div>
+      <div class="field"><label for="spcar">Carousels folder</label><input id="spcar" type="text" value="${esc(S.settings.spCarBase||"")}" data-set="spCarBase" placeholder="Found by itself: the Carousels folder next to Videos" spellcheck="false"${S.me===ADMIN?"":" readonly"}><span class="hint">Each carousel gets its own folder here, named like “${esc(carFolderName({title:"iPhone Giveaway",postDate:today()}))}”, with the photos numbered 01, 02, 03…</span></div>
       <div class="field"><label for="spdr">Drafts folder</label><input id="spdr" type="text" value="${esc(S.settings.spDrafts||SP_DEF.drafts)}" data-set="spDrafts" spellcheck="false"${S.me===ADMIN?"":" readonly"}></div>
       <div class="field"><label for="spfi">Finals folder</label><input id="spfi" type="text" value="${esc(S.settings.spFinal||SP_DEF.final)}" data-set="spFinal" spellcheck="false"${S.me===ADMIN?"":" readonly"}><span class="hint">Example: …/Videos/${esc(spMonth({postDate:today()}))}/${esc(spCfg().drafts)} and …/Videos/${esc(spMonth({postDate:today()}))}/${esc(spCfg().final)}</span></div>
     </details>
@@ -4502,7 +4549,7 @@ function upPaint(){let el=document.getElementById("upPill");
   if(!el){el=document.createElement("div");el.id="upPill";el.className="up-pill";el.setAttribute("aria-live","polite");document.body.appendChild(el)}
   el.hidden=false;
   el.innerHTML=UP.list.map(j=>{const p=j.file&&j.file.size?Math.round(100*j.sent/j.file.size):100;
-    const what=j.kind==="final"?"final":"draft";
+    const what=j.kind==="final"?"final":j.kind==="carousel"?"photos":"draft";
     const line=j.state==="Failed"?`<span class="up-bad">${esc(j.error)}</span>`:j.state==="Sent"?`<span class="up-ok">✓ ${esc(j.msg||"Uploaded")}</span>`:j.state==="Uploading"?`${p}% · ${fmtMB(j.sent)} of ${fmtMB(j.file.size)}`:j.state==="Saving"?"Finishing…":"Starting…";
     return `<div class="up-j ${j.state.toLowerCase()}"><div class="up-h"><b>${esc(j.title)}</b><span>${what}</span></div><div class="up-l">${line}</div>
       ${j.state==="Uploading"||j.state==="Starting"||j.state==="Saving"?`<div class="up-bar"><i style="width:${j.state==="Starting"?3:p}%"></i></div>`:""}
@@ -4550,9 +4597,10 @@ async function openDraft(id){const v=S.videos[id];if(!v||!v.draft)return;DRV.id=
   catch(e){if(DRV.id!==id)return;msg.innerHTML=e.signin?`${esc(e.message)}<br><button type="button" class="btn small primary" data-ms="signin-draft">Sign in with Microsoft</button>`:esc(e.status===404?"This draft was moved or deleted in SharePoint":e.message)}}
 function niceAgo(t){const m=Math.round((Date.now()-t)/60000);return m<1?"just now":m<60?m+" min ago":m<1440?Math.round(m/60)+" h ago":nice(iso(new Date(t)))}
 document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-ms]");if(!b)return;e.preventDefault();const k=b.dataset.ms;
-  const refresh=()=>{const d=$("#upDlg");if(d.open){$("#upMs").innerHTML=upMsHTML();$("#upDrop").classList.toggle("off",!msAccount())}if(S.tab==="settings")render()};
+  const refresh=()=>{const d=$("#upDlg");if(d.open){$("#upMs").innerHTML=upMsHTML();$("#upDrop").classList.toggle("off",!msAccount())}if($("#carDlg").open){$("#carMs").innerHTML=upMsHTML();carPaint()}if(S.tab==="settings")render()};
   if(k==="signin"||k==="switch")msSignIn(refresh);
   else if(k==="signin-draft")msSignIn(()=>{if(DRV.id)openDraft(DRV.id)});
+  else if(k==="signin-gal")msSignIn(()=>{if(GAL.id)openGallery(GAL.id)});
   else if(k==="signout"){const a=msAccount();if(MS.app&&a){MS.app.clearCache?MS.app.clearCache({account:a}).then(refresh):(MS.app.setActiveAccount(null),refresh())}}
   else if(k==="test")spTest()});
 async function spTest(){
@@ -4578,12 +4626,125 @@ async function spTest(){
     if(r==="approve")approveVideo(v);else if(r==="reedit")askReedit(v)});
   $("#drDl").addEventListener("click",e=>{if(!DRV.url){e.preventDefault();toast("The draft is still loading")}});
 })();
+/* ---------- carousels: a folder of photos for each post, reviewed in a gallery ---------- */
+function spRoot(){return spCfg().base.split("/").slice(0,-1).join("/")}            // …/Fahad's Personal Branding
+async function spCarBase(drive){
+  const set=String(S.settings.spCarBase||"").trim().replace(/^\/+|\/+$/g,"");if(set)return set;
+  if(MS.carBase)return MS.carBase;
+  // use the carousels folder that's already there, whatever its exact name
+  try{const r=await gjson(`/drives/${drive}/root:/${encP(spRoot())}:/children?$select=name,folder&$top=200`);
+    const f=(r.value||[]).find(x=>x.folder&&/^carou?sa?e?ls?$|carous|carosal|carousal/i.test(x.name));if(f){MS.carBase=spRoot()+"/"+f.name;return MS.carBase}}catch(_){}
+  MS.carBase=spRoot()+"/Carousels";return MS.carBase}
+function carFolderName(v){const d=(v&&v.postDate)||today();return `${spName(v.title)} - ${+d.slice(8)} ${SP_MON[+d.slice(5,7)-1]}`}
+const isPhotoFile=f=>!!f&&(/^image\//.test(f.type)||/\.(jpe?g|png|heic|heif|webp|gif|tiff?)$/i.test(f.name));
+async function spUploadCar(id,files,job){
+  const v0=S.videos[id];if(!v0||!files.length)return;const total=files.reduce((a,f)=>a+f.size,0);
+  if(!job){job={id:"u"+Date.now()+Math.random().toString(36).slice(2,6),vid:id,kind:"carousel",files,file:{size:total},title:v0.title||"Untitled",sent:0,state:"Starting"};UP.list.push(job)}
+  else Object.assign(job,{sent:0,state:"Starting",error:""});
+  upPaint();
+  try{
+    const drive=await spDrive(),base=await spCarBase(drive),folder=base+"/"+carFolderName(v0);await spEnsure(drive,folder);
+    const fo=await gjson(`/drives/${drive}/root:/${encP(folder)}?$select=id,webUrl`);
+    // a new set replaces the photos the board uploaded last time
+    const old=(S.videos[id]&&S.videos[id].car&&S.videos[id].car.items)||[];
+    for(const it of old){try{await gjson(`/drives/${drive}/items/${it.id}`,{method:"DELETE"})}catch(_){}}
+    job.state="Uploading";upPaint();const items=[];let done=0;
+    for(let i=0;i<files.length;i++){const f=files[i];const ext=((f.name.match(/\.[a-z0-9]{2,5}$/i)||[".jpg"])[0]).toLowerCase();
+      const name=String(i+1).padStart(2,"0")+ext;
+      const ses=await gjson(`/drives/${drive}/items/${fo.id}:/${encodeURIComponent(name)}:/createUploadSession`,{method:"POST",body:{item:{"@microsoft.graph.conflictBehavior":"replace"}}});
+      let item=null;
+      for(let a=0;a<f.size||(a===0&&f.size===0);a+=SP_CHUNK){const b=Math.min(f.size,a+SP_CHUNK);let tries=0;
+        for(;;){try{const j=await putChunk(ses.uploadUrl,f,a,b,n=>{job.sent=done+n;upPaintSoon()});if(j&&j.id)item=j;break}
+          catch(err){if(++tries>3||(err.status&&err.status<500&&err.status!==429))throw err;await new Promise(r=>setTimeout(r,1500*tries))}}
+        if(f.size===0)break}
+      if(!item)throw new Error(`SharePoint didn’t confirm photo ${i+1}`);
+      items.push({id:item.id,name:item.name});done+=f.size;job.sent=done;upPaintSoon()}
+    job.state="Saving";upPaint();
+    let link=fo.webUrl;try{const l=await gjson(`/drives/${drive}/items/${fo.id}/createLink`,{method:"POST",body:{type:"view",scope:"organization"}});link=(l.link&&l.link.webUrl)||link}catch(_){}
+    const cur=S.videos[id];if(!cur)throw new Error("The carousel was deleted from the board");
+    const info={folderId:fo.id,driveId:drive,webUrl:fo.webUrl,link,items,count:items.length,size:total,at:Date.now(),by:S.me||"",round:EDIT_POOL.includes(cur.status)?nextRound(cur):(cur.round||1),folder:folder.split("/").slice(-1)[0]};
+    if(EDIT_POOL.includes(cur.status)){sendForReview({...cur,car:info});job.msg=`${items.length} photos sent to ${reviewerName()}`}
+    else if(["Approved","Ready"].includes(cur.status)&&cur.approvedAt){putVideo({...withStatus(cur,"Ready"),car:info,finalLink:link});celebrate(id,"Ready");job.msg="Ready to post";toast(`Photos of “${cur.title||"Untitled"}” uploaded. It’s ready to post`)}
+    else{putVideo({...cur,car:info});job.msg=`${items.length} photos replaced`;toast(`Photos of “${cur.title||"Untitled"}” replaced`)}
+    job.state="Sent";job.files=null;setTimeout(()=>{UP.list=UP.list.filter(j=>j!==job);upPaint()},7000);
+  }catch(e){job.state="Failed";job.error=e.message||"Upload failed";job.signin=!!e.signin;
+    toast(`Upload of “${job.title}” failed: ${job.error}`,e.signin?"Sign in":"Retry",e.signin?()=>msSignIn(()=>spUploadCar(id,files,job)):()=>spUploadCar(id,files,job))}
+  upPaint()}
+/* the carousel window: drop the photos, put them in order, upload them together */
+const CARU={id:null,files:[],urls:[],drag:-1};
+function openCarUpload(id){const v=S.videos[id];if(!v)return;CARU.id=id;carClear();const d=$("#carDlg");
+  $("#carFor").textContent=`“${v.title||"Untitled"}”. ${EDIT_POOL.includes(v.status)?`It goes to ${reviewerName()} for review as soon as the photos are uploaded.`:v.car?"These replace the photos uploaded last time.":"Drop the photos in the order they should appear."}`;
+  $("#carWhere").textContent=spOn()?`Saved to SharePoint › …/${(String(S.settings.spCarBase||"").trim()||"Carousels").split("/").slice(-1)[0]}/${carFolderName(v)}`:"";
+  $("#carMs").innerHTML=upMsHTML();carPaint();d.returnValue="";openDlg(d);
+  const where=()=>{if(d.open&&CARU.id===id&&MS.carBase)$("#carWhere").textContent=`Saved to SharePoint › …/${MS.carBase.split("/").slice(-1)[0]}/${carFolderName(v)}`};where();
+  if(spOn())msApp().then(()=>{if(d.open&&CARU.id===id){$("#carMs").innerHTML=upMsHTML();carPaint();if(msAccount()&&!MS.carBase)spDrive().then(spCarBase).then(where,()=>{})}},e=>{$("#carMs").innerHTML=`<div class="up-ms off">${esc(e.message)}</div>`})}
+function carClear(){CARU.urls.forEach(u=>{try{URL.revokeObjectURL(u)}catch(_){}});CARU.files=[];CARU.urls=[]}
+function carAdd(list){const add=[...list].filter(f=>isPhotoFile(f)||isVideoFile(f));const skip=list.length-add.length;
+  add.sort((a,b)=>a.name.localeCompare(b.name,undefined,{numeric:true}));
+  add.forEach(f=>{CARU.files.push(f);CARU.urls.push(URL.createObjectURL(f))});if(skip)toast(`${skip} file${skip>1?"s weren’t photos or videos":" wasn’t a photo or video"}, so ${skip>1?"they were":"it was"} left out`);carPaint()}
+function carPaint(){const g=$("#carGrid"),n=CARU.files.length,ok=spOn()&&!!msAccount();
+  $("#carDrop").classList.toggle("off",!ok);$("#carDrop").classList.toggle("has",!!n);
+  g.innerHTML=CARU.files.map((f,i)=>`<div class="car-t" draggable="true" data-i="${i}">${isVideoFile(f)?`<video src="${CARU.urls[i]}" muted preload="metadata"></video>`:`<img src="${CARU.urls[i]}" alt="">`}<span class="car-n">${i+1}</span><button type="button" class="car-x" data-cx="${i}" aria-label="Remove">×</button></div>`).join("");
+  const size=CARU.files.reduce((a,f)=>a+f.size,0);
+  $("#carCount").textContent=n?`${n} ${n===1?"photo":"photos"} · ${fmtMB(size)}${n>1?" · drag to reorder":""}`:"";
+  $("#carGo").disabled=!n||!ok;$("#carGo").textContent=n?`Upload ${n} ${n===1?"photo":"photos"}`:"Upload";
+  const v=S.videos[CARU.id];if(v&&MS.carBase)$("#carWhere").textContent=`Saved to SharePoint › …/${MS.carBase.split("/").slice(-1)[0]}/${carFolderName(v)}`;
+  else if(v&&ok&&!CARU.finding){CARU.finding=true;spDrive().then(spCarBase).then(()=>{CARU.finding=false;if($("#carDlg").open)carPaint()},()=>{CARU.finding=false})}}
+(function(){const d=$("#carDlg"),drop=$("#carDrop"),inp=$("#carFile"),g=$("#carGrid");
+  inp.addEventListener("change",()=>{if(inp.files&&inp.files.length)carAdd(inp.files);inp.value=""});
+  drop.addEventListener("click",e=>{if(drop.classList.contains("off")){e.preventDefault();toast(spOn()?"Sign in with Microsoft first":"SharePoint isn’t set up yet")}});
+  ["dragenter","dragover"].forEach(t=>drop.addEventListener(t,e=>{if(CARU.drag>=0)return;e.preventDefault();drop.classList.add("over")}));
+  ["dragleave","drop"].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.remove("over")}));
+  drop.addEventListener("drop",e=>{if(CARU.drag>=0)return;if(drop.classList.contains("off")){toast("Sign in with Microsoft first");return}const fl=e.dataTransfer&&e.dataTransfer.files;if(fl&&fl.length)carAdd(fl)});
+  g.addEventListener("click",e=>{const x=e.target.closest("[data-cx]");if(!x)return;e.preventDefault();e.stopPropagation();const i=+x.dataset.cx;try{URL.revokeObjectURL(CARU.urls[i])}catch(_){}CARU.files.splice(i,1);CARU.urls.splice(i,1);carPaint()});
+  g.addEventListener("dragstart",e=>{const t=e.target.closest(".car-t");if(!t)return;CARU.drag=+t.dataset.i;t.classList.add("drag");e.dataTransfer.effectAllowed="move";try{e.dataTransfer.setData("text/plain","car")}catch(_){}});
+  g.addEventListener("dragover",e=>{if(CARU.drag<0)return;e.preventDefault();e.stopPropagation();const t=e.target.closest(".car-t");g.querySelectorAll(".car-t.tgt").forEach(x=>x!==t&&x.classList.remove("tgt"));if(t&&+t.dataset.i!==CARU.drag)t.classList.add("tgt")});
+  g.addEventListener("drop",e=>{if(CARU.drag<0)return;e.preventDefault();e.stopPropagation();const t=e.target.closest(".car-t");const from=CARU.drag;CARU.drag=-1;if(!t)return carPaint();const to=+t.dataset.i;
+    const mv=(a)=>{const x=a.splice(from,1)[0];a.splice(to,0,x)};mv(CARU.files);mv(CARU.urls);carPaint()});
+  g.addEventListener("dragend",()=>{CARU.drag=-1;g.querySelectorAll(".drag,.tgt").forEach(x=>x.classList.remove("drag","tgt"))});
+  d.addEventListener("close",()=>{const r=d.returnValue,v=S.videos[CARU.id];
+    if(r==="upload"&&v&&CARU.files.length){const files=CARU.files.slice();CARU.urls.forEach(u=>setTimeout(()=>{try{URL.revokeObjectURL(u)}catch(_){}},60000));CARU.files=[];CARU.urls=[];
+      spUploadCar(v.id,files);toast(`Uploading ${files.length} photos of “${v.title||"Untitled"}” in the background. You can keep working`)}
+    else if(r==="nofile"&&v){sendForReview(v);carClear()}
+    else carClear()});
+})();
+/* the gallery: Zain flicks through the photos, downloads them, approves or asks for changes */
+const GAL={id:null,items:[],i:0};
+async function openGallery(id){const v=S.videos[id];if(!v||!v.car)return;GAL.id=id;GAL.items=[];const d=$("#galDlg"),grid=$("#galGrid");
+  $("#galTitle").textContent=v.title||"Untitled";
+  $("#galSub").textContent=`${v.car.count} photos${v.car.round>1?", round "+v.car.round:""}, uploaded ${v.car.at?niceAgo(v.car.at):""}${v.car.by?" by "+dispName(v.car.by):""}`;
+  const decide=isReviewer()&&v.status==="In review";$("#galOk").hidden=!decide;$("#galRe").hidden=!decide;
+  const sp=$("#galSp");sp.href=safeUrl(v.car.webUrl)||"#";sp.hidden=!safeUrl(v.car.webUrl);
+  galView(-1);grid.innerHTML=`<div class="dr-msg">Loading the photos…</div>`;d.returnValue="";openDlg(d);
+  try{const r=await gjson(`/drives/${v.car.driveId}/items/${v.car.folderId}/children?$expand=thumbnails&$top=200`);if(GAL.id!==id||!d.open)return;
+    GAL.items=(r.value||[]).filter(x=>x.file).sort((a,b)=>a.name.localeCompare(b.name,undefined,{numeric:true}));
+    if(!GAL.items.length){grid.innerHTML=`<div class="dr-msg">The folder is empty</div>`;return}
+    grid.innerHTML=GAL.items.map((x,i)=>{const t=x.thumbnails&&x.thumbnails[0],src=t&&(t.large||t.medium||t.small);
+      return `<button type="button" class="gal-t" data-gi="${i}">${src?`<img src="${esc(src.url)}" alt="" loading="lazy">`:`<span class="gal-f">${esc(x.name)}</span>`}<span class="car-n">${i+1}</span></button>`}).join("")}
+  catch(e){if(GAL.id!==id)return;grid.innerHTML=`<div class="dr-msg">${e.signin?`${esc(e.message)}<br><button type="button" class="btn small primary" data-ms="signin-gal">Sign in with Microsoft</button>`:esc(e.status===404?"This folder was moved or deleted in SharePoint":e.message)}</div>`}}
+function galView(i){const big=$("#galBig"),grid=$("#galGrid");GAL.i=i;
+  if(i<0||!GAL.items[i]){big.hidden=true;big.innerHTML="";grid.hidden=false;return}
+  const x=GAL.items[i],u=x["@microsoft.graph.downloadUrl"]||"",isV=x.file&&/^video\//.test(x.file.mimeType||"");
+  big.innerHTML=`<div class="gal-bar"><button type="button" class="btn small" data-gv="back">‹ All photos</button><span>${i+1} of ${GAL.items.length}</span><a class="btn small" href="${esc(u)}" download="${esc(x.name)}">Download</a></div>
+    <div class="gal-stage"><button type="button" class="gal-nav" data-gv="prev" aria-label="Previous"${i===0?" disabled":""}>‹</button>${isV?`<video src="${esc(u)}" controls playsinline></video>`:`<img src="${esc(u)}" alt="">`}<button type="button" class="gal-nav" data-gv="next" aria-label="Next"${i===GAL.items.length-1?" disabled":""}>›</button></div>`;
+  big.hidden=false;grid.hidden=true;big.tabIndex=-1;try{big.focus({preventScroll:true})}catch(_){}}
+(function(){const d=$("#galDlg");
+  d.addEventListener("click",e=>{const t=e.target.closest("[data-gi]");if(t){e.preventDefault();galView(+t.dataset.gi);return}
+    const n=e.target.closest("[data-gv]");if(!n)return;e.preventDefault();const k=n.dataset.gv;galView(k==="back"?-1:k==="prev"?GAL.i-1:GAL.i+1)});
+  d.addEventListener("keydown",e=>{if(GAL.i<0)return;if(e.key==="ArrowRight"&&GAL.i<GAL.items.length-1)galView(GAL.i+1);else if(e.key==="ArrowLeft"&&GAL.i>0)galView(GAL.i-1)});
+  d.addEventListener("close",()=>{const r=d.returnValue,v=S.videos[GAL.id];GAL.id=null;$("#galBig").innerHTML="";if(!v)return;if(r==="approve")approveVideo(v);else if(r==="reedit")askReedit(v)});
+})();
+function openReview(id){const v=S.videos[id];if(!v)return;if(isCar(v)&&v.car)openGallery(id);else if(v.draft)openDraft(id)}
+const hasReview=v=>!!v&&((isCar(v)&&!!v.car)||!!v.draft);
+function openUp(id,kind){const v=S.videos[id];if(v&&isCar(v))openCarUpload(id);else openUpload(id,kind)}
+
 /* drop a video file straight onto a row in Edit order */
 document.addEventListener("dragover",e=>{const r=e.target.closest&&e.target.closest(".erow[data-fid]");if(!r||!spOn()||!e.dataTransfer||![...e.dataTransfer.types].includes("Files"))return;
   const v=S.videos[r.dataset.fid];if(!canUp(v))return;e.preventDefault();document.querySelectorAll(".erow.fdrop").forEach(x=>x!==r&&x.classList.remove("fdrop"));r.classList.add("fdrop")});
 document.addEventListener("dragleave",e=>{const r=e.target.closest&&e.target.closest(".erow.fdrop");if(r&&!r.contains(e.relatedTarget))r.classList.remove("fdrop")});
 document.addEventListener("drop",e=>{const r=e.target.closest&&e.target.closest(".erow[data-fid]");document.querySelectorAll(".erow.fdrop").forEach(x=>x.classList.remove("fdrop"));
   if(!r||!spOn()||!e.dataTransfer||!e.dataTransfer.files||!e.dataTransfer.files.length)return;e.preventDefault();const v=S.videos[r.dataset.fid],f=e.dataTransfer.files[0];if(!canUp(v))return;
+  if(isCar(v)){openCarUpload(v.id);carAdd(e.dataTransfer.files);return}
   if(!isVideoFile(f)){toast("That isn’t a video file");return}
   if(msAccount()&&EDIT_POOL.concat(["In review"]).includes(v.status)){spUpload(v.id,"draft",f);toast(`Uploading the draft of “${v.title||"Untitled"}” in the background`)}
   else openUpload(v.id,EDIT_POOL.includes(v.status)||v.status==="In review"?"draft":"final")});
@@ -5586,10 +5747,10 @@ function showAlert(v,kind){
   const rev=safeUrl(v.reviewLink);
   let body="";
   if(kind==="review")body=`<div class="al-top"><span class="al-pill">Review</span>${x}</div>${title}<small>${isCar(v)?"Carousel":"Reel"}, round ${v.round||1}${v.shotDate?", shot "+esc(nice(v.shotDate)):""}</small>
-    ${v.draft&&spOn()?`<div class="al-btns"><button class="al-open al-watch" data-al="watch">▶ Watch draft</button></div>`:""}
+    ${hasReview(v)&&spOn()?`<div class="al-btns"><button class="al-open al-watch" data-al="watch">${isCar(v)&&v.car?`▶ View ${v.car.count} photos`:"▶ Watch draft"}</button></div>`:""}
     <div class="al-btns"><button class="al-done" data-al="reedit">Re-edit</button><button class="al-open" data-al="approve">Approve</button></div>`;
-  else if(kind==="approved"&&spOn())body=`<div class="al-top"><span class="al-pill">Approved</span>${x}</div>${title}<small>${esc(reviewerName())} approved it. Upload the final version and it becomes ready to post.</small>
-    <div class="al-btns"><button class="al-done" data-al="x">Later</button><button class="al-open" data-al="upfinal">Upload final</button></div>`;
+  else if(kind==="approved"&&spOn())body=`<div class="al-top"><span class="al-pill">Approved</span>${x}</div>${title}<small>${esc(reviewerName())} approved it. ${isCar(v)?"Upload the photos":"Upload the final version"} and it becomes ready to post.</small>
+    <div class="al-btns"><button class="al-done" data-al="x">Later</button><button class="al-open" data-al="upfinal">${isCar(v)?"Upload photos":"Upload final"}</button></div>`;
   else if(kind==="approved")body=`<div class="al-top"><span class="al-pill">Approved</span>${x}</div>${title}<small>${esc(reviewerName())} approved it. Add the final link to make it ready to post.</small>
     <div class="al-link"><input class="al-in" type="text" placeholder="Paste the final video link" autocomplete="off"><button class="al-open" data-al="savelink">Save</button></div>`;
   else if(kind==="reedit")body=`<div class="al-top"><span class="al-pill warn">Re-edit</span>${x}</div>${title}<small>${esc(reviewerName())} asked for changes${v.round>1?`, round ${v.round}`:""}:</small>
@@ -5641,8 +5802,9 @@ function hist(v,what,note){return [...(v.reviewLog||[]),{what,by:S.me||"",at:Dat
 function approveVideo(v){
   stampFx();
   const base={...v,reviewNote:"",approvedBy:S.me||"",approvedAt:Date.now(),reviewLog:hist(v,"approved")};
+  if(!safeUrl(base.finalLink)&&isCar(v)&&v.car&&safeUrl(v.car.link))base.finalLink=v.car.link;   // the photos folder is the final
   putVideo(withStatus(base,"Ready"));celebrate(v.id,"Ready");
-  toast(safeUrl(v.finalLink)?"Approved. It’s ready to post":`Approved and Ready. ${dispName(v.editedBy||"")||"The editor"} will add the final link`)
+  toast(safeUrl(base.finalLink)?"Approved. It’s ready to post":`Approved and Ready. ${dispName(v.editedBy||"")||"The editor"} will add the final link`)
 }
 function askReedit(v){
   const d=$("#noteDlg");$("#noteFor").textContent=`“${v.title||"Untitled"}”, round ${v.round||1}`;const box=$("#noteBox");box.value="";d.returnValue="";
@@ -5699,8 +5861,8 @@ document.addEventListener("click",e=>{
   if(k==="scheduled"&&v){putVideo(withStatus(v,"Scheduled"));calFx(v);toast(`“${v.title||"Untitled"}” scheduled. It becomes Posted by itself at ${v.postTime?fmtT(v.postTime):"its time"}`)}
   if(k==="posted"&&v){putVideo(withStatus(v,"Posted"));celebrate(v.id,"Posted");toast(`“${v.title||"Untitled"}” marked as posted`)}
   else if(k==="approve"&&v)approveVideo(v);
-  else if(k==="watch"&&v){openDraft(v.id);return}
-  else if(k==="upfinal"&&v)openUpload(v.id,"final");
+  else if(k==="watch"&&v){openReview(v.id);return}
+  else if(k==="upfinal"&&v)openUp(v.id,"final");
   else if(k==="reedit"&&v)askReedit(v);
   else if(k==="startedit"&&v){putVideo(withStatus(v,"Editing"));toast("Moved to Editing. The notes stay on the video")}
   else if(k==="savelink"&&v){const u=safeUrl(el.querySelector(".al-in").value);if(!u){toast("Paste a link that starts with http");return}
@@ -6015,8 +6177,8 @@ document.addEventListener("click",async e=>{
   const act=b.dataset.act;
   if(act==="openAdd")openAdd();
   else if(act==="copy")copyText(b.dataset.text);
-  else if(act==="upDraft"){openUpload(b.dataset.id,"draft")}
-  else if(act==="upFinal"){openUpload(b.dataset.id,"final")}
+  else if(act==="upDraft"){openUp(b.dataset.id,"draft")}
+  else if(act==="upFinal"){openUp(b.dataset.id,"final")}
   else if(act==="dlAdd"){const t=document.getElementById("dlIn");dlAdd(t?t.value:DLR.draft)}
   else if(act==="dlQ"){lsSet("seb-dl-q",b.dataset.v);render()}
   else if(act==="dlCk"){lsSet("seb-dl-ck",b.dataset.v);render()}
@@ -6269,7 +6431,7 @@ document.addEventListener("change",e=>{
     else if(k==="pillarFrom"){S.settings.pillarFrom=t.value}
     else if(k==="editLead"){S.settings.editLead=+t.value}
     else if(k==="reviewers"){S.settings.reviewers=t.value.trim()}
-    else if(/^sp[A-Z]/.test(k)){S.settings[k]=t.value.trim();MS.drive=null}
+    else if(/^sp[A-Z]/.test(k)){S.settings[k]=t.value.trim();MS.drive=null;MS.carBase=null}
     else{const n=parseInt(t.value,10);if(n>0)S.settings[k]=n}
     putSettings();render();return;
   }
