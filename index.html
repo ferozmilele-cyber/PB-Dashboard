@@ -581,6 +581,55 @@ nav.tabs button[aria-selected="true"]{color:#0B0B0C}
 .openlink:hover{background:var(--lime);color:#0B0B0C}
 .openlink.add-lnk{background:rgba(170,255,0,.22);border:1px dashed #7BD100;color:#2c4a00;font-weight:700}
 .openlink.add-lnk:hover{background:var(--lime);color:#0B0B0C;border-style:solid;border-color:transparent}
+/* ---------- Downloader tab ---------- */
+.dl-pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:4px 11px;border-radius:999px;background:rgba(12,14,8,.06);color:var(--muted);margin-left:10px}
+.dl-pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.6}
+.dl-pill.on{background:rgba(170,255,0,.28);color:#2c4a00}.dl-pill.on::before{background:#5fa800;opacity:1;box-shadow:0 0 0 3px rgba(122,209,0,.25)}
+.dl-pill.off{background:rgba(229,72,77,.10);color:#c0392b}
+.dl-sub{margin:-4px 0 16px;color:var(--muted);font-size:14px}
+.dl-in{display:flex;gap:10px;align-items:flex-start}
+.dl-in textarea{flex:1;min-height:52px;max-height:200px;resize:none;border:1.5px solid rgba(12,14,8,.12);background:#fff;color:var(--ink);border-radius:18px;padding:14px 18px;font:inherit;font-size:15px;line-height:1.45;outline:none;transition:border-color .2s,box-shadow .2s}
+.dl-in textarea:focus{border-color:#8fd900;box-shadow:0 0 0 4px rgba(170,255,0,.25)}
+.dl-go{height:52px;padding:0 22px!important;display:inline-flex!important;align-items:center;gap:8px;white-space:nowrap}
+.dl-go:disabled{opacity:.45;cursor:default}
+.dl-opts{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;margin-top:14px}
+.dl-l{font-size:11.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.dl-l+.seg{margin-right:14px}
+.dl-hint{margin:12px 0 0;font-size:12.5px;color:var(--muted)}
+.dl-list{display:flex;flex-direction:column;gap:10px}
+.dl-job{display:grid;grid-template-columns:60px 1fr;gap:16px;padding:12px;border-radius:20px;background:rgba(255,255,255,.75);border:1px solid rgba(12,14,8,.07);animation:dlIn .5s var(--spring) both}
+@keyframes dlIn{from{opacity:0;transform:translateY(8px) scale(.985)}}
+.dl-th{width:60px;height:80px;border-radius:14px;background:rgba(12,14,8,.06) center/cover no-repeat;position:relative;overflow:hidden}
+.dl-th span{position:absolute;left:5px;bottom:5px;background:rgba(11,11,12,.8);color:#fff;font-size:9px;font-weight:800;padding:2px 6px;border-radius:999px}
+.dl-body{min-width:0}
+.dl-t{font-weight:700;font-size:15px;line-height:1.3;margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}
+.dl-m{font-size:12.5px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dl-bar{height:8px;border-radius:999px;background:rgba(12,14,8,.07);margin:11px 0 7px;overflow:hidden;position:relative}
+.dl-bar i{position:absolute;inset:0 auto 0 0;width:0;background:var(--lime);border-radius:inherit;transition:width .5s var(--ease)}
+.dl-bar.busy i{animation:dlSlide 1.2s ease-in-out infinite}
+@keyframes dlSlide{0%{left:-35%}100%{left:100%}}
+.dl-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:8px}
+.dl-bar+.dl-row{margin-top:0}
+.dl-st{font-size:13px;font-weight:600}
+.dl-st.ok::before{content:"✓ ";color:#5fa800;font-weight:800}
+.dl-st.bad{color:#c0392b}
+.dl-acts{display:flex;gap:6px}
+.iconbtn.dl-dark{background:#0B0B0C!important;color:var(--lime)!important;border-color:transparent!important}
+.dl-off{padding:22px 24px;border-radius:20px;background:rgba(12,14,8,.035);border:1.5px dashed rgba(12,14,8,.14)}
+.dl-off b:first-child{font-size:15px}
+.dl-off ol{margin:10px 0 14px;padding-left:20px;color:var(--muted);font-size:13.5px;line-height:1.7}
+.dl-offa{display:flex;gap:10px;align-items:center}
+.dl-offa .openlink{margin-left:0;padding:6px 12px;font-size:12px}
+:root[data-theme="dark"] .dl-in textarea{background:rgba(255,255,255,.04)!important;border-color:rgba(255,255,255,.12)!important;color:var(--ink)!important}
+:root[data-theme="dark"] .dl-job{background:rgba(255,255,255,.035)!important;border-color:rgba(255,255,255,.08)!important}
+:root[data-theme="dark"] .dl-th,:root[data-theme="dark"] .dl-bar{background:rgba(255,255,255,.07)!important}
+:root[data-theme="dark"] .dl-pill{background:rgba(255,255,255,.07)}
+:root[data-theme="dark"] .dl-pill.on{background:rgba(170,255,0,.14);color:var(--lime)}
+:root[data-theme="dark"] .dl-pill.off{background:rgba(255,99,99,.12);color:#ff8a80}
+:root[data-theme="dark"] .dl-st.bad{color:#ff8a80}
+:root[data-theme="dark"] .dl-st.ok::before{color:var(--lime)}
+:root[data-theme="dark"] .iconbtn.dl-dark{background:var(--lime)!important;color:#0B0B0C!important}
+:root[data-theme="dark"] .dl-off{background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.14)}
 .dl-lnk{display:inline-flex!important;align-items:center;justify-content:center;vertical-align:middle;cursor:pointer}
 .openlink.dl-lnk{margin-left:6px;padding:0;width:22px;height:20px;border:0;border-radius:999px;vertical-align:1px}
 .iconbtn.dl-lnk{padding-left:0!important;padding-right:0!important;min-width:32px}
@@ -2603,6 +2652,7 @@ body.viewonly [data-act="pauseAll"],body.viewonly [data-act="resumeAll"],body.vi
     <button role="tab" data-tab="shoots">Shoot plan</button>
     <button role="tab" data-tab="ideas">Content bank</button>
     <button role="tab" data-tab="history">History</button>
+    <button role="tab" data-tab="downloader">Downloader</button>
     <button role="tab" data-tab="settings">Settings</button>
   </nav>
 
@@ -4200,6 +4250,85 @@ function vSettings(){
   </section>`+backupsPanel();
 }
 
+/* ---------- Downloader tab: Instagram, TikTok, YouTube and other links, downloaded by PB Downloader on this PC ---------- */
+const DLR={ok:null,jobs:[],folder:"",draft:"",timer:null,sig:"",busy:false};
+const DL_Q=[["best","Best MP4"],["1080","1080p"],["720","720p"],["max","Highest"],["audio","Sound only"]];
+const DL_CK=[["","Off"],["firefox","Firefox"],["edge","Edge"],["chrome","Chrome"]];
+const dlQ=()=>lsGet("seb-dl-q")||"best",dlCk=()=>lsGet("seb-dl-ck")||"";
+function dlApi(p,body,ms){const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),ms||4000);
+  return fetch(PBD+"/api/"+p,body===undefined?{headers:{"X-PB":"1"},signal:ctl.signal}:{method:"POST",headers:{"Content-Type":"application/json","X-PB":"1"},body:JSON.stringify(body),signal:ctl.signal})
+    .then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.json()}).finally(()=>clearTimeout(tm))}
+function dlUrls(t){return [...new Set((String(t||"").match(/https?:\/\/[^\s"'<>]+/g)||[]).map(u=>u.replace(/[),.]+$/,"")))]}
+function dlSrc(j){const k=((j.info&&j.info.extractor_key)||"")+" "+(j.url||"");
+  return /instagram/i.test(k)?"Instagram":/tiktok/i.test(k)?"TikTok":/youtu/i.test(k)?"YouTube":/facebook|fb\.watch/i.test(k)?"Facebook":/twitter|x\.com/i.test(k)?"X":/drive\.google/i.test(k)?"Drive":/vimeo/i.test(k)?"Vimeo":"Link"}
+const dlDone=j=>["done","error","canceled"].includes(j.state);
+function dlCard(j){
+  const i=j.info||{},title=j.label||i.title||j.url,who=i.uploader||i.channel||"";
+  const qn=(DL_Q.find(x=>x[0]===j.quality)||[0,""])[1];
+  const meta=[dlSrc(j),who,i.duration_string,qn].filter(Boolean).map(esc).join(" · ");
+  const th=i.thumbnail?` style="background-image:url('${esc(i.thumbnail).replace(/'/g,"%27")}')"`:"";
+  let st,acts;
+  if(j.state==="done"){st=`<span class="dl-st ok">Saved</span>`;acts=`<button class="iconbtn dl-dark" data-act="dlDo" data-a="play" data-id="${j.id}">Play</button><button class="iconbtn" data-act="dlDo" data-a="show" data-id="${j.id}">Show in folder</button>`}
+  else if(j.state==="error"||j.state==="canceled"){st=`<span class="dl-st ${j.state==="error"?"bad":""}">${esc(j.state==="error"?j.error:"Stopped")}</span>`;acts=`<button class="iconbtn dl-dark" data-act="dlDo" data-a="retry" data-id="${j.id}">Try again</button><button class="iconbtn" data-act="dlDo" data-a="remove" data-id="${j.id}">Remove</button>`}
+  else{st=`<span class="dl-st">${j.state==="starting"?"Getting the video…":j.state==="merging"?"Finishing…":"0%"}</span>`;acts=`<button class="iconbtn" data-act="dlDo" data-a="cancel" data-id="${j.id}">Stop</button>`}
+  return `<article class="dl-job" id="dlj${j.id}"><div class="dl-th"${th}><span>${esc(dlSrc(j))}</span></div>
+    <div class="dl-body"><div class="dl-t">${esc(title)}</div><div class="dl-m">${meta}</div>
+    ${dlDone(j)?"":`<div class="dl-bar"><i></i></div>`}
+    <div class="dl-row">${st}<div class="dl-acts">${acts}</div></div></div></article>`}
+function dlJobsHTML(){
+  if(DLR.ok===false)return `<div class="dl-off"><b>PB Downloader isn’t running on this PC</b>
+    <ol><li>Double-click <b>Start Downloader</b> in the PB Downloader folder and keep its black window open.</li><li>If the browser asks to let this site reach apps on this device, click <b>Allow</b>.</li></ol>
+    <div class="dl-offa"><button class="btn small" data-act="dlRetry">Check again</button><a class="openlink" href="PB-Downloader.zip" download>Get PB Downloader</a></div></div>`;
+  if(DLR.ok===null)return `<div class="empty">Connecting to PB Downloader…</div>`;
+  if(!DLR.jobs.length)return `<div class="empty">Nothing downloading yet. Paste a reel, TikTok or YouTube link above.</div>`;
+  return DLR.jobs.map(dlCard).join("")}
+function vDownloader(){
+  const seg=(act,list,cur,lbl)=>`<div class="seg" role="group" aria-label="${lbl}">${list.map(([k,l])=>`<button data-act="${act}" data-v="${k}" aria-pressed="${cur===k}">${l}</button>`).join("")}</div>`;
+  const n=DLR.jobs.filter(j=>!dlDone(j)).length,fin=DLR.jobs.some(dlDone);
+  setTimeout(dlStart,0);
+  return `<section class="panel dl-panel">
+    <div class="phead"><h2>Downloader</h2><span class="dl-pill ${DLR.ok?"on":DLR.ok===false?"off":""}" id="dlPill">${DLR.ok?"Connected":DLR.ok===false?"Not running":"Connecting…"}</span>
+      <div class="pactions"><button class="btn small" data-act="dlDo" data-a="show"${DLR.ok?"":" disabled"}>Open folder</button></div></div>
+    <p class="dl-sub">Instagram, TikTok, YouTube, Facebook and more. Saved to Downloads › PB Downloads on this PC.</p>
+    <div class="dl-in"><textarea id="dlIn" rows="1" placeholder="Paste a link, or several (one per line)" spellcheck="false" aria-label="Video links">${esc(DLR.draft)}</textarea>
+      <button class="btn primary dl-go" data-act="dlAdd"${dlUrls(DLR.draft).length?"":" disabled"}><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10.5l5 5 5-5M5 20h14"/></svg>Download</button></div>
+    <div class="dl-opts"><span class="dl-l">Quality</span>${seg("dlQ",DL_Q,dlQ(),"Quality")}
+      <span class="dl-l">Signed in with</span>${seg("dlCk",DL_CK,dlCk(),"Signed in with")}</div>
+    <p class="dl-hint">Instagram asks you to log in? Pick the browser where you’re signed in. Firefox works best; close Edge or Chrome fully first.</p>
+  </section>
+  <section class="panel"><div class="phead"><h2>Downloads${n?` <span class="count">${n}</span>`:""}</h2><div class="pactions"><button class="btn small" data-act="dlClear"${fin?"":" hidden"}>Clear finished</button></div></div>
+    <div class="dl-list" id="dlJobs">${dlJobsHTML()}</div></section>`}
+function dlPaint(){
+  const box=document.getElementById("dlJobs");if(!box)return;
+  const sig=(DLR.ok===null?"n":DLR.ok?"y":"x")+DLR.jobs.map(j=>j.id+j.state+(j.info?1:0)).join();
+  if(sig!==DLR.sig){DLR.sig=sig;box.innerHTML=dlJobsHTML();
+    const pill=document.getElementById("dlPill");if(pill){pill.className="dl-pill "+(DLR.ok?"on":DLR.ok===false?"off":"");pill.textContent=DLR.ok?"Connected":DLR.ok===false?"Not running":"Connecting…"}
+    const cl=document.querySelector('[data-act="dlClear"]');if(cl)cl.hidden=!DLR.jobs.some(dlDone);
+    document.querySelectorAll('.dl-panel [data-a="show"]').forEach(b=>b.disabled=!DLR.ok)}
+  DLR.jobs.forEach(j=>{const el=document.getElementById("dlj"+j.id);if(!el)return;const bar=el.querySelector(".dl-bar"),st=el.querySelector(".dl-st");
+    if(bar){const busy=j.state==="starting"||j.state==="merging";bar.classList.toggle("busy",busy);bar.firstElementChild.style.width=(busy?35:Math.max(2,j.pct||0))+"%"}
+    if(st&&j.state==="working"){const p=Math.round(j.pct||0),ok=s=>s&&!/Unknown|^NA$/i.test(s);st.textContent=`${j.pass>1&&j.quality!=="audio"?"Sound ":""}${p}%${ok(j.speed)?" · "+j.speed:""}${ok(j.eta)?" · "+j.eta+" left":""}`}})}
+async function dlPoll(){
+  clearTimeout(DLR.timer);DLR.timer=null;
+  if(S.tab!=="downloader"||document.hidden)return;
+  try{const d=await dlApi("state");DLR.ok=true;DLR.jobs=d.jobs||[];DLR.folder=d.folder||""}catch(e){DLR.ok=false}
+  dlPaint();
+  if(S.tab==="downloader")DLR.timer=setTimeout(dlPoll,DLR.ok?(DLR.jobs.some(j=>!dlDone(j))?700:2500):4000)}
+function dlStart(){if(!DLR.timer)dlPoll()}
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&S.tab==="downloader")dlStart()});
+async function dlAdd(text){
+  const urls=dlUrls(text);if(!urls.length)return;
+  try{await dlApi("add",{urls,quality:dlQ(),cookies:dlCk()});DLR.draft="";const t=document.getElementById("dlIn");if(t){t.value="";dlGrow(t)}
+    toast(urls.length>1?`Downloading ${urls.length} videos`:"Downloading")}
+  catch(e){DLR.ok=false;dlPaint();toast("PB Downloader isn’t running on this PC. Start it, then try again")}
+  dlPoll()}
+function dlGrow(t){t.style.height="auto";t.style.height=Math.min(200,t.scrollHeight+2)+"px";const g=document.querySelector(".dl-go");if(g)g.disabled=!dlUrls(t.value).length}
+document.addEventListener("input",e=>{if(e.target.id==="dlIn"){DLR.draft=e.target.value;dlGrow(e.target)}});
+document.addEventListener("keydown",e=>{if(e.target.id==="dlIn"&&e.key==="Enter"&&!e.shiftKey){e.preventDefault();dlAdd(e.target.value)}});
+// on the Downloader tab, Ctrl+V anywhere (outside a text box) starts the download straight away
+document.addEventListener("paste",e=>{if(S.tab!=="downloader")return;const a=e.target;if(a&&(a.tagName==="TEXTAREA"||a.tagName==="INPUT"||a.isContentEditable))return;
+  const t=(e.clipboardData||window.clipboardData).getData("text");if(dlUrls(t).length){e.preventDefault();dlAdd(t)}});
+
 /* ---------- render ---------- */
 function isTyping(){const a=document.activeElement;return a&&a.closest&&a.closest("#main")&&!a.dataset.live&&(a.tagName==="TEXTAREA"||(a.tagName==="INPUT"&&/^(text|number)$/.test(a.type)))}
 let VT_ON=false;
@@ -4215,7 +4344,7 @@ function render(){
   const autoFlip=!S.animate&&!RM&&m.firstElementChild&&m.dataset.tab===S.tab;
   const before=autoFlip?keyRects(m):null;
   m.dataset.tab=S.tab;
-  m.innerHTML=S.tab==="overview"?vOverview():S.tab==="videos"?vVideos():S.tab==="order"?vOrder():S.tab==="schedule"?vSchedule():S.tab==="history"?vHistory():S.tab==="shoots"?vShoots():S.tab==="ideas"?vIdeas():vSettings();
+  m.innerHTML=S.tab==="overview"?vOverview():S.tab==="videos"?vVideos():S.tab==="order"?vOrder():S.tab==="schedule"?vSchedule():S.tab==="history"?vHistory():S.tab==="shoots"?vShoots():S.tab==="ideas"?vIdeas():S.tab==="downloader"?vDownloader():vSettings();
   if(S.animate){const mode=S.animate;S.animate=false;if(mode==="m")setTimeout(()=>countUp(m),80);else enterMotion(m,mode==="vt")}
   else if(before)autoFlipRun(m,before);
   segInds(m);
@@ -4282,7 +4411,7 @@ function cmdSources(){
     sub:`${v.status}${v.shotDate?", shot "+nice(v.shotDate):""}${v.postDate?", posts "+niceW(v.postDate)+(v.postTime?" "+fmtT(v.postTime):""):""}${isCar(v)?", carousel":""}`,dot:SC[v.status],v}));
   shoots().forEach(s=>items.push({type:"shoot",id:s.id,title:s.title||"Untitled shoot",hay:((s.title||"")+" "+(s.location||"")+" "+(s.cast||"")+" "+(s.videos||[]).join(" ")).toLowerCase(),
     sub:`Shoot, ${niceW(s.date)}${s.time?" "+fmtT(s.time):""}${s.location?", "+s.location:""}`,dot:hue(s.date),s}));
-  [["overview","Go to Overview"],["videos","Go to All videos"],["order","Go to Edit order"],["schedule","Go to Posting schedule"],["shoots","Go to Shoot plan"],["ideas","Go to Content bank"],["history","Go to History"],["settings","Go to Settings"]]
+  [["overview","Go to Overview"],["videos","Go to All videos"],["order","Go to Edit order"],["schedule","Go to Posting schedule"],["shoots","Go to Shoot plan"],["ideas","Go to Content bank"],["history","Go to History"],["downloader","Go to Downloader"],["settings","Go to Settings"]]
     .forEach(([k,l])=>items.push({type:"tab",id:k,title:l,hay:l.toLowerCase(),sub:"Page"}));
   items.push({type:"act",id:"log",title:"Log a shoot",hay:"log a shoot add videos new",sub:"Action"});
   items.push({type:"act",id:"plan",title:"Plan a shoot",hay:"plan a shoot schedule shoot script",sub:"Action"});
@@ -5592,6 +5721,7 @@ function popContent(tab){
   if(tab==="history"){const P=all.filter(v=>v.status==="Posted"&&v.postDate).sort((a,b)=>postKey(b).localeCompare(postKey(a)));const mo=t.slice(0,7);
     return `<h4>Posting history</h4>`+line("Posted this month",P.filter(v=>v.postDate.startsWith(mo)).length)+line("Posted in total",P.length)+(P[0]?`<p>Last: ${esc(P[0].title||"Untitled")}, ${esc(niceW(P[0].postDate))}</p>`:"")}
   if(tab==="overview")return `<h4>Today at a glance</h4>`+line("Shot today",`${all.filter(v=>v.shotDate===t).length} / ${S.settings.shootTarget}`)+line("Edited today",`${editedToday()} / ${S.settings.editTarget}`)+line("Ready to post",c("Ready"));
+  if(tab==="downloader"){const J=DLR.jobs||[];return `<h4>Downloader</h4>`+line("PB Downloader",DLR.ok?"Running":DLR.ok===false?"Not running":"–")+line("Downloading now",J.filter(j=>!dlDone(j)).length)+line("Saved this session",J.filter(j=>j.state==="done").length)+`<p>Instagram, TikTok, YouTube and more</p>`}
   if(tab==="videos")return `<h4>All videos</h4>`+line("Total",all.length)+line("Waiting for edit",editPool().length)+line("Posted",c("Posted"));
   if(tab==="order"){const q=currentQueue().slice(0,3);return `<h4>Edit next</h4>`+(q.length?q.map((x,i)=>`<div class="pq"><i style="background:${hue(x.v.shotDate)}"></i>${i+1}. ${esc(x.v.title||"Untitled")}</div>`).join(""):`<p>Nothing waiting to edit</p>`)}
   if(tab==="schedule"){const hm=nowHM();const up=all.filter(v=>v.postDate&&v.status!=="Posted"&&(v.postDate>t||(v.postDate===t&&(v.postTime||"")>hm))).sort((a,b)=>postKey(a).localeCompare(postKey(b))).slice(0,3);
@@ -5621,6 +5751,15 @@ document.addEventListener("click",async e=>{
   const act=b.dataset.act;
   if(act==="openAdd")openAdd();
   else if(act==="copy")copyText(b.dataset.text);
+  else if(act==="dlAdd"){const t=document.getElementById("dlIn");dlAdd(t?t.value:DLR.draft)}
+  else if(act==="dlQ"){lsSet("seb-dl-q",b.dataset.v);render()}
+  else if(act==="dlCk"){lsSet("seb-dl-ck",b.dataset.v);render()}
+  else if(act==="dlRetry"){DLR.ok=null;DLR.sig="";dlPaint();dlPoll()}
+  else if(act==="dlClear"){dlApi("clear",{}).then(dlPoll,()=>{})}
+  else if(act==="dlDo"){const a=b.dataset.a,id=b.dataset.id,j=DLR.jobs.find(x=>x.id===id);
+    const body={id:id||"",quality:a==="retry"&&j?j.quality:dlQ(),cookies:dlCk()};
+    if(a==="cancel"||a==="retry"||a==="remove"){b.disabled=true}
+    dlApi(a,body).then(dlPoll,()=>{DLR.ok=false;dlPaint()})}
   else if(act==="dlVideo"){const v=S.videos[b.dataset.id];if(v)sendToDownloader(v,b)}
   else if(act==="fst"){const k=b.dataset.s,a=S.filter.st;S.filter.st=a.includes(k)?a.filter(x=>x!==k):[...a,k];render()}
   else if(act==="ffmt"){S.filter.fmt=b.dataset.v;render()}
@@ -6061,7 +6200,7 @@ if(!GAS){
   const go=()=>{if(started)return;started=true;const t=lsGet("seb-token");
     if(t)startSession(t,lsGet("seb-user")||"");else if(QKEY)keyLogin(QKEY);else showLogin()};
   const qs=new URLSearchParams(location.search);const v=qs.get("view");
-  if(v&&["overview","videos","order","schedule","shoots","ideas","history","settings"].includes(v)){S.tab=v;render()}
+  if(v&&["overview","videos","order","schedule","shoots","ideas","history","downloader","settings"].includes(v)){S.tab=v;render()}
   QKEY=null;   // old quick-login links: Firebase keeps you signed in, so the key is simply ignored
   if(qs.get("key")){qs.delete("key");try{history.replaceState(null,"",location.pathname+(qs.toString()?"?"+qs:""))}catch(e){}}
   go();
