@@ -1,6 +1,6 @@
 // Shoot & Edit Board: always loads the newest page when online, falls back to the saved copy when offline,
 // and handles Windows notification clicks.
-const CACHE = 'shoot-board-v90';
+const CACHE = 'shoot-board-v91';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 self.addEventListener('install', e => {
   // cache: 'reload' skips the browser's own cache, so a new version is really fetched fresh
@@ -17,6 +17,8 @@ self.addEventListener('fetch', e => {
   const same = url.origin === location.origin;
   const fontsOrLibs = /fonts\.(googleapis|gstatic)\.com|cdn\.jsdelivr\.net|www\.gstatic\.com/.test(url.host);   // fonts, libraries and the Firebase code
   if (!same && !fontsOrLibs) return;
+  // the Microsoft sign-in window lands on auth.html: always the real page, never the app
+  if (same && /\/auth\.html$/.test(url.pathname)) return;
   // the page itself: open the saved copy straight away (no waiting on the network),
   // and fetch the newest version in the background for the next open
   if (req.mode === 'navigate' || (same && /\/(index\.html)?$/.test(url.pathname))) {

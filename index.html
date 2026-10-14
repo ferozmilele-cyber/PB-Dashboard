@@ -630,6 +630,45 @@ nav.tabs button[aria-selected="true"]{color:#0B0B0C}
 :root[data-theme="dark"] .dl-st.ok::before{color:var(--lime)}
 :root[data-theme="dark"] .iconbtn.dl-dark{background:var(--lime)!important;color:#0B0B0C!important}
 :root[data-theme="dark"] .dl-off{background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.14)}
+/* ---------- SharePoint uploads ---------- */
+.up-ms{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:10px 14px;border-radius:14px;background:rgba(12,14,8,.045);font-size:13.5px;margin:4px 0 12px}
+.up-ms.on{background:rgba(170,255,0,.16)}.up-ms.off{color:#9a4a12;background:rgba(229,140,40,.10)}
+.linkbtn{border:0;background:transparent;color:var(--ink);font:inherit;font-size:13px;font-weight:700;text-decoration:underline;cursor:pointer;padding:0}
+.up-drop{display:flex;flex-direction:column;align-items:center;gap:4px;padding:28px 18px;border:2px dashed rgba(12,14,8,.18);border-radius:20px;cursor:pointer;text-align:center;transition:border-color .2s,background .2s,transform .3s var(--spring)}
+.up-drop:hover,.up-drop.over{border-color:#7BD100;background:rgba(170,255,0,.10)}
+.up-drop.over{transform:scale(1.01)}
+.up-drop.off{opacity:.45;cursor:not-allowed}
+.up-drop b{font-size:15px}.up-drop span:last-child{font-size:13px;color:var(--muted)}
+.up-ic{width:48px;height:48px;border-radius:16px;background:var(--lime);color:#0B0B0C;display:grid;place-items:center;margin-bottom:6px}
+.up-where{margin:10px 2px 0;font-size:12px;color:var(--muted);word-break:break-word}
+.up-alt{margin-top:12px}.up-alt summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--muted)}
+.up-linkrow{display:flex;gap:8px;margin-top:10px}.up-linkrow .copybox{flex:1;margin:0}
+.iconbtn.up-b{display:inline-flex;align-items:center;gap:5px}
+.erow.fdrop{outline:2px dashed #7BD100;outline-offset:-2px;background:rgba(170,255,0,.10)!important}
+.al-btns .al-watch{flex:1}
+.up-pill{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:120;width:min(320px,calc(100vw - 32px));display:flex;flex-direction:column;gap:8px}
+.up-j{padding:12px 14px;border-radius:18px;background:rgba(255,255,255,.92);-webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);box-shadow:0 18px 44px rgba(20,30,8,.18),0 0 0 1.5px rgba(170,255,0,.6);animation:dlIn .5s var(--spring) both}
+.up-h{display:flex;justify-content:space-between;gap:8px;align-items:baseline}.up-h b{font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.up-h span{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.up-l{font-size:12.5px;color:var(--muted);margin-top:3px}.up-ok{color:#2c7a00;font-weight:700}.up-bad{color:#c0392b;font-weight:600}
+.up-bar{height:6px;border-radius:999px;background:rgba(12,14,8,.08);margin-top:8px;overflow:hidden}.up-bar i{display:block;height:100%;background:var(--lime);border-radius:inherit;transition:width .3s var(--ease)}
+.up-a{display:flex;gap:6px;margin-top:8px}.up-a button{border:1px solid rgba(12,14,8,.12);background:#fff;border-radius:999px;font:inherit;font-size:12px;font-weight:700;padding:5px 11px;cursor:pointer}.up-a button:first-child{background:#0B0B0C;color:var(--lime);border-color:transparent}
+.dr-player{position:relative;background:#0B0B0C;border-radius:18px;min-height:260px;display:grid;place-items:center;overflow:hidden}
+.dr-player video{display:block;max-width:100%;max-height:min(64vh,640px);background:#000}
+.dr-msg{color:#cfd3c8;font-size:14px;padding:24px;text-align:center;line-height:1.6}
+.dr-msg .btn{margin-top:10px}
+.dr-foot{flex-wrap:wrap}.dr-foot .dr-sp{flex:1}
+.btn.dis{opacity:.45;pointer-events:none}
+.sp-intro{margin:-4px 0 10px}
+.sp-more{margin:6px 0 10px}.sp-more summary{cursor:pointer;font-weight:600;font-size:13.5px;color:var(--muted);margin-bottom:8px}
+.sp-state{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:6px 0 22px}
+.sp-state .dl-pill{margin-left:0}
+@media (max-width:600px){.up-pill{bottom:calc(92px + env(safe-area-inset-bottom,0px));left:10px;width:calc(100vw - 20px)}.dr-foot .dr-sp{display:none}.iconbtn.up-b{font-size:0;gap:0}.iconbtn.up-b svg{width:15px;height:15px}}
+:root[data-theme="dark"] .up-ms{background:rgba(255,255,255,.05)}:root[data-theme="dark"] .up-ms.on{background:rgba(170,255,0,.10)}:root[data-theme="dark"] .up-ms.off{color:#ffb27a}
+:root[data-theme="dark"] .up-drop{border-color:rgba(255,255,255,.18)}:root[data-theme="dark"] .up-drop:hover,:root[data-theme="dark"] .up-drop.over{border-color:var(--lime);background:rgba(170,255,0,.06)}
+:root[data-theme="dark"] .up-j{background:rgba(16,22,30,.95);box-shadow:0 18px 44px rgba(0,0,0,.55),0 0 0 1.5px rgba(170,255,0,.45)}
+:root[data-theme="dark"] .up-ok{color:var(--lime)}:root[data-theme="dark"] .up-bad{color:#ff8a80}:root[data-theme="dark"] .up-bar{background:rgba(255,255,255,.1)}
+:root[data-theme="dark"] .up-a button{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.14);color:var(--ink)}:root[data-theme="dark"] .up-a button:first-child{background:var(--lime);color:#0B0B0C}
+:root[data-theme="dark"] .linkbtn{color:var(--ink)}
 .dl-lnk{display:inline-flex!important;align-items:center;justify-content:center;vertical-align:middle;cursor:pointer}
 .openlink.dl-lnk{margin-left:6px;padding:0;width:22px;height:20px;border:0;border-radius:999px;vertical-align:1px}
 .iconbtn.dl-lnk{padding-left:0!important;padding-right:0!important;min-width:32px}
@@ -2792,6 +2831,27 @@ body.viewonly [data-act="pauseAll"],body.viewonly [data-act="resumeAll"],body.vi
     <div class="foot"><button class="btn" value="cancel">Later</button><button class="btn primary" value="ok">Save link</button></div>
   </form>
 </dialog>
+<dialog id="upDlg">
+  <form method="dialog">
+    <h2 id="upTitle">Upload the draft</h2>
+    <p class="sub" id="upFor"></p>
+    <div id="upMs"></div>
+    <label class="up-drop" id="upDrop"><input type="file" id="upFile" accept="video/*,.mov,.mp4,.m4v,.mkv" hidden>
+      <span class="up-ic"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V5M7 9.5l5-5 5 5M5 19h14"/></svg></span>
+      <b>Drop the video here</b><span>or click to choose a file</span></label>
+    <p class="up-where" id="upWhere"></p>
+    <details class="up-alt" id="upAlt"><summary>Paste a link instead</summary><div class="up-linkrow"><input class="copybox" id="upLink" type="url" placeholder="Paste the SharePoint link" autocomplete="off"><button class="btn" value="link">Save link</button></div></details>
+    <div class="foot"><button class="btn" value="cancel">Cancel</button><button class="btn ghost" value="nofile" id="upNoFile" title="Send for review without uploading a file">Send without a file</button></div>
+  </form>
+</dialog>
+<dialog id="draftDlg" class="wide">
+  <form method="dialog">
+    <h2 id="drTitle">Draft</h2>
+    <p class="sub" id="drSub"></p>
+    <div class="dr-player"><video id="drVideo" controls playsinline preload="metadata" hidden></video><div class="dr-msg" id="drMsg"></div></div>
+    <div class="foot dr-foot"><a class="btn dis" id="drDl">Download</a><a class="btn ghost" id="drSp" target="_blank" rel="noopener noreferrer">Open in SharePoint</a><span class="dr-sp"></span><button class="btn" value="cancel">Close</button><button class="btn" value="reedit" id="drRe">Re-edit…</button><button class="btn primary" value="approve" id="drOk">Approve</button></div>
+  </form>
+</dialog>
 <dialog id="shootDlg" class="wide">
   <form method="dialog" id="shootForm">
     <h2 id="shootTitle">Plan a shoot</h2>
@@ -2930,6 +2990,7 @@ function stMenuItems(v){
   const out=[];
   if(isReviewer()){   // Zain only needs the decisions; the editing steps are Shibli's
     out.push({v:v.status,label:v.status==="In review"?"In review (now)":v.status,c:SC[v.status]||"#888",cur:true});
+    if(v.draft&&spOn())out.push({v:"__watch",label:"▶ Watch draft",c:"#0B0B0C",hint:v.draft.round>1?"Round "+v.draft.round:"Watch or download"});
     if(!["Ready","Scheduled","Posted"].includes(v.status))out.push({v:"__approve",label:"Approve",c:"#3E9C5E",hint:"Goes to Ready"});
     out.push({v:"Re-edit",label:"Re-edit…",c:SC["Re-edit"],hint:"Send back with notes"});
     ["Scheduled","Posted"].forEach(k=>{if(k!==v.status)out.push({v:k,label:k,c:SC[k]})});
@@ -2939,6 +3000,12 @@ function stMenuItems(v){
   else if(isReviewer()&&["Ready","Scheduled","Approved"].includes(v.status))out.push({v:"Re-edit",label:"Re-edit…",c:SC["Re-edit"],hint:"Send it back with notes"});
   // the editor can record a re-edit Zain asked for in person, after the fact
   if(!isReviewer()&&["Shot","Editing","Pending"].includes(v.status)&&(v.submittedAt||v.approvedAt))out.push({v:"__logre",label:"Log as re-edit…",c:SC["Re-edit"],hint:"If Zain asked for changes"});
+  if(spOn()&&canUp(v)){
+    if(EDIT_POOL.includes(v.status))out.push({v:"__updraft",label:"Upload draft…",c:"#D1A23A",hint:`Goes to ${reviewerName()} for review`});
+    if(v.status==="In review")out.push({v:"__updraft",label:"Replace draft…",c:"#D1A23A",hint:"Upload a newer version"});
+    if((v.status==="Approved"||(v.status==="Ready"&&v.approvedAt))&&!safeUrl(v.finalLink))out.push({v:"__upfinal",label:"Upload final…",c:"#3E9C5E",hint:"Becomes ready to post"});
+  }
+  if(v.draft&&spOn())out.push({v:"__watch",label:"▶ Watch draft",c:"#0B0B0C"});
   if(!ST_MAIN.includes(v.status))out.push({v:v.status,label:v.status,c:SC[v.status]||"#888",cur:true});
   ST_MAIN.forEach(k=>out.push({v:k,label:k==="In review"&&v.status!=="In review"?"Send for review":k,c:SC[k],cur:k===v.status}));
   return out;
@@ -2962,6 +3029,11 @@ function closeStMenu(){const pop=$("#stPop");pop.classList.remove("show");popHid
 document.addEventListener("click",e=>{const o=e.target.closest&&e.target.closest("#stPop [data-stv]");
   if(o){const v=S.videos[$("#stPop").dataset.id],val=o.dataset.stv;closeStMenu();if(!v)return;
     if(val==="__approve"){approveVideo(v);return}
+    if(val==="__watch"){openDraft(v.id);return}
+    if(val==="__updraft"){openUpload(v.id,"draft");return}
+    if(val==="__upfinal"){openUpload(v.id,"final");return}
+    // with SharePoint set up, sending for review means uploading the draft
+    if(val==="In review"&&spOn()&&canUp(v)&&!isReviewer()&&EDIT_POOL.includes(v.status)){openUpload(v.id,"draft");return}
     if(val==="__logre"){askEditorReedit(v,v.status);return}if(val===v.status)return;setStatusFlow(v,val);return}
   if(!(e.target.closest&&e.target.closest("#stPop,.stsel")))closeStMenu()});
 document.addEventListener("keydown",e=>{const pop=$("#stPop");if(!pop||!pop.classList.contains("show"))return;
@@ -3856,7 +3928,7 @@ function vOrder(){
       return `<div class="erow${pinned?" pinned":""}" data-fid="${v.id}">
         <div class="num grip" title="Drag to reorder"><span class="n">${idx+1}</span><span class="g">⋮⋮</span></div>
         <div class="etitle"><span class="dot" style="background:${hue(v.shotDate)}"></span><div><b>${esc(v.title||"Untitled")}</b>${pillarTag(v)}<small>Shot ${esc(v.shotDate?nice(v.shotDate):"date unknown")}${v.postDate?`, posts ${esc(niceW(v.postDate))}${v.postTime?" "+fmtT(v.postTime):""}`:""}${tags}</small></div></div>
-        ${v.shotDate?`<span class="eacts"><button class="iconbtn" data-act="copy" data-text="${esc(folder(v.shotDate))}" title="${esc(folder(v.shotDate))}">Copy path</button>${rawLinkFor(v.shotDate)?`<a class="openlink" href="${esc(rawLinkFor(v.shotDate))}" target="_blank" rel="noopener noreferrer">Open folder</a>`:`<button class="iconbtn" data-act="addRaw" data-d="${v.shotDate}">+ Link</button>`}</span>`:"<span></span>"}
+        ${v.shotDate||(spOn()&&canUp(v))?`<span class="eacts">${spOn()&&canUp(v)?`<button class="iconbtn up-b" data-act="upDraft" data-id="${v.id}" title="Upload the draft. It goes to ${esc(reviewerName())} for review"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V9M7 13.5l5-5 5 5M5 4h14"/></svg>Draft</button>`:""}${!v.shotDate?"":`<button class="iconbtn" data-act="copy" data-text="${esc(folder(v.shotDate))}" title="${esc(folder(v.shotDate))}">Copy path</button>${rawLinkFor(v.shotDate)?`<a class="openlink" href="${esc(rawLinkFor(v.shotDate))}" target="_blank" rel="noopener noreferrer">Open folder</a>`:`<button class="iconbtn" data-act="addRaw" data-d="${v.shotDate}">+ Link</button>`}`}</span>`:"<span></span>"}
         <div>${statusSelect(v)}</div>
         <div class="mv2"><button data-act="up" data-i="${idx}" aria-label="Move up"${idx===0?" disabled":""}>↑</button><button data-act="down" data-i="${idx}" aria-label="Move down"${idx===list.length-1?" disabled":""}>↓</button></div>
       </div>`}).join("");
@@ -4208,6 +4280,17 @@ function vSettings(){
       <span class="hint">Separate several addresses with commas.</span>
     </div>
     ${GAS?`<button class="btn" data-act="testNotify">Send a test email</button>`:""}
+    <h3 class="subh" id="spSet">SharePoint uploads</h3>
+    <p class="hint sp-intro">Drafts and finals upload straight from the board into SharePoint, a folder for each month. Your IT adds the two IDs below once; after that everyone signs in with their Milele Microsoft account.</p>
+    <div class="field"><label for="spcid">Application (client) ID</label><input id="spcid" type="text" value="${esc(S.settings.spClientId||"")}" data-set="spClientId" placeholder="From IT, e.g. 1a2b3c4d-…" spellcheck="false"${S.me===ADMIN?"":" readonly"}></div>
+    <div class="field"><label for="sptid">Directory (tenant) ID</label><input id="sptid" type="text" value="${esc(S.settings.spTenantId||"")}" data-set="spTenantId" placeholder="From IT, e.g. 9f8e7d6c-…" spellcheck="false"${S.me===ADMIN?"":" readonly"}></div>
+    <details class="sp-more"><summary>Folders</summary>
+      <div class="field"><label for="spsite">SharePoint site</label><input id="spsite" type="text" value="${esc(S.settings.spSite||SP_DEF.site)}" data-set="spSite" spellcheck="false"${S.me===ADMIN?"":" readonly"}></div>
+      <div class="field"><label for="spbase">Videos folder</label><input id="spbase" type="text" value="${esc(S.settings.spBase||SP_DEF.base)}" data-set="spBase" spellcheck="false"${S.me===ADMIN?"":" readonly"}><span class="hint">Inside Documents. Each month gets its own folder here, like Oct.</span></div>
+      <div class="field"><label for="spdr">Drafts folder</label><input id="spdr" type="text" value="${esc(S.settings.spDrafts||SP_DEF.drafts)}" data-set="spDrafts" spellcheck="false"${S.me===ADMIN?"":" readonly"}></div>
+      <div class="field"><label for="spfi">Finals folder</label><input id="spfi" type="text" value="${esc(S.settings.spFinal||SP_DEF.final)}" data-set="spFinal" spellcheck="false"${S.me===ADMIN?"":" readonly"}><span class="hint">Example: …/Videos/${esc(spMonth({postDate:today()}))}/${esc(spCfg().drafts)} and …/Videos/${esc(spMonth({postDate:today()}))}/${esc(spCfg().final)}</span></div>
+    </details>
+    <div class="sp-state">${!spOn()?`<span class="dl-pill off">Not set up</span>`:msAccount()?`<span class="dl-pill on">Signed in as ${esc(msAccount().username)}</span><button class="btn small" data-ms="test">Test</button><button class="btn small ghost" data-ms="switch">Switch account</button>`:`<span class="dl-pill">Not signed in</span><button class="btn small primary" data-ms="signin">Sign in with Microsoft</button>`}</div>
     <h3 class="subh">Pop-up alerts on the board</h3>
     <div class="field">
       <label for="revusers">Reviewer</label>
@@ -4335,6 +4418,176 @@ document.addEventListener("keydown",e=>{if(e.target.id==="dlIn"&&e.key==="Enter"
 document.addEventListener("paste",e=>{if(S.tab!=="downloader")return;const a=e.target;if(a&&(a.tagName==="TEXTAREA"||a.tagName==="INPUT"||a.isContentEditable))return;
   const t=(e.clipboardData||window.clipboardData).getData("text");if(dlUrls(t).length){e.preventDefault();dlAdd(t)}});
 
+/* ---------- SharePoint: drafts and finals upload from the board, Zain reviews here ---------- */
+const SP_DEF={site:"https://milelemotors.sharepoint.com/sites/milelecentralhub-Milele-MarketingDepartment",base:"Milele - Marketing Department/Fahad's Personal Branding/Videos",drafts:"Drafts",final:"Final"};
+const SP_MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const SP_SCOPES=["Files.ReadWrite.All","Sites.Read.All"];
+const MSAL_URL="https://cdn.jsdelivr.net/npm/@azure/msal-browser@3.28.1/lib/msal-browser.min.js";
+function spCfg(){const g=k=>String(S.settings[k]||"").trim();
+  return {clientId:g("spClientId"),tenantId:g("spTenantId"),site:(g("spSite")||SP_DEF.site).replace(/\/+$/,""),base:(g("spBase")||SP_DEF.base).replace(/^\/+|\/+$/g,""),drafts:g("spDrafts")||SP_DEF.drafts,final:g("spFinal")||SP_DEF.final}}
+const spOn=()=>{const c=spCfg();return !!(c.clientId&&c.tenantId)};
+const canUp=v=>!!v&&(!viewOnly()||mayEdit(v.id));
+const MS={app:null,key:"",loading:null,drive:null,driveFor:"",made:new Set()};
+function msLoad(){if(window.msal)return Promise.resolve();if(MS.loading)return MS.loading;
+  MS.loading=new Promise((res,rej)=>{const s=document.createElement("script");s.src=MSAL_URL;s.onload=()=>res();s.onerror=()=>{MS.loading=null;rej(new Error("Couldn’t load Microsoft sign-in. Check the internet connection"))};document.head.appendChild(s)});return MS.loading}
+async function msApp(){const c=spCfg();if(!c.clientId||!c.tenantId)throw new Error("SharePoint isn’t set up yet. Add the two IDs in Settings");
+  await msLoad();const key=c.clientId+"|"+c.tenantId;if(MS.app&&MS.key===key)return MS.app;
+  const app=new msal.PublicClientApplication({auth:{clientId:c.clientId,authority:"https://login.microsoftonline.com/"+c.tenantId,redirectUri:new URL("auth.html",location.href).href,navigateToLoginRequestUrl:false},cache:{cacheLocation:"localStorage"}});
+  await app.initialize();const a=app.getActiveAccount()||app.getAllAccounts()[0];if(a)app.setActiveAccount(a);MS.app=app;MS.key=key;return app}
+function msAccount(){return MS.app?(MS.app.getActiveAccount()||MS.app.getAllAccounts()[0]||null):null}
+// the sign-in window has to open straight from a click, so the library is loaded ahead of time
+function msSignIn(after){
+  if(!MS.app||MS.key!==spCfg().clientId+"|"+spCfg().tenantId){msApp().then(()=>toast("Ready. Click Sign in again"),e=>toast(e.message));return}
+  MS.app.loginPopup({scopes:SP_SCOPES,prompt:"select_account"}).then(r=>{MS.app.setActiveAccount(r.account);toast(`Signed in to Microsoft as ${r.account.username}`);after&&after()},
+    e=>{if(!/user_cancelled|popup_window_error|interaction_in_progress/.test(e.errorCode||""))toast("Microsoft sign-in didn’t finish: "+(e.errorMessage||e.message||"").split("\n")[0].slice(0,140));else if(/popup_window_error/.test(e.errorCode||""))toast("Allow pop-ups for this site, then try again")})}
+function spSignErr(m){const e=new Error(m);e.signin=true;return e}
+async function msToken(){const app=await msApp();const acct=msAccount();if(!acct)throw spSignErr("Sign in to Microsoft first");
+  try{return (await app.acquireTokenSilent({scopes:SP_SCOPES,account:acct})).accessToken}
+  catch(e){if(e instanceof msal.InteractionRequiredAuthError||/interaction_required|login_required|consent_required|no_tokens_found|token_renewal/.test(e.errorCode||""))throw spSignErr("Microsoft needs you to sign in again");throw e}}
+function spErr(st,m){return st===401?"Microsoft sign-in expired. Sign in again":st===403?"Your Microsoft account can’t open that SharePoint folder":st===404?"SharePoint folder not found. Check the folders in Settings":st===507?"SharePoint is full":(m||"SharePoint error "+st)}
+async function gjson(path,opt){opt=opt||{};const tok=await msToken();
+  const r=await fetch(/^https:/.test(path)?path:"https://graph.microsoft.com/v1.0"+path,{method:opt.method||"GET",headers:Object.assign({Authorization:"Bearer "+tok},opt.body?{"Content-Type":"application/json"}:{}),body:opt.body?JSON.stringify(opt.body):undefined});
+  if(!r.ok){let m="";try{const j=await r.json();m=j.error&&j.error.message}catch(_){}const e=new Error(spErr(r.status,m));e.status=r.status;if(r.status===401)e.signin=true;throw e}
+  return r.status===204?{}:r.json()}
+const encP=p=>p.split("/").filter(Boolean).map(s=>encodeURIComponent(s).replace(/'/g,"%27")).join("/");
+async function spDrive(){const c=spCfg();if(MS.drive&&MS.driveFor===c.site)return MS.drive;const u=new URL(c.site);
+  const site=await gjson(`/sites/${u.hostname}:${u.pathname.replace(/\/+$/,"")}?$select=id`);const d=await gjson(`/sites/${site.id}/drive?$select=id`);
+  MS.drive=d.id;MS.driveFor=c.site;MS.made=new Set();return d.id}
+async function spEnsure(drive,path){if(MS.made.has(path))return;
+  try{await gjson(`/drives/${drive}/root:/${encP(path)}?$select=id`)}
+  catch(e){if(e.status!==404)throw e;const i=path.lastIndexOf("/"),parent=i<0?"":path.slice(0,i),name=path.slice(i+1);if(parent)await spEnsure(drive,parent);
+    await gjson(parent?`/drives/${drive}/root:/${encP(parent)}:/children`:`/drives/${drive}/root/children`,{method:"POST",body:{name,folder:{},"@microsoft.graph.conflictBehavior":"fail"}}).catch(x=>{if(x.status!==409)throw x})}
+  MS.made.add(path)}
+function spMonth(v){const d=(v&&v.postDate)||today();return SP_MON[+d.slice(5,7)-1]}
+function spFolder(v,kind){const c=spCfg();return `${c.base}/${spMonth(v)}/${kind==="final"?c.final:c.drafts}`}
+function spName(t){return (String(t||"").replace(/["*:<>?\/\\|#%~&{}\u0000-\u001f]/g," ").replace(/\s+/g," ").trim().replace(/^\.+|\.+$/g,"").slice(0,100))||"Untitled"}
+/* uploads run in the background, in 10 MB pieces, with a progress pill in the corner */
+const UP={list:[]};const SP_CHUNK=10485760;
+function putChunk(url,file,a,b,onp){return new Promise((res,rej)=>{const x=new XMLHttpRequest();x.open("PUT",url);x.setRequestHeader("Content-Range",`bytes ${a}-${b-1}/${file.size}`);
+  x.upload.onprogress=e=>onp(a+e.loaded);x.onload=()=>{if(x.status>=200&&x.status<300){let j=null;try{j=JSON.parse(x.responseText)}catch(_){}res(j)}else{const e=new Error("Upload stopped ("+x.status+")");e.status=x.status;rej(e)}};
+  x.onerror=()=>rej(new Error("Network error"));x.send(file.slice(a,b))})}
+const isVideoFile=f=>!!f&&(/^video\//.test(f.type)||/\.(mp4|mov|m4v|mkv|avi|webm|mxf)$/i.test(f.name));
+async function spUpload(id,kind,file,job){
+  const v0=S.videos[id];if(!v0)return;
+  if(!job){job={id:"u"+Date.now()+Math.random().toString(36).slice(2,6),vid:id,kind,file,title:v0.title||"Untitled",sent:0,state:"Starting"};UP.list.push(job)}
+  else Object.assign(job,{sent:0,state:"Starting",error:""});
+  upPaint();
+  try{
+    const drive=await spDrive(),folder=spFolder(v0,kind);await spEnsure(drive,folder);
+    const round=kind==="draft"?nextRound(S.videos[id]||v0):((S.videos[id]||v0).round||1);
+    const ext=((file.name.match(/\.[a-z0-9]{2,5}$/i)||[".mp4"])[0]).toLowerCase();
+    const fname=spName(v0.title)+(kind==="draft"?` - Draft ${round}`:"")+ext;
+    const ses=await gjson(`/drives/${drive}/root:/${encP(folder+"/"+fname)}:/createUploadSession`,{method:"POST",body:{item:{"@microsoft.graph.conflictBehavior":"replace"}}});
+    job.state="Uploading";upPaint();let item=null;
+    for(let a=0;a<file.size;a+=SP_CHUNK){const b=Math.min(file.size,a+SP_CHUNK);let tries=0;
+      for(;;){try{const j=await putChunk(ses.uploadUrl,file,a,b,n=>{job.sent=n;upPaintSoon()});if(j&&j.id)item=j;break}
+        catch(err){if(++tries>3||(err.status&&err.status<500&&err.status!==429))throw err;await new Promise(r=>setTimeout(r,1500*tries))}}
+      job.sent=b;upPaintSoon()}
+    if(!item)throw new Error("SharePoint didn’t confirm the upload");
+    job.state="Saving";upPaint();
+    const info={itemId:item.id,driveId:drive,name:item.name,size:item.size,webUrl:item.webUrl,at:Date.now(),by:S.me||"",round};
+    const cur=S.videos[id];if(!cur)throw new Error("The video was deleted from the board");
+    if(kind==="draft"){sendForReview({...cur,draft:info});job.state="Sent";job.msg=`Sent to ${reviewerName()}`}
+    else{let link=item.webUrl;try{const l=await gjson(`/drives/${drive}/items/${item.id}/createLink`,{method:"POST",body:{type:"view",scope:"organization"}});link=(l.link&&l.link.webUrl)||link}catch(_){}
+      const ok=["Approved","Ready"].includes(cur.status);putVideo(ok?{...withStatus(cur,"Ready"),finalLink:link,final:info}:{...cur,finalLink:link,final:info});
+      if(ok)celebrate(id,"Ready");job.state="Sent";job.msg=ok?"Ready to post":"Final saved";toast(`Final of “${cur.title||"Untitled"}” uploaded${ok?". It’s ready to post":""}`)}
+    job.file=null;setTimeout(()=>{UP.list=UP.list.filter(j=>j!==job);upPaint()},7000);
+  }catch(e){job.state="Failed";job.error=e.message||"Upload failed";job.signin=!!e.signin;
+    toast(`Upload of “${job.title}” failed: ${job.error}`,e.signin?"Sign in":"Retry",e.signin?()=>msSignIn(()=>spUpload(id,kind,file,job)):()=>spUpload(id,kind,file,job))}
+  upPaint()}
+let upT=null;function upPaintSoon(){if(!upT)upT=setTimeout(()=>{upT=null;upPaint()},200)}
+const fmtMB=n=>n>=1073741824?(n/1073741824).toFixed(1)+" GB":Math.max(0.1,n/1048576).toFixed(n<10485760?1:0)+" MB";
+function upPaint(){let el=document.getElementById("upPill");
+  if(!UP.list.length){if(el)el.hidden=true;return}
+  if(!el){el=document.createElement("div");el.id="upPill";el.className="up-pill";el.setAttribute("aria-live","polite");document.body.appendChild(el)}
+  el.hidden=false;
+  el.innerHTML=UP.list.map(j=>{const p=j.file&&j.file.size?Math.round(100*j.sent/j.file.size):100;
+    const what=j.kind==="final"?"final":"draft";
+    const line=j.state==="Failed"?`<span class="up-bad">${esc(j.error)}</span>`:j.state==="Sent"?`<span class="up-ok">✓ ${esc(j.msg||"Uploaded")}</span>`:j.state==="Uploading"?`${p}% · ${fmtMB(j.sent)} of ${fmtMB(j.file.size)}`:j.state==="Saving"?"Finishing…":"Starting…";
+    return `<div class="up-j ${j.state.toLowerCase()}"><div class="up-h"><b>${esc(j.title)}</b><span>${what}</span></div><div class="up-l">${line}</div>
+      ${j.state==="Uploading"||j.state==="Starting"||j.state==="Saving"?`<div class="up-bar"><i style="width:${j.state==="Starting"?3:p}%"></i></div>`:""}
+      ${j.state==="Failed"?`<div class="up-a"><button data-upa="${j.signin?"signin":"retry"}" data-j="${j.id}">${j.signin?"Sign in and retry":"Retry"}</button><button data-upa="drop" data-j="${j.id}">Dismiss</button></div>`:""}</div>`}).join("")}
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-upa]");if(!b)return;const j=UP.list.find(x=>x.id===b.dataset.j);if(!j)return;
+  if(b.dataset.upa==="drop"){UP.list=UP.list.filter(x=>x!==j);upPaint()}
+  else if(b.dataset.upa==="signin")msSignIn(()=>spUpload(j.vid,j.kind,j.file,j));
+  else spUpload(j.vid,j.kind,j.file,j)});
+window.addEventListener("beforeunload",e=>{if(UP.list.some(j=>["Starting","Uploading","Saving"].includes(j.state))){e.preventDefault();e.returnValue=""}});
+/* the upload window: drop a file, or (for a draft) send without one, or (for a final) paste a link */
+const UPD={id:null,kind:"draft"};
+function upMsHTML(){
+  if(!spOn())return `<div class="up-ms off">SharePoint isn’t set up yet. ${S.me===ADMIN?"Add the two IDs in Settings › SharePoint.":"Ask Shibili to finish the SharePoint setup."}</div>`;
+  const a=msAccount();
+  return a?`<div class="up-ms on"><span>Signed in as <b>${esc(a.username)}</b></span><button type="button" class="linkbtn" data-ms="switch">Switch account</button></div>`
+    :`<div class="up-ms"><span>Sign in with your Milele Microsoft account to upload.</span><button type="button" class="btn small primary" data-ms="signin">Sign in with Microsoft</button></div>`}
+function openUpload(id,kind){const v=S.videos[id];if(!v)return;UPD.id=id;UPD.kind=kind;const d=$("#upDlg");
+  const round=kind==="draft"?nextRound(v):(v.round||1);
+  $("#upTitle").textContent=kind==="final"?"Upload the final video":"Upload the draft";
+  $("#upFor").textContent=kind==="final"?`“${v.title||"Untitled"}” is approved. The final link is added by itself and it becomes ready to post.`:`“${v.title||"Untitled"}”${round>1?`, round ${round}`:""}. It goes to ${reviewerName()} for review as soon as it’s uploaded.`;
+  $("#upWhere").textContent=spOn()?`Saved to SharePoint › …/${spCfg().base.split("/").slice(-1)[0]}/${spMonth(v)}/${kind==="final"?spCfg().final:spCfg().drafts}`:"";
+  $("#upMs").innerHTML=upMsHTML();$("#upDrop").classList.toggle("off",!(spOn()&&msAccount()));
+  $("#upNoFile").hidden=kind!=="draft";$("#upAlt").hidden=kind!=="final";$("#upAlt").open=!spOn();$("#upLink").value="";$("#upFile").value="";
+  d.returnValue="";openDlg(d);
+  if(spOn())msApp().then(()=>{if(d.open&&UPD.id===id){$("#upMs").innerHTML=upMsHTML();$("#upDrop").classList.toggle("off",!msAccount())}},e=>{$("#upMs").innerHTML=`<div class="up-ms off">${esc(e.message)}</div>`})}
+function upStart(file){const v=S.videos[UPD.id];if(!v)return;
+  if(!isVideoFile(file)){toast("That isn’t a video file");return}
+  if(!spOn()){toast("SharePoint isn’t set up yet");return}
+  if(!msAccount()){toast("Sign in with Microsoft first");return}
+  $("#upDlg").close("upload");spUpload(v.id,UPD.kind,file);
+  toast(`Uploading the ${UPD.kind} of “${v.title||"Untitled"}” in the background. You can keep working`)}
+/* the draft player: Zain watches or downloads, then approves or asks for a re-edit */
+const DRV={id:null,url:""};
+async function openDraft(id){const v=S.videos[id];if(!v||!v.draft)return;DRV.id=id;DRV.url="";const d=$("#draftDlg"),vid=$("#drVideo"),msg=$("#drMsg");
+  $("#drTitle").textContent=v.title||"Untitled";
+  $("#drSub").textContent=`Draft${v.draft.round>1?" "+v.draft.round:""}, uploaded ${v.draft.at?niceAgo(v.draft.at):""}${v.draft.by?" by "+dispName(v.draft.by):""}${v.draft.size?" · "+fmtMB(v.draft.size):""}`;
+  const decide=isReviewer()&&v.status==="In review";$("#drOk").hidden=!decide;$("#drRe").hidden=!decide;
+  const sp=$("#drSp");sp.href=safeUrl(v.draft.webUrl)||"#";sp.hidden=!safeUrl(v.draft.webUrl);
+  const dl=$("#drDl");dl.removeAttribute("href");dl.classList.add("dis");
+  vid.removeAttribute("src");vid.hidden=true;msg.hidden=false;msg.innerHTML="Loading the draft…";
+  d.returnValue="";openDlg(d);
+  try{const it=await gjson(`/drives/${v.draft.driveId}/items/${v.draft.itemId}?$select=id,name,@microsoft.graph.downloadUrl`);
+    if(DRV.id!==id||!d.open)return;const u=it["@microsoft.graph.downloadUrl"];if(!u)throw new Error("SharePoint didn’t give a link to the file");
+    DRV.url=u;vid.src=u;vid.hidden=false;msg.hidden=true;dl.href=u;dl.setAttribute("download",it.name||"draft.mp4");dl.classList.remove("dis")}
+  catch(e){if(DRV.id!==id)return;msg.innerHTML=e.signin?`${esc(e.message)}<br><button type="button" class="btn small primary" data-ms="signin-draft">Sign in with Microsoft</button>`:esc(e.status===404?"This draft was moved or deleted in SharePoint":e.message)}}
+function niceAgo(t){const m=Math.round((Date.now()-t)/60000);return m<1?"just now":m<60?m+" min ago":m<1440?Math.round(m/60)+" h ago":nice(iso(new Date(t)))}
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-ms]");if(!b)return;e.preventDefault();const k=b.dataset.ms;
+  const refresh=()=>{const d=$("#upDlg");if(d.open){$("#upMs").innerHTML=upMsHTML();$("#upDrop").classList.toggle("off",!msAccount())}if(S.tab==="settings")render()};
+  if(k==="signin"||k==="switch")msSignIn(refresh);
+  else if(k==="signin-draft")msSignIn(()=>{if(DRV.id)openDraft(DRV.id)});
+  else if(k==="signout"){const a=msAccount();if(MS.app&&a){MS.app.clearCache?MS.app.clearCache({account:a}).then(refresh):(MS.app.setActiveAccount(null),refresh())}}
+  else if(k==="test")spTest()});
+async function spTest(){
+  try{await msApp();if(!msAccount()){toast("Sign in with Microsoft first");return}
+    const drive=await spDrive();await gjson(`/drives/${drive}/root:/${encP(spCfg().base)}?$select=id`);toast("SharePoint works. The videos folder was found ✓")}
+  catch(e){toast("SharePoint test failed: "+e.message)}}
+
+
+/* upload window events */
+(function(){const d=$("#upDlg"),drop=$("#upDrop"),inp=$("#upFile");
+  inp.addEventListener("change",()=>{const f=inp.files&&inp.files[0];if(f)upStart(f)});
+  drop.addEventListener("click",e=>{if(drop.classList.contains("off")){e.preventDefault();toast(spOn()?"Sign in with Microsoft first":"SharePoint isn’t set up yet")}});
+  ["dragenter","dragover"].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.add("over")}));
+  ["dragleave","drop"].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.remove("over")}));
+  drop.addEventListener("drop",e=>{const f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];if(f)upStart(f)});
+  $("#upLink").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();d.close("link")}});
+  d.addEventListener("close",()=>{const r=d.returnValue,v=S.videos[UPD.id];if(!v)return;
+    if(r==="nofile"){sendForReview(v)}
+    else if(r==="link"){const u=safeUrl($("#upLink").value);if(!u){if($("#upLink").value.trim())toast("That doesn’t look like a link");return}
+      const ok=["Approved","Ready"].includes(v.status);putVideo(ok?{...withStatus(v,"Ready"),finalLink:u}:{...v,finalLink:u});if(ok){celebrate(v.id,"Ready");toast("Ready to post")}}});
+  const dd=$("#draftDlg");dd.addEventListener("close",()=>{const vid=$("#drVideo");try{vid.pause()}catch(_){}vid.removeAttribute("src");vid.load&&vid.load();
+    const r=dd.returnValue,v=S.videos[DRV.id];DRV.id=null;if(!v)return;
+    if(r==="approve")approveVideo(v);else if(r==="reedit")askReedit(v)});
+  $("#drDl").addEventListener("click",e=>{if(!DRV.url){e.preventDefault();toast("The draft is still loading")}});
+})();
+/* drop a video file straight onto a row in Edit order */
+document.addEventListener("dragover",e=>{const r=e.target.closest&&e.target.closest(".erow[data-fid]");if(!r||!spOn()||!e.dataTransfer||![...e.dataTransfer.types].includes("Files"))return;
+  const v=S.videos[r.dataset.fid];if(!canUp(v))return;e.preventDefault();document.querySelectorAll(".erow.fdrop").forEach(x=>x!==r&&x.classList.remove("fdrop"));r.classList.add("fdrop")});
+document.addEventListener("dragleave",e=>{const r=e.target.closest&&e.target.closest(".erow.fdrop");if(r&&!r.contains(e.relatedTarget))r.classList.remove("fdrop")});
+document.addEventListener("drop",e=>{const r=e.target.closest&&e.target.closest(".erow[data-fid]");document.querySelectorAll(".erow.fdrop").forEach(x=>x.classList.remove("fdrop"));
+  if(!r||!spOn()||!e.dataTransfer||!e.dataTransfer.files||!e.dataTransfer.files.length)return;e.preventDefault();const v=S.videos[r.dataset.fid],f=e.dataTransfer.files[0];if(!canUp(v))return;
+  if(!isVideoFile(f)){toast("That isn’t a video file");return}
+  if(msAccount()&&EDIT_POOL.concat(["In review"]).includes(v.status)){spUpload(v.id,"draft",f);toast(`Uploading the draft of “${v.title||"Untitled"}” in the background`)}
+  else openUpload(v.id,EDIT_POOL.includes(v.status)||v.status==="In review"?"draft":"final")});
+
 /* ---------- render ---------- */
 function isTyping(){const a=document.activeElement;return a&&a.closest&&a.closest("#main")&&!a.dataset.live&&(a.tagName==="TEXTAREA"||(a.tagName==="INPUT"&&/^(text|number)$/.test(a.type)))}
 let VT_ON=false;
@@ -4356,7 +4609,7 @@ function render(){
   segInds(m);
   document.querySelectorAll(".mbar button").forEach(b=>b.setAttribute("aria-current",b.dataset.mtab===S.tab?"page":"false"));
   updateBell();updateMe();
-  if(S.tab==="settings"){loadBackups();loadTeam()}
+  if(S.tab==="settings"){loadBackups();loadTeam();if(spOn()&&!MS.app)msApp().then(()=>{if(S.tab==="settings")render()},()=>{})}
   moveInd();
   window.scrollTo(0,y);
   if(live){const e=m.querySelector(`[data-live="${live}"]`);if(e){e.focus();if(sel!=null&&e.setSelectionRange)try{e.setSelectionRange(sel,sel)}catch(_){}}}
@@ -5333,7 +5586,10 @@ function showAlert(v,kind){
   const rev=safeUrl(v.reviewLink);
   let body="";
   if(kind==="review")body=`<div class="al-top"><span class="al-pill">Review</span>${x}</div>${title}<small>${isCar(v)?"Carousel":"Reel"}, round ${v.round||1}${v.shotDate?", shot "+esc(nice(v.shotDate)):""}</small>
+    ${v.draft&&spOn()?`<div class="al-btns"><button class="al-open al-watch" data-al="watch">▶ Watch draft</button></div>`:""}
     <div class="al-btns"><button class="al-done" data-al="reedit">Re-edit</button><button class="al-open" data-al="approve">Approve</button></div>`;
+  else if(kind==="approved"&&spOn())body=`<div class="al-top"><span class="al-pill">Approved</span>${x}</div>${title}<small>${esc(reviewerName())} approved it. Upload the final version and it becomes ready to post.</small>
+    <div class="al-btns"><button class="al-done" data-al="x">Later</button><button class="al-open" data-al="upfinal">Upload final</button></div>`;
   else if(kind==="approved")body=`<div class="al-top"><span class="al-pill">Approved</span>${x}</div>${title}<small>${esc(reviewerName())} approved it. Add the final link to make it ready to post.</small>
     <div class="al-link"><input class="al-in" type="text" placeholder="Paste the final video link" autocomplete="off"><button class="al-open" data-al="savelink">Save</button></div>`;
   else if(kind==="reedit")body=`<div class="al-top"><span class="al-pill warn">Re-edit</span>${x}</div>${title}<small>${esc(reviewerName())} asked for changes${v.round>1?`, round ${v.round}`:""}:</small>
@@ -5443,6 +5699,8 @@ document.addEventListener("click",e=>{
   if(k==="scheduled"&&v){putVideo(withStatus(v,"Scheduled"));calFx(v);toast(`“${v.title||"Untitled"}” scheduled. It becomes Posted by itself at ${v.postTime?fmtT(v.postTime):"its time"}`)}
   if(k==="posted"&&v){putVideo(withStatus(v,"Posted"));celebrate(v.id,"Posted");toast(`“${v.title||"Untitled"}” marked as posted`)}
   else if(k==="approve"&&v)approveVideo(v);
+  else if(k==="watch"&&v){openDraft(v.id);return}
+  else if(k==="upfinal"&&v)openUpload(v.id,"final");
   else if(k==="reedit"&&v)askReedit(v);
   else if(k==="startedit"&&v){putVideo(withStatus(v,"Editing"));toast("Moved to Editing. The notes stay on the video")}
   else if(k==="savelink"&&v){const u=safeUrl(el.querySelector(".al-in").value);if(!u){toast("Paste a link that starts with http");return}
@@ -5757,6 +6015,8 @@ document.addEventListener("click",async e=>{
   const act=b.dataset.act;
   if(act==="openAdd")openAdd();
   else if(act==="copy")copyText(b.dataset.text);
+  else if(act==="upDraft"){openUpload(b.dataset.id,"draft")}
+  else if(act==="upFinal"){openUpload(b.dataset.id,"final")}
   else if(act==="dlAdd"){const t=document.getElementById("dlIn");dlAdd(t?t.value:DLR.draft)}
   else if(act==="dlQ"){lsSet("seb-dl-q",b.dataset.v);render()}
   else if(act==="dlCk"){lsSet("seb-dl-ck",b.dataset.v);render()}
@@ -6009,6 +6269,7 @@ document.addEventListener("change",e=>{
     else if(k==="pillarFrom"){S.settings.pillarFrom=t.value}
     else if(k==="editLead"){S.settings.editLead=+t.value}
     else if(k==="reviewers"){S.settings.reviewers=t.value.trim()}
+    else if(/^sp[A-Z]/.test(k)){S.settings[k]=t.value.trim();MS.drive=null}
     else{const n=parseInt(t.value,10);if(n>0)S.settings[k]=n}
     putSettings();render();return;
   }
