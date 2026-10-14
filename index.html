@@ -2305,6 +2305,83 @@ body.viewonly [data-act="pauseAll"],body.viewonly [data-act="resumeAll"],body.vi
 /* quiet text link inside the extra-slot dialog */
 .slot-alt{display:inline-block;margin:10px 0 0;padding:0;border:0;background:none;font:inherit;font-size:12.5px;color:var(--muted);text-decoration:underline;text-decoration-color:rgba(127,127,127,.35);text-underline-offset:3px;cursor:pointer}
 .slot-alt:hover{color:var(--ink);text-decoration-color:currentColor}
+/* ================= v104: teleprompter, copy today's plan, victory lap ================= */
+.ov-copy{display:inline-flex;align-items:center;margin-left:auto;font-size:12.5px;padding:6px 12px;border-radius:999px;gap:6px}
+.ov-copy svg{flex:none}
+#scriptTp{gap:7px}
+/* teleprompter: always black, like a real prompter, in both themes */
+dialog.tp{position:fixed;inset:0;width:100vw;height:100dvh;max-width:none;max-height:none;margin:0;padding:0;border:0;border-radius:0;background:#050605!important;color:#fff;overflow:hidden;box-shadow:none!important}
+dialog.tp::backdrop{background:#000}
+html body dialog#tpDlg.tp{background:#050605!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;opacity:1!important}
+dialog#tpDlg.tp::before,dialog#tpDlg.tp::after{display:none!important}
+.tp-scroll{background:#050605}
+dialog.tp[open]{animation:tpIn .32s cubic-bezier(.2,.8,.2,1)}
+@keyframes tpIn{from{opacity:0;transform:scale(1.02)}to{opacity:1;transform:none}}
+.tp-scroll{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;cursor:default}
+.tp-scroll::-webkit-scrollbar{display:none}
+.tp-text{max-width:min(1100px,92vw);margin:0 auto;padding:38vh 0 75vh;font:700 var(--tps,52px)/1.42 "Inter",system-ui,sans-serif;letter-spacing:-.005em;color:#fff;transition:font-size .2s ease}
+.tp-text.mir{transform:scaleX(-1)}
+.tp-text *{color:inherit!important;background:none!important;font-size:inherit!important;font-family:inherit!important;line-height:inherit!important;font-weight:inherit!important;border:0!important;margin:0 0 .55em!important;padding:0!important;text-align:left!important}
+.tp-text a{text-decoration:none}.tp-text img,.tp-text table,.tp-text hr{display:none!important}
+.tp-text b,.tp-text strong{color:#AAFF00!important}
+.tp-line{position:absolute;left:0;right:0;top:38vh;height:calc(var(--tps,52px)*1.42);transform:translateY(-2px);pointer-events:none;border-top:1px solid rgba(170,255,0,.35);border-bottom:1px solid rgba(170,255,0,.35);background:rgba(170,255,0,.07)}
+.tp-line::before,.tp-line::after{content:"";position:absolute;top:50%;width:0;height:0;border:9px solid transparent;transform:translateY(-50%)}
+.tp-line::before{left:10px;border-left-color:#AAFF00}.tp-line::after{right:10px;border-right-color:#AAFF00}
+.tp-fade{position:absolute;left:0;right:0;pointer-events:none}
+.tp-fade.t{top:0;height:24vh;background:linear-gradient(#050605 25%,rgba(5,6,5,0))}
+.tp-fade.b{bottom:0;height:34vh;background:linear-gradient(rgba(5,6,5,0),#050605 80%)}
+.tp-prog{position:absolute;left:0;top:0;height:3px;width:100%;transform-origin:0 50%;transform:scaleX(var(--p,0));background:#AAFF00;box-shadow:0 0 12px #AAFF00}
+.tp-bar{position:absolute;top:max(12px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:6px;padding:6px;border-radius:999px;background:rgba(28,30,26,.72);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);transition:opacity .35s ease,transform .35s ease;white-space:nowrap;max-width:calc(100vw - 24px)}
+.tp.playing.calm .tp-bar,.tp.playing.calm .tp-go{opacity:0;pointer-events:none}
+.tp.playing.calm .tp-bar{transform:translate(-50%,-8px)}
+.tp-bar button{all:unset;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:34px;padding:0 8px;border-radius:999px;color:#fff;font:600 13px/1 "Inter",system-ui,sans-serif;box-sizing:border-box;transition:background .2s}
+.tp-bar button:hover{background:rgba(255,255,255,.12)}
+.tp-bar button:focus-visible{outline:2px solid #AAFF00;outline-offset:1px}
+.tp-bar button.on{background:#AAFF00;color:#0B0B0C}
+.tp-bar .sep{width:1px;height:20px;background:rgba(255,255,255,.14);margin:0 2px}
+.tp-bar .val{font:700 13px/1 "Inter",system-ui;color:#AAFF00;min-width:52px;text-align:center}
+.tp-bar .lbl{font:500 11px/1 "Inter",system-ui;color:rgba(255,255,255,.55);padding:0 2px}
+.tp-left{font:600 12px/1 "Inter",system-ui;color:rgba(255,255,255,.6);padding:0 8px;min-width:58px;text-align:center}
+.tp-go{all:unset;position:absolute;left:50%;bottom:max(26px,calc(env(safe-area-inset-bottom) + 14px));transform:translateX(-50%);cursor:pointer;display:flex;align-items:center;gap:10px;padding:14px 26px 14px 22px;border-radius:999px;background:#AAFF00;color:#0B0B0C;font:800 15px/1 "Inter",system-ui;box-shadow:0 10px 40px rgba(170,255,0,.35),inset 0 1px 0 rgba(255,255,255,.6);transition:opacity .35s,transform .2s}
+.tp-go:active{transform:translateX(-50%) scale(.96)}
+.tp-go:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.tp-cd{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;font:900 min(42vw,320px)/1 "Inter",system-ui;color:#AAFF00;text-shadow:0 0 60px rgba(170,255,0,.55);opacity:0}
+.tp-cd.go{animation:tpCd .9s cubic-bezier(.2,.8,.2,1)}
+@keyframes tpCd{0%{opacity:0;transform:scale(1.5)}25%{opacity:1;transform:scale(1)}80%{opacity:1}100%{opacity:0;transform:scale(.85)}}
+.tp-help{position:absolute;right:16px;bottom:max(16px,env(safe-area-inset-bottom));font:500 11px/1.5 "Inter",system-ui;color:rgba(255,255,255,.38);text-align:right;transition:opacity .35s}
+.tp.playing.calm .tp-help{opacity:0}
+@media (max-width:640px){
+  .tp-bar{gap:2px;padding:4px}.tp-bar button{min-width:30px;height:32px;padding:0 6px;font-size:12px}
+  .tp-bar .lbl,.tp-help,.tp-bar .hide-ph{display:none}.tp-bar .val{min-width:30px}.tp-left{min-width:40px;padding:0 4px}
+  .tp-text{max-width:90vw}
+}
+/* victory lap */
+#lap{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;background:radial-gradient(120% 90% at 50% 40%,rgba(14,18,10,.9),rgba(3,4,3,.97));backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);opacity:0;transition:opacity .45s ease;cursor:pointer}
+#lap.on{opacity:1}
+#lap canvas{position:absolute;inset:0;width:100%;height:100%}
+.lap-card{position:relative;text-align:center;color:#fff;transform:translateY(-9vh);padding:0 20px}
+.lap-card small{display:block;font:700 12px/1 "Inter",system-ui;letter-spacing:.22em;text-transform:uppercase;color:#AAFF00;opacity:0;transform:translateY(8px);transition:all .6s .2s cubic-bezier(.2,.8,.2,1)}
+.lap-card b{display:block;font:900 clamp(96px,22vw,210px)/.95 "Inter",system-ui;letter-spacing:-.05em;color:#fff;text-shadow:0 0 50px rgba(170,255,0,.45);font-variant-numeric:tabular-nums;margin:14px 0 6px;opacity:0;transform:scale(.8);transition:all .7s .25s cubic-bezier(.2,1.2,.3,1)}
+.lap-card b i{font-style:normal;color:#AAFF00}
+.lap-card h3{margin:0;font:800 clamp(20px,4.4vw,30px)/1.15 "Inter",system-ui;letter-spacing:-.01em;opacity:0;transform:translateY(8px);transition:all .6s .45s cubic-bezier(.2,.8,.2,1)}
+.lap-card p{margin:10px auto 0;max-width:440px;font:500 14px/1.5 "Inter",system-ui;color:rgba(255,255,255,.66);opacity:0;transform:translateY(8px);transition:all .6s .65s cubic-bezier(.2,.8,.2,1)}
+#lap.on .lap-card>*{opacity:1;transform:none}
+.lap-card em.lap-next{font-style:normal;font-weight:800;color:#AAFF00}
+.lap-hint{position:absolute;bottom:max(18px,env(safe-area-inset-bottom));left:0;right:0;text-align:center;font:500 11.5px/1 "Inter",system-ui;color:rgba(255,255,255,.4)}
+
+/* ===== waiting on the reviewer timer ===== */
+.rvtimer{display:inline-flex;align-items:center;gap:5px;margin-left:6px;padding:3px 9px 3px 7px;border-radius:999px;font-size:12px;font-weight:600;line-height:1.2;white-space:nowrap;vertical-align:middle;background:rgba(209,162,58,.13);border:1px solid rgba(209,162,58,.32);color:#7a5d12}
+.rvtimer b{font-weight:800;font-variant-numeric:tabular-nums}
+.rvtimer svg{flex:none;animation:rvFlip 3.2s cubic-bezier(.6,0,.3,1) infinite}
+@keyframes rvFlip{0%,80%{transform:rotate(0)}100%{transform:rotate(180deg)}}
+.rvtimer.lv1{background:rgba(230,140,40,.16);border-color:rgba(230,140,40,.42);color:#9a4f06}
+.rvtimer.lv2{background:rgba(214,64,52,.13);border-color:rgba(214,64,52,.42);color:#b42318;animation:rvPulse 2.4s ease-in-out infinite}
+@keyframes rvPulse{0%,100%{box-shadow:0 0 0 0 rgba(214,64,52,0)}50%{box-shadow:0 0 0 4px rgba(214,64,52,.12)}}
+.rvtimer.mini{padding:1px 6px 1px 5px;gap:3px;font-size:10.5px;margin-left:5px}
+.rvtimer.mini svg{width:10px;height:10px}
+.stsel+.rvtimer{display:flex;width:max-content;margin:6px 0 0}
+.mp .rvtimer.mini{margin:2px 0 0;display:flex;width:max-content;max-width:100%}
+@media (prefers-reduced-motion:reduce){.rvtimer svg,.rvtimer.lv2{animation:none}}
 /* ================================================================
    DARK MODE — final layer (v73)
    One place for every dark rule. The theme script in <head> always sets
@@ -2568,6 +2645,9 @@ body.viewonly [data-act="pauseAll"],body.viewonly [data-act="resumeAll"],body.vi
   :root[data-theme="dark"] section.panel{background:var(--d-panel)!important}
   :root[data-theme="dark"] tbody tr{background:var(--d-card)!important}
 }
+:root[data-theme="dark"] .rvtimer{background:rgba(242,193,78,.12)!important;border-color:rgba(242,193,78,.34)!important;color:#F2C14E!important}
+:root[data-theme="dark"] .rvtimer.lv1{background:rgba(255,160,70,.14)!important;border-color:rgba(255,160,70,.42)!important;color:#FFB066!important}
+:root[data-theme="dark"] .rvtimer.lv2{background:rgba(255,92,80,.14)!important;border-color:rgba(255,92,80,.45)!important;color:#FF8A80!important}
 
 /* ================================================================
    iPHONE — minimal layer (v82)
@@ -2954,7 +3034,7 @@ body.viewonly [data-act="pauseAll"],body.viewonly [data-act="resumeAll"],body.vi
       <b>Drop the video here</b><span>or click to choose a file</span></label>
     <p class="up-where" id="upWhere"></p>
     <details class="up-alt" id="upAlt"><summary>Paste a link instead</summary><div class="up-linkrow"><input class="copybox" id="upLink" type="url" placeholder="Paste the SharePoint link" autocomplete="off"><button class="btn" value="link">Save link</button></div></details>
-    <div class="foot"><button class="btn" value="cancel">Cancel</button><button class="btn ghost" value="nofile" id="upNoFile" title="Send for review without uploading a file">Send without a file</button></div>
+    <div class="foot"><button class="btn" value="cancel">Cancel</button><button class="btn ghost" value="nofile" id="upNoFile" title="Send for review without uploading a file">Send without a file</button><button class="btn primary" value="usedraft" id="upUseDraft" hidden title="Copies the draft Zain approved into the Final folder. Nothing to upload">Use approved draft</button></div>
   </form>
 </dialog>
 <dialog id="draftDlg" class="wide">
@@ -3119,7 +3199,7 @@ function folder(s){
 function slate(s){return s?`<span class="slate" style="--h:${hue(s)}"><span>${esc(niceW(s))}</span></span>`:`<span class="slate none"><span>No shot date</span></span>`}
 const ST_MAIN=["Shot","Editing","In review","Ready","Scheduled","Posted"];
 function statusSelect(v){
-  return `<button type="button" class="status stsel${mayEdit(v.id)?" mine":""}" data-act="stMenu" data-id="${v.id}" data-stsel="${v.id}" style="--c:${SC[v.status]||"#888"}" aria-haspopup="listbox" aria-label="Status: ${esc(v.status)}"><i></i><span>${esc(v.status)}</span><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;
+  return `<button type="button" class="status stsel${mayEdit(v.id)?" mine":""}" data-act="stMenu" data-id="${v.id}" data-stsel="${v.id}" style="--c:${SC[v.status]||"#888"}" aria-haspopup="listbox" aria-label="Status: ${esc(v.status)}"><i></i><span>${esc(v.status)}</span><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>${rvTimer(v)}`;
 }
 function stMenuItems(v){
   const out=[];
@@ -3863,7 +3943,7 @@ function todayPosts(){
       const cls=late?"now":soon?"soon":"";
       clockHtml=`<span class="post-clock${cls?" "+cls:""}" data-due="${due}"><i class="post-clock-dot"></i><span class="post-clock-val">${diff<0?str+" ago":str}</span></span>`}
     return `<div class="tp${v.status==="Posted"?" done":""}${late?" late":""}"><span class="tp-t">${v.postTime?fmtT(v.postTime):"No time"}</span>
-      <span class="tp-n"><b>${esc(v.title||"Untitled")}</b><small><i style="background:${SC[v.status]}"></i>${esc(v.status)}${isCar(v)?", carousel":""}${clockHtml}${late?` <span class="tag warn">Overdue</span>`:soon?` <span class="tag new">${now>=due?"Now":"Soon"}</span>`:""}</small></span>
+      <span class="tp-n"><b>${esc(v.title||"Untitled")}</b><small><i style="background:${SC[v.status]}"></i>${esc(v.status)}${isCar(v)?", carousel":""}${rvTimer(v,true)}${clockHtml}${late?` <span class="tag warn">Overdue</span>`:soon?` <span class="tag new">${now>=due?"Now":"Soon"}</span>`:""}</small></span>
       <span class="tp-a">${v.status==="Posted"?`<span class="tp-ok">✓ Posted</span>`:v.status==="Scheduled"?`<span class="tp-ok sched">✓ Scheduled</span>`:`${lnk?`<a class="iconbtn" href="${esc(lnk)}" data-prev="${v.id}" target="_blank" rel="noopener noreferrer">Open</a>${dlBtn(v,"iconbtn")}`:""}${v.status==="Ready"?`<button class="iconbtn" data-act="markScheduled" data-id="${v.id}">Scheduled</button>${slideHTML(v.id,"Slide to post","tp")}`:""}`}</span></div>`}).join("");
   const open=slots.filter(s=>!L.some(v=>v.postTime===s.tm&&kindOf(v)===s.k)).length;
   return `<section class="panel"><div class="phead"><h2>Today’s posts</h2><span class="stat">${posted} of ${L.length} posted${open?`, ${open} empty slot${open>1?"s":""}`:""}</span></div>
@@ -3930,7 +4010,7 @@ function vOverview(){
     :todo.length?`To cover ${OR.label}: ${todo.join(" and ")}.`
     :empty?`Assign your ${empty} ready video${empty===1?"":"s"} to the empty slots, or press Reshuffle.`
     :`Nothing left to edit or shoot for ${OR.label}.`;
-  const waitNote=[review?`<b>${review}</b> ${review===1?"is":"are"} with ${esc(reviewerName())} for review`:"",link?`<b>${link}</b> ${link===1?"needs its":"need their"} final link`:""].filter(Boolean).join(" and ");
+  const waitNote=[review?`<b>${review}</b> ${review===1?"is":"are"} with ${esc(reviewerName())} for review${(()=>{const w=vids().filter(v=>v.status==="In review").map(reviewSince).filter(Boolean);if(!w.length)return "";const ms=Date.now()-Math.min(...w);return ` <span class="rvtimer mini lv${rvLevel(ms)}" title="Longest wait">${RV_HG}<b>${fmtWait(ms)}</b></span>`})()}`:"",link?`<b>${link}</b> ${link===1?"needs its":"need their"} final link`:""].filter(Boolean).join(" and ");
   // pipeline
   const counts=STATUSES.map(s=>({...s,n:all.filter(v=>v.status===s.k).length})).filter(c=>c.n);
   const tot=all.length||1;
@@ -3943,7 +4023,7 @@ function vOverview(){
   return `${awayBanner()}
   <section class="panel ov">
     <div class="phead"><h2>${esc(niceW(t))}</h2>
-      <div class="ovtoday">${(()=>{const g=shootGoalToday();return `<span>Shot today <b>${shotT}</b>/${g}</span><i style="--p:${Math.min(1,shotT/g)}"></i>`})()}${(()=>{const ep=editPlan();const goal=edT+ep.todayLeft;const s=editStreak();return `<span class="gwrap">${goalRing(edT,ep.todayOff?0:goal)}<span>${ep.todayOff?"Day off":`Edited <b>${edT}</b>/${goal||edT}`}${s>1?`<em class="streak">🔥 ${s}-day streak</em>`:""}</span></span>`})()}</div></div>
+      <div class="ovtoday">${(()=>{const g=shootGoalToday();return `<span>Shot today <b>${shotT}</b>/${g}</span><i style="--p:${Math.min(1,shotT/g)}"></i>`})()}${(()=>{const ep=editPlan();const goal=edT+ep.todayLeft;const s=editStreak();return `<span class="gwrap">${goalRing(edT,ep.todayOff?0:goal)}<span>${ep.todayOff?"Day off":`Edited <b>${edT}</b>/${goal||edT}`}${s>1?`<em class="streak">🔥 ${s}-day streak</em>`:""}</span></span>`})()}<button class="btn ov-copy" data-act="copyPlan" title="Copy today’s shoots, posts and edits as text for WhatsApp or Teams"><svg width="13" height="13" viewBox="0 0 16 16" aria-hidden="true"><rect x="5" y="5" width="9" height="9" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M11 3.5A1.5 1.5 0 0 0 9.5 2h-5A2.5 2.5 0 0 0 2 4.5v5A1.5 1.5 0 0 0 3.5 11" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>Copy today’s plan</button></div></div>
     <div class="ovk">
       <div class="k1 tap" data-act="ovGo" data-go="hand" title="Show these videos"><b>${inHand}</b><span>Videos in hand</span></div>
       <div class="tap" data-act="ovGo" data-go="ready" title="Show these videos"><b>${ready}</b><span>Ready to post</span></div>
@@ -4020,7 +4100,7 @@ function vVideos(){
   L.forEach(v=>{if(v.status!=="Posted"){main.push(v);return}const k=vidPeriod(v),key=k.slice(0,4)<cy?k.slice(0,4):k.slice(0,7);if(key===cm){main.push(v);return}(G[key]=G[key]||[]).push(v)});
   const rowOf=v=>`<tr class="${S.sel.has(v.id)?"sel":""}${(S.moreRows||{})[v.id]?" open":""}" data-k="v-${v.id}">
     <td class="ck"><input type="checkbox" data-act-ck="${v.id}"${S.sel.has(v.id)?" checked":""} aria-label="Select ${esc(v.title)}"></td>
-    <td class="title"><input type="text" value="${esc(v.title)}" data-f="title" data-id="${v.id}" aria-label="Title"><button class="mob-more" data-act="rowMore" data-id="${v.id}">${(S.moreRows||{})[v.id]?"Less":"Details"}</button>${(v.status==="Re-edit"||EDIT_POOL.includes(v.status))&&v.reviewNote?`<small class="rnote">Changes: ${esc(v.reviewNote)}</small>`:""}${v.status==="In review"?`<small class="rnote rv">With ${esc(reviewerName())} for review${v.round>1?`, round ${v.round}`:""}</small>`:""}</td>
+    <td class="title"><input type="text" value="${esc(v.title)}" data-f="title" data-id="${v.id}" aria-label="Title"><button class="mob-more" data-act="rowMore" data-id="${v.id}">${(S.moreRows||{})[v.id]?"Less":"Details"}</button>${(v.status==="Re-edit"||EDIT_POOL.includes(v.status))&&v.reviewNote?`<small class="rnote">Changes: ${esc(v.reviewNote)}</small>`:""}${v.status==="In review"&&v.round>1?`<small class="rnote rv">Review round ${v.round}</small>`:""}</td>
     <td class="c-fmt" data-l="Format"><select data-f="format" data-id="${v.id}" aria-label="Format"><option${v.format!=="Carousel"?" selected":""}>Reel</option><option${v.format==="Carousel"?" selected":""}>Carousel</option></select></td>
     <td class="c-pil" data-l="Pillar">${isCar(v)?`<span class="stat">Carousel</span>`:pillarSelect(`data-f="pillar" data-id="${v.id}" aria-label="Pillar" class="psel" style="--pc:${pillarColor(v.pillar)}"`,v.pillar||"")}</td>
     <td class="c-shot" data-l="Shot on"><input type="date" value="${esc(v.shotDate||"")}" data-f="shotDate" data-id="${v.id}" aria-label="Shot date" class="dt-in" style="--dc:${hue(v.shotDate)}"></td>
@@ -4064,7 +4144,7 @@ function vOrder(){
     const mix=g.items.map(x=>`<i style="background:${hue(x.v.shotDate)}" title="Shot ${esc(nice(x.v.shotDate)||"date unknown")}"></i>`).join("");
     const rows=g.items.map((x,k)=>{const idx=g.start+k;const v=x.v;const prev=idx>0?list[idx-1].v.shotDate:null;const clash=prev&&prev===v.shotDate;const late=v.postDate&&v.postDate<g.day;
       const pinned=S.queue.pins&&S.queue.pins[v.id]!=null;
-      const tags=(pinned?`<button class="tag pin" data-act="unpin" data-id="${v.id}" title="Unpin: let Shuffle move it again">Pinned ×</button>`:"")+(v.status==="Editing"?editTimer(v):"")+(v.status==="Re-edit"||(EDIT_POOL.includes(v.status)&&v.reviewNote)?`<span class="tag warn">Changes: ${esc((v.reviewNote||"see notes").slice(0,90))}</span>`:"")+(v.round>1&&EDIT_POOL.includes(v.status)?`<span class="tag">Round ${v.round}</span>`:"")+(tw[v.id]?`<span class="tag tp-to" title="Assigned while you’re away">→ ${esc(tw[v.id])}</span>`:"")+(x.fresh?`<span class="tag new">New</span>`:"")+(clash?`<span class="tag warn">Same shoot as above</span>`:"")+(late?`<span class="tag warn">Due before this</span>`:"");
+      const tags=(pinned?`<button class="tag pin" data-act="unpin" data-id="${v.id}" title="Unpin: let Shuffle move it again">Pinned ×</button>`:"")+(v.status==="Editing"?editTimer(v):"")+rvTimer(v)+(v.status==="Re-edit"||(EDIT_POOL.includes(v.status)&&v.reviewNote)?`<span class="tag warn">Changes: ${esc((v.reviewNote||"see notes").slice(0,90))}</span>`:"")+(v.round>1&&EDIT_POOL.includes(v.status)?`<span class="tag">Round ${v.round}</span>`:"")+(tw[v.id]?`<span class="tag tp-to" title="Assigned while you’re away">→ ${esc(tw[v.id])}</span>`:"")+(x.fresh?`<span class="tag new">New</span>`:"")+(clash?`<span class="tag warn">Same shoot as above</span>`:"")+(late?`<span class="tag warn">Due before this</span>`:"");
       return `<div class="erow${pinned?" pinned":""}" data-fid="${v.id}">
         <div class="num grip" title="Drag to reorder"><span class="n">${idx+1}</span><span class="g">⋮⋮</span></div>
         <div class="etitle"><span class="dot" style="background:${hue(v.shotDate)}"></span><div><b>${esc(v.title||"Untitled")}</b>${pillarTag(v)}<small>Shot ${esc(v.shotDate?nice(v.shotDate):"date unknown")}${v.postDate?`, posts ${esc(niceW(v.postDate))}${v.postTime?" "+fmtT(v.postTime):""}`:""}${tags}</small></div></div>
@@ -4185,11 +4265,11 @@ function monthView(){
     const car=all.filter(v=>v.postDate===d&&isCar(v)),TC=cslotsFor(d);
     const filled=T.filter(tm=>reels.some(v=>v.postTime===tm)).length;
     const pills=T.map(tm=>{const v=reels.find(x=>x.postTime===tm);if(!v&&d<t)return "";
-      return v?`<div class="mp" title="${esc(fmtT(tm)+", "+(v.title||"Untitled")+" ("+v.status+")")}"><i style="background:${SC[v.status]}"></i><span class="mt">${fmtT(tm).replace(":00","").replace(" ","").toLowerCase()}</span><span class="mn">${esc(v.title||"Untitled")}</span></div>`
+      return v?`<div class="mp" title="${esc(fmtT(tm)+", "+(v.title||"Untitled")+" ("+v.status+")")}"><i style="background:${SC[v.status]}"></i><span class="mt">${fmtT(tm).replace(":00","").replace(" ","").toLowerCase()}</span><span class="mn">${esc(v.title||"Untitled")}</span>${rvTimer(v,true)}</div>`
         :`<div class="mp open"><span class="mt">${fmtT(tm).replace(":00","").replace(" ","").toLowerCase()}</span><span class="mn">Open</span></div>`}).join("")
       +reels.filter(v=>!T.includes(v.postTime)).map(v=>`<div class="mp"><i style="background:${SC[v.status]}"></i><span class="mn">${esc(v.title||"Untitled")}</span></div>`).join("")
       +TC.map(tm=>{const v=car.find(x=>x.postTime===tm);if(!v&&d<t)return "";const tt=fmtT(tm).replace(":00","").replace(" ","").toLowerCase();
-        return v?`<div class="mp car" title="${esc("Carousel, "+fmtT(tm)+", "+(v.title||"Untitled")+" ("+v.status+")")}"><i style="background:${SC[v.status]}"></i><span class="mt">${tt}</span><span class="mn">${esc(v.title||"Untitled")}</span></div>`:`<div class="mp open car"><span class="mt">${tt}</span><span class="mn">Carousel</span></div>`}).join("")
+        return v?`<div class="mp car" title="${esc("Carousel, "+fmtT(tm)+", "+(v.title||"Untitled")+" ("+v.status+")")}"><i style="background:${SC[v.status]}"></i><span class="mt">${tt}</span><span class="mn">${esc(v.title||"Untitled")}</span>${rvTimer(v,true)}</div>`:`<div class="mp open car"><span class="mt">${tt}</span><span class="mn">Carousel</span></div>`}).join("")
       +car.filter(v=>!TC.includes(v.postTime)).map(v=>`<div class="mp car"><i style="background:${SC[v.status]}"></i><span class="mn">${esc(v.title||"Untitled")}</span></div>`).join("");
     const dd=+d.slice(8),dayAll=reels.concat(car),nP=dayAll.filter(v=>v.status==="Posted").length,nT=dayAll.length-nP;
     const bub=(nP?`<span class="mbub ok" title="${nP} posted">${nP}</span>`:"")+(nT?`<span class="mbub due" title="${nT} still to post">${nT}</span>`:"");
@@ -4330,7 +4410,7 @@ function vHistory(){
       <div><b>${posted.length}</b><span>All time</span></div>
     </div>
     <div class="toolbar"><input type="search" placeholder="Search posted videos" value="${esc(H.q)}" data-live="hq" aria-label="Search posted videos"></div>
-    ${missed.length?`<div class="card attn"><header><h3>Not marked as posted</h3><span class="count low">${missed.length}</span><button class="btn small" data-act="markAllPosted" style="margin-left:auto">Mark all as posted</button></header>${missed.map(v=>`<div class="hrow"><div class="hdate"><b>${+v.postDate.slice(8)}</b><span>${MON[+v.postDate.slice(5,7)-1]}</span></div><div class="etitle"><span class="dot" style="background:${SC[v.status]}"></span><div><b>${esc(v.title||"Untitled")}</b><small>${v.postTime?fmtT(v.postTime):"No time"}, still ${esc(v.status)}</small></div></div><div><button class="iconbtn" data-act="markPosted" data-id="${v.id}">Mark posted</button></div></div>`).join("")}</div>`:""}
+    ${missed.length?`<div class="card attn"><header><h3>Not marked as posted</h3><span class="count low">${missed.length}</span><button class="btn small" data-act="markAllPosted" style="margin-left:auto">Mark all as posted</button></header>${missed.map(v=>`<div class="hrow"><div class="hdate"><b>${+v.postDate.slice(8)}</b><span>${MON[+v.postDate.slice(5,7)-1]}</span></div><div class="etitle"><span class="dot" style="background:${SC[v.status]}"></span><div><b>${esc(v.title||"Untitled")}</b><small>${v.postTime?fmtT(v.postTime):"No time"}, still ${esc(v.status)}${rvTimer(v,true)}</small></div></div><div><button class="iconbtn" data-act="markPosted" data-id="${v.id}">Mark posted</button></div></div>`).join("")}</div>`:""}
     ${body||`<div class="empty"><b>No posts here yet</b>Videos appear once their status is Posted.</div>`}
   </section>`;
 }
@@ -4727,10 +4807,10 @@ function upMsHTML(){
 function openUpload(id,kind){const v=S.videos[id];if(!v)return;UPD.id=id;UPD.kind=kind;const d=$("#upDlg");
   const round=kind==="draft"?nextRound(v):(v.round||1);
   $("#upTitle").textContent=kind==="final"?"Upload the final video":"Upload the draft";
-  $("#upFor").textContent=kind==="final"?`“${v.title||"Untitled"}” is approved. The final link is added by itself and it becomes ready to post.`:`“${v.title||"Untitled"}”${round>1?`, round ${round}`:""}. It goes to ${reviewerName()} for review as soon as it’s uploaded.`;
+  $("#upFor").textContent=kind==="final"?`“${v.title||"Untitled"}” is approved. ${!isCar(v)&&v.draft&&v.draft.itemId?"Use the approved draft as the final, or upload a different file.":"The final link is added by itself and it becomes ready to post."}`:`“${v.title||"Untitled"}”${round>1?`, round ${round}`:""}. It goes to ${reviewerName()} for review as soon as it’s uploaded.`;
   $("#upWhere").textContent=spOn()?`Saved to SharePoint › …/${spCfg().base.split("/").slice(-1)[0]}/${spMonth(v)}/${kind==="final"?spCfg().final:spCfg().drafts}`:"";
   $("#upMs").innerHTML=upMsHTML();$("#upDrop").classList.toggle("off",!(spOn()&&msAccount()));
-  $("#upNoFile").hidden=kind!=="draft";$("#upAlt").hidden=kind!=="final";$("#upAlt").open=!spOn();$("#upLink").value="";$("#upFile").value="";
+  $("#upNoFile").hidden=kind!=="draft";$("#upUseDraft").hidden=!(kind==="final"&&!isCar(v)&&v.draft&&v.draft.itemId);$("#upAlt").hidden=kind!=="final";$("#upAlt").open=!spOn();$("#upLink").value="";$("#upFile").value="";
   d.returnValue="";openDlg(d);
   if(spOn())msApp().then(()=>{if(d.open&&UPD.id===id){$("#upMs").innerHTML=upMsHTML();$("#upDrop").classList.toggle("off",!msAccount())}},e=>{$("#upMs").innerHTML=`<div class="up-ms off">${esc(e.message)}</div>`})}
 function upStart(file){const v=S.videos[UPD.id];if(!v)return;
@@ -4791,6 +4871,7 @@ async function spTest(){
   $("#upLink").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();d.close("link")}});
   d.addEventListener("close",()=>{const r=d.returnValue,v=S.videos[UPD.id];if(!v)return;
     if(r==="nofile"){sendForReview(v)}
+    else if(r==="usedraft"){spPromoteDraft(v.id)}
     else if(r==="link"){const u=safeUrl($("#upLink").value);if(!u){if($("#upLink").value.trim())toast("That doesn’t look like a link");return}
       const ok=["Approved","Ready"].includes(v.status);putVideo(ok?{...withStatus(v,"Ready"),finalLink:u}:{...v,finalLink:u});if(ok){celebrate(v.id,"Ready");toast("Ready to post")}}});
   const dd=$("#draftDlg");dd.addEventListener("close",()=>{const vid=$("#drVideo");try{vid.pause()}catch(_){}vid.removeAttribute("src");vid.load&&vid.load();
@@ -6171,6 +6252,7 @@ function viewScript(id){
   $("#scriptBody").innerHTML=sc?safeHtml(sc.html):`<p class="sub">No script text here yet. ${s.scriptLink?"Open the original below.":""}</p>`;
   autoLink($("#scriptBody"));
   const a=$("#scriptOpen");if(s.scriptLink){a.href=s.scriptLink;a.hidden=false}else a.hidden=true;
+  const tpb=$("#scriptTp");if(tpb){tpb.dataset.id=id;tpb.hidden=!(sc&&sc.html)}
   const d=$("#scriptDlg");openDlg(d);$("#scriptBody").scrollTop=0;
 }
 function logShootVideos(id){
@@ -6233,9 +6315,15 @@ function autoPostScheduled(){
   vids().forEach(v=>{if(v.status==="Scheduled"){const due=dueMs(v);if(due!=null&&due<=now){putVideo({...withStatus(v,"Posted"),autoPosted:true,autoPostedAt:Date.now()},true);celebrate(v.id,"Posted");n++}}});
   if(n)render();
 }
+const PROMO_TRIED=new Set();
+function autoPromote(){if(!spOn()||!isEditor()||viewOnly())return;
+  vids().forEach(v=>{if(PROMO_TRIED.has(v.id)||isCar(v)||!v.draft||!v.draft.itemId||safeUrl(v.finalLink))return;
+    if(!(v.status==="Approved"||(v.status==="Ready"&&v.approvedAt)))return;if(v.finalPending&&Date.now()-v.finalPending<180000)return;if(!canUp(v))return;
+    PROMO_TRIED.add(v.id);putVideo({...v,finalPending:Date.now()},true);spPromoteDraft(v.id)})}
 function checkAlerts(){
   updateBell();
   if(!loaded)return;
+  try{autoPromote()}catch(_){}
   autoPostScheduled();
   loadSeen();const L=myAlerts();
   if(!SEEN){SEEN=new Set(L.map(x=>alertKey(x.v,x.k)));saveSeen();return} // first visit: no flood
@@ -6345,6 +6433,14 @@ function editElapsed(v){const st=editSession(v);if(!st)return null;const now=Dat
 function fmtClock(ms){if(ms==null)return "–";const m=Math.floor(ms/60000),hh=Math.floor(m/60);return hh?`${hh}h ${String(m%60).padStart(2,"0")}m`:`${m}m`}
 function pauseVideo(v,quiet){if(isPausedV(v))return;putVideo({...v,pauses:[...(v.pauses||[]),{a:Date.now(),b:null}].slice(-80)},quiet)}
 function resumeVideo(v,quiet){if(!isPausedV(v))return;putVideo({...v,pauses:(v.pauses||[]).map(p=>p.b?p:{...p,b:Date.now()})},quiet)}
+/* waiting on the reviewer: how long a video has been "In review" */
+function reviewSince(v){const l=(v.log||[]).filter(x=>x.s==="In review").pop();return (l&&l.at)||v.submittedAt||(v.draft&&v.draft.at)||null}
+function fmtWait(ms){const m=Math.max(0,Math.floor(ms/60000));if(m<60)return m+"m";const hh=Math.floor(m/60);if(hh<24)return hh+"h "+String(m%60).padStart(2,"0")+"m";const dd=Math.floor(hh/24);return dd+"d "+(hh%24)+"h"}
+function rvLevel(ms){return ms==null?0:ms>=864e5?2:ms>=144e5?1:0}   // amber after 4 hours, red after a day
+const RV_HG='<svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M4 1.8h8M4 14.2h8M4.8 2c0 3.2 3.2 4.4 3.2 6S4.8 10.8 4.8 14M11.2 2c0 3.2-3.2 4.4-3.2 6s3.2 2.8 3.2 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
+function rvTimer(v,mini){if(!v||v.status!=="In review")return "";const t=reviewSince(v),ms=t?Date.now()-t:null,me=isReviewer();
+  const who=me?"you":reviewerName(),since=t?new Date(t).toLocaleString("en-GB",{weekday:"short",day:"numeric",month:"short",hour:"numeric",minute:"2-digit"}):"";
+  return `<span class="rvtimer lv${rvLevel(ms)}${mini?" mini":""}" data-rvid="${v.id}" title="Waiting on ${esc(who)}${since?" since "+esc(since):""}${v.round>1?`, round ${v.round}`:""}">${RV_HG}${mini?"":`<span class="rvw">${me?"Waiting on you":"Waiting on "+esc(who)}</span>`}<b>${ms==null?"–":fmtWait(ms)}</b></span>`}
 function editTimer(v){if(v.status!=="Editing")return "";const p=isPausedV(v),ms=editElapsed(v);
   const arcSvg=`<span class="et-arc"><svg viewBox="0 0 22 22" width="22" height="22" aria-hidden="true"><circle class="et-arc-bg" cx="11" cy="11" r="9"/><circle class="et-arc-fg" cx="11" cy="11" r="9"/></svg><i class="et-arc-dot"></i></span>`;
   return `<span class="etimer${p?" paused":""}" data-id="${v.id}">${arcSvg}<b>${ms==null?"–":fmtClock(ms)}</b>${p?`<span style="font-size:11px;opacity:.7">paused</span>`:""}<button class="et-btn" data-act="${p?"resumeEdit":"pauseEdit"}" data-id="${v.id}" title="${p?"Resume":"Pause"}">${p?"▶":"⏸"}</button></span>`}
@@ -6418,7 +6514,8 @@ function askNotif(){
     if(S.tab==="settings")render();
   });
 }
-function osTest(){if(!osOn()){toast("Turn notifications on first");return}const opts={body:"Notifications are working. You’ll see reviews and posting reminders here.",icon:"icon-192.png",tag:"seb-test"};
+function osTest(){if(!osOn()){toast("Turn notifications on first");return}const opts={body:"Notifications are working. You’ll see reviews and posting reminders here.",icon:"icon-192.png",tag:"seb-test-"+Date.now(),silent:false};
+  setTimeout(()=>toast("Didn’t see a pop-up at the bottom right? Windows is hiding it. Open Windows Settings › System › Notifications, turn off Do not disturb, and switch on PB Dashboard and Google Chrome in the list."),2500);
   if(navigator.serviceWorker&&navigator.serviceWorker.controller)navigator.serviceWorker.ready.then(r=>r.showNotification("PB Dashboard",opts));else try{new Notification("PB Dashboard",opts)}catch(e){}}
 function osPanel(){
   if(!OSN)return `<p class="sub">This browser can’t show Windows notifications.</p>`;
@@ -6439,6 +6536,7 @@ if(navigator.serviceWorker)navigator.serviceWorker.addEventListener("message",e=
 /* live tickers: editing timer + post countdown — refresh every second */
 setInterval(()=>{
   /* editing elapsed time */
+  document.querySelectorAll(".rvtimer[data-rvid]").forEach(el=>{const v=S.videos[el.dataset.rvid];if(!v||v.status!=="In review")return;const t=reviewSince(v);if(!t)return;const ms=Date.now()-t;el.querySelector("b").textContent=fmtWait(ms);el.classList.remove("lv0","lv1","lv2");el.classList.add("lv"+rvLevel(ms))});
   document.querySelectorAll(".etimer[data-id]").forEach(el=>{const v=S.videos[el.dataset.id];if(v&&!isPausedV(v)){const ms=editElapsed(v);if(ms!=null)el.querySelector("b").textContent=fmtClock(ms)}});
   /* live posting countdown clocks */
   const nowMs=Date.now();
@@ -6662,7 +6760,7 @@ function popContent(tab){
   if(tab==="videos")return `<h4>All videos</h4>`+line("Total",all.length)+line("Waiting for edit",editPool().length)+line("Posted",c("Posted"));
   if(tab==="order"){const q=currentQueue().slice(0,3);return `<h4>Edit next</h4>`+(q.length?q.map((x,i)=>`<div class="pq"><i style="background:${hue(x.v.shotDate)}"></i>${i+1}. ${esc(x.v.title||"Untitled")}</div>`).join(""):`<p>Nothing waiting to edit</p>`)}
   if(tab==="schedule"){const hm=nowHM();const up=all.filter(v=>v.postDate&&v.status!=="Posted"&&(v.postDate>t||(v.postDate===t&&(v.postTime||"")>hm))).sort((a,b)=>postKey(a).localeCompare(postKey(b))).slice(0,3);
-    return `<h4>Posting next</h4>`+(up.length?up.map(v=>`<div class="pq"><i style="background:${SC[v.status]}"></i>${esc(v.title||"Untitled")}<small>${v.postDate===t?"Today":esc(niceW(v.postDate))}, ${fmtT(v.postTime)}</small></div>`).join(""):`<p>No upcoming posts</p>`)+line("Empty slots, next 7 days",emptySlots(7))}
+    return `<h4>Posting next</h4>`+(up.length?up.map(v=>`<div class="pq"><i style="background:${SC[v.status]}"></i>${esc(v.title||"Untitled")}<small>${v.postDate===t?"Today":esc(niceW(v.postDate))}, ${fmtT(v.postTime)}${rvTimer(v,true)}</small></div>`).join(""):`<p>No upcoming posts</p>`)+line("Empty slots, next 7 days",emptySlots(7))}
   const pl=planFor(t);return `<h4>Settings</h4>`+line("Reels a day",pl.times.length)+line("Edits a day",S.settings.editTarget)+`<p class="mono">${esc(folder(t))}</p>`;
 }
 const pop=$("#tabPop");let popT=null,popFor=null;
@@ -6861,6 +6959,7 @@ document.addEventListener("click",async e=>{
   else if(act==="qrevoke"){if(!await ask("Turn off your quick-login links?","Home Screen shortcuts made with them will ask for your password again.","Turn off"))return;call("revokeDeviceKeys",token).then(n=>toast(n?`${n} link${n>1?"s":""} turned off`:"You had no quick-login links")).catch(()=>toast("Couldn’t turn them off"))}
   else if(act==="more"){const mm=$("#moreMenu");mm.hidden=!mm.hidden;b.setAttribute("aria-expanded",String(!mm.hidden))}
   else if(act==="mGame"){$("#moreMenu").hidden=true;GR.open()}
+  else if(act==="copyPlan"){copyPlan()}
   else if(act==="mImport"){$("#moreMenu").hidden=true;$("#importBtn").click()}
   else if(act==="mExport"){$("#moreMenu").hidden=true;$("#exportBtn").click()}
   else if(act==="mOut"){$("#moreMenu").hidden=true;$("#logoutBtn").click()}
@@ -7133,7 +7232,15 @@ $("#logoutBtn").addEventListener("click",async()=>{await flush();if(token)try{aw
     lsSet(TKEY,next);applyTheme(next);
   });
 })();
-if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
+/* keeps the app on the newest version: checks GitHub every 10 minutes and whenever the window comes back,
+   then reloads by itself once nothing is uploading, no window is open and nobody is typing */
+if("serviceWorker" in navigator){let hadCtl=!!navigator.serviceWorker.controller,reloading=false;
+  navigator.serviceWorker.register("sw.js").then(reg=>{const up=()=>{try{reg.update().catch(()=>{})}catch(_){}};setInterval(up,10*60000);
+    addEventListener("focus",up);document.addEventListener("visibilitychange",()=>{if(!document.hidden)up()})}).catch(()=>{});
+  navigator.serviceWorker.addEventListener("controllerchange",()=>{if(!hadCtl){hadCtl=true;return}if(reloading)return;reloading=true;
+    const busy=()=>UP.list.some(j=>!["Sent","Failed"].includes(j.state))||document.querySelector("dialog[open]")||document.getElementById("lap")||(document.activeElement&&/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)&&!document.hidden);
+    const go=()=>{if(busy()){setTimeout(go,4000);return}location.reload()};
+    toast("A new version of PB Dashboard is here. Updating…");setTimeout(go,2500)})}
 render();
 if(!GAS){
   $("#logoutBtn").hidden=true;loadLocal();render();
@@ -7148,6 +7255,161 @@ if(!GAS){
   if(qs.get("key")){qs.delete("key");try{history.replaceState(null,"",location.pathname+(qs.toString()?"?"+qs:""))}catch(e){}}
   go();
 }
+/* ================= v104: teleprompter for Fahad's scripts ================= */
+const TP=(()=>{
+  const SIZES=[30,36,42,48,56,64,74,86];
+  let d,sc,tx,raf=0,last=0,acc=0,playing=false,calmT=0,lock=null,pref={};
+  try{pref=JSON.parse(localStorage.getItem("pb-tp")||"{}")}catch(_){}
+  if(pref.size==null)pref.size=innerWidth<640?1:4;if(pref.speed==null)pref.speed=4;
+  const save=()=>{try{localStorage.setItem("pb-tp",JSON.stringify(pref))}catch(_){}};
+  const px=()=>SIZES[pref.size];
+  const pxs=()=>pref.speed*8*(px()/48);                 // reading speed in pixels a second, scaled with the text size
+  function build(){if(d)return;d=document.createElement("dialog");d.className="tp";d.id="tpDlg";d.setAttribute("aria-label","Teleprompter");
+    d.innerHTML=`<div class="tp-scroll"><div class="tp-text"></div></div><div class="tp-line"></div><i class="tp-fade t"></i><i class="tp-fade b"></i><i class="tp-prog"></i>
+    <div class="tp-bar" role="toolbar" aria-label="Teleprompter controls">
+      <button data-tp="close" title="Close (Esc)" aria-label="Close">✕</button><span class="sep"></span>
+      <span class="lbl">Speed</span><button data-tp="slow" aria-label="Slower" title="Slower (↓)">−</button><span class="val" data-v="speed"></span><button data-tp="fast" aria-label="Faster" title="Faster (↑)">+</button><span class="sep"></span>
+      <span class="lbl">Text</span><button data-tp="small" aria-label="Smaller text" title="Smaller text (−)">A−</button><button data-tp="big" aria-label="Bigger text" title="Bigger text (+)">A+</button><span class="sep"></span>
+      <button data-tp="mirror" title="Mirror for a teleprompter glass (M)" aria-label="Mirror">⇋<span class="hide-ph">&nbsp;Mirror</span></button>
+      <button data-tp="top" title="Back to the start (Home)" aria-label="Back to the start">⤒</button><span class="sep"></span><span class="tp-left"></span></div>
+    <button class="tp-go" data-tp="play"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" fill="currentColor"/></svg><span>Start</span></button>
+    <div class="tp-cd" aria-hidden="true"></div>
+    <div class="tp-help">Space start / pause · ↑ ↓ speed · tap the text to pause</div>`;
+    document.body.appendChild(d);sc=d.querySelector(".tp-scroll");tx=d.querySelector(".tp-text");
+    d.addEventListener("click",e=>{const b=e.target.closest("[data-tp]");if(b){act(b.dataset.tp);return}
+      if(e.target.closest(".tp-scroll"))toggle()});
+    d.addEventListener("keydown",e=>{const k=e.key;
+      if(k===" "||k==="Enter"&&!e.target.closest("button")){e.preventDefault();toggle()}
+      else if(k==="ArrowUp"||k==="ArrowRight"){e.preventDefault();act("fast")}else if(k==="ArrowDown"||k==="ArrowLeft"){e.preventDefault();act("slow")}
+      else if(k==="+"||k==="="){act("big")}else if(k==="-"||k==="_"){act("small")}else if(k==="m"||k==="M"){act("mirror")}else if(k==="Home"){e.preventDefault();act("top")}
+      wake()});
+    d.addEventListener("mousemove",wake);d.addEventListener("touchstart",e=>{if(!e.target.closest(".tp-scroll"))wake()},{passive:true});
+    sc.addEventListener("scroll",paintLeft,{passive:true});
+    d.addEventListener("close",()=>{stop();relLock()})}
+  function paint(){d.style.setProperty("--tps",px()+"px");tx.classList.toggle("mir",!!pref.mirror);
+    d.querySelector('[data-v="speed"]').textContent=pref.speed;d.querySelector('[data-tp="mirror"]').classList.toggle("on",!!pref.mirror);
+    d.querySelector(".tp-go span").textContent=playing?"Pause":sc.scrollTop>4?"Resume":"Start";
+    d.querySelector(".tp-go svg").innerHTML=playing?'<path d="M4 2.5h3v11H4zM9 2.5h3v11H9z" fill="currentColor"/>':'<path d="M4 2.5v11l9-5.5z" fill="currentColor"/>';
+    d.classList.toggle("playing",playing);paintLeft()}
+  function paintLeft(){if(!d)return;const max=Math.max(1,sc.scrollHeight-sc.clientHeight-innerHeight*.37);const left=Math.max(0,max-sc.scrollTop);
+    d.querySelector(".tp-prog").style.setProperty("--p",Math.min(1,sc.scrollTop/max).toFixed(4));
+    const s=Math.round(left/pxs());d.querySelector(".tp-left").textContent=`${Math.floor(s/60)}:${String(s%60).padStart(2,"0")} left`}
+  function act(a){
+    if(a==="close"){d.close();return}
+    if(a==="play"){toggle();return}
+    if(a==="fast")pref.speed=Math.min(15,pref.speed+1);if(a==="slow")pref.speed=Math.max(1,pref.speed-1);
+    if(a==="big"||a==="small"){const ratio=sc.scrollTop/Math.max(1,sc.scrollHeight);pref.size=Math.max(0,Math.min(SIZES.length-1,pref.size+(a==="big"?1:-1)));paint();sc.scrollTop=ratio*sc.scrollHeight}
+    if(a==="mirror")pref.mirror=!pref.mirror;
+    if(a==="top"){sc.scrollTop=0;acc=0}
+    save();paint();wake()}
+  function wake(){d.classList.remove("calm");clearTimeout(calmT);if(playing)calmT=setTimeout(()=>d.classList.add("calm"),2200)}
+  async function grabLock(){try{if("wakeLock" in navigator&&!lock){lock=await navigator.wakeLock.request("screen");lock.addEventListener("release",()=>lock=null)}}catch(_){}}
+  function relLock(){try{lock&&lock.release()}catch(_){}lock=null}
+  let cdT=[];
+  function toggle(){if(playing){stop();paint();wake();return}
+    const fromTop=sc.scrollTop<5;grabLock();
+    if(fromTop&&!RM){const cd=d.querySelector(".tp-cd");playing=true;paint();d.classList.add("calm");cdT.forEach(clearTimeout);
+      cdT=[3,2,1].map((n,i)=>setTimeout(()=>{if(!playing)return;cd.textContent=n;cd.classList.remove("go");void cd.offsetWidth;cd.classList.add("go");try{sfx("tick")}catch(_){}},i*900));
+      cdT.push(setTimeout(()=>{if(playing)run()},2700));return}
+    playing=true;paint();run()}
+  function run(){last=performance.now();acc=sc.scrollTop;cancelAnimationFrame(raf);wake();
+    const step=now=>{if(!playing)return;const dt=Math.min(.1,(now-last)/1000);last=now;
+      if(Math.abs(sc.scrollTop-Math.round(acc))>2)acc=sc.scrollTop;   // the reader dragged the text; carry on from there
+      acc+=pxs()*dt;sc.scrollTop=acc;
+      if(sc.scrollTop>=sc.scrollHeight-sc.clientHeight-1){stop();paint();d.classList.remove("calm");return}
+      raf=requestAnimationFrame(step)};raf=requestAnimationFrame(step)}
+  function stop(){playing=false;cancelAnimationFrame(raf);cdT.forEach(clearTimeout);cdT=[];if(d)d.classList.remove("playing")}
+  function open(id){const s=S.shoots[id],x=S.scripts[id];if(!x)return;build();stop();
+    tx.innerHTML=`<p><b>${esc(s&&s.title||x.name||"Script")}</b></p>`+safeHtml(x.html);
+    tx.querySelectorAll("p,div,li,h1,h2,h3,h4,span").forEach(n=>{if(!n.textContent.trim()&&!n.querySelector("br"))n.remove()});
+    const sd=document.getElementById("scriptDlg");if(sd&&sd.open)sd.close();
+    sc.scrollTop=0;acc=0;paint();d.showModal();d.querySelector(".tp-go").focus();relLock()}
+  return {open,_st:()=>({playing,top:sc&&sc.scrollTop,pref})};
+})();
+(()=>{const foot=document.querySelector("#scriptDlg .foot");if(!foot)return;const b=document.createElement("button");b.type="button";b.className="btn";b.id="scriptTp";b.hidden=true;
+  b.innerHTML='<svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" fill="currentColor"/></svg>Teleprompter';
+  b.addEventListener("click",e=>{e.preventDefault();TP.open(b.dataset.id)});foot.querySelector("#scriptOpen").after(b)})();
+
+/* ================= v104: today's plan as text, ready to paste in WhatsApp or Teams ================= */
+function planText(){
+  const t=today(),all=vids(),L=[`📋 PB plan · ${niceW(t)}`,""];
+  const sh=shoots().filter(s=>s.date===t&&s.status!=="Cancelled").sort((a,b)=>shootKey(a).localeCompare(shootKey(b)));
+  if(sh.length)sh.forEach(s=>L.push(`🎬 Shoot: ${s.title||"Untitled shoot"}${s.time?" at "+fmtT(s.time):""}${(s.videos||[]).length?` · ${plural(s.videos.length,"video")}`:""}${S.scripts[s.id]||s.scriptLink?" · script ready":" · no script yet"}`));
+  else{const n=upcomingShoots().find(s=>s.date>t);L.push(`🎬 No shoot today${n?` · next: ${n.title||"Untitled shoot"}, ${niceW(n.date)}${n.time?" at "+fmtT(n.time):""}`:""}`)}
+  const posts=all.filter(v=>v.postDate===t).sort((a,b)=>(a.postTime||"99").localeCompare(b.postTime||"99"));
+  const st=v=>v.status==="Posted"?"posted ✅":["Ready","Scheduled"].includes(v.status)?"ready ✓":v.status==="Approved"?"approved, final link needed":`${v.status.toLowerCase()}, not ready ⚠️`;
+  L.push("");
+  if(posts.length){L.push(`📲 Posting today (${posts.length})`);posts.forEach(v=>L.push(`• ${v.postTime?fmtT(v.postTime):"Any time"} · ${v.title||"Untitled"}${isCar(v)?" (carousel)":""} · ${st(v)}`))}
+  else L.push("📲 Nothing scheduled to post today");
+  const ep=editPlan(),ed=editPool().length,done=editedToday();
+  L.push("",`✂️ Editing: ${ed} waiting · ${ep.todayOff?"day off today":`edited ${done} of ${done+ep.todayLeft} today`}`);
+  const rv=all.filter(v=>v.status==="In review"),re=all.filter(v=>v.status==="Re-edit");
+  if(rv.length)L.push(`👀 With ${reviewerName()}: ${rv.map(v=>v.title||"Untitled").join(", ")}`);
+  if(re.length)L.push(`🔁 Re-edit: ${re.map(v=>v.title||"Untitled").join(", ")}`);
+  const tm=all.filter(v=>v.postDate===addDays(t,1)),tmR=tm.filter(v=>["Ready","Scheduled","Posted"].includes(v.status)).length;
+  if(tm.length)L.push("",`⏭️ Tomorrow: ${plural(tm.length,"post")}, ${tmR} ready`);
+  return L.join("\n")}
+async function copyPlan(){const txt=planText();try{await navigator.clipboard.writeText(txt);toast("Today’s plan copied. Paste it in WhatsApp or Teams")}
+  catch(_){const ta=document.createElement("textarea");ta.value=txt;ta.style.cssText="position:fixed;opacity:0";document.body.appendChild(ta);ta.select();try{document.execCommand("copy");toast("Today’s plan copied. Paste it in WhatsApp or Teams")}catch(e){toast("Couldn’t copy on this device")}ta.remove()}}
+
+/* ================= v104 surprise: a victory lap from Fahad's garage every 25 posts ================= */
+const LAP=(()=>{
+  const STEP=25;let el=null,raf=0,acx=null;
+  const posted=()=>vids().filter(v=>v.status==="Posted").length;
+  const key=()=>"pb-lap-"+(S.me||"me");
+  function check(){if(!loaded||!vids().length||document.hidden)return;if(document.querySelector("dialog[open]"))return;
+    const n=posted(),m=Math.floor(n/STEP)*STEP,seen=lsGet(key());
+    if(seen==null||seen===""){lsSet(key(),String(m));if(n>0)setTimeout(()=>play(n,true),600);return}
+    if(m>=STEP&&m>+seen){lsSet(key(),String(m));play(m,false)}}
+  function whoosh(delay,dur,pitch){if(RM)return;let muted=false;try{muted=localStorage.getItem("gr-mute")==="1"}catch(_){}if(muted)return;
+    try{acx=acx||new (window.AudioContext||window.webkitAudioContext)();if(acx.state==="suspended")acx.resume().catch(()=>{});const a=acx,t=a.currentTime+delay;
+      const o=a.createOscillator(),f=a.createBiquadFilter(),g=a.createGain(),p=a.createStereoPanner?a.createStereoPanner():null;
+      o.type="sawtooth";o.frequency.setValueAtTime(55*pitch,t);o.frequency.linearRampToValueAtTime(95*pitch,t+dur*.45);o.frequency.linearRampToValueAtTime(48*pitch,t+dur);
+      f.type="lowpass";f.frequency.setValueAtTime(380,t);f.frequency.linearRampToValueAtTime(1500,t+dur*.45);f.frequency.linearRampToValueAtTime(300,t+dur);
+      g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.07,t+dur*.45);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+      o.connect(f).connect(g);if(p){p.pan.setValueAtTime(-1,t);p.pan.linearRampToValueAtTime(1,t+dur);g.connect(p).connect(a.destination)}else g.connect(a.destination);o.start(t);o.stop(t+dur+.05)}catch(_){}}
+  function close(){if(!el)return;const e=el;el=null;e.classList.remove("on");cancelAnimationFrame(raf);setTimeout(()=>e.remove(),480)}
+  function play(n,intro){if(el)close();
+    const next=(Math.floor(n/STEP)+1)*STEP;
+    el=document.createElement("div");el.id="lap";el.setAttribute("role","dialog");el.setAttribute("aria-label",`${n} videos posted`);
+    el.innerHTML=`<canvas></canvas><div class="lap-card"><small>${intro?"From Fahad’s garage":"Milestone"}</small><b><span>0</span><i>.</i></b><h3>${n===1?"post":"posts"} live on Fahad’s page</h3><p>${intro?"Every video the team shot, edited, reviewed and posted. The Brabus, the Cullinan and the SF90 took a lap for you.":"Another 25 out the door. The garage took a lap for the team."} Next stop: <em class="lap-next">${next}</em>.</p></div><div class="lap-hint">Tap anywhere to close</div>`;
+    document.body.appendChild(el);el.addEventListener("click",close);
+    const onKey=e=>{if(e.key==="Escape"||e.key===" "||e.key==="Enter"){e.preventDefault();close();removeEventListener("keydown",onKey,true)}};addEventListener("keydown",onKey,true);
+    requestAnimationFrame(()=>el&&el.classList.add("on"));
+    const num=el.querySelector(".lap-card b span"),cv=el.querySelector("canvas"),ctx=cv.getContext("2d");
+    const DPR=Math.min(2,devicePixelRatio||1);let W=0,H=0;const size=()=>{W=innerWidth;H=innerHeight;cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0)};size();
+    const IM={};["brabus","cullinan","sf90"].forEach(k=>["body","wr","wf"].forEach(p=>{const i=new Image();i.src=GR_SPR[k][p];IM[k+p]=i}));
+    // three lanes, back to front; the SF90 comes last and overtakes everyone
+    const CARS=[{k:"brabus",t0:.35,d:3.1,lane:0},{k:"cullinan",t0:.85,d:3.2,lane:1},{k:"sf90",t0:1.9,d:1.55,lane:2}];
+    CARS.forEach(c=>whoosh(c.t0+c.d*.15,c.d*.75,c.k==="sf90"?1.5:c.k==="cullinan"?.8:1));
+    const t0=performance.now(),ease=p=>p*.8+.2*(.5-.5*Math.cos(Math.PI*p));   // slight ease, mostly constant speed
+    let burst=false;
+    const frame=now=>{if(!el)return;const t=(now-t0)/1000;if(cv.width!==Math.round(innerWidth*DPR))size();ctx.clearRect(0,0,W,H);
+      // count up
+      const cp=Math.min(1,Math.max(0,(t-.45)/1.7)),ce=cp>=1?1:1-Math.pow(2,-10*cp);num.textContent=Math.round(n*ce);
+      if(!burst&&t>2.3){burst=true;if(!RM){const r=num.getBoundingClientRect();confetti(r,40);setTimeout(()=>el&&confetti(r,26),180)}}
+      // road
+      const gy=H*.82,cw=Math.min(W*(W<640?.46:.24),340);
+      const g=ctx.createLinearGradient(0,gy-60,0,H);g.addColorStop(0,"rgba(170,255,0,0)");g.addColorStop(.35,"rgba(170,255,0,.07)");g.addColorStop(1,"rgba(170,255,0,0)");ctx.fillStyle=g;ctx.fillRect(0,gy-60,W,H-gy+60);
+      ctx.fillStyle="rgba(170,255,0,.55)";ctx.fillRect(0,gy+cw*.03,W,1.5);
+      ctx.fillStyle="rgba(255,255,255,.22)";const off=(t*W*.9)%90;for(let x=-off;x<W;x+=90)ctx.fillRect(x,gy+cw*.11,44,2);
+      if(!RM)CARS.forEach(c=>{const p=(t-c.t0)/c.d;if(p<=0||p>=1)return;const s=GR_SPR[c.k],sc=[.74,.86,1][c.lane]*cw/s.w,w=s.w*sc,h=s.h*sc,r=s.r*sc;
+        const x=-w-40+(W+w+80)*ease(p),y=gy-[cw*.075,cw*.035,0][c.lane]+Math.sin(t*23+c.lane)*.6;const fade=c.lane===0?.8:1;
+        const rx=x+s.wheels[0][0]*sc,fx=x+s.wheels[1][0]*sc;
+        // light trail behind the car and a soft headlight beam ahead
+        const ty=y-h*.42,tl=Math.min(W*.5,w*1.7),tg=ctx.createLinearGradient(x-tl,0,x+w*.15,0);tg.addColorStop(0,"rgba(170,255,0,0)");tg.addColorStop(1,`rgba(170,255,0,${.55*fade})`);
+        ctx.fillStyle=tg;ctx.fillRect(x-tl,ty-h*.05,tl+w*.15,h*.1);ctx.fillRect(x-tl*.7,y-r*1.1,tl*.7+w*.1,1.5);
+        const hb=ctx.createRadialGradient(x+w,y-h*.4,0,x+w,y-h*.4,w*.55);hb.addColorStop(0,`rgba(255,255,240,${.38*fade})`);hb.addColorStop(1,"rgba(255,255,240,0)");ctx.fillStyle=hb;ctx.beginPath();ctx.ellipse(x+w*1.15,y-h*.35,w*.55,h*.28,0,0,7);ctx.fill();
+        ctx.fillStyle="rgba(0,0,0,.45)";ctx.beginPath();ctx.ellipse(x+w*.5,y+1,w*.5,r*.22,0,0,7);ctx.fill();
+        ctx.globalAlpha=fade;const ang=(x-(-w))/r;
+        for(const [im,cx] of [[IM[c.k+"wr"],rx],[IM[c.k+"wf"],fx]])if(im.complete){ctx.save();ctx.translate(cx,y-r);ctx.rotate(ang);ctx.drawImage(im,-r,-r,r*2,r*2);ctx.restore()}
+        const b=IM[c.k+"body"];if(b.complete)ctx.drawImage(b,x,y-r-s.wheels[0][1]*sc+Math.sin(t*31+c.lane)*.7,w,h);ctx.globalAlpha=1});
+      if(t>7.2){close();return}raf=requestAnimationFrame(frame)};
+    raf=requestAnimationFrame(frame);try{sfx2("win")}catch(_){}}
+  setInterval(check,4000);
+  return {play,check,close};
+})();
+
 })();
 </script>
 </body>
