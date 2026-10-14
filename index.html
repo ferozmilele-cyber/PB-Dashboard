@@ -649,7 +649,10 @@ nav.tabs button[aria-selected="true"]{color:#0B0B0C}
 .up-pill{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:120;width:min(320px,calc(100vw - 32px));display:flex;flex-direction:column;gap:8px}
 .up-j{padding:12px 14px;border-radius:18px;background:rgba(255,255,255,.92);-webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);box-shadow:0 18px 44px rgba(20,30,8,.18),0 0 0 1.5px rgba(170,255,0,.6);animation:dlIn .5s var(--spring) both}
 .up-h{display:flex;justify-content:space-between;gap:8px;align-items:baseline}.up-h b{font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.up-h span{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
-.up-l{font-size:12.5px;color:var(--muted);margin-top:3px}.up-ok{color:#2c7a00;font-weight:700}.up-bad{color:#c0392b;font-weight:600}
+.up-l{font-size:12.5px;color:var(--muted);margin-top:3px;font-variant-numeric:tabular-nums;min-height:1.4em}.up-p{color:var(--ink);font-weight:800}
+.up-j.bye{animation:upBye .3s var(--ease) forwards}@keyframes upBye{to{opacity:0;transform:translateX(-12px) scale(.97)}}
+.up-bar[hidden],.up-a:empty{display:none}
+.up-bar i{transition:width .45s cubic-bezier(.22,1,.36,1)!important}.up-ok{color:#2c7a00;font-weight:700}.up-bad{color:#c0392b;font-weight:600}
 .up-bar{height:6px;border-radius:999px;background:rgba(12,14,8,.08);margin-top:8px;overflow:hidden}.up-bar i{display:block;height:100%;background:var(--lime);border-radius:inherit;transition:width .3s var(--ease)}
 .up-a{display:flex;gap:6px;margin-top:8px}.up-a button{border:1px solid rgba(12,14,8,.12);background:#fff;border-radius:999px;font:inherit;font-size:12px;font-weight:700;padding:5px 11px;cursor:pointer}.up-a button:first-child{background:#0B0B0C;color:var(--lime);border-color:transparent}
 .dr-player{position:relative;background:#0B0B0C;border-radius:18px;min-height:260px;display:grid;place-items:center;overflow:hidden}
@@ -4597,12 +4600,19 @@ function upPaint(){let el=document.getElementById("upPill");
   if(!UP.list.length){if(el)el.hidden=true;return}
   if(!el){el=document.createElement("div");el.id="upPill";el.className="up-pill";el.setAttribute("aria-live","polite");document.body.appendChild(el)}
   el.hidden=false;
-  el.innerHTML=UP.list.map(j=>{const p=j.file&&j.file.size?Math.round(100*j.sent/j.file.size):100;
-    const what=j.kind==="final"?"final":j.kind==="carousel"?"photos":"draft";
-    const line=j.state==="Failed"?`<span class="up-bad">${esc(j.error)}</span>`:j.state==="Sent"?`<span class="up-ok">✓ ${esc(j.msg||"Uploaded")}</span>`:j.state==="Uploading"?`${p}% · ${fmtMB(j.sent)} of ${fmtMB(j.file.size)}`:j.state==="Saving"?"Finishing…":"Starting…";
-    return `<div class="up-j ${j.state.toLowerCase()}"><div class="up-h"><b>${esc(j.title)}</b><span>${what}</span></div><div class="up-l">${line}</div>
-      ${j.state==="Uploading"||j.state==="Starting"||j.state==="Saving"?`<div class="up-bar"><i style="width:${j.state==="Starting"?3:p}%"></i></div>`:""}
-      ${j.state==="Failed"?`<div class="up-a"><button data-upa="${j.signin?"signin":"retry"}" data-j="${j.id}">${j.signin?"Sign in and retry":"Retry"}</button><button data-upa="drop" data-j="${j.id}">Dismiss</button></div>`:""}</div>`}).join("")}
+  // each card is made once and then only its words and bar change, so nothing jumps while the numbers climb
+  const keep=new Set(UP.list.map(j=>j.id));
+  [...el.children].forEach(c=>{if(!keep.has(c.dataset.j)&&!c.classList.contains("bye")){c.classList.add("bye");setTimeout(()=>c.remove(),320)}});
+  UP.list.forEach(j=>{let c=el.querySelector(`.up-j[data-j="${j.id}"]`);
+    if(!c){c=document.createElement("div");c.dataset.j=j.id;c.innerHTML=`<div class="up-h"><b></b><span></span></div><div class="up-l"></div><div class="up-bar"><i></i></div><div class="up-a"></div>`;el.appendChild(c)}
+    const total=j.file&&j.file.size,p=total?Math.min(100,Math.floor(100*j.sent/total)):100,busy=["Starting","Uploading","Saving"].includes(j.state);
+    const cls="up-j "+j.state.toLowerCase();if(c.className!==cls)c.className=cls;
+    const set=(sel,prop,val)=>{const x=c.querySelector(sel);if(x[prop]!==val)x[prop]=val;return x};
+    set(".up-h b","textContent",j.title);set(".up-h span","textContent",j.kind==="final"?"final":j.kind==="carousel"?"photos":"draft");
+    set(".up-l","innerHTML",j.state==="Failed"?`<span class="up-bad">${esc(j.error)}</span>`:j.state==="Sent"?`<span class="up-ok">✓ ${esc(j.msg||"Uploaded")}</span>`:j.state==="Uploading"?`<b class="up-p">${p}%</b> · ${fmtMB(j.sent)} of ${fmtMB(total)}`:j.state==="Saving"?"Finishing…":"Starting…");
+    const bar=c.querySelector(".up-bar");bar.hidden=!busy;const w=(j.state==="Starting"?3:j.state==="Saving"?100:p)+"%";if(bar.firstChild.style.width!==w)bar.firstChild.style.width=w;
+    set(".up-a","innerHTML",j.state==="Failed"?`<button data-upa="${j.signin?"signin":"retry"}" data-j="${j.id}">${j.signin?"Sign in and retry":"Retry"}</button><button data-upa="drop" data-j="${j.id}">Dismiss</button>`:"");
+  })}
 document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-upa]");if(!b)return;const j=UP.list.find(x=>x.id===b.dataset.j);if(!j)return;
   if(b.dataset.upa==="drop"){UP.list=UP.list.filter(x=>x!==j);upPaint()}
   else if(b.dataset.upa==="signin")msSignIn(()=>spUpload(j.vid,j.kind,j.file,j));
