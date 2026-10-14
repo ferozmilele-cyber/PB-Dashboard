@@ -4251,7 +4251,9 @@ function vSettings(){
 }
 
 /* ---------- Downloader tab: Instagram, TikTok, YouTube and other links, downloaded by PB Downloader on this PC ---------- */
-const DLR={ok:null,jobs:[],folder:"",draft:"",timer:null,sig:"",busy:false};
+const DLR={ok:null,why:"",jobs:[],folder:"",draft:"",timer:null,sig:"",busy:false};
+// is the downloader running at all? A plain request needs no permission check, so it answers even when the dashboard's own requests are refused
+function dlReachable(){const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),2500);return fetch(PBD+"/api/ping",{mode:"no-cors",cache:"no-store",signal:ctl.signal}).then(()=>true,()=>false).finally(()=>clearTimeout(tm))}
 const DL_Q=[["best","Best MP4"],["1080","1080p"],["720","720p"],["max","Highest"],["audio","Sound only"]];
 const DL_CK=[["","Off"],["firefox","Firefox"],["edge","Edge"],["chrome","Chrome"]];
 const dlQ=()=>lsGet("seb-dl-q")||"best",dlCk=()=>lsGet("seb-dl-ck")||"";
@@ -4276,8 +4278,11 @@ function dlCard(j){
     ${dlDone(j)?"":`<div class="dl-bar"><i></i></div>`}
     <div class="dl-row">${st}<div class="dl-acts">${acts}</div></div></div></article>`}
 function dlJobsHTML(){
+  if(DLR.ok===false&&DLR.why==="blocked")return `<div class="dl-off"><b>PB Downloader is running, but the dashboard can’t talk to it yet</b>
+    <ol><li>Update PB Downloader: unzip the new <b>PB-Downloader.zip</b> over your PB Downloader folder and replace the files.</li><li>Double-click <b>Start Downloader</b> again. It sets itself up and keeps running in the background.</li><li>Still stuck? Click the icon left of the address bar, open <b>Site settings</b>, and set <b>Local network access</b> to <b>Allow</b>. Then reload this page.</li></ol>
+    <div class="dl-offa"><button class="btn small" data-act="dlRetry">Check again</button><a class="openlink" href="PB-Downloader.zip" download>Get the new PB Downloader</a></div></div>`;
   if(DLR.ok===false)return `<div class="dl-off"><b>PB Downloader isn’t running on this PC</b>
-    <ol><li>Double-click <b>Start Downloader</b> in the PB Downloader folder and keep its black window open.</li><li>If the browser asks to let this site reach apps on this device, click <b>Allow</b>.</li></ol>
+    <ol><li>Double-click <b>Start Downloader</b> in the PB Downloader folder. It runs in the background from then on and starts with Windows, so there’s no window to keep open.</li><li>If the browser asks to let this site reach apps on this device, click <b>Allow</b>.</li></ol>
     <div class="dl-offa"><button class="btn small" data-act="dlRetry">Check again</button><a class="openlink" href="PB-Downloader.zip" download>Get PB Downloader</a></div></div>`;
   if(DLR.ok===null)return `<div class="empty">Connecting to PB Downloader…</div>`;
   if(!DLR.jobs.length)return `<div class="empty">Nothing downloading yet. Paste a reel, TikTok or YouTube link above.</div>`;
@@ -4287,7 +4292,7 @@ function vDownloader(){
   const n=DLR.jobs.filter(j=>!dlDone(j)).length,fin=DLR.jobs.some(dlDone);
   setTimeout(dlStart,0);
   return `<section class="panel dl-panel">
-    <div class="phead"><h2>Downloader</h2><span class="dl-pill ${DLR.ok?"on":DLR.ok===false?"off":""}" id="dlPill">${DLR.ok?"Connected":DLR.ok===false?"Not running":"Connecting…"}</span>
+    <div class="phead"><h2>Downloader</h2><span class="dl-pill ${DLR.ok?"on":DLR.ok===false?"off":""}" id="dlPill">${DLR.ok?"Connected":DLR.ok===false?(DLR.why==="blocked"?"Blocked":"Not running"):"Connecting…"}</span>
       <div class="pactions"><button class="btn small" data-act="dlDo" data-a="show"${DLR.ok?"":" disabled"}>Open folder</button></div></div>
     <p class="dl-sub">Instagram, TikTok, YouTube, Facebook and more. Saved to Downloads › PB Downloads on this PC.</p>
     <div class="dl-in"><textarea id="dlIn" rows="1" placeholder="Paste a link, or several (one per line)" spellcheck="false" aria-label="Video links">${esc(DLR.draft)}</textarea>
@@ -4300,9 +4305,9 @@ function vDownloader(){
     <div class="dl-list" id="dlJobs">${dlJobsHTML()}</div></section>`}
 function dlPaint(){
   const box=document.getElementById("dlJobs");if(!box)return;
-  const sig=(DLR.ok===null?"n":DLR.ok?"y":"x")+DLR.jobs.map(j=>j.id+j.state+(j.info?1:0)).join();
+  const sig=(DLR.ok===null?"n":DLR.ok?"y":"x"+DLR.why)+DLR.jobs.map(j=>j.id+j.state+(j.info?1:0)).join();
   if(sig!==DLR.sig){DLR.sig=sig;box.innerHTML=dlJobsHTML();
-    const pill=document.getElementById("dlPill");if(pill){pill.className="dl-pill "+(DLR.ok?"on":DLR.ok===false?"off":"");pill.textContent=DLR.ok?"Connected":DLR.ok===false?"Not running":"Connecting…"}
+    const pill=document.getElementById("dlPill");if(pill){pill.className="dl-pill "+(DLR.ok?"on":DLR.ok===false?"off":"");pill.textContent=DLR.ok?"Connected":DLR.ok===false?(DLR.why==="blocked"?"Blocked":"Not running"):"Connecting…"}
     const cl=document.querySelector('[data-act="dlClear"]');if(cl)cl.hidden=!DLR.jobs.some(dlDone);
     document.querySelectorAll('.dl-panel [data-a="show"]').forEach(b=>b.disabled=!DLR.ok)}
   DLR.jobs.forEach(j=>{const el=document.getElementById("dlj"+j.id);if(!el)return;const bar=el.querySelector(".dl-bar"),st=el.querySelector(".dl-st");
@@ -4311,7 +4316,7 @@ function dlPaint(){
 async function dlPoll(){
   clearTimeout(DLR.timer);DLR.timer=null;
   if(S.tab!=="downloader"||document.hidden)return;
-  try{const d=await dlApi("state");DLR.ok=true;DLR.jobs=d.jobs||[];DLR.folder=d.folder||""}catch(e){DLR.ok=false}
+  try{const d=await dlApi("state");DLR.ok=true;DLR.why="";DLR.jobs=d.jobs||[];DLR.folder=d.folder||""}catch(e){DLR.ok=false;DLR.why=(await dlReachable())?"blocked":"off"}
   dlPaint();
   if(S.tab==="downloader")DLR.timer=setTimeout(dlPoll,DLR.ok?(DLR.jobs.some(j=>!dlDone(j))?700:2500):4000)}
 function dlStart(){if(!DLR.timer)dlPoll()}
@@ -4320,7 +4325,8 @@ async function dlAdd(text){
   const urls=dlUrls(text);if(!urls.length)return;
   try{await dlApi("add",{urls,quality:dlQ(),cookies:dlCk()});DLR.draft="";const t=document.getElementById("dlIn");if(t){t.value="";dlGrow(t)}
     toast(urls.length>1?`Downloading ${urls.length} videos`:"Downloading")}
-  catch(e){DLR.ok=false;dlPaint();toast("PB Downloader isn’t running on this PC. Start it, then try again")}
+  catch(e){DLR.ok=false;DLR.why=(await dlReachable())?"blocked":"off";dlPaint();
+    toast(DLR.why==="blocked"?"PB Downloader is running but needs updating, or the browser blocked it. See the steps below":"PB Downloader isn’t running on this PC. Start it, then try again")}
   dlPoll()}
 function dlGrow(t){t.style.height="auto";t.style.height=Math.min(200,t.scrollHeight+2)+"px";const g=document.querySelector(".dl-go");if(g)g.disabled=!dlUrls(t.value).length}
 document.addEventListener("input",e=>{if(e.target.id==="dlIn"){DLR.draft=e.target.value;dlGrow(e.target)}});
