@@ -760,6 +760,21 @@ dialog{background:rgba(255,255,255,.86)}
 .mhead{display:flex;justify-content:space-between;align-items:center}
 .mdate{font-weight:700;font-size:14px;width:26px;height:26px;display:grid;place-items:center;border-radius:50%}
 .mcell.today .mdate{background:var(--lime);color:#0B0B0C}
+.mbubs{display:inline-flex;gap:4px}
+.mbub{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 6px;border-radius:999px;font-size:12px;font-weight:800;line-height:1;position:relative;
+  -webkit-backdrop-filter:blur(10px) saturate(180%);backdrop-filter:blur(10px) saturate(180%);transition:transform .4s var(--spring)}
+.mbub::after{content:"";position:absolute;inset:1px 3px auto;height:45%;border-radius:999px;background:linear-gradient(rgba(255,255,255,.75),rgba(255,255,255,0));pointer-events:none}
+.mbub.ok{background:radial-gradient(circle at 35% 30%,#e4ff9a,#aaff00 55%,#86d100);color:#0B0B0C;box-shadow:0 4px 12px rgba(122,209,0,.45),inset 0 -2px 4px rgba(60,110,0,.35),0 0 0 1px rgba(255,255,255,.6)}
+.mbub.due{background:radial-gradient(circle at 35% 30%,#ff9a9a,#ff4d4f 55%,#d62b2e);color:#fff;box-shadow:0 4px 12px rgba(229,72,77,.45),inset 0 -2px 4px rgba(120,0,0,.3),0 0 0 1px rgba(255,255,255,.55)}
+.mcell:hover .mbub{transform:scale(1.08)}
+.mrep .ovk b{font-size:34px}
+.mrep-k>div.k1{background:linear-gradient(135deg,rgba(170,255,0,.55),rgba(170,255,0,.18))}
+.mrep-note{margin:14px 2px 0;font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.mrep-note .mbub{min-width:22px;height:22px;font-size:11.5px}
+.mrep-note .mbub+.mbub,.mrep-note .mbub.due{margin-left:8px}
+:root[data-theme="dark"] .mbub::after{background:linear-gradient(rgba(255,255,255,.45),rgba(255,255,255,0))}
+:root[data-theme="dark"] .mrep-k>div.k1{background:linear-gradient(135deg,rgba(170,255,0,.22),rgba(170,255,0,.06))!important}
+@media (max-width:600px){.month .mhead{flex-direction:column;align-items:flex-start!important;gap:3px}.mbub{min-width:16px;height:16px;font-size:9.5px;padding:0 4px}.mbub::after{inset:1px 2px auto}.mbubs{gap:2px}.mrep .ovk{grid-template-columns:1fr 1fr}.mrep .ovk b{font-size:28px}}
 .mcnt{font-size:10.5px;font-weight:700;padding:1px 6px;border-radius:999px;background:#0B0B0C;color:var(--lime)}
 .mcnt.low{background:#FFF0E3;color:#B8480A}
 .mp{display:flex;align-items:center;gap:5px;font-size:11.5px;line-height:1.25;padding:3px 6px;border-radius:7px;background:rgba(12,14,8,.045);min-width:0}
@@ -4101,12 +4116,13 @@ function monthView(){
       +TC.map(tm=>{const v=car.find(x=>x.postTime===tm);if(!v&&d<t)return "";const tt=fmtT(tm).replace(":00","").replace(" ","").toLowerCase();
         return v?`<div class="mp car" title="${esc("Carousel, "+fmtT(tm)+", "+(v.title||"Untitled")+" ("+v.status+")")}"><i style="background:${SC[v.status]}"></i><span class="mt">${tt}</span><span class="mn">${esc(v.title||"Untitled")}</span></div>`:`<div class="mp open car"><span class="mt">${tt}</span><span class="mn">Carousel</span></div>`}).join("")
       +car.filter(v=>!TC.includes(v.postTime)).map(v=>`<div class="mp car"><i style="background:${SC[v.status]}"></i><span class="mn">${esc(v.title||"Untitled")}</span></div>`).join("");
-    const dd=+d.slice(8);
+    const dd=+d.slice(8),dayAll=reels.concat(car),nP=dayAll.filter(v=>v.status==="Posted").length,nT=dayAll.length-nP;
+    const bub=(nP?`<span class="mbub ok" title="${nP} posted">${nP}</span>`:"")+(nT?`<span class="mbub due" title="${nT} still to post">${nT}</span>`:"");
     cells+=`<button class="mcell${inM?"":" out"}${d===t?" today":""}${d<t?" past":""}" data-act="mday" data-d="${d}" aria-label="${esc(niceW(d))}, ${filled} of ${T.length} slots filled">
-      <div class="mhead"><span class="mdate">${dd}</span>${T.length&&(d>=t||filled)?`<span class="mcnt${filled<T.length&&d>=t?" low":""}">${filled}/${T.length}</span>`:""}</div>${pills}</button>`;
+      <div class="mhead"><span class="mdate">${dd}</span>${bub?`<span class="mbubs">${bub}</span>`:""}</div>${pills}</button>`;
   }
   const prev=iso(new Date(Y,M-2,1)).slice(0,7),next=iso(new Date(Y,M,1)).slice(0,7);
-  return `<div class="card month">
+  return monthReport(cur)+`<div class="card month">
     <header><h3>${MONL[M-1]} ${Y}</h3><div class="mnav"><button class="navb" data-act="mnav" data-m="${prev}" aria-label="Previous month">‹</button><button class="btn small" data-act="mnav" data-m="${t.slice(0,7)}">Today</button><button class="navb" data-act="mnav" data-m="${next}" aria-label="Next month">›</button></div></header>
     <div class="mgrid">${["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map(w=>`<div class="mw">${w}</div>`).join("")}${cells}</div>
   </div>`;
@@ -4157,6 +4173,29 @@ function sumChart(D){
   return `<div class="sum-chart"><svg viewBox="0 0 ${W} ${H}" width="100%" style="min-width:${Math.min(W,600)}px;display:block" role="img" aria-label="Shot and edited per day">${bars}</svg></div>
     <div class="sum-leg"><span><i style="background:#3B7DD8"></i>Shot</span><span><i style="background:#7BD100"></i>Edited</span></div>`;
 }
+/* the manager's report: what was shot and posted in the month on screen, or any range */
+function repRange(cur){const R=S.repRange||{mode:"month"},[Y,M]=cur.split("-").map(Number);
+  if(R.mode==="custom"&&R.from&&R.to)return R.from<=R.to?[R.from,R.to]:[R.to,R.from];
+  if(R.mode==="last"){const a=iso(new Date(Y,M-2,1));return [a,iso(new Date(Y,M-1,0))]}
+  return [iso(new Date(Y,M-1,1)),iso(new Date(Y,M,0))]}
+function monthReport(cur){
+  const R=S.repRange||{mode:"month"},[from,to]=repRange(cur),[Y,M]=cur.split("-").map(Number),inR=d=>!!d&&d>=from&&d<=to,all=vids();
+  const shot=all.filter(v=>inR(v.shotDate)),posted=all.filter(v=>v.status==="Posted"&&inR(v.postDate));
+  const due=all.filter(v=>v.status!=="Posted"&&inR(v.postDate)),missed=due.filter(v=>v.postDate<today());
+  const lastName=MONL[(M+10)%12];
+  const tile=(n,l,cls)=>`<div class="${cls||""}"><b>${n}</b><span>${l}</span></div>`;
+  return `<section class="panel mrep">
+    <div class="phead"><h2>${R.mode==="custom"?"Report":`${R.mode==="last"?lastName:MONL[M-1]} report`}</h2>
+      <div class="pactions"><div class="seg" role="group" aria-label="Report range">${[["month",MONL[M-1]],["last",lastName],["custom","Custom"]].map(([k,l])=>`<button data-act="repMode" data-m="${k}" aria-pressed="${(R.mode||"month")===k}">${l}</button>`).join("")}</div></div></div>
+    ${R.mode==="custom"?`<div class="pl-filter"><span class="pl-cust"><input type="date" value="${esc(from)}" data-repr="from" aria-label="From"><span>to</span><input type="date" value="${esc(to)}" data-repr="to" aria-label="To"></span><span class="stat">${esc(nice(from))} – ${esc(nice(to))}</span></div>`:""}
+    <div class="ovk mrep-k">
+      ${tile(shot.length,"Videos shot","k1")}
+      ${tile(posted.length,"Posted")}
+      ${tile(posted.filter(isReel).length,"Reels posted")}
+      ${tile(posted.filter(isCar).length,"Carousels posted")}
+    </div>
+    <p class="mrep-note"><span class="mbub ok">${posted.length}</span> posted <span class="mbub due">${due.length}</span> still to post${missed.length?` · <b>${missed.length}</b> from past days not marked posted yet`:""}</p>
+  </section>`}
 function vSummary(){
   const D=summaryData(),R=S.sumRange||{mode:"thismonth"};
   const modes=[["thismonth","This month"],["lastmonth","Last month"],["thisweek","This week"],["lastweek","Last week"],["custom","Custom"]];
@@ -6255,6 +6294,7 @@ document.addEventListener("click",async e=>{
   else if(act==="days"){S.schedDays=+b.dataset.n;render()}
   else if(act==="sview"){S.schedView=b.dataset.v;S.animate=true;render()}
   else if(act==="mnav"){S.monthCursor=b.dataset.m;render()}
+  else if(act==="repMode"){const m=b.dataset.m,cur=S.monthCursor||today().slice(0,7);if(m==="custom"&&!(S.repRange&&S.repRange.from)){const [a,z]=repRange(cur);S.repRange={mode:"custom",from:a,to:z}}else S.repRange={...(S.repRange||{}),mode:m};render()}
   else if(act==="mday"){const d=b.dataset.d;S.schedView="list";S.schedStart=d===today()?null:d;S.animate=true;render();window.scrollTo({top:0,behavior:"smooth"})}
   else if(act==="schedToday"){S.schedStart=null;render()}
   else if(act==="newWin"){window.open(location.origin+location.pathname+"?view="+b.dataset.view,"_blank")}
@@ -6438,6 +6478,7 @@ document.addEventListener("change",e=>{
     vids().filter(v=>v.pillar===old).forEach(v=>putVideo({...v,pillar:nw},true));putSettings();render();toast(`Renamed to ${nw}`);return}
   if(t.dataset.porder!=null){const O=[...(S.settings.pillarOrder||[])];O[+t.dataset.porder]=t.value;S.settings.pillarOrder=O;putSettings();render();return}
   if(t.dataset.plr){S.plRange={...(S.plRange||{mode:"custom"}),mode:"custom",[t.dataset.plr]:t.value};render();return}
+  if(t.dataset.repr){S.repRange={...(S.repRange||{}),mode:"custom",[t.dataset.repr]:t.value};render();return}
   if(t.dataset.sumr){S.sumRange={...(S.sumRange||{}),mode:"custom",[t.dataset.sumr]:t.value};render();return}
   if(t.dataset.ovr){S.ovRange={...(S.ovRange||{}),mode:"custom",[t.dataset.ovr]:t.value};render();return}
   if(t.dataset.sset){S.settings[t.dataset.sset]=t.checked;putSettings();render();return}
