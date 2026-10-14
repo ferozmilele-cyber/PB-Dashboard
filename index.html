@@ -581,6 +581,14 @@ nav.tabs button[aria-selected="true"]{color:#0B0B0C}
 .openlink:hover{background:var(--lime);color:#0B0B0C}
 .openlink.add-lnk{background:rgba(170,255,0,.22);border:1px dashed #7BD100;color:#2c4a00;font-weight:700}
 .openlink.add-lnk:hover{background:var(--lime);color:#0B0B0C;border-style:solid;border-color:transparent}
+.dl-lnk{display:inline-flex!important;align-items:center;justify-content:center;vertical-align:middle;cursor:pointer}
+.openlink.dl-lnk{margin-left:6px;padding:0;width:22px;height:20px;border:0;border-radius:999px;vertical-align:1px}
+.iconbtn.dl-lnk{padding-left:0!important;padding-right:0!important;min-width:32px}
+.sday .slot .openlink.dl-lnk{vertical-align:-1px}
+.dl-lnk.busy{opacity:.55;pointer-events:none}
+.dl-lnk.sent{background:var(--lime)!important;color:#0B0B0C!important}
+.dl-lnk svg{display:block}
+@media (max-width:600px),(hover:none){.dl-lnk{display:none!important}}
 .openlink.edit-lnk{background:transparent;border:1px solid rgba(12,14,8,.14);color:var(--muted);font-weight:600}
 .openlink.edit-lnk:hover{opacity:1;background:var(--surface-2);color:var(--ink)}
 .lockbtn{border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 12px;font-size:12px;font-weight:600}
@@ -2959,6 +2967,24 @@ function askRaw(d,count){
 function vids(){return Object.values(S.videos)}
 function safeUrl(u){u=String(u||"").trim();return /^https?:\/\//i.test(u)?u:""}
 function openLink(v,label){const u=safeUrl(v.finalLink);return u?`<a class="openlink" href="${esc(u)}" target="_blank" rel="noopener noreferrer">${label||"Open final video"}</a>`:""}
+/* ---------- PB Downloader: sends a video's link to the downloader app running on this PC ---------- */
+const PBD="http://localhost:8765";
+function dlBtn(v,cls){return safeUrl(v.finalLink)?`<button class="${cls||"openlink"} dl-lnk" data-act="dlVideo" data-id="${v.id}" title="Download to this PC with PB Downloader" aria-label="Download"><svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10.5l5 5 5-5M5 20h14"/></svg></button>`:""}
+async function sendToDownloader(v,btn){
+  const u=safeUrl(v.finalLink);if(!u)return;
+  if(btn){btn.disabled=true;btn.classList.add("busy")}
+  const done=()=>{if(btn){btn.disabled=false;btn.classList.remove("busy")}};
+  const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),5000);
+  try{
+    const r=await fetch(PBD+"/api/add",{method:"POST",headers:{"Content-Type":"application/json","X-PB":"1"},body:JSON.stringify({urls:[u],quality:"auto",cookies:"auto",name:v.title||""}),signal:ctl.signal});
+    if(!r.ok)throw new Error("HTTP "+r.status);
+    if(btn){btn.classList.add("sent");setTimeout(()=>btn.classList.remove("sent"),1800)}
+    toast(`Downloading “${v.title||"Untitled"}” to Downloads › PB Downloads`,"Show",()=>window.open(PBD+"/","pb-downloader"));
+  }catch(e){
+    // not running, or the browser asked first: open the downloader page with this link, and it starts there
+    toast("Couldn’t reach PB Downloader. Open it to download this video (start it on this PC first)","Open",()=>window.open(PBD+"/#add="+encodeURIComponent(u)+"&name="+encodeURIComponent(v.title||""),"pb-downloader"));
+  }finally{clearTimeout(tm);done()}
+}
 function toast(m,label,fn){const t=$("#toast");t.classList.remove("act");void t.offsetWidth;t.textContent=m;t.classList.toggle("act",!!label);
   if(label){const b=document.createElement("button");b.textContent=label;b.onclick=()=>{t.classList.remove("show");fn()};t.appendChild(b)}
   t.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove("show"),label?9000:2400)}
@@ -3576,7 +3602,7 @@ function todayPosts(){
       clockHtml=`<span class="post-clock${cls?" "+cls:""}" data-due="${due}"><i class="post-clock-dot"></i><span class="post-clock-val">${diff<0?str+" ago":str}</span></span>`}
     return `<div class="tp${v.status==="Posted"?" done":""}${late?" late":""}"><span class="tp-t">${v.postTime?fmtT(v.postTime):"No time"}</span>
       <span class="tp-n"><b>${esc(v.title||"Untitled")}</b><small><i style="background:${SC[v.status]}"></i>${esc(v.status)}${isCar(v)?", carousel":""}${clockHtml}${late?` <span class="tag warn">Overdue</span>`:soon?` <span class="tag new">${now>=due?"Now":"Soon"}</span>`:""}</small></span>
-      <span class="tp-a">${v.status==="Posted"?`<span class="tp-ok">✓ Posted</span>`:v.status==="Scheduled"?`<span class="tp-ok sched">✓ Scheduled</span>`:`${lnk?`<a class="iconbtn" href="${esc(lnk)}" target="_blank" rel="noopener noreferrer">Open</a>`:""}${v.status==="Ready"?`<button class="iconbtn" data-act="markScheduled" data-id="${v.id}">Scheduled</button>${slideHTML(v.id,"Slide to post","tp")}`:""}`}</span></div>`}).join("");
+      <span class="tp-a">${v.status==="Posted"?`<span class="tp-ok">✓ Posted</span>`:v.status==="Scheduled"?`<span class="tp-ok sched">✓ Scheduled</span>`:`${lnk?`<a class="iconbtn" href="${esc(lnk)}" target="_blank" rel="noopener noreferrer">Open</a>${dlBtn(v,"iconbtn")}`:""}${v.status==="Ready"?`<button class="iconbtn" data-act="markScheduled" data-id="${v.id}">Scheduled</button>${slideHTML(v.id,"Slide to post","tp")}`:""}`}</span></div>`}).join("");
   const open=slots.filter(s=>!L.some(v=>v.postTime===s.tm&&kindOf(v)===s.k)).length;
   return `<section class="panel"><div class="phead"><h2>Today’s posts</h2><span class="stat">${posted} of ${L.length} posted${open?`, ${open} empty slot${open>1?"s":""}`:""}</span></div>
     ${rows||`<p class="sub">Nothing scheduled for today yet.</p>`}</section>`;
@@ -3822,7 +3848,7 @@ function vSchedule(){
     const editing=(S.editLinks||{})[v.id];
     const tags=(isReady&&!hasLink?`<span class="tag warn">No final link</span>`:"")+(v.status!=="Ready"&&v.status!=="Scheduled"&&v.status!=="Posted"?`<span class="tag">Not ready</span>`:"")+(extraTags||"");
     const linkArea=hasLink?
-      `${openLink(v,"Open")}<button class="openlink edit-lnk" data-act="openLinkDlg" data-id="${v.id}" title="Change link">Edit link</button>`:
+      `${openLink(v,"Open")}${dlBtn(v)}<button class="openlink edit-lnk" data-act="openLinkDlg" data-id="${v.id}" title="Change link">Edit link</button>`:
       `<button class="openlink add-lnk" data-act="openLinkDlg" data-id="${v.id}">+ Add link</button>`;
     const sl=d?`${d}|${tm}|${k}`:"";
     return `<div class="slot filled${k==="C"?" car":""}"${d?` data-slot="${sl}"`:""} data-drag-id="${v.id}"><div class="grip" title="Drag to move">⋮⋮</div><div class="tm">${label}${k==="C"?`<span class="kind">Carousel</span>`:(d&&slotPillar(d,tm))?`<span class="kind pk" style="--pc:${pillarColor(slotPillar(d,tm))}">${esc(slotPillar(d,tm))}</span>`:""}</div><div class="ttl"><b>${esc(v.title||"Untitled")}</b>${pillarTag(v)}${linkArea}<small>${v.shotDate?"Shot "+esc(nice(v.shotDate)):"No shot date"}${tags}</small></div><div>${statusSelect(v)}</div><div>${lockCtl(v)}</div><div class="mv2">${d?`<button data-act="slotMove" data-dir="-1" data-slot="${sl}" aria-label="Move up">↑</button><button data-act="slotMove" data-dir="1" data-slot="${sl}" aria-label="Move down">↓</button>`:""}</div><div><button class="xbtn" data-act="unassign" data-id="${v.id}" aria-label="Remove from schedule" title="Remove">×</button></div></div>`;
@@ -4006,7 +4032,7 @@ function vHistory(){
   const groups={};L.forEach(v=>{const k=v.postDate.slice(0,7);(groups[k]=groups[k]||[]).push(v)});
   const row=v=>`<div class="hrow" data-k="h-${v.id}"><div class="hdate"><b>${+v.postDate.slice(8)}</b><span>${WD[new Date(v.postDate+"T00:00:00").getDay()]}</span></div>
       <div class="etitle"><span class="dot" style="background:${hue(v.shotDate)}"></span><div><b>${esc(v.title||"Untitled")}</b><small>${v.postTime?fmtT(v.postTime):"No time"}, ${esc(v.format||"Reel")}${v.shotDate?`, shot ${esc(nice(v.shotDate))}`:""}</small></div></div>
-      <div class="hrow-link">${openLink(v,isCar(v)?"Open post":"Open video")?`${openLink(v,isCar(v)?"Open post":"Open video")}<button class="iconbtn hlink-edit" data-act="editLink" data-id="${v.id}" title="Change link" style="margin-left:6px">Edit</button>`:`<span class="hlink-add"><input type="text" class="link-in" value="${esc(v.finalLink||"")}" data-f="finalLink" data-id="${v.id}" placeholder="Paste link…" aria-label="Final video link"><button class="iconbtn" data-act="savehlink" data-id="${v.id}">Save</button></span>`}</div></div>`;
+      <div class="hrow-link">${openLink(v,isCar(v)?"Open post":"Open video")?`${openLink(v,isCar(v)?"Open post":"Open video")}${dlBtn(v)}<button class="iconbtn hlink-edit" data-act="editLink" data-id="${v.id}" title="Change link" style="margin-left:6px">Edit</button>`:`<span class="hlink-add"><input type="text" class="link-in" value="${esc(v.finalLink||"")}" data-f="finalLink" data-id="${v.id}" placeholder="Paste link…" aria-label="Final video link"><button class="iconbtn" data-act="savehlink" data-id="${v.id}">Save</button></span>`}</div></div>`;
   const body=Object.keys(groups).sort().reverse().map(k=>{const [y,m]=k.split("-").map(Number);
     return `<div class="card"><header><h3>${MONL[m-1]} ${y}</h3><span class="count">${groups[k].length}</span></header>${groups[k].map(row).join("")}</div>`}).join("");
   return `<section class="panel">
@@ -5595,6 +5621,7 @@ document.addEventListener("click",async e=>{
   const act=b.dataset.act;
   if(act==="openAdd")openAdd();
   else if(act==="copy")copyText(b.dataset.text);
+  else if(act==="dlVideo"){const v=S.videos[b.dataset.id];if(v)sendToDownloader(v,b)}
   else if(act==="fst"){const k=b.dataset.s,a=S.filter.st;S.filter.st=a.includes(k)?a.filter(x=>x!==k):[...a,k];render()}
   else if(act==="ffmt"){S.filter.fmt=b.dataset.v;render()}
   else if(act==="fsched"){S.filter.sched=b.dataset.v;render()}
