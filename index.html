@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Shoot & edit board</title>
+<title>PB Dashboard</title>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#F6F7F2">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Shoot Board">
+<meta name="apple-mobile-web-app-title" content="PB Dashboard">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=94">
 <link rel="icon" type="image/png" href="icon-192.png?v=94">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -656,6 +656,7 @@ nav.tabs button[aria-selected="true"]{color:#0B0B0C}
 .up-bar{height:6px;border-radius:999px;background:rgba(12,14,8,.08);margin-top:8px;overflow:hidden}.up-bar i{display:block;height:100%;background:var(--lime);border-radius:inherit;transition:width .3s var(--ease)}
 .up-a{display:flex;gap:6px;margin-top:8px}.up-a button{border:1px solid rgba(12,14,8,.12);background:#fff;border-radius:999px;font:inherit;font-size:12px;font-weight:700;padding:5px 11px;cursor:pointer}.up-a button:first-child{background:#0B0B0C;color:var(--lime);border-color:transparent}
 .dr-player{position:relative;background:#0B0B0C;border-radius:18px;min-height:260px;display:grid;place-items:center;overflow:hidden}
+.dr-spin{display:inline-block;width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.25);border-top-color:var(--lime);margin-right:8px;vertical-align:-2px;animation:drSpin .8s linear infinite}@keyframes drSpin{to{transform:rotate(360deg)}}
 .dr-player video[hidden]{display:none!important}
 .dr-player video{display:block;max-width:100%;max-height:min(64vh,640px);background:#000}
 .dr-msg{color:#cfd3c8;font-size:14px;padding:24px;text-align:center;line-height:1.6}
@@ -2694,7 +2695,7 @@ body.viewonly [data-act="pauseAll"],body.viewonly [data-act="resumeAll"],body.vi
 <body>
 <div id="login" hidden>
   <form id="loginForm">
-    <h1>Shoot & edit board</h1>
+    <h1>PB Dashboard</h1>
     <p>Sign in to continue</p>
     <label>Email<input name="user" type="text" inputmode="email" autocomplete="username" placeholder="you@milele.com" spellcheck="false" autocapitalize="off" required></label>
     <label>Password<input name="pass" type="password" autocomplete="current-password" required></label>
@@ -2707,7 +2708,7 @@ body.viewonly [data-act="pauseAll"],body.viewonly [data-act="resumeAll"],body.vi
     <div class="brandrow">
       <span class="hdr-pb"><img src="icon-192.png?v=94" alt="PB" width="64" height="64"></span>
       <div>
-      <h1>Shoot & edit board</h1>
+      <h1>PB Dashboard</h1>
       <p id="subline">Fahad Riaz, content production</p>
       </div>
     </div>
@@ -3155,7 +3156,7 @@ function askRaw(d,count){
 }
 function vids(){return Object.values(S.videos)}
 function safeUrl(u){u=String(u||"").trim();return /^https?:\/\//i.test(u)?u:""}
-function openLink(v,label){const u=safeUrl(v.finalLink);return u?`<a class="openlink" href="${esc(u)}" target="_blank" rel="noopener noreferrer">${label||"Open final video"}</a>`:""}
+function openLink(v,label){const u=safeUrl(v.finalLink);return u?`<a class="openlink" href="${esc(u)}" data-prev="${v.id}" target="_blank" rel="noopener noreferrer">${label||"Open final video"}</a>`:""}
 /* ---------- PB Downloader: sends a video's link to the downloader app running on this PC ---------- */
 const PBD="http://localhost:8765";
 function dlBtn(v,cls){return safeUrl(v.finalLink)?`<button class="${cls||"openlink"} dl-lnk" data-act="dlVideo" data-id="${v.id}" title="Download to this PC with PB Downloader" aria-label="Download"><svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10.5l5 5 5-5M5 20h14"/></svg></button>`:""}
@@ -3792,7 +3793,7 @@ function todayPosts(){
       clockHtml=`<span class="post-clock${cls?" "+cls:""}" data-due="${due}"><i class="post-clock-dot"></i><span class="post-clock-val">${diff<0?str+" ago":str}</span></span>`}
     return `<div class="tp${v.status==="Posted"?" done":""}${late?" late":""}"><span class="tp-t">${v.postTime?fmtT(v.postTime):"No time"}</span>
       <span class="tp-n"><b>${esc(v.title||"Untitled")}</b><small><i style="background:${SC[v.status]}"></i>${esc(v.status)}${isCar(v)?", carousel":""}${clockHtml}${late?` <span class="tag warn">Overdue</span>`:soon?` <span class="tag new">${now>=due?"Now":"Soon"}</span>`:""}</small></span>
-      <span class="tp-a">${v.status==="Posted"?`<span class="tp-ok">✓ Posted</span>`:v.status==="Scheduled"?`<span class="tp-ok sched">✓ Scheduled</span>`:`${lnk?`<a class="iconbtn" href="${esc(lnk)}" target="_blank" rel="noopener noreferrer">Open</a>${dlBtn(v,"iconbtn")}`:""}${v.status==="Ready"?`<button class="iconbtn" data-act="markScheduled" data-id="${v.id}">Scheduled</button>${slideHTML(v.id,"Slide to post","tp")}`:""}`}</span></div>`}).join("");
+      <span class="tp-a">${v.status==="Posted"?`<span class="tp-ok">✓ Posted</span>`:v.status==="Scheduled"?`<span class="tp-ok sched">✓ Scheduled</span>`:`${lnk?`<a class="iconbtn" href="${esc(lnk)}" data-prev="${v.id}" target="_blank" rel="noopener noreferrer">Open</a>${dlBtn(v,"iconbtn")}`:""}${v.status==="Ready"?`<button class="iconbtn" data-act="markScheduled" data-id="${v.id}">Scheduled</button>${slideHTML(v.id,"Slide to post","tp")}`:""}`}</span></div>`}).join("");
   const open=slots.filter(s=>!L.some(v=>v.postTime===s.tm&&kindOf(v)===s.k)).length;
   return `<section class="panel"><div class="phead"><h2>Today’s posts</h2><span class="stat">${posted} of ${L.length} posted${open?`, ${open} empty slot${open>1?"s":""}`:""}</span></div>
     ${rows||`<p class="sub">Nothing scheduled for today yet.</p>`}</section>`;
@@ -4641,25 +4642,39 @@ function upStart(file){const v=S.videos[UPD.id];if(!v)return;
   $("#upDlg").close("upload");spUpload(v.id,UPD.kind,file);
   toast(`Uploading the ${UPD.kind} of “${v.title||"Untitled"}” in the background. You can keep working`)}
 /* the draft player: Zain watches or downloads, then approves or asks for a re-edit */
-const DRV={id:null,url:""};
-async function openDraft(id){const v=S.videos[id];if(!v||!v.draft)return;DRV.id=id;DRV.url="";const d=$("#draftDlg"),vid=$("#drVideo"),msg=$("#drMsg");
-  $("#drTitle").textContent=v.title||"Untitled";
-  $("#drSub").textContent=`Draft${v.draft.round>1?" "+v.draft.round:""}, uploaded ${v.draft.at?niceAgo(v.draft.at):""}${v.draft.by?" by "+dispName(v.draft.by):""}${v.draft.size?" · "+fmtMB(v.draft.size):""}`;
-  const decide=isReviewer()&&v.status==="In review";$("#drOk").hidden=!decide;$("#drRe").hidden=!decide;
-  const sp=$("#drSp");sp.href=safeUrl(v.draft.webUrl)||"#";sp.hidden=!safeUrl(v.draft.webUrl);
+const DRV={id:null,url:"",mode:"draft"};
+async function openDraft(id){const v=S.videos[id];if(!v||!v.draft)return;
+  openPlayer(id,{mode:"draft",sub:`Draft${v.draft.round>1?" "+v.draft.round:""}, uploaded ${v.draft.at?niceAgo(v.draft.at):""}${v.draft.by?" by "+dispName(v.draft.by):""}${v.draft.size?" · "+fmtMB(v.draft.size):""}`,
+    ref:v.draft,link:v.draft.webUrl,decide:isReviewer()&&v.status==="In review",what:"draft"})}
+/* Open on a finished video: play it here, with Download and Open in SharePoint for a slow connection */
+function openPreview(id){const v=S.videos[id];if(!v)return false;const link=safeUrl(v.finalLink);if(!link||!spOn()||!isSpUrl(link))return false;
+  const when=v.postDate?`${v.status==="Posted"?"Posted":"Posts"} ${v.postDate===today()?"today":niceW(v.postDate)}${v.postTime?", "+fmtT(v.postTime):""}`:"Not scheduled yet";
+  if(isCar(v)){openGallery(id,{link,ref:v.car||null,sub:`Final photos · ${when}`});return true}
+  openPlayer(id,{mode:"final",sub:`Final video · ${when}`,ref:v.final&&v.final.itemId?v.final:null,link,decide:false,what:"video"});return true}
+async function spResolve(ref,link){
+  if(ref&&ref.driveId&&(ref.itemId||ref.folderId))return spItem(ref.driveId,ref.itemId||ref.folderId);
+  let it=await gjson(`/shares/u!${btoa(unescape(encodeURIComponent(link))).replace(/=+$/,"").replace(/\//g,"_").replace(/\+/g,"-")}/driveItem`);
+  if(!it.folder&&!it["@microsoft.graph.downloadUrl"]&&it.parentReference&&it.parentReference.driveId)it=await spItem(it.parentReference.driveId,it.id);
+  return it}
+async function openPlayer(id,o){const v=S.videos[id];if(!v)return;DRV.id=id;DRV.url="";DRV.mode=o.mode;const d=$("#draftDlg"),vid=$("#drVideo"),msg=$("#drMsg");
+  $("#drTitle").textContent=v.title||"Untitled";$("#drSub").textContent=o.sub||"";
+  $("#drOk").hidden=!o.decide;$("#drRe").hidden=!o.decide;
+  const sp=$("#drSp");sp.href=safeUrl(o.link)||"#";sp.hidden=!safeUrl(o.link);
   const dl=$("#drDl");dl.removeAttribute("href");dl.classList.add("dis");
-  vid.removeAttribute("src");vid.hidden=true;msg.hidden=false;msg.innerHTML="Loading the draft…";
+  vid.removeAttribute("src");vid.hidden=true;msg.hidden=false;msg.innerHTML=`<span class="dr-spin"></span>Loading the ${o.what}…`;
   d.returnValue="";openDlg(d);
-  try{const it=await spItem(v.draft.driveId,v.draft.itemId);
+  try{await msApp();if(!msAccount())throw spSignErr("Sign in to Microsoft to play it here");
+    const it=await spResolve(o.ref,o.link);
     if(DRV.id!==id||!d.open)return;const u=it["@microsoft.graph.downloadUrl"];if(!u)throw new Error("SharePoint didn’t give a link to the file");
-    DRV.url=u;vid.src=u;vid.hidden=false;msg.hidden=true;dl.href=u;dl.setAttribute("download",it.name||"draft.mp4");dl.classList.remove("dis")}
-  catch(e){if(DRV.id!==id)return;msg.innerHTML=e.signin?`${esc(e.message)}<br><button type="button" class="btn small primary" data-ms="signin-draft">Sign in with Microsoft</button>`:esc(e.status===404?"This draft was moved or deleted in SharePoint":e.message)}}
+    DRV.url=u;vid.src=u;vid.hidden=false;msg.hidden=true;dl.href=u;dl.setAttribute("download",it.name||"video.mp4");dl.classList.remove("dis");
+    vid.addEventListener("error",()=>{if(DRV.url===u){vid.hidden=true;msg.hidden=false;msg.innerHTML="This video can’t play in the browser. Use Download or Open in SharePoint."}},{once:true})}
+  catch(e){if(DRV.id!==id)return;msg.innerHTML=e.signin?`${esc(e.message)}<br><button type="button" class="btn small primary" data-ms="signin-draft">Sign in with Microsoft</button>`:esc(e.status===404?`This ${o.what} was moved or deleted in SharePoint`:e.message)+(safeUrl(o.link)?"<br>You can still use Open in SharePoint.":"")}}
 function niceAgo(t){const m=Math.round((Date.now()-t)/60000);return m<1?"just now":m<60?m+" min ago":m<1440?Math.round(m/60)+" h ago":nice(iso(new Date(t)))}
 document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-ms]");if(!b)return;e.preventDefault();const k=b.dataset.ms;
   const refresh=()=>{const d=$("#upDlg");if(d.open){$("#upMs").innerHTML=upMsHTML();$("#upDrop").classList.toggle("off",!msAccount())}if($("#carDlg").open){$("#carMs").innerHTML=upMsHTML();carPaint()}if(S.tab==="settings")render()};
   if(k==="signin"||k==="switch")msSignIn(refresh);
-  else if(k==="signin-draft")msSignIn(()=>{if(DRV.id)openDraft(DRV.id)});
-  else if(k==="signin-gal")msSignIn(()=>{if(GAL.id)openGallery(GAL.id)});
+  else if(k==="signin-draft")msSignIn(()=>{if(DRV.id){DRV.mode==="final"?openPreview(DRV.id):openDraft(DRV.id)}});
+  else if(k==="signin-gal")msSignIn(()=>{if(GAL.id){GAL.pv?openPreview(GAL.id):openGallery(GAL.id)}});
   else if(k==="signout"){const a=msAccount();if(MS.app&&a){MS.app.clearCache?MS.app.clearCache({account:a}).then(refresh):(MS.app.setActiveAccount(null),refresh())}}
   else if(k==="test")spTest()});
 async function spTest(){
@@ -4769,13 +4784,16 @@ function carPaint(){const g=$("#carGrid"),n=CARU.files.length,ok=spOn()&&!!msAcc
 })();
 /* the gallery: Zain flicks through the photos, downloads them, approves or asks for changes */
 const GAL={id:null,items:[],i:0};
-async function openGallery(id){const v=S.videos[id];if(!v||!v.car)return;GAL.id=id;GAL.items=[];const d=$("#galDlg"),grid=$("#galGrid");
+async function openGallery(id,pv){const v=S.videos[id];if(!v||!(v.car||pv))return;GAL.id=id;GAL.pv=pv||null;GAL.items=[];const d=$("#galDlg"),grid=$("#galGrid");
   $("#galTitle").textContent=v.title||"Untitled";
-  $("#galSub").textContent=`${v.car.count} photos${v.car.round>1?", round "+v.car.round:""}, uploaded ${v.car.at?niceAgo(v.car.at):""}${v.car.by?" by "+dispName(v.car.by):""}`;
-  const decide=isReviewer()&&v.status==="In review";$("#galOk").hidden=!decide;$("#galRe").hidden=!decide;
-  const sp=$("#galSp");sp.href=safeUrl(v.car.webUrl)||"#";sp.hidden=!safeUrl(v.car.webUrl);
-  galView(-1);grid.innerHTML=`<div class="dr-msg">Loading the photos…</div>`;d.returnValue="";openDlg(d);
-  try{const r=await gjson(`/drives/${v.car.driveId}/items/${v.car.folderId}/children?$expand=thumbnails&$top=200`);if(GAL.id!==id||!d.open)return;
+  $("#galSub").textContent=pv?pv.sub:`${v.car.count} photos${v.car.round>1?", round "+v.car.round:""}, uploaded ${v.car.at?niceAgo(v.car.at):""}${v.car.by?" by "+dispName(v.car.by):""}`;
+  const decide=!pv&&isReviewer()&&v.status==="In review";$("#galOk").hidden=!decide;$("#galRe").hidden=!decide;
+  const spl=pv?pv.link:v.car.webUrl,sp=$("#galSp");sp.href=safeUrl(spl)||"#";sp.hidden=!safeUrl(spl);
+  galView(-1);grid.innerHTML=`<div class="dr-msg"><span class="dr-spin"></span>Loading the photos…</div>`;d.returnValue="";openDlg(d);
+  try{let drive,folder;
+    if(pv&&!(pv.ref&&pv.ref.folderId)){await msApp();if(!msAccount())throw spSignErr("Sign in to Microsoft to see the photos here");const it=await spResolve(null,pv.link);if(!it.folder)throw new Error("That link isn’t a folder of photos");drive=it.parentReference.driveId;folder=it.id}
+    else{const c=pv?pv.ref:v.car;drive=c.driveId;folder=c.folderId}
+    const r=await gjson(`/drives/${drive}/items/${folder}/children?$expand=thumbnails&$top=200`);if(GAL.id!==id||!d.open)return;
     GAL.items=(r.value||[]).filter(x=>x.file).sort((a,b)=>a.name.localeCompare(b.name,undefined,{numeric:true}));
     if(!GAL.items.length){grid.innerHTML=`<div class="dr-msg">The folder is empty</div>`;return}
     grid.innerHTML=GAL.items.map((x,i)=>{const t=x.thumbnails&&x.thumbnails[0],src=t&&(t.large||t.medium||t.small);
@@ -4830,6 +4848,9 @@ async function spDownload(link,label,ref){
     saveUrl(it["@microsoft.graph.downloadUrl"],it.name);toast(`Downloading “${label||it.name}” to your Downloads folder`);return true}
   catch(e){toast(e.signin?"Microsoft needs you to sign in again":`Couldn’t download from SharePoint: ${e.status===404?"the file was moved or deleted":e.status===403?"your account can’t open it":e.message}`,e.signin?"Sign in":undefined,e.signin?()=>msSignIn(()=>spDownload(link,label,ref)):undefined);return false}}
 
+
+document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest("a[data-prev]");if(!a||e.button!==0||e.ctrlKey||e.metaKey||e.shiftKey||e.altKey)return;
+  if(openPreview(a.dataset.prev)){e.preventDefault();e.stopPropagation();const al=a.closest(".alert");if(al&&a.dataset.al==="open")setTimeout(()=>closeAlert(al),50)}},true);
 /* ---------- render ---------- */
 function isTyping(){const a=document.activeElement;return a&&a.closest&&a.closest("#main")&&!a.dataset.live&&(a.tagName==="TEXTAREA"||(a.tagName==="INPUT"&&/^(text|number)$/.test(a.type)))}
 let VT_ON=false;
@@ -5838,16 +5859,16 @@ function showAlert(v,kind){
     <p class="al-note">${esc(v.reviewNote||"No notes added.")}</p><div class="al-btns"><button class="al-done" data-al="x">Later</button><button class="al-open" data-al="startedit">Start re-edit</button></div>`;
   else if(kind==="soon"||kind==="now"||(kind==="late"&&isPoster())){const lnk=safeUrl(v.finalLink);
     body=`<div class="al-top"><span class="al-pill${kind==="late"?" warn":kind==="now"?" pulse":""}">${kind==="soon"?"Posting in 15 min":kind==="now"?"Post now":"Not posted yet"}</span>${x}</div>${title}<small>${isCar(v)?"Carousel":"Reel"}, ${kind==="late"?"was due ":""}${when}</small>
-    <div class="al-btns">${lnk?`<a class="al-done" href="${esc(lnk)}" target="_blank" rel="noopener noreferrer">${isCar(v)?"Open post":"Open video"}</a>`:""}${slideHTML(v.id,"Slide to post")}</div>`}
+    <div class="al-btns">${lnk?`<a class="al-done" href="${esc(lnk)}" data-prev="${v.id}" target="_blank" rel="noopener noreferrer">${isCar(v)?"Open post":"Open video"}</a>`:""}${slideHTML(v.id,"Slide to post")}</div>`}
   else if(kind==="late")body=`<div class="al-top"><span class="al-pill warn">Not posted yet</span>${x}</div>${title}<small>Was due ${when}. ${esc(posterName())} hasn’t marked it posted.</small>
     <div class="al-btns"><button class="al-done" data-al="x">OK</button><button class="al-open" data-al="posted">It’s posted</button></div>`;
   else if(kind==="posted"){const lnk=safeUrl(v.finalLink);
     body=`<div class="al-top"><span class="al-pill">✓ Posted</span>${x}</div>${title}<small>${kindName(v)}, went live ${when} as scheduled.</small>
-    <div class="al-btns">${lnk?`<a class="al-done" href="${esc(lnk)}" target="_blank" rel="noopener noreferrer">${isCar(v)?"Open post":"Open video"}</a>`:""}<button class="al-open" data-al="x">OK</button></div>`}
+    <div class="al-btns">${lnk?`<a class="al-done" href="${esc(lnk)}" data-prev="${v.id}" target="_blank" rel="noopener noreferrer">${isCar(v)?"Open post":"Open video"}</a>`:""}<button class="al-open" data-al="x">OK</button></div>`}
   else if(kind==="notready")body=`<div class="al-top"><span class="al-pill warn">Due soon, not ready</span>${x}</div>${title}<small>Posts ${when}, still ${esc(v.status)}.</small>
     <div class="al-btns"><button class="al-done" data-al="x">OK</button></div>`;
   else body=`<div class="al-top"><span class="al-pill">Ready to post</span>${x}</div>${title}<small>${isCar(v)?"Carousel":"Reel"}, ${when}</small>
-    <div class="al-btns"><a class="al-open" href="${esc(safeUrl(v.finalLink))}" target="_blank" rel="noopener noreferrer" data-al="open">${isCar(v)?"Open post":"Open video"}</a><button class="al-done" data-al="scheduled">Scheduled</button></div><div class="al-slide">${slideHTML(v.id,"Slide to post")}</div>`;
+    <div class="al-btns"><a class="al-open" href="${esc(safeUrl(v.finalLink))}" data-prev="${v.id}" target="_blank" rel="noopener noreferrer" data-al="open">${isCar(v)?"Open post":"Open video"}</a><button class="al-done" data-al="scheduled">Scheduled</button></div><div class="al-slide">${slideHTML(v.id,"Slide to post")}</div>`;
   el.innerHTML=body;el.dataset.id=v.id;el.dataset.key=alertKey(v,kind);const bar=box.querySelector(".al-bar");if(bar)bar.after(el);else box.prepend(el);box.scrollTop=0;alertsLayout();
   if(RM||!el.animate)return;
   const hgt=el.offsetHeight;el.style.overflow="hidden";
@@ -5969,7 +5990,7 @@ function osText(v,k){
     reedit:["Re-edit requested",`${t}: ${v.reviewNote||"see the notes"}`],ready:["Ready to post",`${t}, posts ${when}`],
     soon:["Posting in 15 minutes",`${t}, posts ${when}`],now:["Post now",`${t}, due ${when}`],late:["Not posted yet",`${t} was due ${when}`],
     posted:["Posted ✓",`${t} went live ${when} as scheduled.`],
-    notready:["Due soon, not ready",`${t} posts ${when}, still ${v.status}`]})[k]||["Shoot Board",t];
+    notready:["Due soon, not ready",`${t} posts ${when}, still ${v.status}`]})[k]||["PB Dashboard",t];
 }
 function osNotify(v,k,force){
   if(!osOn())return;
@@ -5989,7 +6010,7 @@ function askNotif(){
   });
 }
 function osTest(){if(!osOn()){toast("Turn notifications on first");return}const opts={body:"Notifications are working. You’ll see reviews and posting reminders here.",icon:"icon-192.png",tag:"seb-test"};
-  if(navigator.serviceWorker&&navigator.serviceWorker.controller)navigator.serviceWorker.ready.then(r=>r.showNotification("Shoot Board",opts));else try{new Notification("Shoot Board",opts)}catch(e){}}
+  if(navigator.serviceWorker&&navigator.serviceWorker.controller)navigator.serviceWorker.ready.then(r=>r.showNotification("PB Dashboard",opts));else try{new Notification("PB Dashboard",opts)}catch(e){}}
 function osPanel(){
   if(!OSN)return `<p class="sub">This browser can’t show Windows notifications.</p>`;
   const p=Notification.permission;
@@ -6022,7 +6043,7 @@ setInterval(()=>{
   });
 },1000);
 // check the clock every minute so posting reminders arrive on time, and show a count in the window title
-setInterval(()=>{if(loaded)checkAlerts();const n=myAlerts().filter(x=>["now","late"].includes(x.k)).length;document.title=(n?`(${n}) Post now · `:"")+"Shoot & edit board"},60000);
+setInterval(()=>{if(loaded)checkAlerts();const n=myAlerts().filter(x=>["now","late"].includes(x.k)).length;document.title="PB Dashboard"+(n?` · ${n} ${n===1?"post":"posts"} due now`:"")},60000);   // starts with the app’s exact name, so Windows doesn’t show the name twice
 function closeAllAlerts(){const box=$("#alerts");if(!box)return 0;const A=[...box.querySelectorAll(".alert:not([data-closing])")];box.classList.remove("multi","open");A.forEach((el,i)=>setTimeout(()=>closeAlert(el),i*40));return A.length}
 document.addEventListener("pointerdown",e=>{const t=e.target;if(!t.closest)return;if(t.closest("#alerts,#bellBtn,dialog,.stpop,#toast"))return;
   const box=$("#alerts");if(box&&box.querySelector(".alert:not([data-closing])"))closeAllAlerts()},true);
