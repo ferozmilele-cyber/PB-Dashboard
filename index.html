@@ -2116,6 +2116,7 @@ nav.tabs.stuck{background:rgba(255,255,255,.8)!important;box-shadow:0 16px 40px 
 .aw-acts{display:flex;align-items:center;gap:4px;flex:none}
 .away.editing{border-color:rgba(123,209,0,.5)!important;box-shadow:0 0 0 4px rgba(170,255,0,.18),inset 0 1px 0 #fff!important}
 .aw-edit{grid-template-columns:1.4fr 1fr 1fr 1fr 1fr auto!important;margin-top:10px}
+.aw-del{all:unset;cursor:pointer;margin-right:auto;font:600 12.5px Inter,system-ui,sans-serif;color:#b42318;padding:6px 4px;text-decoration:underline;text-underline-offset:3px;opacity:.85}.aw-del:hover{opacity:1}:root[data-theme="dark"] .aw-del{color:#ff8a80}
 .aw-eb{display:flex;gap:6px;align-self:end}
 .aw-boxes.two{grid-template-columns:1.4fr 1fr}
 .aw-box.hi b{font-size:30px}
@@ -2516,7 +2517,8 @@ dialog.od-dlg form{position:relative}
 .cc-day{position:relative;display:flex;flex-direction:column;align-items:center;gap:1px;padding:7px 2px 6px;border-radius:12px;border:1px solid rgba(12,14,8,.08);background:rgba(255,255,255,.65);cursor:pointer;font-family:Inter,system-ui,sans-serif;color:var(--ink);transition:background .2s,border-color .2s,transform .15s}
 #main .cc-day small,#main .cc-day b{display:block!important;margin:0!important;text-align:center}
 #main .cc-day{min-width:0;overflow:visible;height:58px;min-height:0!important;justify-content:center;padding:0!important}
-:root[data-theme="dark"] #main .cc-row input{color:#eef1ea!important;-webkit-text-fill-color:#eef1ea;color-scheme:dark}
+:root[data-theme="dark"] #main .cc-row input{color:#eef1ea!important;-webkit-text-fill-color:#eef1ea;color-scheme:dark;background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.12)!important;border-radius:14px;height:46px;padding:0 12px}
+#main .cc-row input{height:46px;border-radius:14px;padding:0 12px;box-sizing:border-box;width:100%;border:1px solid rgba(12,14,8,.1);background:rgba(255,255,255,.85);font:600 14px Inter,system-ui,sans-serif;color:var(--ink)}
 .cc-day small{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
 .cc-day b{font-size:16px;font-weight:800;line-height:1.1}
 .cc-day em{position:absolute;top:-7px;right:-4px;font-style:normal;font-size:9.5px;font-weight:800;padding:1px 5px;border-radius:999px;background:#0B0B0C;color:#AAFF00}
@@ -2978,7 +2980,14 @@ dialog.od-dlg form{position:relative}
   #main .aw-cov{display:grid;gap:8px}
   #main .aw-cov .aw-n{display:flex;white-space:nowrap}
   #main .aw-cov select,#main .aw-cov .gsel,#main .aw-cov input{width:100%;min-width:0}
-  #main .away-form{display:none!important}
+  #main .away-form:not(.aw-edit){display:none!important}
+  /* editing a trip works on the phone too: one field per row */
+  #main .away-form.aw-edit{display:grid!important;grid-template-columns:1fr 1fr!important;gap:10px!important}
+  #main .away-form.aw-edit>label:first-child{grid-column:1/-1}
+  #main .away-form.aw-edit .aw-eb{grid-column:1/-1;justify-self:stretch;display:flex;align-items:center;gap:8px}
+  #main .away-form.aw-edit .aw-eb .btn{flex:1 1 0}
+  #main .away-form.aw-edit .aw-eb .aw-del{flex:none;margin-right:6px}
+  #main .away.editing .aw-m>b,#main .away.editing .aw-m>small{padding-right:0}
   #main .shero .sh-acts .btn{flex:1 1 auto}
   #main .srow .etitle small .tag:not(.warn){display:none}
 
@@ -6169,7 +6178,7 @@ function awayCard(a){const N=awayNumbers(a),editor=roleOf(a)==="edit";
     ${m==="partial"?`<label class="aw-n">Per day<input type="number" min="0" max="20" value="${+a.perDay||0}" data-awc="perDay" data-id="${a.id}"></label>`:""}
     ${m==="partial"||m==="team"?`<input type="text" class="aw-t" placeholder="Teammate name" value="${esc(a.teammate||"")}" data-awc="teammate" data-id="${a.id}">`:""}</div>`:"";
   return `<div class="away"><div class="aw-i">✈︎</div><div class="aw-m"><b>${esc(a.label||"Time away")}</b><small>${esc(niceW(a.from))} – ${esc(niceW(a.to))} · no shooting${editor&&["before","team"].includes(m)?", no editing by you":""} · posting ${esc(posting)}</small>${body}${cover?`<p class="aw-cv">${cover}</p>`:""}${ed}</div>
-    <div class="aw-acts"><button class="btn small ghost" data-act="awayEdit" data-id="${a.id}">Edit</button><button class="xbtn" data-act="awayDel" data-id="${a.id}" aria-label="Remove" title="Remove">×</button></div></div>`}
+    <div class="aw-acts"><button class="btn small ghost" data-act="awayEdit" data-id="${a.id}">Edit</button></div></div>`}
 function awayEditCard(a0){const a={...a0,...AWE},base=planFor(a.from).times||[],mx=Math.max(base.length,4);
   return `<div class="away editing"><div class="aw-i">✎</div><div class="aw-m"><b>Edit trip</b>
     <div class="away-form aw-edit">
@@ -6178,7 +6187,7 @@ function awayEditCard(a0){const a={...a0,...AWE},base=planFor(a.from).times||[],
       <label>To<input type="date" id="aeTo" data-aef="to" value="${a.to}"></label>
       <label>Reels per day<select id="aeReels" data-aef="reels"><option value="">Same as usual</option>${Array.from({length:mx},(_,n)=>n).map(n=>`<option value="${n}"${String(a.reels)===String(n)?" selected":""}>${n===0?"None":n}</option>`).join("")}</select></label>
       <label>Carousels<select id="aeCars" data-aef="cars"><option value="keep">Same</option><option value="pause"${a.cars==="pause"?" selected":""}>None</option></select></label>
-      <span class="aw-eb"><button class="btn small" data-act="awayEditCancel">Cancel</button><button class="btn small primary" data-act="awayEditSave" data-id="${a.id}">Save</button></span>
+      <span class="aw-eb"><button class="aw-del" data-act="awayDel" data-id="${a.id}" title="Delete this time away">Delete</button><button class="btn small" data-act="awayEditCancel">Cancel</button><button class="btn small primary" data-act="awayEditSave" data-id="${a.id}">Save</button></span>
     </div></div></div>`}
 const AWF={},AWE={};
 document.addEventListener("input",e=>{const d=e.target&&e.target.dataset;if(!d)return;if(d.awf)AWF[d.awf]=e.target.value;if(d.aef)AWE[d.aef]=e.target.value},true);
@@ -7072,7 +7081,7 @@ document.addEventListener("click",async e=>{
   else if(act==="awayAdd"){const who=$("#awWho").value.trim()||"Time away";const a={id:"aw"+Date.now().toString(36),label:who,mode:"before",from:$("#awFrom").value,to:$("#awTo").value,reels:$("#awReels").value,cars:$("#awCars").value};
     if(!a.from||!a.to){toast("Pick both dates");return}if(a.to<a.from){const x=a.from;a.from=a.to;a.to=x}
     S.settings.away=[...(S.settings.away||[]),a];applyAway(a);Object.keys(AWF).forEach(k=>delete AWF[k]);putSettings();render();toast(`${a.label}: ${nice(a.from)} – ${nice(a.to)} added`)}
-  else if(act==="awayDel"){const a=(S.settings.away||[]).find(x=>x.id===b.dataset.id);if(!a)return;if(!await ask(`Remove “${a.label}”?`,"Those days go back to the usual posting plan.","Remove"))return;
+  else if(act==="awayDel"){const a=(S.settings.away||[]).find(x=>x.id===b.dataset.id);if(!a)return;if(!await ask(`Delete “${a.label||"this time away"}”?`,`${niceW(a.from)} – ${niceW(a.to)} becomes normal days again: shooting allowed, the usual posting plan, and the shoot targets for this trip disappear. This can’t be undone.`,"Delete"))return;
     S.settings.away=(S.settings.away||[]).filter(x=>x.id!==a.id);S.settings.plans=plans().filter(p=>p.awayId!==a.id);S.settings.cplans=cplans().filter(p=>p.awayId!==a.id);putSettings();render()}
   else if(act==="goShoots"){goTab("shoots")}
   else if(act==="awayEdit"){Object.keys(AWE).forEach(k=>delete AWE[k]);S.awayEdit=b.dataset.id;render()}
