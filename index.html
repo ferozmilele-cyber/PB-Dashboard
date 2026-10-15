@@ -2568,6 +2568,13 @@ dialog.od-dlg form{position:relative}
 :root[data-theme="dark"] .cc-empty{border-color:rgba(255,255,255,.14)}
 :root[data-theme="dark"] .cc-day em{background:#AAFF00;color:#0B0B0C}
 
+/* ===== history: reels / carousels split ===== */
+.hstats .hsplit{display:flex;gap:6px;align-items:baseline;flex-wrap:wrap;margin-top:8px;font-style:normal;font-size:12.5px;font-weight:600;color:var(--muted)}
+.hstats .hsplit i{font-style:normal;font-weight:900;font-size:15px;color:var(--ink)}
+.hstats .hsplit s{text-decoration:none;opacity:.5}
+.hstats>div:first-child .hsplit{color:rgba(11,11,12,.7)}.hstats>div:first-child .hsplit i{color:#0B0B0C}
+.hgsplit{margin-left:10px;font-size:12.5px;font-weight:600;color:var(--muted)}
+:root[data-theme="dark"] .hstats>div:first-child .hsplit{color:rgba(170,255,0,.75)}:root[data-theme="dark"] .hstats>div:first-child .hsplit i{color:#AAFF00}
 /* ================================================================
    DARK MODE — final layer (v73)
    One place for every dark rule. The theme script in <head> always sets
@@ -3017,6 +3024,13 @@ dialog.od-dlg form{position:relative}
   #main .dl-opts .seg::-webkit-scrollbar{display:none}
   #main .dl-opts .seg::-webkit-scrollbar{display:none}
   #main .dl-opts .seg button{white-space:nowrap;flex:none;padding-left:11px!important;padding-right:11px!important}
+}
+/* history tiles: reels and carousels on two short lines */
+@media (max-width:600px){
+  #main .hstats .hsplit{flex-direction:column;gap:2px;align-items:flex-start;font-size:11.5px}
+  #main .hstats .hsplit s{display:none}
+  #main .hstats .hsplit i{font-size:14px;margin-right:3px}
+  #main .hgsplit{display:block;margin:2px 0 0;font-size:11.5px}
 }
 
 </style>
@@ -3878,6 +3892,10 @@ function editedToday(){return vids().filter(v=>v.editedOn===today()).length}
 /* ---------- smart edit plan: spreads the edits evenly over your work days so the week never piles up ---------- */
 const FIN=["Edited","In review","Approved","Ready","Scheduled","Posted"];
 function workDaysSet(){return Array.isArray(S.settings.workDays)?S.settings.workDays:[1,2,3,4,5,6]}
+function shootWdSet(){return Array.isArray(S.settings.shootDays)?S.settings.shootDays:[1,2,3,4,5]}
+function canShoot(d){return shootWdSet().includes(new Date(d+"T00:00:00").getDay())&&!(typeof isAway==="function"&&isAway(d))}
+function shootDaysLabel(){const W=shootWdSet(),o=[1,2,3,4,5,6,0].filter(w=>W.includes(w));if(!o.length)return "no shoot days set";const s=o.map(w=>WD[w].slice(0,3));
+  const run=o.every((w,i)=>i===0||[1,2,3,4,5,6,0].indexOf(w)===[1,2,3,4,5,6,0].indexOf(o[i-1])+1);return run&&o.length>2?`${s[0]}–${s[s.length-1]}`:s.join(", ")}
 function isWorkDay(d){if(typeof isAway==="function"){const a=isAway(d,"edit");if(a&&tripHasPlan(a))return tripWorkDay(a,d);if(a&&["before","team"].includes(a.mode||"before"))return false}const on=(S.settings.daysOn||[]).includes(d),off=(S.settings.daysOff||[]).includes(d);
   return !off&&(on||workDaysSet().includes(new Date(d+"T00:00:00").getDay()))}
 function editPlan(){
@@ -4598,19 +4616,21 @@ function vHistory(){
   let L=posted.filter(v=>(H.range==="all"||(H.range==="month"?v.postDate.startsWith(mo):v.postDate.startsWith(lm)))&&(!q||(v.title||"").toLowerCase().includes(q)));
   L.sort((a,b)=>postKey(b).localeCompare(postKey(a)));
   const thisM=posted.filter(v=>v.postDate.startsWith(mo)).length,lastM=posted.filter(v=>v.postDate.startsWith(lm)).length;
+  const split=list=>{const c=list.filter(isCar).length,r=list.length-c;return `<em class="hsplit"><span><i>${r}</i> ${r===1?"reel":"reels"}</span><s>·</s><span><i>${c}</i> ${c===1?"carousel":"carousels"}</span></em>`};
   const groups={};L.forEach(v=>{const k=v.postDate.slice(0,7);(groups[k]=groups[k]||[]).push(v)});
   const row=v=>`<div class="hrow" data-k="h-${v.id}"><div class="hdate"><b>${+v.postDate.slice(8)}</b><span>${WD[new Date(v.postDate+"T00:00:00").getDay()]}</span></div>
       <div class="etitle"><span class="dot" style="background:${hue(v.shotDate)}"></span><div><b>${esc(v.title||"Untitled")}</b><small>${v.postTime?fmtT(v.postTime):"No time"}, ${esc(v.format||"Reel")}${v.shotDate?`, shot ${esc(nice(v.shotDate))}`:""}</small></div></div>
       <div class="hrow-link">${openLink(v,isCar(v)?"Open post":"Open video")?`${openLink(v,isCar(v)?"Open post":"Open video")}${dlBtn(v)}<button class="iconbtn hlink-edit" data-act="editLink" data-id="${v.id}" title="Change link" style="margin-left:6px">Edit</button>`:`<span class="hlink-add"><input type="text" class="link-in" value="${esc(v.finalLink||"")}" data-f="finalLink" data-id="${v.id}" placeholder="Paste link…" aria-label="Final video link"><button class="iconbtn" data-act="savehlink" data-id="${v.id}">Save</button></span>`}</div></div>`;
   const body=Object.keys(groups).sort().reverse().map(k=>{const [y,m]=k.split("-").map(Number);
-    return `<div class="card"><header><h3>${MONL[m-1]} ${y}</h3><span class="count">${groups[k].length}</span></header>${groups[k].map(row).join("")}</div>`}).join("");
+    const gc=groups[k].filter(isCar).length,gr=groups[k].length-gc;
+    return `<div class="card"><header><h3>${MONL[m-1]} ${y}</h3><span class="count">${groups[k].length}</span><span class="hgsplit">${gr} ${gr===1?"reel":"reels"} · ${gc} ${gc===1?"carousel":"carousels"}</span></header>${groups[k].map(row).join("")}</div>`}).join("");
   return `<section class="panel">
     <div class="phead"><h2>Posting history</h2>${histSwitch()}
       <div class="pactions">${GAS?`<button class="btn small" data-act="newWin" data-view="history">Open in new window</button>`:""}<div class="seg" role="group" aria-label="Range">${[["all","All"],["month","This month"],["last","Last month"]].map(([k,l])=>`<button data-act="hrange" data-r="${k}" aria-pressed="${H.range===k}">${l}</button>`).join("")}</div></div></div>
     <div class="hstats">
-      <div><b>${thisM}</b><span>Posted this month</span></div>
-      <div><b>${lastM}</b><span>Last month</span></div>
-      <div><b>${posted.length}</b><span>All time</span></div>
+      <div><b>${thisM}</b><span>Posted this month</span>${split(posted.filter(v=>v.postDate.startsWith(mo)))}</div>
+      <div><b>${lastM}</b><span>Last month</span>${split(posted.filter(v=>v.postDate.startsWith(lm)))}</div>
+      <div><b>${posted.length}</b><span>All time</span>${split(posted)}</div>
     </div>
     <div class="toolbar"><input type="search" placeholder="Search posted videos" value="${esc(H.q)}" data-live="hq" aria-label="Search posted videos"></div>
     ${missed.length?`<div class="card attn"><header><h3>Not marked as posted</h3><span class="count low">${missed.length}</span><button class="btn small" data-act="markAllPosted" style="margin-left:auto">Mark all as posted</button></header>${missed.map(v=>`<div class="hrow"><div class="hdate"><b>${+v.postDate.slice(8)}</b><span>${MON[+v.postDate.slice(5,7)-1]}</span></div><div class="etitle"><span class="dot" style="background:${SC[v.status]}"></span><div><b>${esc(v.title||"Untitled")}</b><small>${v.postTime?fmtT(v.postTime):"No time"}, still ${esc(v.status)}${rvTimer(v,true)}</small></div></div><div><button class="iconbtn" data-act="markPosted" data-id="${v.id}">Mark posted</button></div></div>`).join("")}</div>`:""}
@@ -4775,6 +4795,9 @@ function vSettings(){
     <div class="field"><label>Edit days</label>
       <div class="wds" role="group" aria-label="Edit days">${[1,2,3,4,5,6,0].map(w=>`<button class="wd" data-act="workday" data-w="${w}" aria-pressed="${workDaysSet().includes(w)}">${WD[w].slice(0,2)}</button>`).join("")}</div>
       <span class="hint">Days you edit. Posts on your days off are covered the work day before. Take a single day off from the Edit order tab.</span></div>
+    <div class="field"><label>Shoot days</label>
+      <div class="wds" role="group" aria-label="Shoot days">${[1,2,3,4,5,6,0].map(w=>`<button class="wd" data-act="shootday" data-w="${w}" aria-pressed="${shootWdSet().includes(w)}">${WD[w].slice(0,2)}</button>`).join("")}</div>
+      <span class="hint">Days Fahad can shoot. Time away targets are shared across these days only.</span></div>
     <div class="field"><label for="elead">Finish edits</label>
       <select id="elead" data-set="editLead"><option value="1"${(S.settings.editLead==null?1:+S.settings.editLead)===1?" selected":""}>A day before they post</option><option value="0"${+S.settings.editLead===0&&S.settings.editLead!=null?" selected":""}>On the day they post</option></select></div>
     <div class="switches">${toggle("data-sset","editCountAll",S.settings.editCountAll!==false,"Count carousels in the edit target")}</div>
@@ -6150,7 +6173,7 @@ function modeLabel(m,role){const R=ROLES[role]||ROLES.shoot;const act=R.act,verb
 function awayNumbers(a){const t=today();if(a.to<t)return null;const started=a.from<=t,len=daysBetween(a.from,a.to)+1;
   const R=needFor("R",0,t,a.to),C=needFor("C",0,t,a.to);                  // everything that posts from now until they are back
   const DR=needFor("R",0,a.from,a.to),DC=needFor("C",0,a.from,a.to);      // what posts while they are away
-  const shootR=R.toShoot,shootC=C.toShoot;let days=0;for(let d=t;d<a.from;d=addDays(d,1))if(!isAway(d))days++;
+  const shootR=R.toShoot,shootC=C.toShoot;let days=0;for(let d=t;d<a.from;d=addDays(d,1))if(canShoot(d))days++;   // only real shoot days count (weekends off by default)
   const dur={r:DR.total,c:DC.total},durN=dur.r+dur.c,mode=a.mode||"before";
   const you=mode==="remote"?durN:mode==="partial"?Math.min(durN,(+a.perDay||0)*len):0,team=mode==="team"?durN:mode==="partial"?Math.max(0,durN-you):0;
   const shoot=shootR+shootC;
@@ -6166,7 +6189,7 @@ function awayCard(a){const N=awayNumbers(a),editor=roleOf(a)==="edit";
   const body=!N?`<p class="sub">Finished.</p>`:`<div class="aw-boxes two">
     <div class="aw-box hi"><small>${N.started?"Shooting is paused now":`To shoot before ${esc(niceW(a.from))}`}</small>
       <div class="aw-bigs">${big(N.shootR,"reel")}${big(N.shootC,"carousel")}</div>
-      <span>${N.shoot&&!N.started?(N.days?`Minimum ${[rate(N.shootR,N.days,"reel"),rate(N.shootC,N.days,"carousel")].filter(Boolean).join(" + ")} over the ${plural(N.days,"day")} left. Skip a day and this goes up.`:"No shoot days left before the trip."):N.shoot?"":`✓ Enough footage until ${esc(nice(a.to))}`}</span>
+      <span>${N.shoot&&!N.started?(N.days?`Minimum ${[rate(N.shootR,N.days,"reel"),rate(N.shootC,N.days,"carousel")].filter(Boolean).join(" + ")} over the ${plural(N.days,"shoot day")} left (${esc(shootDaysLabel())}). Skip a day and this goes up.`:"No shoot days left before the trip."):N.shoot?"":`✓ Enough footage until ${esc(nice(a.to))}`}</span>
       <em class="aw-note">Counts every post until ${esc(nice(a.to))}, minus the footage you already have.</em></div>
     <div class="aw-box"><small>Posts while away (${plural(N.len,"day")})</small>
       <div class="aw-bigs">${big(N.dur.r,"reel")}${big(N.dur.c,"carousel")}</div>
@@ -7146,6 +7169,7 @@ document.addEventListener("click",async e=>{
     S.settings.pillars=P;S.settings.pillarOrder=(S.settings.pillarOrder||[]).filter(x=>x!==gone);putSettings();render()}
   else if(act==="addOrder"){const O=[...(S.settings.pillarOrder||[])];O.push(pillars()[0]||"");S.settings.pillarOrder=O;putSettings();render()}
   else if(act==="rmOrder"){const O=[...(S.settings.pillarOrder||[])];O.splice(+b.dataset.i,1);S.settings.pillarOrder=O;putSettings();render()}
+  else if(act==="shootday"){const w=+b.dataset.w,W=[...shootWdSet()];S.settings.shootDays=W.includes(w)?W.filter(x=>x!==w):[...W,w].sort();putSettings();render()}
   else if(act==="workday"){const w=+b.dataset.w,W=[...workDaysSet()];S.settings.workDays=W.includes(w)?W.filter(x=>x!==w):[...W,w].sort();putSettings();render()}
   else if(act==="toggleDay"){const d=b.dataset.d;let off=[...(S.settings.daysOff||[])].filter(x=>x>=today()),on=[...(S.settings.daysOn||[])].filter(x=>x>=today());
     const usual=workDaysSet().includes(new Date(d+"T00:00:00").getDay());
@@ -7995,7 +8019,7 @@ const OD=(()=>{
 const CALC=(()=>{
   const WDN=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
   function defaults(){const t=today(),a=awayList().find(x=>x.to>=t);
-    return {mode:"dates",from:t,to:a?a.to:addDays(t,13),dates:[],wd:[1,3,5],lead:tripLead()}}
+    return {mode:"dates",from:t,to:a?a.to:addDays(t,13),dates:[],wd:shootWdSet().slice(),lead:tripLead()}}
   function st(){if(!S.calc)S.calc=defaults();const c=S.calc;const t=today();if(c.from<t)c.from=t;if(c.to<c.from)c.to=c.from;return c}
   const awayOn=d=>awayList().find(a=>d>=a.from&&d<=a.to);   // any time away means no shooting that day (editing and posting carry on)
   function shootDays(c){const t=today();if(c.mode==="dates")return c.dates.filter(d=>d>=t&&d<=c.to&&!awayOn(d)).sort();
