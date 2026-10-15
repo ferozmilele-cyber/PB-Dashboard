@@ -2575,6 +2575,34 @@ dialog.od-dlg form{position:relative}
 .hstats>div:first-child .hsplit{color:rgba(11,11,12,.7)}.hstats>div:first-child .hsplit i{color:#0B0B0C}
 .hgsplit{margin-left:10px;font-size:12.5px;font-weight:600;color:var(--muted)}
 :root[data-theme="dark"] .hstats>div:first-child .hsplit{color:rgba(170,255,0,.75)}:root[data-theme="dark"] .hstats>div:first-child .hsplit i{color:#AAFF00}
+/* ===== Instagram posting ===== */
+.ig-acct{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:16px;background:rgba(12,14,8,.04);border:1px solid rgba(12,14,8,.07);max-width:560px}
+.ig-acct img,.ig-acct>i{width:40px;height:40px;border-radius:50%;object-fit:cover;flex:none;background:linear-gradient(45deg,#feda75,#fa7e1e,#d62976,#962fbf,#4f5bd5)}
+.ig-acct>div{flex:1;min-width:0}.ig-acct b{display:block}.ig-acct small{display:block;color:var(--muted);font-size:12px}
+:root[data-theme="dark"] .ig-acct{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.08)}
+dialog.ig-dlg{width:min(860px,96vw)}
+.ig-h{display:flex;gap:14px;align-items:flex-start;margin-bottom:14px}.ig-h h2{margin:0}.ig-h .sub{margin:4px 0 0}
+.ig-logo{flex:none;width:44px;height:44px;border-radius:14px;background:radial-gradient(circle at 30% 110%,#feda75 0 18%,#fa7e1e 32%,#d62976 52%,#962fbf 72%,#4f5bd5);position:relative}
+.ig-logo::before{content:"";position:absolute;inset:11px;border:3px solid #fff;border-radius:9px}.ig-logo::after{content:"";position:absolute;left:50%;top:50%;width:10px;height:10px;margin:-5px 0 0 -5px;border:3px solid #fff;border-radius:50%;box-sizing:border-box}
+.ig-grid{display:grid;grid-template-columns:240px 1fr;gap:18px}
+.ig-prev{position:relative;aspect-ratio:9/16;border-radius:18px;overflow:hidden;background:#0b0d10}
+.ig-prev video{width:100%;height:100%;object-fit:cover;display:block}
+.ig-prev span{position:absolute;inset:0;display:grid;place-items:center;padding:16px;text-align:center;color:rgba(255,255,255,.7);font-size:13px;font-weight:600}
+.ig-prev span[hidden]{display:none}
+.ig-form{display:flex;flex-direction:column;gap:10px;min-width:0}
+.ig-cap{display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:700;color:var(--muted)}
+.ig-cap textarea{font:500 14px/1.5 Inter,system-ui,sans-serif;padding:12px 14px;border-radius:14px;resize:vertical;min-height:150px}
+.ig-cap small{align-self:flex-end;font-weight:600}.ig-cap small.bad{color:#b42318}
+.ig-row{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600}
+.ig-row input[type=number]{width:72px;padding:6px 8px;border-radius:10px}
+.ig-st{margin-top:4px;padding:12px;border-radius:14px;background:rgba(12,14,8,.04)}
+.ig-st[hidden]{display:none}
+.ig-bar{height:8px;border-radius:999px;background:rgba(12,14,8,.08);overflow:hidden}.ig-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#d62976,#AAFF00);transition:width .4s cubic-bezier(.22,1,.36,1)}
+.ig-st p{margin:8px 0 0;font-size:13px;font-weight:600}
+.ig-st.bad{background:#FFF0E3}.ig-st.bad p{color:#9a3c06}.ig-st.bad .ig-bar i{background:#d64034}
+:root[data-theme="dark"] .ig-st{background:rgba(255,255,255,.05)}:root[data-theme="dark"] .ig-st.bad{background:rgba(255,160,70,.12)}:root[data-theme="dark"] .ig-st.bad p{color:#ffb27a}
+@media (max-width:640px){.ig-grid{grid-template-columns:1fr}.ig-prev{max-height:42vh;aspect-ratio:auto;height:42vh}}
+
 /* ================================================================
    DARK MODE — final layer (v73)
    One place for every dark rule. The theme script in <head> always sets
@@ -3430,6 +3458,7 @@ function stMenuItems(v){
   }
   if(isReviewer()&&v.status==="In review"){out.push({v:"__approve",label:"Approve",c:"#3E9C5E",hint:"Goes to Ready"});out.push({v:"Re-edit",label:"Re-edit…",c:SC["Re-edit"],hint:"Send back with notes"})}
   else if(isReviewer()&&["Ready","Scheduled","Approved"].includes(v.status))out.push({v:"Re-edit",label:"Re-edit…",c:SC["Re-edit"],hint:"Send it back with notes"});
+  if(typeof IG!=="undefined"&&IG.ready()&&!isCar(v)&&((v.final&&v.final.itemId)||safeUrl(v.finalLink))&&!(v.posts&&v.posts.ig))out.push({v:"__igpost",label:"Post to Instagram",c:"#d62976",hint:"@"+((S.settings.ig||{}).username||"")});
   // the editor can record a re-edit Zain asked for in person, after the fact
   if(!isReviewer()&&["Shot","Editing","Pending"].includes(v.status)&&(v.submittedAt||v.approvedAt))out.push({v:"__logre",label:"Log as re-edit…",c:SC["Re-edit"],hint:"If Zain asked for changes"});
   if(spOn()&&canUp(v)){
@@ -3468,6 +3497,7 @@ document.addEventListener("click",e=>{const o=e.target.closest&&e.target.closest
     if(val==="__updraft"){openUp(v.id,"draft");return}
     if(val==="__upfinal"){openUp(v.id,"final");return}
     if(val==="__usedraft"){spPromoteDraft(v.id);return}
+    if(val==="__igpost"){IG.open(v.id);return}
     // with SharePoint set up, sending for review means uploading the draft
     if(val==="In review"&&spOn()&&canUp(v)&&!isReviewer()&&EDIT_POOL.includes(v.status)){openUp(v.id,"draft");return}
     if(val==="__logre"){askEditorReedit(v,v.status);return}if(val===v.status)return;setStatusFlow(v,val);return}
@@ -4747,6 +4777,7 @@ function vSettings(){
       <span class="hint">Separate several addresses with commas.</span>
     </div>
     ${GAS?`<button class="btn" data-act="testNotify">Send a test email</button>`:""}
+    ${typeof IG!=="undefined"?IG.panel():""}
     <h3 class="subh" id="spSet">SharePoint uploads</h3>
     <p class="hint sp-intro">Drafts and finals upload straight from the board into SharePoint, a folder for each month. Everyone signs in once with their Milele Microsoft account.</p>
     <div class="field"><label for="spcid">Application (client) ID</label><input id="spcid" type="text" value="${esc(S.settings.spClientId||SP_DEF.clientId)}" data-set="spClientId" placeholder="From IT, e.g. 1a2b3c4d-…" spellcheck="false"${S.me===ADMIN?"":" readonly"}></div>
@@ -8087,6 +8118,112 @@ const CALC=(()=>{
   document.addEventListener("change",e=>{const el=e.target;if(!el.dataset||!el.dataset.calc)return;const c=st();
     if(el.dataset.calc==="to"&&el.value)c.to=el.value;else if(el.dataset.calc==="lead")c.lead=+el.value;repaint()});
   return {panel,compute};
+})();
+
+/* ================= v113: Instagram posting (experiment on a secondary account) =================
+   Runs in the browser with the poster's own Facebook sign-in: no server, no stored passwords.
+   Path: Facebook Login for Business → the Page's Instagram account → reel container with a resumable upload → publish. */
+const IG=(()=>{
+  const SCOPES="instagram_basic,instagram_content_publish,pages_show_list,pages_read_engagement,business_management";
+  let sdk=null,tok=null,pageTok=null,busy=false,dlg=null,job=null;
+  const cfg=()=>S.settings.ig||{};
+  const ver=()=>(S.settings.igApiVer||"v23.0").replace(/^([0-9])/,"v$1");
+  const on=()=>!!S.settings.igAppId;
+  const ready=()=>on()&&!!cfg().igId&&S.me===ADMIN;          // only the admin posts during the experiment
+  function loadSdk(){if(sdk)return sdk;sdk=new Promise((res,rej)=>{if(!on())return rej(new Error("Add the Meta App ID in Settings first"));
+      window.fbAsyncInit=()=>{try{FB.init({appId:S.settings.igAppId,version:ver(),xfbml:false,cookie:true,status:true});res(window.FB)}catch(e){rej(e)}};
+      const s=document.createElement("script");s.src="https://connect.facebook.net/en_US/sdk.js";s.async=true;s.crossOrigin="anonymous";s.onerror=()=>{sdk=null;rej(new Error("Couldn’t load Facebook sign-in. Check the internet"))};document.head.appendChild(s)});
+    return sdk}
+  // the sign-in window must open straight from a click, so the SDK is loaded ahead of time
+  function preload(){if(on())loadSdk().catch(()=>{})}
+  async function g(path,opt){opt=opt||{};const u=new URL(`https://graph.facebook.com/${ver()}${path}`);const body=opt.body;
+    if(opt.method!=="POST"){Object.entries(opt.q||{}).forEach(([k,v])=>u.searchParams.set(k,v));u.searchParams.set("access_token",opt.token||pageTok||tok)}
+    const fd=new URLSearchParams();if(opt.method==="POST"){Object.entries(body||{}).forEach(([k,v])=>fd.set(k,v));fd.set("access_token",opt.token||pageTok||tok)}
+    const r=await fetch(u,opt.method==="POST"?{method:"POST",body:fd}:{});const j=await r.json().catch(()=>({}));
+    if(!r.ok||j.error){const e=new Error((j.error&&(j.error.error_user_msg||j.error.message))||("Instagram said "+r.status));e.code=j.error&&j.error.code;throw e}return j}
+  function status(){return new Promise(res=>{try{FB.getLoginStatus(r=>res(r),true)}catch(_){res(null)}})}
+  // use the sign-in Facebook already has; only open the window when needed, straight from the click
+  async function session(interactive){const F=await loadSdk();let ar=F.getAuthResponse&&F.getAuthResponse();
+    if(!(ar&&ar.accessToken)){if(interactive){const opt=S.settings.igConfigId?{config_id:S.settings.igConfigId}:{scope:SCOPES,return_scopes:true};const r=await new Promise(res=>F.login(res,opt));ar=r&&r.authResponse}
+      else{const r=await status();ar=r&&r.status==="connected"&&r.authResponse;if(!ar)throw Object.assign(new Error("Sign in with Facebook to post"),{signin:true})}}
+    if(!(ar&&ar.accessToken))throw new Error("Facebook sign-in was cancelled");
+    tok=ar.accessToken;return tok}
+  async function pages(){const j=await g("/me/accounts",{q:{fields:"id,name,access_token,instagram_business_account{id,username,profile_picture_url}",limit:"50"},token:tok});return (j.data||[]).filter(p=>p.instagram_business_account)}
+  async function pageToken(){const c=cfg();const P=await pages();const p=P.find(x=>x.id===c.pageId)||P.find(x=>x.instagram_business_account.id===c.igId);
+    if(!p)throw new Error(`@${c.username||"the account"} isn’t reachable with this Facebook sign-in. Use the Facebook account that manages its Page`);pageTok=p.access_token;return pageTok}
+  // Settings → Connect: pick which Instagram account the board posts to
+  async function connect(){try{await session(true);const P=await pages();
+      if(!P.length){toast("No Instagram professional account found. It must be linked to a Facebook Page you manage");return}
+      let p=P[0];if(P.length>1){const names=P.map((x,i)=>`${i+1}. @${x.instagram_business_account.username} (Page: ${x.name})`).join("\n");const k=prompt(`Which account should the board post to?\n\n${names}\n\nType the number:`,"1");if(!k)return;p=P[+k-1]||P[0]}
+      const a=p.instagram_business_account;S.settings.ig={pageId:p.id,pageName:p.name,igId:a.id,username:a.username,pic:a.profile_picture_url||"",by:S.me,at:Date.now()};putSettings();pageTok=p.access_token;render();toast(`Connected to @${a.username}`)}
+    catch(e){toast(e.message||"Couldn’t connect")}}
+  function disconnect(){S.settings.ig=null;putSettings();pageTok=null;render();toast("Instagram disconnected")}
+  function panel(){const c=cfg(),adm=S.me===ADMIN;
+    return `<h3 class="subh" id="igSet">Instagram posting <span class="tag">Experiment</span></h3>
+      <p class="hint sp-intro">Post reels straight from the board to one Instagram account. Use a secondary account while we test. It needs to be a professional (Business or Creator) account linked to a Facebook Page.</p>
+      <div class="field"><label for="igapp">Meta App ID</label><input id="igapp" type="text" value="${esc(S.settings.igAppId||"")}" data-set="igAppId" placeholder="From developers.facebook.com, e.g. 1234567890123456" spellcheck="false"${adm?"":" readonly"}></div>
+      <div class="field"><label for="igcfg">Login configuration ID</label><input id="igcfg" type="text" value="${esc(S.settings.igConfigId||"")}" data-set="igConfigId" placeholder="From Facebook Login for Business → Configurations" spellcheck="false"${adm?"":" readonly"}><span class="hint">Needed for Business apps. Leave empty for other app types.</span></div>
+      ${c.igId?`<div class="ig-acct">${c.pic?`<img src="${esc(c.pic)}" alt="">`:`<i></i>`}<div><b>@${esc(c.username)}</b><small>Page: ${esc(c.pageName||"")} · connected by ${esc(dispName(c.by)||c.by||"")}</small></div>${adm?`<button class="btn small" data-act="igConnect">Switch</button><button class="btn small ghost" data-act="igOff">Disconnect</button>`:""}</div>`
+        :adm?`<button class="btn primary" data-act="igConnect"${S.settings.igAppId?"":" disabled"}>Connect Instagram</button><span class="hint" style="display:block;margin-top:6px">${S.settings.igAppId?"Signs in with Facebook in a small window.":"Add the App ID first."}</span>`:`<p class="hint">Not connected yet.</p>`}`}
+
+  /* ---------- the Post window ---------- */
+  function makeDlg(){dlg=document.createElement("dialog");dlg.id="igDlg";dlg.className="ig-dlg";dlg.setAttribute("aria-label","Post to Instagram");
+    dlg.innerHTML=`<form method="dialog"><div class="ig-h"><span class="ig-logo"></span><div><h2>Post to Instagram</h2><p class="sub" id="igFor"></p></div></div>
+      <div class="ig-grid"><div class="ig-prev"><video id="igVid" playsinline muted loop preload="metadata"></video><span id="igPrevMsg">Loading the final video…</span></div>
+      <div class="ig-form"><label class="ig-cap">Caption<textarea id="igCap" rows="8" maxlength="2200" placeholder="Write the caption. Hashtags at the end."></textarea><small id="igCount"></small></label>
+        <label class="ig-row"><input type="checkbox" id="igFeed" checked> Also show in the main grid</label>
+        <label class="ig-row">Cover from <input type="number" id="igThumb" min="0" step="0.5" value="0"> seconds in</label>
+        <label class="ig-row"><input type="checkbox" id="igMark" checked> Mark as Posted when it’s live</label>
+        <div class="ig-st" id="igSt" hidden><div class="ig-bar"><i></i></div><p></p></div></div></div>
+      <div class="foot"><button class="btn" value="cancel" id="igCancel">Cancel</button><span style="flex:1"></span><button class="btn primary" type="button" id="igGo">Post now</button></div></form>`;
+    document.body.appendChild(dlg);
+    const cap=dlg.querySelector("#igCap"),cnt=dlg.querySelector("#igCount");const upd=()=>{const t=cap.value,h=(t.match(/#[\p{L}\p{N}_]+/gu)||[]).length;cnt.textContent=`${t.length}/2200 · ${h}/30 hashtags`;cnt.classList.toggle("bad",h>30)};cap.addEventListener("input",upd);
+    dlg.querySelector("#igThumb").addEventListener("input",e=>{const v=dlg.querySelector("#igVid");try{v.currentTime=+e.target.value||0}catch(_){}});
+    dlg.querySelector("#igGo").addEventListener("click",()=>go());dlg._upd=upd}
+  async function open(id){const v=S.videos[id];if(!v)return;if(!ready()){toast("Connect Instagram in Settings first");return}if(!dlg)makeDlg();
+    if(job&&job.busy&&job.id!==id){toast("Another post is still going up. Wait for it to finish");return}
+    dlg.dataset.id=id;dlg.querySelector("#igFor").textContent=`“${v.title||"Untitled"}” → @${cfg().username}`;
+    const cap=dlg.querySelector("#igCap");cap.value=v.caption||"";dlg._upd();dlg.querySelector("#igThumb").value=v.igThumb||0;
+    const st=dlg.querySelector("#igSt");st.hidden=!(job&&job.id===id);dlg.querySelector("#igGo").disabled=!!(job&&job.busy);
+    openDlg(dlg);preload();
+    const vid=dlg.querySelector("#igVid"),msg=dlg.querySelector("#igPrevMsg");vid.removeAttribute("src");msg.hidden=false;msg.textContent="Loading the final video…";
+    try{const it=await srcItem(v);const url=it["@microsoft.graph.downloadUrl"];if(!url)throw new Error("SharePoint didn’t give a link");vid.onloadeddata=()=>{msg.hidden=true};vid.onerror=()=>{msg.hidden=false;msg.textContent="Preview isn’t available here. Posting still works"};vid.src=url;vid.play().catch(()=>{})}
+    catch(e){msg.textContent=e.signin?"Sign in to Microsoft to load the video":(e.message||"Couldn’t load the video")}}
+  async function srcItem(v){await msApp();if(!msAccount())throw Object.assign(new Error("Sign in to Microsoft first"),{signin:true});
+    if(v.final&&v.final.itemId)return spItem(v.final.driveId||await spDrive(),v.final.itemId);if(safeUrl(v.finalLink)&&isSpUrl(v.finalLink))return spResolve(v.final,v.finalLink);
+    throw new Error("This video has no final in SharePoint yet")}
+  function paint(p,txt,bad){const st=dlg&&dlg.querySelector("#igSt");if(!st)return;st.hidden=false;st.classList.toggle("bad",!!bad);st.querySelector("i").style.width=Math.round(p*100)+"%";st.querySelector("p").textContent=txt}
+  async function go(){const id=dlg.dataset.id,v=S.videos[id];if(!v||busy)return;const caption=dlg.querySelector("#igCap").value.trim(),feed=dlg.querySelector("#igFeed").checked,thumb=+dlg.querySelector("#igThumb").value||0,mark=dlg.querySelector("#igMark").checked;
+    if((caption.match(/#[\p{L}\p{N}_]+/gu)||[]).length>30){toast("Instagram allows 30 hashtags at most");return}
+    putVideo({...v,caption,igThumb:thumb},true);
+    busy=true;job={id,busy:true};const goBtn=dlg.querySelector("#igGo");goBtn.disabled=true;
+    try{
+      paint(.03,"Signing in to Facebook…");await session(true);await pageToken();
+      paint(.06,"Getting the final video from SharePoint…");const it=await srcItem(v);const r=await fetch(it["@microsoft.graph.downloadUrl"]);if(!r.ok)throw new Error("Couldn’t download the final from SharePoint");const blob=await r.blob();
+      paint(.15,"Preparing the reel on Instagram…");
+      const c=await g(`/${cfg().igId}/media`,{method:"POST",body:{media_type:"REELS",upload_type:"resumable",caption,share_to_feed:feed?"true":"false",...(thumb?{thumb_offset:String(Math.round(thumb*1000))}:{})}});
+      if(!c.id||!c.uri)throw new Error("Instagram didn’t open an upload");
+      paint(.2,`Uploading ${fmtMB(blob.size)}…`);
+      await new Promise((res,rej)=>{const x=new XMLHttpRequest();x.open("POST",c.uri);x.setRequestHeader("Authorization","OAuth "+pageTok);x.setRequestHeader("offset","0");x.setRequestHeader("file_size",String(blob.size));
+        x.upload.onprogress=e=>{if(e.lengthComputable)paint(.2+.55*e.loaded/e.total,`Uploading ${Math.round(100*e.loaded/e.total)}% · ${fmtMB(e.loaded)} of ${fmtMB(e.total)}`)};
+        x.onload=()=>{if(x.status>=200&&x.status<300)res();else{let m="";try{m=JSON.parse(x.responseText).debug_info.message}catch(_){}rej(new Error(m||"Upload to Instagram failed ("+x.status+")"))}};
+        x.onerror=()=>rej(new Error("The browser couldn’t send the video to Instagram. Tell Claude: “upload blocked” so we switch to the link method"));x.send(blob)});
+      paint(.78,"Instagram is processing the video…");
+      let s="";for(let i=0;i<90;i++){const q=await g(`/${c.id}`,{q:{fields:"status_code,status"}});s=q.status_code;if(s==="FINISHED")break;if(s==="ERROR"||s==="EXPIRED")throw new Error("Instagram couldn’t process the video: "+(q.status||s));paint(.78+Math.min(.14,i*.004),"Instagram is processing the video…");await new Promise(z=>setTimeout(z,4000))}
+      if(s!=="FINISHED")throw new Error("Instagram is still processing. Try Post now again in a few minutes");
+      paint(.94,"Publishing…");const p=await g(`/${cfg().igId}/media_publish`,{method:"POST",body:{creation_id:c.id}});
+      let link="";try{link=(await g(`/${p.id}`,{q:{fields:"permalink"}})).permalink||""}catch(_){}
+      const cur=S.videos[id]||v;const posts={...(cur.posts||{}),ig:{id:p.id,link,at:Date.now(),by:S.me,acct:cfg().username}};
+      putVideo(mark?{...withStatus(cur,"Posted"),posts,igLink:link}:{...cur,posts,igLink:link});
+      paint(1,"Live on Instagram ✓");if(mark)try{celebrate(id,"Posted")}catch(_){}
+      toast(`“${v.title||"Untitled"}” is live on @${cfg().username}`,link?"Open":"",link?()=>window.open(link,"_blank","noopener"):null);
+      goBtn.textContent="Posted ✓";setTimeout(()=>{if(dlg.open&&dlg.dataset.id===id)softClose(dlg,"ok")},2500)}
+    catch(e){paint(1,e.message||"Posting failed",true);goBtn.disabled=false;goBtn.textContent="Try again";if(e.signin)toast(e.message)}
+    finally{busy=false;job.busy=false}}
+  document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-act]");if(!b)return;
+    if(b.dataset.act==="igConnect"){e.preventDefault();connect()}else if(b.dataset.act==="igOff"){e.preventDefault();if(confirm("Disconnect Instagram from the board?"))disconnect()}});
+  setTimeout(preload,3000);
+  return {ready,open,panel,preload,_g:g};
 })();
 
 })();
