@@ -2498,6 +2498,74 @@ dialog.od-dlg form{position:relative}
 :root[data-theme="dark"] .od-ic{background:rgba(255,92,80,.14)}
 @media (max-width:600px){.od-row{grid-template-columns:10px 1fr auto;row-gap:6px}.od-row .btn{grid-column:2/4;justify-self:start}}
 
+/* ===== shoot calculator ===== */
+.cc .phead{flex-wrap:wrap;gap:4px 14px;align-items:baseline}
+.cc .phead .sub{font-size:13px;color:var(--muted)}
+.cc-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:22px;margin-top:6px}
+.cc-row{display:flex;gap:12px;flex-wrap:wrap}
+.cc-row label{display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:700;color:var(--muted);flex:1;min-width:150px}
+.cc-pre{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 14px}
+.cc-chip{border:1px solid rgba(12,14,8,.1);background:rgba(255,255,255,.7);border-radius:999px;padding:7px 14px;font:700 13px/1 Inter,system-ui,sans-serif;color:var(--ink);cursor:pointer;transition:background .2s,border-color .2s,transform .2s}
+.cc-chip.sm{padding:6px 11px;font-size:12px;font-weight:600}
+.cc-chip:hover{border-color:rgba(123,209,0,.6)}
+.cc-chip.on{background:#AAFF00;border-color:#8fdc00;color:#0B0B0C;box-shadow:0 4px 14px rgba(170,255,0,.35)}
+.cc-mode{margin-bottom:12px}
+.cc-wd{display:flex;flex-wrap:wrap;gap:8px}
+.cc-wd .cc-chip{min-width:58px;text-align:center}
+.cc-days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.cc-day{position:relative;display:flex;flex-direction:column;align-items:center;gap:1px;padding:7px 2px 6px;border-radius:12px;border:1px solid rgba(12,14,8,.08);background:rgba(255,255,255,.65);cursor:pointer;font-family:Inter,system-ui,sans-serif;color:var(--ink);transition:background .2s,border-color .2s,transform .15s}
+#main .cc-day small,#main .cc-day b{display:block!important;margin:0!important;text-align:center}
+#main .cc-day{min-width:0;overflow:visible;height:58px;min-height:0!important;justify-content:center;padding:0!important}
+:root[data-theme="dark"] #main .cc-row input{color:#eef1ea!important;-webkit-text-fill-color:#eef1ea;color-scheme:dark}
+.cc-day small{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.cc-day b{font-size:16px;font-weight:800;line-height:1.1}
+.cc-day em{position:absolute;top:-7px;right:-4px;font-style:normal;font-size:9.5px;font-weight:800;padding:1px 5px;border-radius:999px;background:#0B0B0C;color:#AAFF00}
+.cc-day:hover{border-color:rgba(123,209,0,.6)}
+.cc-day:active{transform:scale(.95)}
+.cc-day.away{background:repeating-linear-gradient(135deg,rgba(12,14,8,.04) 0 6px,transparent 6px 12px),rgba(255,255,255,.5)}
+.cc-day.away small{color:#b8480a}
+.cc-day[disabled]{cursor:not-allowed;opacity:.6}
+.cc-day[disabled]:hover{border-color:rgba(12,14,8,.08)}
+.cc-away{margin:12px 0 0;padding:10px 12px;border-radius:14px;background:rgba(12,14,8,.04);font-size:12.5px;line-height:1.45;color:var(--muted)}
+.cc-away b{color:var(--ink)}
+:root[data-theme="dark"] .cc-away{background:rgba(255,255,255,.05)}
+.cc-day.on{background:#AAFF00;border-color:#8fdc00;box-shadow:0 4px 14px rgba(170,255,0,.35)}
+.cc-day.on small{color:#0B0B0C}
+.cc-clear{margin-top:10px;border:0;background:none;color:var(--muted);font:600 12.5px Inter,system-ui;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.cc-out{min-width:0}
+.cc-empty{display:grid;place-items:center;height:100%;min-height:160px;margin:0;border-radius:18px;border:1.5px dashed rgba(12,14,8,.14);color:var(--muted);font-weight:600;text-align:center;padding:20px}
+.cc-tot{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.cc-big{padding:14px 14px 12px;border-radius:18px;background:rgba(255,255,255,.75);border:1px solid rgba(12,14,8,.07)}
+.cc-big small{display:block;font-size:12px;font-weight:700;color:var(--muted)}
+.cc-big b{display:block;font-size:38px;font-weight:900;letter-spacing:-.03em;line-height:1.05;margin-top:4px}
+.cc-big span{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
+.cc-big.r{background:linear-gradient(160deg,#C8FF4D,#AAFF00);border-color:#9be600}
+.cc-big.r small,.cc-big.r span{color:rgba(11,11,12,.7)}.cc-big.r b{color:#0B0B0C}
+.cc-warn{margin-top:10px;padding:10px 12px;border-radius:14px;background:#FFF0E3;color:#9a3c06;font-size:12.5px;line-height:1.45}
+.cc-tbl{margin-top:12px;border-radius:16px;overflow:hidden;border:1px solid rgba(12,14,8,.07)}
+.cc-tr{display:grid;grid-template-columns:1.3fr .6fr .8fr 1.4fr;gap:8px;align-items:center;padding:9px 14px;font-size:13.5px}
+.cc-tr:nth-child(even){background:rgba(12,14,8,.03)}
+.cc-th{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);background:rgba(12,14,8,.04)!important}
+.cc-r,.cc-c{font-weight:900;font-size:16px;font-variant-numeric:tabular-nums}
+.cc-cov{font-size:12.5px;color:var(--muted)}
+.cc-tr.idle{opacity:.55}
+@media (max-width:900px){.cc-grid{grid-template-columns:1fr}}
+@media (max-width:600px){.cc-tot{grid-template-columns:1fr 1fr}.cc-big.s{grid-column:1/3}.cc-big b{font-size:32px}.cc-tr{grid-template-columns:1.2fr .5fr .7fr;}.cc-tr .cc-cov{grid-column:1/4;margin-top:-4px}.cc-th span:last-child{display:none}.cc-wd{gap:5px}.cc-wd .cc-chip{min-width:0;flex:1;padding:8px 2px;font-size:12px}}
+:root[data-theme="dark"] .cc-chip{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12);color:#eef1ea}
+:root[data-theme="dark"] .cc-chip.on,:root[data-theme="dark"] .cc-day.on{background:#AAFF00;border-color:#8fdc00;color:#0B0B0C}
+:root[data-theme="dark"] .cc-day{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1);color:#eef1ea}
+:root[data-theme="dark"] .cc-day.on b{color:#0B0B0C}
+:root[data-theme="dark"] .cc-day.away{background:repeating-linear-gradient(135deg,rgba(255,255,255,.05) 0 6px,transparent 6px 12px),rgba(255,255,255,.03)}
+:root[data-theme="dark"] .cc-day.away small{color:#ffb27a}
+:root[data-theme="dark"] .cc-big{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.08)}
+:root[data-theme="dark"] .cc-big.r{background:linear-gradient(160deg,#C8FF4D,#AAFF00)}
+:root[data-theme="dark"] .cc-tbl{border-color:rgba(255,255,255,.08)}
+:root[data-theme="dark"] .cc-tr:nth-child(even){background:rgba(255,255,255,.03)}
+:root[data-theme="dark"] .cc-th{background:rgba(255,255,255,.05)!important}
+:root[data-theme="dark"] .cc-warn{background:rgba(255,160,70,.12);color:#ffb27a}
+:root[data-theme="dark"] .cc-empty{border-color:rgba(255,255,255,.14)}
+:root[data-theme="dark"] .cc-day em{background:#AAFF00;color:#0B0B0C}
+
 /* ================================================================
    DARK MODE — final layer (v73)
    One place for every dark rule. The theme script in <head> always sets
@@ -6272,7 +6340,7 @@ function vShoots(){
   const keys=Object.keys(groups).sort();if(view!=="upcoming")keys.reverse();
   const list=keys.map(k=>{const [y,m]=k.split("-").map(Number);return `<div class="card"><header><h3>${MONL[m-1]} ${y}</h3><span class="count">${groups[k].length}</span></header>${groups[k].map(shootRow).join("")}</div>`}).join("");
   const up=upcomingShoots().length,done=shoots().filter(s=>s.status==="Done").length,withScript=upcomingShoots().filter(s=>S.scripts[s.id]||s.scriptLink).length;
-  return awayPanel()+`<section class="panel">
+  return awayPanel()+CALC.panel()+`<section class="panel">
     <div class="phead"><h2>Shoot plan</h2><div class="pactions"><button class="shuffle" data-act="newShoot">Plan a shoot</button></div></div>
     <div class="hstats">
       <div><b>${up}</b><span>Coming up</span></div>
@@ -7912,6 +7980,80 @@ const OD=(()=>{
   function openDlg2(auto){if(!dlg)makeDlg();const L=list();if(!L.length)return;lastSig="";paintDlg(L);openDlg(dlg);if(auto)try{sfx2&&sfx2("pop")}catch(_){}}
   setInterval(tick,1000);addEventListener("resize",place);addEventListener("scroll",()=>{},{passive:true});
   return {tick,list,open:()=>openDlg2()};
+})();
+
+/* ================= v109: shoot calculator — pick the shoot days, see how many reels and carousels each one needs ================= */
+const CALC=(()=>{
+  const WDN=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  function defaults(){const t=today(),a=awayList().find(x=>x.to>=t);
+    return {mode:"dates",from:t,to:a?a.to:addDays(t,13),dates:[],wd:[1,3,5],lead:tripLead()}}
+  function st(){if(!S.calc)S.calc=defaults();const c=S.calc;const t=today();if(c.from<t)c.from=t;if(c.to<c.from)c.to=c.from;return c}
+  const awayOn=d=>awayList().find(a=>d>=a.from&&d<=a.to);   // any time away means no shooting that day (editing and posting carry on)
+  function shootDays(c){const t=today();if(c.mode==="dates")return c.dates.filter(d=>d>=t&&d<=c.to&&!awayOn(d)).sort();
+    const out=[];for(let d=t,g=0;d<=c.to&&g<370;d=addDays(d,1),g++)if(c.wd.includes(new Date(d+"T00:00:00").getDay())&&!awayOn(d))out.push(d);return out}
+  function awayNote(c){const L=awayList().filter(a=>a.to>=today()&&a.from<=c.to);if(!L.length)return "";
+    return `<p class="cc-away">✈︎ No shooting ${L.map(a=>`<b>${esc(nice(a.from))} – ${esc(nice(a.to))}</b> (${esc(a.label||"time away")})`).join(", ")}. ${c.mode==="weekly"?"Those days are skipped. ":""}Posts in that time are covered by the shoot days before it.</p>`}
+  // empty posting slots per day in the range, after the unscheduled footage you already have fills the earliest ones
+  function demand(k,from,to){const t=today(),hm=nowHM(),days=[];let empty=0;
+    for(let d=from,g=0;d<=to&&g<370;d=addDays(d,1),g++){let n=0;for(const tm of slotsK(d,k)){if(d===t&&tm<=hm)continue;if(!vids().some(x=>kindOf(x)===k&&x.postDate===d&&x.postTime===tm))n++}days.push([d,n]);empty+=n}
+    let stock=vids().filter(v=>kindOf(v)===k&&!v.postDate&&v.status in TIER).length;const have=stock;
+    for(const r of days){const use=Math.min(stock,r[1]);r[1]-=use;stock-=use}
+    return {days,empty,have,fromStock:Math.min(have,empty)}}
+  function compute(){const c=st(),S_=shootDays(c),L=+c.lead||0;const res={c,shoots:S_,R:demand("R",c.from,c.to),C:demand("C",c.from,c.to)};
+    const rows=S_.map(d=>({d,r:0,c:0,until:null}));let gapR=0,gapC=0,gapFrom=null,gapTo=null;
+    // spread the shooting evenly, but make sure each post has footage ready by its day
+    const plan=(key,days)=>{const need=days.filter(([,n])=>n);const total=need.reduce((s,[,n])=>s+n,0);if(!total)return {cover:c.to};
+      const first=S_.length?addDays(S_[0],L):null;let gap=0;need.forEach(([d,n])=>{if(!first||d<first){gap+=n;if(!gapFrom||d<gapFrom)gapFrom=d;if(!gapTo||d>gapTo)gapTo=d}});
+      if(key==="r")gapR=gap;else gapC=gap;
+      const due=i=>need.filter(([d])=>d>=first&&(i+1<S_.length?d<addDays(S_[i+1],L):true)).reduce((s,[,n])=>s+n,0);
+      let left=total-gap,done=0,mustBy=0;
+      rows.forEach((r,i)=>{mustBy=due(i);   /* everything due before the next shoot day’s footage is ready */const even=Math.ceil(left/(rows.length-i));const x=Math.min(left,Math.max(mustBy-done,even));r[key]=x;done+=x;left-=x});
+      // how far each shoot's footage reaches
+      let cum=0,k=0;const covered=need.filter(([d])=>first&&d>=first);rows.forEach(r=>{cum+=r[key];let c2=0,last=null;let all=true;for(const [d,n] of covered){if(c2+n<=cum){c2+=n;last=d}else{all=false;break}}r["u"+key]=all?c.to:(last?last:addDays(r.d,L-1))});
+      return {}};
+    plan("r",res.R.days);plan("c",res.C.days);
+    rows.forEach((r,i)=>{const a=addDays(r.d,L);const ends=[r.ur,r.uc].filter(Boolean).sort();r.a=a;r.b=ends.length?ends[0]:null;
+      // when one kind needs nothing, the other decides
+      if(!res.R.days.some(([,n])=>n))r.b=r.uc||null;if(!res.C.days.some(([,n])=>n))r.b=r.ur||null});
+    Object.assign(res,{rows,gapR,gapC,gapFrom,gapTo,totR:rows.reduce((s,r)=>s+r.r,0),totC:rows.reduce((s,r)=>s+r.c,0)});return res}
+  const n=(x,w)=>`<b>${x}</b> ${w}${x===1?"":"s"}`;
+  function chips(c){const t=today();
+    if(c.mode==="weekly")return `<div class="cc-wd">${[1,2,3,4,5,6,0].map(i=>`<button type="button" class="cc-chip${c.wd.includes(i)?" on":""}" data-calc="wd" data-v="${i}" aria-pressed="${c.wd.includes(i)}">${WDN[i]}</button>`).join("")}</div>`;
+    const days=[];for(let d=t,g=0;d<=c.to&&g<62;d=addDays(d,1),g++)days.push(d);
+    const away=d=>!!awayOn(d);
+    return `<div class="cc-days">${days.map(d=>{const dt=new Date(d+"T00:00:00");return `<button type="button" class="cc-day${c.dates.includes(d)?" on":""}${away(d)?" away":""}${dt.getDay()===0||dt.getDate()===1?" brk":""}" data-calc="day" data-v="${d}" aria-pressed="${c.dates.includes(d)}" title="${esc(niceW(d))}${away(d)?" · no shooting, "+esc(awayOn(d).label||"time away"):""}"${away(d)?" disabled":""}><small>${WDN[dt.getDay()]}</small><b>${dt.getDate()}</b>${dt.getDate()===1||d===t?`<em>${MON[dt.getMonth()]}</em>`:""}</button>`}).join("")}</div>`}
+  function panel(){const x=compute(),c=x.c;const a=awayList().find(y=>y.to>=today());
+    const presets=[a?[`Until ${esc(nice(a.to))} (end of ${esc(a.label||"time away")})`,a.to]:null,["2 weeks",addDays(today(),13)],["4 weeks",addDays(today(),27)]].filter(Boolean);
+    const rangeTxt=`${esc(niceW(c.from))} – ${esc(niceW(c.to))}`;
+    const result=!x.shoots.length?`<p class="cc-empty">${c.mode==="dates"?"Tap the days you can shoot.":"Pick the weekdays you can shoot."}</p>`
+      :`<div class="cc-tot"><div class="cc-big r"><small>Reels to shoot</small><b>${x.totR+x.gapR}</b><span>${x.shoots.length?`about ${Math.ceil(x.totR/x.shoots.length)} a shoot day`:""}</span></div>
+        <div class="cc-big c"><small>Carousels to shoot</small><b>${x.totC+x.gapC}</b><span>${x.shoots.length?`about ${Math.ceil(x.totC/x.shoots.length)} a shoot day`:""}</span></div>
+        <div class="cc-big s"><small>Shoot days</small><b>${x.shoots.length}</b><span>${x.R.fromStock||x.C.fromStock?`${x.R.fromStock} reels and ${x.C.fromStock} carousels already in hand`:"nothing in hand yet"}</span></div></div>
+      ${x.gapR||x.gapC?`<div class="cc-warn">⚠ ${x.gapR?n(x.gapR,"reel"):""}${x.gapR&&x.gapC?" and ":""}${x.gapC?n(x.gapC,"carousel"):""} ${x.gapR+x.gapC===1?"is":"are"} due ${esc(nice(x.gapFrom))}${x.gapTo!==x.gapFrom?` – ${esc(nice(x.gapTo))}`:""}, before your first shoot day’s footage is ready. Add an earlier shoot day for ${x.gapR+x.gapC===1?"it":"them"}. ${x.gapR+x.gapC===1?"It’s":"They’re"} included in the totals.</div>`:""}
+      <div class="cc-tbl"><div class="cc-tr cc-th"><span>Shoot day</span><span>Reels</span><span>Carousels</span><span>Covers posts until</span></div>
+      ${x.rows.map(r=>`<div class="cc-tr${r.r||r.c?"":" idle"}"><span><b>${esc(niceW(r.d))}</b></span><span class="cc-r">${r.r}</span><span class="cc-c">${r.c}</span><span class="cc-cov">${r.r||r.c?(r.b?esc(niceW(r.b)):"–"):"Not needed"}</span></div>`).join("")}</div>`;
+    return `<section class="panel cc" id="calcPanel"><div class="phead"><h2>Shoot calculator</h2><span class="sub">How many to shoot on the days you choose, so every post from ${rangeTxt} is covered</span></div>
+      <div class="cc-grid"><div class="cc-in">
+        <div class="cc-row"><label>Cover posts until<input type="date" data-calc="to" value="${c.to}" min="${today()}"></label>
+          <label>Ready to post<select data-calc="lead"><option value="0"${+c.lead===0?" selected":""}>Same day</option><option value="1"${+c.lead===1?" selected":""}>Next day</option><option value="2"${+c.lead===2?" selected":""}>2 days later</option></select></label></div>
+        <div class="cc-pre">${presets.map(([l,d])=>`<button type="button" class="cc-chip sm${c.to===d?" on":""}" data-calc="preset" data-v="${d}">${l}</button>`).join("")}</div>
+        <div class="seg cc-mode"><button type="button" data-calc="mode" data-v="dates" aria-pressed="${c.mode==="dates"}" class="${c.mode==="dates"?"on":""}">Pick dates</button><button type="button" data-calc="mode" data-v="weekly" aria-pressed="${c.mode==="weekly"}" class="${c.mode==="weekly"?"on":""}">Same days every week</button></div>
+        ${chips(c)}${awayNote(c)}
+        ${c.mode==="dates"&&c.dates.length?`<button type="button" class="cc-clear" data-calc="clear">Clear days</button>`:""}
+      </div><div class="cc-out">${result}</div></div></section>`}
+  function repaint(){const el=document.getElementById("calcPanel");if(el){const y=scrollY;el.outerHTML=panel();const n=document.getElementById("calcPanel");try{segInds(n)}catch(_){}try{gxEnhance(n);gxSyncAll(n)}catch(_){}scrollTo(0,y)}}
+  document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-calc]");if(!b||b.tagName==="INPUT"||b.tagName==="SELECT")return;const c=st(),v=b.dataset.v;
+    switch(b.dataset.calc){
+      case "day":{const i=c.dates.indexOf(v);i<0?c.dates.push(v):c.dates.splice(i,1);break}
+      case "wd":{const k=+v,i=c.wd.indexOf(k);i<0?c.wd.push(k):c.wd.splice(i,1);break}
+      case "mode":c.mode=v;break;
+      case "preset":c.to=v;break;
+      case "clear":c.dates=[];break;
+      default:return}
+    repaint()});
+  document.addEventListener("change",e=>{const el=e.target;if(!el.dataset||!el.dataset.calc)return;const c=st();
+    if(el.dataset.calc==="to"&&el.value)c.to=el.value;else if(el.dataset.calc==="lead")c.lead=+el.value;repaint()});
+  return {panel,compute};
 })();
 
 })();
