@@ -2603,6 +2603,13 @@ dialog.ig-dlg{width:min(860px,96vw)}
 :root[data-theme="dark"] .ig-st{background:rgba(255,255,255,.05)}:root[data-theme="dark"] .ig-st.bad{background:rgba(255,160,70,.12)}:root[data-theme="dark"] .ig-st.bad p{color:#ffb27a}
 @media (max-width:640px){.ig-grid{grid-template-columns:1fr}.ig-prev{max-height:42vh;aspect-ratio:auto;height:42vh}}
 
+/* ===== carousel: videos inside, and a View button ===== */
+.gal-play{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;display:grid;place-items:center;background:rgba(11,11,12,.6);color:#fff;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:0 0 0 2px rgba(255,255,255,.7);pointer-events:none}
+.gal-play svg{margin-left:3px}.gal-play.sm{width:32px;height:32px;margin:-16px 0 0 -16px}
+.gal-t.is-vid::after{content:"VIDEO";position:absolute;right:6px;bottom:6px;padding:2px 6px;border-radius:6px;background:rgba(11,11,12,.75);color:#AAFF00;font:800 10px/1.4 Inter,system-ui,sans-serif;letter-spacing:.06em}
+.gal-stage video{max-width:100%;max-height:min(70vh,720px);border-radius:14px;background:#000}
+.openlink.car-view{background:#0B0B0C;color:#AAFF00;border-color:transparent}
+:root[data-theme="dark"] .openlink.car-view{background:#AAFF00;color:#0B0B0C}
 /* ================================================================
    DARK MODE — final layer (v73)
    One place for every dark rule. The theme script in <head> always sets
@@ -2840,7 +2847,7 @@ dialog.ig-dlg{width:min(860px,96vw)}
 :root[data-theme="dark"] .ovtoday i,:root[data-theme="dark"] .need-bar,:root[data-theme="dark"] .dial-dots i{background:rgba(255,255,255,.08)!important}
 :root[data-theme="dark"] .nb-e{background:repeating-linear-gradient(135deg,rgba(255,255,255,.10) 0 4px,rgba(255,255,255,.03) 4px 8px)!important}
 :root[data-theme="dark"] .dial-dots i.on{background:var(--lime)!important}
-:root[data-theme="dark"] .dn{fill:var(--ink)!important}
+:root[data-theme="dark"] .dn{fill:#0B0B0C!important}   /* the finger holes stay white in dark mode, so the digits stay black */
 :root[data-theme="dark"] .shoot-need .sn em{color:var(--lime)!important}
 :root[data-theme="dark"] .ovverdict{color:var(--ink)!important}
 
@@ -3518,11 +3525,14 @@ function folderChip(s){
   const f=folder(s),rl=rawLinkFor(s),own=rawPathFor(s);
   return `<span class="chipset"><button class="gchip" data-act="copy" data-text="${esc(f)}" title="${esc(f)}">${ICO_F}<span>Copy path</span></button>${rl?`<a class="gchip ic" href="${esc(rl)}" target="_blank" rel="noopener noreferrer" title="Open folder">${ICO_P}</a>`:""}<button class="gchip ic" data-act="addRaw" data-d="${s}" title="${own?"Change this day’s folder":"Set this day’s folder"}">${ICO_E}</button></span>`;
 }
+function carMix(c){const vids=(c&&c.items||[]).filter(x=>/\.(mp4|mov|m4v|webm|avi|mkv)$/i.test(x.name||"")).length,n=(c&&c.count)||0,ph=Math.max(0,n-vids);
+  return [ph?`${ph} ${ph===1?"photo":"photos"}`:"",vids?`${vids} ${vids===1?"video":"videos"}`:""].filter(Boolean).join(" + ")||`${n} files`}
+function carView(v,cls){return isCar(v)&&v.car&&v.car.folderId?`<button type="button" class="${cls||"openlink"} car-view" data-act="viewCar" data-id="${v.id}" title="See ${esc(carMix(v.car))}">View ${esc(carMix(v.car))}</button>`:""}
 function linkChip(v){
   const u=safeUrl(v.finalLink),ed=(S.editLinks||{})[v.id];
   const lbl=isCar(v)?"Open post":"Open video";
   if(u&&!ed)return `<span class="chipset"><a class="gchip play" href="${esc(u)}" target="_blank" rel="noopener noreferrer" title="${esc(u)}">${ICO_P}<span>${lbl}</span></a><button class="gchip ic" data-act="editLink" data-id="${v.id}" title="Change link">${ICO_E}</button></span>`;
-  return `<input type="text" class="link-in" value="${esc(v.finalLink||"")}" data-f="finalLink" data-id="${v.id}" placeholder="Paste link" aria-label="Final video link"${ed?" autofocus":""}>`;
+  return `${!ed&&isCar(v)&&v.car?`<span class="chipset">${carView(v,"gchip play")}</span>`:""}<input type="text" class="link-in" value="${esc(v.finalLink||"")}" data-f="finalLink" data-id="${v.id}" placeholder="Paste link" aria-label="Final video link"${ed?" autofocus":""}>`;
 }
 function folderCell(s){
   if(!s)return `<span class="folder"><code>Add a shot date to get the folder</code></span>`;
@@ -4442,7 +4452,7 @@ function vSchedule(){
     const tags=(isReady&&!hasLink?`<span class="tag warn">No final link</span>`:"")+(v.status!=="Ready"&&v.status!=="Scheduled"&&v.status!=="Posted"?`<span class="tag">Not ready</span>`:"")+(extraTags||"");
     const linkArea=hasLink?
       `${openLink(v,"Open")}${dlBtn(v)}<button class="openlink edit-lnk" data-act="openLinkDlg" data-id="${v.id}" title="Change link">Edit link</button>`:
-      `<button class="openlink add-lnk" data-act="openLinkDlg" data-id="${v.id}">+ Add link</button>`;
+      `${carView(v)}<button class="openlink add-lnk" data-act="openLinkDlg" data-id="${v.id}">+ Add link</button>`;
     const sl=d?`${d}|${tm}|${k}`:"";
     return `<div class="slot filled${k==="C"?" car":""}"${d?` data-slot="${sl}"`:""} data-drag-id="${v.id}"><div class="grip" title="Drag to move">⋮⋮</div><div class="tm">${label}${k==="C"?`<span class="kind">Carousel</span>`:(d&&slotPillar(d,tm))?`<span class="kind pk" style="--pc:${pillarColor(slotPillar(d,tm))}">${esc(slotPillar(d,tm))}</span>`:""}</div><div class="ttl"><b>${esc(v.title||"Untitled")}</b>${pillarTag(v)}${linkArea}<small>${v.shotDate?"Shot "+esc(nice(v.shotDate)):"No shot date"}${tags}</small></div><div>${statusSelect(v)}</div><div>${lockCtl(v)}</div><div class="mv2">${d?`<button data-act="slotMove" data-dir="-1" data-slot="${sl}" aria-label="Move up">↑</button><button data-act="slotMove" data-dir="1" data-slot="${sl}" aria-label="Move down">↓</button>`:""}</div><div><button class="xbtn" data-act="unassign" data-id="${v.id}" aria-label="Remove from schedule" title="Remove">×</button></div></div>`;
   };
@@ -5193,10 +5203,11 @@ function carAdd(list){const add=[...list].filter(f=>isPhotoFile(f)||isVideoFile(
   add.forEach(f=>{CARU.files.push(f);CARU.urls.push(URL.createObjectURL(f))});if(skip)toast(`${skip} file${skip>1?"s weren’t photos or videos":" wasn’t a photo or video"}, so ${skip>1?"they were":"it was"} left out`);carPaint()}
 function carPaint(){const g=$("#carGrid"),n=CARU.files.length,ok=spOn()&&!!msAccount();
   $("#carDrop").classList.toggle("off",!ok);$("#carDrop").classList.toggle("has",!!n);
-  g.innerHTML=CARU.files.map((f,i)=>`<div class="car-t" draggable="true" data-i="${i}">${isVideoFile(f)?`<video src="${CARU.urls[i]}" muted preload="metadata"></video>`:`<img src="${CARU.urls[i]}" alt="">`}<span class="car-n">${i+1}</span><button type="button" class="car-x" data-cx="${i}" aria-label="Remove">×</button></div>`).join("");
+  g.innerHTML=CARU.files.map((f,i)=>`<div class="car-t" draggable="true" data-i="${i}">${isVideoFile(f)?`<video src="${CARU.urls[i]}" muted preload="metadata"></video>`:`<img src="${CARU.urls[i]}" alt="">`}<span class="car-n">${i+1}</span>${isVideoFile(f)?`<span class="gal-play sm" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg></span>`:""}<button type="button" class="car-x" data-cx="${i}" aria-label="Remove">×</button></div>`).join("");
   const size=CARU.files.reduce((a,f)=>a+f.size,0);
-  $("#carCount").textContent=n?`${n} ${n===1?"photo":"photos"} · ${fmtMB(size)}${n>1?" · drag to reorder":""}`:"";
-  $("#carGo").disabled=!n||!ok;$("#carGo").textContent=n?`Upload ${n} ${n===1?"photo":"photos"}`:"Upload";
+  const nv=CARU.files.filter(isVideoFile).length,np=n-nv,mix=[np?`${np} ${np===1?"photo":"photos"}`:"",nv?`${nv} ${nv===1?"video":"videos"}`:""].filter(Boolean).join(" + ");
+  $("#carCount").textContent=n?`${mix} · ${fmtMB(size)}${n>1?" · drag to reorder":""}`:"";
+  $("#carGo").disabled=!n||!ok;$("#carGo").textContent=n?`Upload ${mix}`:"Upload";
   const v=S.videos[CARU.id];if(v&&MS.carBase)$("#carWhere").textContent=`Saved to SharePoint › …/${MS.carBase.split("/").slice(-1)[0]}/${carFolderName(v)}`;
   else if(v&&ok&&!CARU.finding){CARU.finding=true;spDrive().then(spCarBase).then(()=>{CARU.finding=false;if($("#carDlg").open)carPaint()},()=>{CARU.finding=false})}}
 (function(){const d=$("#carDlg"),drop=$("#carDrop"),inp=$("#carFile"),g=$("#carGrid");
@@ -5221,7 +5232,7 @@ function carPaint(){const g=$("#carGrid"),n=CARU.files.length,ok=spOn()&&!!msAcc
 const GAL={id:null,items:[],i:0};
 async function openGallery(id,pv){const v=S.videos[id];if(!v||!(v.car||pv))return;GAL.id=id;GAL.pv=pv||null;GAL.items=[];const d=$("#galDlg"),grid=$("#galGrid");
   $("#galTitle").textContent=v.title||"Untitled";
-  $("#galSub").textContent=pv?pv.sub:`${v.car.count} photos${v.car.round>1?", round "+v.car.round:""}, uploaded ${v.car.at?niceAgo(v.car.at):""}${v.car.by?" by "+dispName(v.car.by):""}`;
+  $("#galSub").textContent=pv?pv.sub:`${carMix(v.car)}${v.car.round>1?", round "+v.car.round:""}, uploaded ${v.car.at?niceAgo(v.car.at):""}${v.car.by?" by "+dispName(v.car.by):""}`;
   const decide=!pv&&isReviewer()&&v.status==="In review";$("#galOk").hidden=!decide;$("#galRe").hidden=!decide;
   const spl=pv?pv.link:v.car.webUrl,sp=$("#galSp");sp.href=safeUrl(spl)||"#";sp.hidden=!safeUrl(spl);
   galView(-1);grid.innerHTML=`<div class="dr-msg"><span class="dr-spin"></span>Loading the photos…</div>`;d.returnValue="";openDlg(d);
@@ -5232,13 +5243,14 @@ async function openGallery(id,pv){const v=S.videos[id];if(!v||!(v.car||pv))retur
     GAL.items=(r.value||[]).filter(x=>x.file).sort((a,b)=>a.name.localeCompare(b.name,undefined,{numeric:true}));
     if(!GAL.items.length){grid.innerHTML=`<div class="dr-msg">The folder is empty</div>`;return}
     grid.innerHTML=GAL.items.map((x,i)=>{const t=x.thumbnails&&x.thumbnails[0],src=t&&(t.large||t.medium||t.small);
-      return `<button type="button" class="gal-t" data-gi="${i}">${src?`<img src="${esc(src.url)}" alt="" loading="lazy">`:`<span class="gal-f">${esc(x.name)}</span>`}<span class="car-n">${i+1}</span></button>`}).join("")}
+      const vid=/^video\//.test((x.file&&x.file.mimeType)||"")||/\.(mp4|mov|m4v|webm)$/i.test(x.name);
+      return `<button type="button" class="gal-t${vid?" is-vid":""}" data-gi="${i}" aria-label="${vid?"Video":"Photo"} ${i+1}">${src?`<img src="${esc(src.url)}" alt="" loading="lazy">`:`<span class="gal-f">${esc(x.name)}</span>`}<span class="car-n">${i+1}</span>${vid?`<span class="gal-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg></span>`:""}</button>`}).join("")}
   catch(e){if(GAL.id!==id)return;grid.innerHTML=`<div class="dr-msg">${e.signin?`${esc(e.message)}<br><button type="button" class="btn small primary" data-ms="signin-gal">Sign in with Microsoft</button>`:esc(e.status===404?"This folder was moved or deleted in SharePoint":e.message)}</div>`}}
 function galView(i){const big=$("#galBig"),grid=$("#galGrid");GAL.i=i;
   if(i<0||!GAL.items[i]){big.hidden=true;big.innerHTML="";grid.hidden=false;return}
   const x=GAL.items[i],u=x["@microsoft.graph.downloadUrl"]||"",isV=x.file&&/^video\//.test(x.file.mimeType||"");
-  big.innerHTML=`<div class="gal-bar"><button type="button" class="btn small" data-gv="back">‹ All photos</button><span>${i+1} of ${GAL.items.length}</span><a class="btn small" href="${esc(u)}" download="${esc(x.name)}">Download</a></div>
-    <div class="gal-stage"><button type="button" class="gal-nav" data-gv="prev" aria-label="Previous"${i===0?" disabled":""}>‹</button>${isV?`<video src="${esc(u)}" controls playsinline></video>`:`<img src="${esc(u)}" alt="">`}<button type="button" class="gal-nav" data-gv="next" aria-label="Next"${i===GAL.items.length-1?" disabled":""}>›</button></div>`;
+  big.innerHTML=`<div class="gal-bar"><button type="button" class="btn small" data-gv="back">‹ All</button><span>${i+1} of ${GAL.items.length}</span><a class="btn small" href="${esc(u)}" download="${esc(x.name)}">Download</a></div>
+    <div class="gal-stage"><button type="button" class="gal-nav" data-gv="prev" aria-label="Previous"${i===0?" disabled":""}>‹</button>${isV?`<video src="${esc(u)}" controls playsinline autoplay></video>`:`<img src="${esc(u)}" alt="">`}<button type="button" class="gal-nav" data-gv="next" aria-label="Next"${i===GAL.items.length-1?" disabled":""}>›</button></div>`;
   big.hidden=false;grid.hidden=true;big.tabIndex=-1;try{big.focus({preventScroll:true})}catch(_){}}
 (function(){const d=$("#galDlg");
   d.addEventListener("click",e=>{const t=e.target.closest("[data-gi]");if(t){e.preventDefault();galView(+t.dataset.gi);return}
@@ -7148,6 +7160,7 @@ document.addEventListener("click",async e=>{
   else if(act==="stMenu"){openStMenu(b)}
   else if(act==="editLink"){S.editLinks=S.editLinks||{};S.editLinks[b.dataset.id]=true;render();setTimeout(()=>{const i=document.querySelector(`.link-in[data-id="${b.dataset.id}"]`);if(i){i.focus();i.select()}},30)}
   else if(act==="cancelEditLink"){if(S.editLinks)delete S.editLinks[b.dataset.id];render()}
+  else if(act==="viewCar"){openGallery(b.dataset.id)}
   else if(act==="openLinkDlg"){
     // reuses the same "Add the final video link" dialog as the approval prompt
     const id=b.dataset.id,v=S.videos[id],d=$("#linkDlg"),box=$("#linkBox");if(!d||!v||!box)return;
@@ -8125,11 +8138,11 @@ const CALC=(()=>{
    Path: Facebook Login for Business → the Page's Instagram account → reel container with a resumable upload → publish. */
 const IG=(()=>{
   const SCOPES="instagram_basic,instagram_content_publish,pages_show_list,pages_read_engagement,business_management";
-  let sdk=null,tok=null,pageTok=null,busy=false,dlg=null,job=null;
+  let sdk=null,tok=null,pageTok=null,busy=false,dlg=null,job=null,tokOpen=false;
   const cfg=()=>S.settings.ig||{};
   const ver=()=>(S.settings.igApiVer||"v23.0").replace(/^([0-9])/,"v$1");
   const on=()=>!!S.settings.igAppId;
-  const ready=()=>on()&&!!cfg().igId&&S.me===ADMIN;          // only the admin posts during the experiment
+  const ready=()=>(on()||!!pasted())&&!!cfg().igId&&S.me===ADMIN;          // only the admin posts during the experiment
   function loadSdk(){if(sdk)return sdk;sdk=new Promise((res,rej)=>{if(!on())return rej(new Error("Add the Meta App ID in Settings first"));
       window.fbAsyncInit=()=>{try{FB.init({appId:S.settings.igAppId,version:ver(),xfbml:false,cookie:true,status:true});res(window.FB)}catch(e){rej(e)}};
       const s=document.createElement("script");s.src="https://connect.facebook.net/en_US/sdk.js";s.async=true;s.crossOrigin="anonymous";s.onerror=()=>{sdk=null;rej(new Error("Couldn’t load Facebook sign-in. Check the internet"))};document.head.appendChild(s)});
@@ -8143,7 +8156,8 @@ const IG=(()=>{
     if(!r.ok||j.error){const e=new Error((j.error&&(j.error.error_user_msg||j.error.message))||("Instagram said "+r.status));e.code=j.error&&j.error.code;throw e}return j}
   function status(){return new Promise(res=>{try{FB.getLoginStatus(r=>res(r),true)}catch(_){res(null)}})}
   // use the sign-in Facebook already has; only open the window when needed, straight from the click
-  async function session(interactive){const F=await loadSdk();let ar=F.getAuthResponse&&F.getAuthResponse();
+  const pasted=()=>{try{return localStorage.getItem("pb-ig-token")||""}catch(_){return ""}};
+  async function session(interactive){if(pasted()){tok=pasted();return tok}const F=await loadSdk();let ar=F.getAuthResponse&&F.getAuthResponse();
     if(!(ar&&ar.accessToken)){if(interactive){const opt=S.settings.igConfigId?{config_id:S.settings.igConfigId}:{scope:SCOPES,return_scopes:true};const r=await new Promise(res=>F.login(res,opt));ar=r&&r.authResponse}
       else{const r=await status();ar=r&&r.status==="connected"&&r.authResponse;if(!ar)throw Object.assign(new Error("Sign in with Facebook to post"),{signin:true})}}
     if(!(ar&&ar.accessToken))throw new Error("Facebook sign-in was cancelled");
@@ -8152,19 +8166,21 @@ const IG=(()=>{
   async function pageToken(){const c=cfg();const P=await pages();const p=P.find(x=>x.id===c.pageId)||P.find(x=>x.instagram_business_account.id===c.igId);
     if(!p)throw new Error(`@${c.username||"the account"} isn’t reachable with this Facebook sign-in. Use the Facebook account that manages its Page`);pageTok=p.access_token;return pageTok}
   // Settings → Connect: pick which Instagram account the board posts to
-  async function connect(){try{await session(true);const P=await pages();
+  async function connect(){try{const t=(document.getElementById("igtok")||{}).value;if(t&&t.trim()){try{localStorage.setItem("pb-ig-token",t.trim())}catch(_){}}await session(true);const P=await pages();
       if(!P.length){toast("No Instagram professional account found. It must be linked to a Facebook Page you manage");return}
       let p=P[0];if(P.length>1){const names=P.map((x,i)=>`${i+1}. @${x.instagram_business_account.username} (Page: ${x.name})`).join("\n");const k=prompt(`Which account should the board post to?\n\n${names}\n\nType the number:`,"1");if(!k)return;p=P[+k-1]||P[0]}
       const a=p.instagram_business_account;S.settings.ig={pageId:p.id,pageName:p.name,igId:a.id,username:a.username,pic:a.profile_picture_url||"",by:S.me,at:Date.now()};putSettings();pageTok=p.access_token;render();toast(`Connected to @${a.username}`)}
     catch(e){toast(e.message||"Couldn’t connect")}}
-  function disconnect(){S.settings.ig=null;putSettings();pageTok=null;render();toast("Instagram disconnected")}
+  function disconnect(){try{localStorage.removeItem("pb-ig-token")}catch(_){}S.settings.ig=null;putSettings();pageTok=null;render();toast("Instagram disconnected")}
   function panel(){const c=cfg(),adm=S.me===ADMIN;
     return `<h3 class="subh" id="igSet">Instagram posting <span class="tag">Experiment</span></h3>
       <p class="hint sp-intro">Post reels straight from the board to one Instagram account. Use a secondary account while we test. It needs to be a professional (Business or Creator) account linked to a Facebook Page.</p>
       <div class="field"><label for="igapp">Meta App ID</label><input id="igapp" type="text" value="${esc(S.settings.igAppId||"")}" data-set="igAppId" placeholder="From developers.facebook.com, e.g. 1234567890123456" spellcheck="false"${adm?"":" readonly"}></div>
       <div class="field"><label for="igcfg">Login configuration ID</label><input id="igcfg" type="text" value="${esc(S.settings.igConfigId||"")}" data-set="igConfigId" placeholder="From Facebook Login for Business → Configurations" spellcheck="false"${adm?"":" readonly"}><span class="hint">Needed for Business apps. Leave empty for other app types.</span></div>
+      <details class="sp-more ig-tokbox"${pasted()||tokOpen?" open":""}><summary>Or paste an access token (if Facebook sign-in isn’t available)</summary>
+        <div class="field"><label for="igtok">Access token</label><input id="igtok" type="password" value="${esc(pasted())}" placeholder="From Graph API Explorer, extended to 60 days" spellcheck="false" autocomplete="off"${adm?"":" readonly"}><span class="hint">Kept only on this computer, never sent to the team. Press Connect Instagram after pasting.</span></div></details>
       ${c.igId?`<div class="ig-acct">${c.pic?`<img src="${esc(c.pic)}" alt="">`:`<i></i>`}<div><b>@${esc(c.username)}</b><small>Page: ${esc(c.pageName||"")} · connected by ${esc(dispName(c.by)||c.by||"")}</small></div>${adm?`<button class="btn small" data-act="igConnect">Switch</button><button class="btn small ghost" data-act="igOff">Disconnect</button>`:""}</div>`
-        :adm?`<button class="btn primary" data-act="igConnect"${S.settings.igAppId?"":" disabled"}>Connect Instagram</button><span class="hint" style="display:block;margin-top:6px">${S.settings.igAppId?"Signs in with Facebook in a small window.":"Add the App ID first."}</span>`:`<p class="hint">Not connected yet.</p>`}`}
+        :adm?`<button class="btn primary" data-act="igConnect">Connect Instagram</button><span class="hint" style="display:block;margin-top:6px">${S.settings.igAppId?"Signs in with Facebook in a small window.":"Add the App ID first."}</span>`:`<p class="hint">Not connected yet.</p>`}`}
 
   /* ---------- the Post window ---------- */
   function makeDlg(){dlg=document.createElement("dialog");dlg.id="igDlg";dlg.className="ig-dlg";dlg.setAttribute("aria-label","Post to Instagram");
@@ -8222,6 +8238,9 @@ const IG=(()=>{
     finally{busy=false;job.busy=false}}
   document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-act]");if(!b)return;
     if(b.dataset.act==="igConnect"){e.preventDefault();connect()}else if(b.dataset.act==="igOff"){e.preventDefault();if(confirm("Disconnect Instagram from the board?"))disconnect()}});
+  document.addEventListener("toggle",e=>{if(e.target.classList&&e.target.classList.contains("ig-tokbox"))tokOpen=e.target.open},true);
+  // keep a pasted token even if the page redraws while it’s being pasted
+  document.addEventListener("input",e=>{if(e.target&&e.target.id==="igtok"){try{const v=e.target.value.trim();v?localStorage.setItem("pb-ig-token",v):localStorage.removeItem("pb-ig-token")}catch(_){}}});
   setTimeout(preload,3000);
   return {ready,open,panel,preload,_g:g};
 })();
