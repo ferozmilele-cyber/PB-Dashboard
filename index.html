@@ -6633,7 +6633,10 @@ function seeKey(k){loadSeen();if(!SEEN)SEEN=new Set();SEEN.add(k);saveSeen()}
 function markSeen(v){const k=alertKind(v);if(k&&k!=="posted")seeKey(alertKey(v,k))}
 function alertsForMe(){return true}
 function readyList(){return myAlerts().map(x=>x.v)}
-function updateBell(){const L=myAlerts().filter(x=>x.k!=="posted"),n=L.length,e=$("#bellN");if(!e)return;e.hidden=!n;e.textContent=n;const b=$("#bellBtn");b.classList.toggle("has",!!n);
+// an alert card that no longer applies (approved from the draft window, posted from the schedule, …) closes by itself
+function pruneAlerts(){const box=$("#alerts");if(!box)return;box.querySelectorAll(".alert:not([data-closing])").forEach(el=>{const v=S.videos[el.dataset.id],k=(el.id.match(/-([a-z]+)$/)||[])[1];
+  if(!k||k==="posted")return;if(!v||(alertKind(v)!==k&&timeKind(v)!==k))closeAlert(el)})}
+function updateBell(){try{pruneAlerts()}catch(_){}const L=myAlerts().filter(x=>x.k!=="posted"),n=L.length,e=$("#bellN");if(!e)return;e.hidden=!n;e.textContent=n;const b=$("#bellBtn");b.classList.toggle("has",!!n);
   const kinds=[...new Set(L.map(x=>x.k))];b.title=n?({review:"Waiting for your review",approved:"Approved, add final link",reedit:"Re-edit requested",ready:"Ready to post",soon:"Posting soon",now:"Post now",late:"Not posted yet",notready:"Due soon, not ready"}[kinds[0]]+(kinds.length>1?" and more":"")):"Nothing waiting"}
 function autoPostScheduled(){
   if(S.settings.autoPostScheduled!==true)return;
@@ -6727,6 +6730,8 @@ function approveVideo(v){
   const promote=!isCar(v)&&!safeUrl(base.finalLink)&&spOn()&&v.draft&&v.draft.itemId;            // the approved draft becomes the final video
   if(promote)base.finalPending=Date.now();
   putVideo(withStatus(base,"Ready"));celebrate(v.id,"Ready");
+  try{const nv=S.videos[v.id];if(nv&&safeUrl(nv.finalLink))seeKey(alertKey(nv,"ready"))}catch(_){}   // no "ready" pop-up for a video you just approved
+  try{pruneAlerts()}catch(_){}
   if(promote){spPromoteDraft(v.id);toast("Approved. Saving the draft as the final video");return}
   toast(safeUrl(base.finalLink)?"Approved. It’s ready to post":`Approved and Ready. ${dispName(v.editedBy||"")||"The editor"} will add the final link`)
 }
