@@ -2282,6 +2282,26 @@ body.fbloading #fbLoading{display:grid}
 /* members: status pill works on their own videos only */
 body.viewonly .stsel.mine{pointer-events:auto;box-shadow:0 0 0 2px rgba(170,255,0,.55)}
 body.viewonly.member header.top h1::after{content:"Member"}
+body.viewonly.editor header.top h1::after{content:"Editor"}
+body.viewonly.helper .pactions [data-act="pauseAll"],body.viewonly.helper .pactions [data-act="resumeAll"]{display:inline-flex!important}
+.et-by{font-style:normal;font-size:11px;font-weight:700;opacity:.75;margin-right:2px}
+.tp-days{margin:0 0 14px;padding:12px 14px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.55)}
+.tp-dl{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin:0 0 10px;font-size:13px}.tp-dl span{color:var(--muted);font-size:12.5px}
+.tp-dgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(74px,1fr));gap:8px}
+.tp-dn{display:grid;justify-items:center;gap:2px;padding:8px 6px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.8);font-size:12px;cursor:text}
+.tp-dn small{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}.tp-dn>span{font-size:12px;font-weight:600}
+.tp-dn input{width:52px;height:32px;text-align:center;border:1px solid var(--line);border-radius:10px;background:#fff;font:inherit;font-size:16px;font-weight:800;color:var(--ink);padding:0}
+.tp-dn>b{font-size:20px;font-weight:800;line-height:32px}
+.tp-dn.zero{background:rgba(12,14,8,.03)}.tp-dn.zero input,.tp-dn.zero>b{color:var(--muted)}
+.tp-dn.set{border-color:rgba(123,209,0,.6)}.tp-dn.now{box-shadow:0 0 0 2px rgba(170,255,0,.7)}
+.ttc .tt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.tt-day h4{display:flex;align-items:baseline;gap:8px;margin:0 0 8px;font-size:15px}.tt-day h4 span{font-size:12.5px;font-weight:600;color:var(--muted)}
+.tt-who{padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.7);margin-bottom:8px}
+.tt-who>b{display:flex;align-items:center;gap:8px;font-size:14px}.tt-who>b em{font-style:normal;font-size:12px;font-weight:800;padding:1px 8px;border-radius:999px;background:var(--lime);color:#0B0B0C}
+.tt-who ul{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:6px}.tt-who li{font-size:13.5px;font-weight:600;line-height:1.3}.tt-empty{color:var(--muted);font-weight:600}.tt-who li small{display:block;font-size:12px;font-weight:500;color:var(--muted)}
+.tp-row:has(.tp-a .stsel){grid-template-columns:150px minmax(0,1fr) 300px}.tp-a:has(.stsel){align-items:center}.tp-a:has(.tp-whotxt) .stsel{flex:1;min-width:0;width:auto}
+@media (max-width:760px){.tp-row:has(.tp-a .stsel){grid-template-columns:1fr}}
+.tp-a .tp-whotxt{white-space:nowrap}.tp-a:has(.stsel) .tp-whotxt{padding:6px 10px}
 body.viewonly [data-act="pauseAll"],body.viewonly [data-act="resumeAll"],body.viewonly [data-act="tripReset"]{display:none!important}
 .tp-set[hidden]{display:none!important}
 .tp-whotxt{display:inline-block;padding:6px 12px;border-radius:999px;background:rgba(12,14,8,.05);font-size:13px;font-weight:700}
@@ -2825,6 +2845,13 @@ dialog.ig-dlg{width:min(860px,96vw)}
 :root[data-theme="dark"] .tp-day h4 span{background:rgba(255,255,255,.08)!important;color:var(--muted)!important}
 :root[data-theme="dark"] .tp-whotxt{background:rgba(255,255,255,.07)!important;color:var(--ink)!important}
 :root[data-theme="dark"] .tag.tp-to{background:rgba(139,114,207,.2)!important;color:#C3B3F5!important}
+:root[data-theme="dark"] .tp-days{background:rgba(255,255,255,.03)!important;border-color:var(--line)!important}
+:root[data-theme="dark"] .tp-dn{background:var(--d-card)!important;border-color:var(--d-line2)!important}
+:root[data-theme="dark"] .tp-dn.zero{background:rgba(255,255,255,.02)!important}
+:root[data-theme="dark"] .tp-dn.set{border-color:rgba(170,255,0,.45)!important}
+:root[data-theme="dark"] .tp-dn input{background:var(--d-field)!important;border-color:var(--d-line2)!important;color:var(--ink)!important}
+:root[data-theme="dark"] .tp-dn.zero input,:root[data-theme="dark"] .tp-dn.zero>b{color:var(--muted)!important}
+:root[data-theme="dark"] .tt-who{background:rgba(255,255,255,.03)!important;border-color:var(--line)!important}
 
 /* 11 ── Tags & status text ───────────────────────────────────── */
 :root[data-theme="dark"] .tag{background:rgba(255,255,255,.07)!important;color:#B4BDC6!important;border-color:rgba(255,255,255,.08)!important}
@@ -3607,9 +3634,10 @@ let token=null,since=0,pending=new Map(),inflight=new Map(),flushT=null,pollT=nu
 const FB_CONFIG={apiKey:"AIzaSyAb6oX0GBaUyMrOg4gktH3bOxrCYXupMrs",authDomain:"shoot-edit-board.firebaseapp.com",projectId:"shoot-edit-board",
   storageBucket:"shoot-edit-board.firebasestorage.app",messagingSenderId:"527953591815",appId:"1:527953591815:web:1bc8669fc95f109d7f34a2"};
 // sign-in email -> board username (keeps photos, reviewer, poster and all settings linked to the right person)
-const FB_TEAM={"muhammed.shibili@milele.com":"shibili","zain.ulabdin@milele.com":"zain","zain.nawaz@milele.com":"nawaz","waleed.farid@milele.com":"waleed"};
+const FB_TEAM={"muhammed.shibili@milele.com":"shibili","zain.ulabdin@milele.com":"zain","zain.nawaz@milele.com":"nawaz","waleed.farid@milele.com":"waleed","hamza.rajpoot@milele.com":"hamza"};
 const VIEW_ONLY=["nawaz"];   // the manager: can see everything, can't change anything
 const MEMBERS=["waleed"];    // editors helping out: see everything, change only the videos assigned to them in the Away plan
+const EDITORS=["hamza"];     // editors: see everything, change video status on Edit order and Posting schedule, run the editing timer
 const ADMIN="shibili";
 const COLS=["videos","shoots","scripts","profiles","ideas","meta"];
 const OLD_API=API;   // the Google Sheet link, kept only for the one-time import
@@ -3739,29 +3767,40 @@ function lsSet(k,v){try{v==null?localStorage.removeItem(k):localStorage.setItem(
 function saveLocal(){try{localStorage.setItem("seb-free-demo",JSON.stringify({videos:S.videos,settings:S.settings,queue:S.queue,shoots:S.shoots,scripts:S.scripts,profiles:S.profiles}))}catch(e){}}
 function loadLocal(){try{const r=JSON.parse(localStorage.getItem("seb-free-demo")||"null");if(r){S.videos=r.videos||{};S.shoots=r.shoots||{};S.scripts=r.scripts||{};S.profiles=r.profiles||{};Object.assign(S.settings,r.settings||{});S.queue=r.queue||S.queue}}catch(e){}}
 function isMember(u){u=String(u==null?S.me:u||"").toLowerCase();return !!u&&MEMBERS.some(n=>u===n||u.includes(n))}
-function viewOnly(){return VIEW_ONLY.includes(S.me||"")||isMember()}
+function isEdAcct(u){u=String(u==null?S.me:u||"").toLowerCase();return !!u&&EDITORS.some(n=>u===n||u.includes(n))}
+function helperAcct(u){return isMember(u)||isEdAcct(u)}   // Waleed and Hamza: the editing team besides Shibli
+function viewOnly(){return VIEW_ONLY.includes(S.me||"")||isMember()||isEdAcct()}
+function roleName(u){return u===ADMIN?"Admin":reviewers().includes(u)?"Reviewer":isEdAcct(u)?"Editor":isMember(u)?"Member":VIEW_ONLY.includes(u)?"View only":"Member"}
 // the name this member goes by in the Away plan team list
 function memberName(){const T=new Set();awayList().forEach(a=>tripTeam(a).forEach(n=>T.add(n)));const me=String(S.me||"").toLowerCase(),dn=String(dispName(S.me)||"").toLowerCase();
-  return [...T].find(n=>{const l=n.toLowerCase();return l===dn||l===me||me.includes(l)||MEMBERS.some(m=>me.includes(m)&&l.includes(m))})||""}
+  return [...T].find(n=>{const l=n.toLowerCase();return l===dn||l===me||me.includes(l)||[...MEMBERS,...EDITORS].some(m=>me.includes(m)&&l.includes(m))})||""}
 // videos a member may change: the ones assigned to them in a current or upcoming trip
-function myVideos(){const out=new Set();if(!isMember())return out;const nm=memberName();if(!nm)return out;
+function myVideos(){const out=new Set();if(!helperAcct())return out;const nm=memberName();if(!nm)return out;
   awayList().filter(a=>a.to>=addDays(today(),-1)).forEach(a=>tripRows(a).forEach(r=>{if(r.v&&r.who===nm)out.add(r.v.id)}));return out}
 // videos a teammate edits during a trip (so your own timer never pauses theirs)
 function teamOwned(){const out=new Set();awayList().filter(a=>a.to>=addDays(today(),-1)).forEach(a=>tripRows(a).forEach(r=>{if(r.v&&!["me","before","open"].includes(r.who))out.add(r.v.id)}));return out}
-function mayEdit(id){return isMember()&&myVideos().has(id)}
-let voT=0;function voNote(){if(Date.now()-voT<2500)return;voT=Date.now();toast(isMember()?"You can change the status of the videos assigned to you":"View only. Ask Shibli or Zain to make changes")}
-const VIEW_OK=new Set(["tripOpen","tripWho","tripCopy","copy","days","dialBack","dialTry","dialType","dlBackup","fclear","ffmt","fnolink","fnopil","fsched","fst","goShoots","goTab","grpToggle","histView","hrange","ideaArch","ideaCopy","ideaPil","ideaType","mExport","mOut","mday","mnav","more","newWin","openCmd","osnOn","osnTest","ovGo","ovMode","ovStatus","plByDay","plMode","playWrapped","printSum","rowMore","schedToday","shView","sumMode","sview","testAlert","vaultLock","vaultOpen","vcopy","viewScript","vshow","clearSel","chpw","freshLoad"]);
+function mayEdit(id){return isEdAcct()?["order","schedule"].includes(S.tab):isMember()&&myVideos().has(id)}
+// may this account save changes to a video (status, timer, uploads)
+function mayWrite(id){return isEdAcct()||(isMember()&&myVideos().has(id))}
+// whose editing timer is it: so pausing yours never pauses a teammate's
+function timerMine(o){if(isMember())return myVideos().has(o.id);if(isEdAcct())return o.editBy===S.me||myVideos().has(o.id);
+  return !teamOwned().has(o.id)&&!(o.editBy&&o.editBy!==S.me&&helperAcct(o.editBy))}
+let voT=0;function voNote(){if(Date.now()-voT<2500)return;voT=Date.now();toast(isEdAcct()?"You can change the video status on Edit order and Posting schedule":isMember()?"You can change the status of the videos assigned to you":"View only. Ask Shibli or Zain to make changes")}
+const VIEW_OK=new Set(["tripGo","tripOpen","tripWho","tripCopy","copy","days","dialBack","dialTry","dialType","dlBackup","fclear","ffmt","fnolink","fnopil","fsched","fst","goShoots","goTab","grpToggle","histView","hrange","ideaArch","ideaCopy","ideaPil","ideaType","mExport","mOut","mday","mnav","more","newWin","openCmd","osnOn","osnTest","ovGo","ovMode","ovStatus","plByDay","plMode","playWrapped","printSum","rowMore","schedToday","shView","sumMode","sview","testAlert","vaultLock","vaultOpen","vcopy","viewScript","vshow","clearSel","chpw","freshLoad"]);
 const VIEW_FIELDS=["live","plr","sumr","ovr","opt"];
-function isViewField(el){const d=el&&el.dataset||{};return VIEW_FIELDS.some(k=>k in d)||el.type==="search"||!!(el.closest&&el.closest("#login,#cmd,.tpw,.vault-form"))}
+// Waleed and Hamza also use PB Downloader and the editing timer
+const HELPER_OK=new Set(["dlAdd","dlDo","dlQ","dlCk","dlClear","dlRetry","dlVideo","pauseEdit","resumeEdit","pauseAll","resumeAll","upDraft"]);
+function isViewField(el){const d=el&&el.dataset||{};return VIEW_FIELDS.some(k=>k in d)||el.type==="search"||!!(el.closest&&el.closest("#login,#cmd,.tpw,.vault-form"))||!!(helperAcct()&&el.closest&&el.closest(".dl-panel"))}
 document.addEventListener("click",e=>{if(!viewOnly())return;const t=e.target;if(!t.closest)return;
   const g=t.closest(".gsel");if(g&&g._sel&&!isViewField(g._sel)){e.preventDefault();e.stopPropagation();voNote();return}
   const b=t.closest("[data-act]");if(b&&b.dataset.act==="stMenu"&&mayEdit(b.dataset.id))return;
+  if(b&&helperAcct()&&HELPER_OK.has(b.dataset.act)){const v=b.dataset.id&&S.videos[b.dataset.id];if(!v||(b.dataset.act==="upDraft"?mayWrite(v.id):timerMine(v)))return}
   if(b&&!VIEW_OK.has(b.dataset.act)){e.preventDefault();e.stopPropagation();voNote()}},true);
 ["change","input"].forEach(ev=>document.addEventListener(ev,e=>{if(!viewOnly())return;const t=e.target;if(!t||!t.closest||!t.closest("#main,#addDlg,#shootDlg"))return;if(isViewField(t))return;
   e.stopPropagation();if(ev==="change"){voNote();render()}},true));
 document.addEventListener("pointerdown",e=>{if(viewOnly()&&e.target.closest&&e.target.closest("[data-drag-id],.erow")&&!e.target.closest("a,[data-act],.gsel"))e.stopPropagation()},true);
 function enqueue(op,collection,id,data){
-  if(viewOnly()&&!(isMember()&&((collection==="videos"&&op==="set"&&mayEdit(id))||(collection==="profiles"&&id===S.me)))){voNote();return}
+  if(viewOnly()&&!(helperAcct()&&((collection==="videos"&&op==="set"&&mayWrite(id))||(collection==="profiles"&&id===S.me)))){voNote();return}
   if(!GAS){saveLocal();return}
   pending.set(collection+"/"+id,{op,collection,id,data});savePendingLocal();cacheRow({collection,id,data,deleted:op==="delete"});
   $("#sync").textContent="Saving…";
@@ -3948,7 +3987,7 @@ function editPlan(){
       const v=vids().find(x=>kindOf(x)===k&&x.postDate===P&&x.postTime===tm);
       if(v&&FIN.includes(v.status))return;if(!v&&stock>0){stock--;return}n++}));
     vids().forEach(v=>{if(v.postDate===P&&kinds.includes(kindOf(v))&&!slotsK(P,kindOf(v)).includes(v.postTime)&&!FIN.includes(v.status)&&!(P===t&&(v.postTime||"99")<=hm))n++});
-    if(typeof isAway==="function"){const a=awayList().find(x=>roleOf(x)==="edit"&&P>=addDays(x.from,tripLead())&&P<=addDays(x.to,tripLead()));if(a&&tripHasPlan(a))n=Math.min(n,tripMineOn(a,P));else{const b=isAway(P,"edit");if(b){const m=b.mode||"before";if(m==="team")n=0;else if(m==="partial")n=Math.min(n,Math.max(0,+b.perDay||0))}}}
+    if(typeof isAway==="function"){const a=awayList().find(x=>roleOf(x)==="edit"&&P>=addDays(x.from,tripLead())&&P<=addDays(x.to,tripLead()));if(a&&tripHasPlan(a))n=Math.min(n,tripMineOn(a,P));else{const b=isAway(P,"edit");if(b){const m=b.mode||"before";if(m==="team")n=0;else if(m==="partial")n=Math.min(n,tripPer(b,P))}}}
     if(n)due[P]=n}
   const work=[];for(let i=0;i<H;i++){const d=addDays(t,i);if(isWorkDay(d))work.push(d)}
   const need=work.map(()=>0),covers=work.map(()=>[]);let late=0;
@@ -4281,7 +4320,7 @@ function vOverview(){
   const noScript=upcomingShoots().filter(s=>!S.scripts[s.id]&&!s.scriptLink).length;
   const shootLine=(lbl,s)=>`<div class="ovs"><span class="ovs-l">${lbl}</span>${s?`<span class="ovs-t"><b>${esc(s.title||"Untitled shoot")}</b><small>${esc(niceW(s.date))}${s.time?", "+fmtT(s.time):""}${(s.videos||[]).length?`, ${s.videos.length} video${s.videos.length===1?"":"s"}`:""}</small></span>${S.scripts[s.id]||s.scriptLink?`<button class="iconbtn" data-act="viewScript" data-id="${s.id}">Script</button>`:`<span class="tag warn">No script</span>`}`:`<span class="ovs-t muted">Nothing planned</span>`}</div>`;
   const shotT=all.filter(v=>v.shotDate===t).length,edT=editedToday();
-  return `${awayBanner()}
+  return `${awayBanner()}${tripTodayCard()}
   <section class="panel ov">
     <div class="phead"><h2>${esc(niceW(t))}</h2>
       <div class="ovtoday">${(()=>{const g=shootGoalToday();return `<span>Shot today <b>${shotT}</b>/${g}</span><i style="--p:${Math.min(1,shotT/g)}"></i>`})()}${(()=>{const ep=editPlan();const goal=edT+ep.todayLeft;const s=editStreak();return `<span class="gwrap">${goalRing(edT,ep.todayOff?0:goal)}<span>${ep.todayOff?"Day off":`Edited <b>${edT}</b>/${goal||edT}`}${s>1?`<em class="streak">🔥 ${s}-day streak</em>`:""}</span></span>`})()}<button class="btn ov-copy" data-act="copyPlan" title="Copy today’s shoots, posts and edits as text for WhatsApp or Teams"><svg width="13" height="13" viewBox="0 0 16 16" aria-hidden="true"><rect x="5" y="5" width="9" height="9" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M11 3.5A1.5 1.5 0 0 0 9.5 2h-5A2.5 2.5 0 0 0 2 4.5v5A1.5 1.5 0 0 0 3.5 11" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>Copy today’s plan</button></div></div>
@@ -4418,8 +4457,8 @@ function vOrder(){
   const c=clashes(list),trip=editTrip();
   return `<section class="panel">
     <div class="phead"><h2>Edit order</h2>
-      <div class="pactions">${trip?`<button class="btn small ghost tp-toggle" data-act="tripOpen" aria-pressed="${!!S.tripOpen}" title="Who edits what while you’re away">✈︎ ${S.tripOpen?"Hide away plan":"Away plan"}</button>`:""}${(()=>{const ed=vids().filter(v=>v.status==="Editing");if(!ed.length)return "";const run=ed.filter(v=>!isPausedV(v));return run.length?`<button class="btn small" data-act="pauseAll">⏸ Pause editing</button>`:`<button class="btn small primary" data-act="resumeAll">▶ Resume editing</button>`})()}${list.length?`<span class="stat">${list.length} in queue${c?`, ${c} same-day pair${c>1?"s":""}`:""}</span>${Object.keys(S.queue.pins||{}).length?`<button class="btn small ghost" data-act="unpinAll">Unpin all</button>`:""}`:""}<button class="shuffle" data-act="shuffle"${list.length<2?" disabled":""}>Shuffle</button></div></div>
-    ${S.tripOpen&&trip?tripPanel():""}
+      <div class="pactions">${trip?`<button class="btn small ghost tp-toggle" data-act="tripOpen" aria-pressed="${tripShown()}" title="Who edits what while ${esc(editorName())} is away">✈︎ ${tripShown()?"Hide away plan":"Away plan"}</button>`:""}${(()=>{const ed=vids().filter(v=>v.status==="Editing"&&timerMine(v));if(!ed.length)return "";const run=ed.filter(v=>!isPausedV(v));return run.length?`<button class="btn small" data-act="pauseAll">⏸ Pause editing</button>`:`<button class="btn small primary" data-act="resumeAll">▶ Resume editing</button>`})()}${list.length?`<span class="stat">${list.length} in queue${c?`, ${c} same-day pair${c>1?"s":""}`:""}</span>${Object.keys(S.queue.pins||{}).length?`<button class="btn small ghost" data-act="unpinAll">Unpin all</button>`:""}`:""}<button class="shuffle" data-act="shuffle"${list.length<2?" disabled":""}>Shuffle</button></div></div>
+    ${tripShown()&&trip?tripPanel():""}
     ${planPanel()}
     <div class="switches">
       ${toggle("data-opt","deadlineFirst",S.opts.deadlineFirst,"Scheduled first")}
@@ -4940,7 +4979,7 @@ const MSAL_URL="https://cdn.jsdelivr.net/npm/@azure/msal-browser@3.28.1/lib/msal
 function spCfg(){const g=k=>String(S.settings[k]||"").trim();
   return {clientId:g("spClientId")||SP_DEF.clientId,tenantId:g("spTenantId")||SP_DEF.tenantId,site:(g("spSite")||SP_DEF.site).replace(/\/+$/,""),base:(g("spBase")||SP_DEF.base).replace(/^\/+|\/+$/g,""),drafts:g("spDrafts")||SP_DEF.drafts,final:g("spFinal")||SP_DEF.final}}
 const spOn=()=>{const c=spCfg();return !!(c.clientId&&c.tenantId)};
-const canUp=v=>!!v&&(!viewOnly()||mayEdit(v.id));
+const canUp=v=>!!v&&(!viewOnly()||mayWrite(v.id));
 const MS={app:null,key:"",loading:null,drive:null,driveFor:"",made:new Set()};
 function msLoad(){if(window.msal)return Promise.resolve();if(MS.loading)return MS.loading;
   MS.loading=new Promise((res,rej)=>{const s=document.createElement("script");s.src=MSAL_URL;s.onload=()=>res();s.onerror=()=>{MS.loading=null;rej(new Error("Couldn’t load Microsoft sign-in. Check the internet connection"))};document.head.appendChild(s)});return MS.loading}
@@ -5609,7 +5648,7 @@ const GR=(()=>{
 function isTyping(){const a=document.activeElement;return a&&a.closest&&a.closest("#main")&&!a.dataset.live&&(a.tagName==="TEXTAREA"||(a.tagName==="INPUT"&&/^(text|number)$/.test(a.type)))}
 let VT_ON=false;
 function render(){
-  document.body.classList.toggle("viewonly",viewOnly());document.body.classList.toggle("member",isMember());
+  document.body.classList.toggle("viewonly",viewOnly());document.body.classList.toggle("member",isMember());document.body.classList.toggle("editor",isEdAcct());document.body.classList.toggle("helper",helperAcct());
   if(isTyping()||DIAL.busy||DIAL.trying||VT_ON||(typeof GX!=="undefined"&&GX.btn)||(typeof STM!=="undefined"&&STM.btn)){pendingRender=true;return}
   pendingRender=false;
   const a=document.activeElement,live=a&&a.dataset&&a.dataset.live,sel=live&&a.selectionStart;
@@ -5766,7 +5805,7 @@ function teamPanel(){
       <div class="tphoto">${avatar(u,92,"big")}
         ${edit?`<label class="tchange" title="Change photo"><input type="file" accept=".jpg,.jpeg,.png,.webp,.gif,.heic" data-photo="${esc(u)}">Change photo</label>${prof(u).photo?`<span class="tphoto-a"><button class="btn small ghost" data-act="reframe" data-u="${esc(u)}">Reframe</button><button class="btn small ghost" data-act="rmPhoto" data-u="${esc(u)}">Remove</button></span>`:""}`:""}</div>
       <div class="tinfo">
-        <div class="trole"><b>${esc(dispName(u))}</b><span class="tag">${u===d.admin?"Admin":"Member"}</span>${self?`<span class="tag new">You</span>`:""}</div>
+        <div class="trole"><b>${esc(dispName(u))}</b><span class="tag">${u===d.admin?"Admin":esc(roleName(u))}</span>${self?`<span class="tag new">You</span>`:""}</div>
         <small>Username: ${esc(u)}</small>
         ${edit?`<label class="tf">Display name<input type="text" value="${esc(prof(u).name||"")}" placeholder="${esc(u)}" data-pname="${esc(u)}"></label>`:""}
         ${GAS&&edit?`<div class="tpw${self?"":" solo"}">${self?`<input type="password" placeholder="Current password" data-pw-old="${esc(u)}" autocomplete="current-password">`:""}
@@ -6218,7 +6257,8 @@ function awayNumbers(a){const t=today();if(a.to<t)return null;const started=a.fr
   const DR=needFor("R",0,a.from,a.to),DC=needFor("C",0,a.from,a.to);      // what posts while they are away
   const shootR=R.toShoot,shootC=C.toShoot;let days=0;for(let d=t;d<a.from;d=addDays(d,1))if(canShoot(d))days++;   // only real shoot days count (weekends off by default)
   const dur={r:DR.total,c:DC.total},durN=dur.r+dur.c,mode=a.mode||"before";
-  const you=mode==="remote"?durN:mode==="partial"?Math.min(durN,(+a.perDay||0)*len):0,team=mode==="team"?durN:mode==="partial"?Math.max(0,durN-you):0;
+  let mineSum=0;for(let d=a.from,g=0;d<=a.to&&g<120;d=addDays(d,1),g++)mineSum+=tripPer(a,d);
+  const you=mode==="remote"?durN:mode==="partial"?Math.min(durN,mineSum):0,team=mode==="team"?durN:mode==="partial"?Math.max(0,durN-you):0;
   const shoot=shootR+shootC;
   return {started,len,days,shoot,shootR,shootC,dur,durN,mode,you,team,pace:days?Math.ceil(shoot/days):shoot}}
 function plural(n,w){return `${n} ${w}${n===1?"":"s"}`}
@@ -6239,7 +6279,7 @@ function awayCard(a){const N=awayNumbers(a),editor=roleOf(a)==="edit";
       ${carDays.length?`<span>Carousels on ${esc(carDays.join(", "))}</span>`:""}</div></div>`;
   const m=a.mode||"before",tm=a.teammate?esc(a.teammate):"a teammate";
   const cover=!N||!editor?"":m==="before"?`Editing: you finish everything before leaving.`:m==="remote"?`Editing: you edit from home, about <b>${Math.ceil(N.you/N.len)} a day</b>.`
-    :m==="partial"?`Editing: <b>you ${+a.perDay||0} a day</b> (${N.you}), <b>${tm}</b> edits the other <b>${N.team}</b>.`:`Editing: <b>${tm}</b> edits all <b>${N.team}</b>.`;
+    :m==="partial"?`Editing: <b>you ${Object.keys(a.perDays||{}).length?"a set number each day":(+a.perDay||0)+" a day"}</b> (${N.you}), <b>${tm}</b> edits the other <b>${N.team}</b>.`:`Editing: <b>${tm}</b> edits all <b>${N.team}</b>.`;
   const ed=editor?`<div class="aw-cov"><span>Editing while away</span><select data-awc="mode" data-id="${a.id}">${[["before","I’ll edit everything before I leave"],["remote","I’ll edit from home"],["partial","I’ll edit some, a teammate does the rest"],["team","A teammate edits"]].map(([k,l])=>`<option value="${k}"${k===m?" selected":""}>${l}</option>`).join("")}</select>
     ${m==="partial"?`<label class="aw-n">Per day<input type="number" min="0" max="20" value="${+a.perDay||0}" data-awc="perDay" data-id="${a.id}"></label>`:""}
     ${m==="partial"||m==="team"?`<input type="text" class="aw-t" placeholder="Teammate name" value="${esc(a.teammate||"")}" data-awc="teammate" data-id="${a.id}">`:""}</div>`:"";
@@ -6264,6 +6304,7 @@ document.addEventListener("change",e=>{const k=e.target&&e.target.dataset&&e.tar
 function editTrip(){const L=awayList().filter(a=>a.to>=today());return L.find(a=>roleOf(a)==="edit")||L[0]||null}
 function tripTeam(a){const T=Array.isArray(a.team)?a.team:String(a.teammate||"").split(/,|&|\band\b/i);return [...new Set(T.map(x=>String(x).trim()).filter(Boolean))]}
 function tripHasPlan(a){return !!a&&(tripTeam(a).length>0||Object.keys(a.assign||{}).length>0)}
+function tripPer(a,d){const m=a&&a.perDays||{};return Math.max(0,m[d]!=null&&m[d]!==""?+m[d]||0:(+(a&&a.perDay)||0))}
 function editorName(){const n=dispName(ADMIN)||ROLES.edit.who;return n.charAt(0).toUpperCase()+n.slice(1)}
 function tripLead(){return S.settings.editLead==null?1:+S.settings.editLead}
 // every post whose edit is due during the trip, with the person editing it
@@ -6274,10 +6315,10 @@ function tripRows(a){
       const v=vids().find(x=>kindOf(x)===k&&x.postDate===P&&x.postTime===tm);rows.push({P,tm,k,key:P+"|"+tm+"|"+k,v})});
       vids().filter(v=>v.postDate===P&&kindOf(v)===k&&!slotsK(P,k).includes(v.postTime)&&!(P===t&&(v.postTime||"99")<=hm)).forEach(v=>rows.push({P,tm:v.postTime||"",k,key:P+"|"+(v.postTime||"")+"|"+k,v,off:true}))})}
   rows.sort((x,y)=>(x.P+x.tm).localeCompare(y.P+y.tm));
-  const team=tripTeam(a),mode=a.mode||"before",per=Math.max(0,+a.perDay||0),mine={};let rr=0;
+  const team=tripTeam(a),mode=a.mode||"before",mine={};let rr=0;
   rows.forEach(r=>{r.by=addDays(r.P,-lead);r.done=!!(r.v&&FIN.includes(r.v.status));
     let def;if(mode==="before")def="before";else if(mode==="remote")def="me";
-    else if(mode==="partial"&&(mine[r.by]||0)<per){def="me";mine[r.by]=(mine[r.by]||0)+1}
+    else if(mode==="partial"&&(mine[r.by]||0)<tripPer(a,r.by)){def="me";mine[r.by]=(mine[r.by]||0)+1}
     else def=team.length?team[rr++%team.length]:"open";
     const set=(a.assign||{})[r.key];r.who=set&&(set==="me"||set==="before"||team.includes(set))?set:def;r.picked=!!set&&r.who===set});
   return rows;
@@ -6285,6 +6326,7 @@ function tripRows(a){
 function whoLabel(w){return w==="me"?editorName():w==="before"?"Before you leave":w==="open"?"Not assigned":w}
 function tripMineOn(a,P){return tripRows(a).filter(r=>r.P===P&&!r.done&&(r.who==="me"||r.who==="before")).length}
 function tripWorkDay(a,d){return tripRows(a).some(r=>!r.done&&r.who==="me"&&r.by===d)}
+function tripShown(){const a=editTrip();if(S.tripOpen!=null)return !!S.tripOpen;return !!a&&roleOf(a)==="edit"&&a.from<=addDays(today(),1)&&a.to>=today()}
 function tripPanel(){
   const a=editTrip();if(!a)return "";
   const rows=tripRows(a),team=tripTeam(a),lead=tripLead(),f=S.tripWho||"all";
@@ -6299,7 +6341,7 @@ function tripPanel(){
   const row=r=>{const v=r.v,p=r.k==="R"?slotPillar(r.P,r.tm):null;
     return `<div class="tp-row${r.done?" done":""}"><span class="tp-when"><b>${esc(fmtT(r.tm)||"No time")}</b><small>posts ${esc(niceW(r.P))}</small></span>
       <span class="tp-what">${v?`<b>${esc(v.title||"Untitled")}</b>${pillarTag(v)}${r.k==="C"?'<span class="tag">Carousel</span>':""}<small>${esc(v.status)}${v.shotDate?", shot "+esc(nice(v.shotDate)):""}</small>`:`<b class="tp-empty">Empty ${r.k==="C"?"carousel":"reel"} slot${p?" · "+esc(p):""}</b><small>Nothing scheduled yet. Reshuffle fills it.</small>`}</span>
-      <span class="tp-a">${r.done?`<span class="lockd sched">Edited ✓</span>`:viewOnly()?(v&&mayEdit(v.id)?statusSelect(v):`<span class="tp-whotxt">${esc(whoLabel(r.who))}</span>`):opt(r)}</span></div>`};
+      <span class="tp-a">${r.done?`<span class="lockd sched">Edited ✓</span>`:viewOnly()?`<span class="tp-whotxt">${esc(whoLabel(r.who))}</span>${v&&mayEdit(v.id)?statusSelect(v):""}`:opt(r)}</span></div>`};
   const days=Object.keys(groups).sort().map(g=>`<div class="tp-day"><h4>${g===leaveBy&&groups[g].some(r=>r.who==="before")?`Before you leave · by ${esc(niceW(g))}`:`Edit by ${esc(niceW(g))}`}<span>${groups[g].length}</span></h4>${groups[g].map(row).join("")}</div>`).join("");
   const m=a.mode||"before";
   return `<div class="tplan" id="tripPlan">
@@ -6307,15 +6349,31 @@ function tripPanel(){
       <button class="btn small ghost" data-act="tripCopy" title="Copy the list shown below">Copy list</button></div>
     <div class="tp-set"${viewOnly()?" hidden":""}>
       <label>Editing while away<select data-awc="mode" data-id="${a.id}">${[["before","I edit everything before I leave"],["remote","I edit from home"],["partial","I edit some each day, the team does the rest"],["team","The team edits"]].map(([k,l])=>`<option value="${k}"${k===m?" selected":""}>${l}</option>`).join("")}</select></label>
-      ${m==="partial"?`<label class="tp-n">Mine per day<input type="number" min="0" max="20" value="${+a.perDay||0}" data-awc="perDay" data-id="${a.id}"></label>`:""}
+      ${m==="partial"?`<label class="tp-n">Usually per day<input type="number" min="0" max="20" value="${+a.perDay||0}" data-awc="perDay" data-id="${a.id}"></label>`:""}
       <label class="tp-team">Team<input type="text" value="${esc(team.join(", "))}" placeholder="Names, separated by commas" data-tripteam="${a.id}" autocomplete="off"></label>
       ${Object.keys(a.assign||{}).length?`<button class="btn small ghost" data-act="tripReset" data-id="${a.id}" title="Forget the changes you made by hand and split evenly again">Split evenly again</button>`:""}
     </div>
+    ${m==="partial"?tripDays(a):""}
     ${!team.length&&m!=="before"&&m!=="remote"?`<p class="ovnote">Add your teammates’ names above and the posts are split between them.</p>`:""}
     <div class="tp-chips">${chips}</div>
     ${days||`<div class="empty"><b>Nothing here</b>${f==="all"?"No posts need editing during this trip.":"No posts for this filter."}</div>`}
   </div>`;
 }
+// how many Shibli edits on each day of the trip: some days 2, some days none. Everyone sees it; only Shibli changes it
+function tripDays(a){const ro=viewOnly(),P=a.perDays||{},out=[];
+  for(let d=a.from,g=0;d<=a.to&&g<62;d=addDays(d,1),g++){const n=tripPer(a,d),dt=new Date(d+"T00:00:00"),set=P[d]!=null&&P[d]!=="";
+    out.push(`<label class="tp-dn${n?"":" zero"}${set?" set":""}${d===today()?" now":""}" title="${esc(niceW(d))}"><small>${WD[dt.getDay()]}</small><span>${dt.getDate()} ${MON[dt.getMonth()]}</span>${ro?`<b>${n}</b>`:`<input type="number" min="0" max="20" inputmode="numeric" value="${n}" data-tripday="${d}" data-trip="${a.id}" aria-label="${esc(editorName())} edits on ${esc(niceW(d))}">`}</label>`)}
+  return `<div class="tp-days"><p class="tp-dl"><b>${esc(editorName())} edits each day</b><span>${ro?"Set by "+esc(editorName())+".":"Change any day. 0 means no editing that day; the team takes the rest."}</span></p><div class="tp-dgrid">${out.join("")}</div></div>`}
+document.addEventListener("change",e=>{const t=e.target;if(!t||!t.dataset||!t.dataset.tripday||viewOnly())return;const id=t.dataset.trip,d=t.dataset.tripday,n=Math.max(0,Math.min(20,Math.round(+t.value||0)));
+  S.settings.away=(S.settings.away||[]).map(x=>x.id===id?{...x,perDays:{...(x.perDays||{}),[d]:n}}:x);putSettings();render();toast(n?`${editorName()} edits ${n} on ${niceW(d)}`:`No editing by ${editorName()} on ${niceW(d)}`)},true);
+// today's and tomorrow's edits during the trip, on the Overview for everyone
+function tripTodayCard(){const a=editTrip();if(!a||roleOf(a)!=="edit"||(a.mode||"before")==="before")return "";const t=today();if(a.from>addDays(t,1)||a.to<t)return "";
+  const rows=tripRows(a).filter(r=>!r.done&&r.who!=="before");if(!rows.length)return "";
+  const nx=rows.map(r=>r.by).filter(d=>d>t).sort()[0];
+  const day=(L,lbl,d)=>{const by={};L.forEach(r=>{(by[r.who]=by[r.who]||[]).push(r)});
+    return `<div class="tt-day"><h4>${lbl}<span>${esc(niceW(d))}</span></h4>${L.length?Object.keys(by).map(w=>`<div class="tt-who"><b>${esc(whoLabel(w))}<em>${by[w].length}</em></b><ul>${by[w].map(r=>`<li>${r.v?esc(r.v.title||"Untitled"):`<span class="tt-empty">Empty ${r.k==="C"?"carousel":"reel"} slot</span>`}<small>${r.v?esc(r.v.status)+" · ":""}posts ${esc(niceW(r.P))}${r.tm?" "+esc(fmtT(r.tm)):""}</small></li>`).join("")}</ul></div>`).join(""):`<p class="sub">Nothing to edit.</p>`}</div>`};
+  const body=day(rows.filter(r=>r.by<=t),"Today",t)+(nx?day(rows.filter(r=>r.by===nx),nx===addDays(t,1)?"Tomorrow":"Next",nx):"");
+  return `<section class="panel ttc"><div class="phead"><h2>✈︎ Edits while ${esc(editorName())} is away</h2><div class="pactions"><button class="btn small ghost" data-act="tripGo">Full plan</button></div></div><div class="tt-grid">${body}</div></section>`}
 function tripListText(){const a=editTrip();if(!a)return "";const f=S.tripWho||"all",rows=tripRows(a).filter(r=>f==="all"?!r.done:f==="done"?r.done:(!r.done&&r.who===f));
   const by={};rows.forEach(r=>{const g=r.who==="before"?addDays(a.from,-1):r.by;(by[g]=by[g]||[]).push(r)});
   const head=`${a.label||"Time away"}: ${nice(a.from)} – ${nice(a.to)}${f!=="all"&&f!=="done"?` · ${whoLabel(f)}`:""}`;
@@ -6711,9 +6769,10 @@ function rvTimer(v,mini){if(!v||v.status!=="In review")return "";const t=reviewS
   return `<span class="rvtimer lv${rvLevel(ms)}${mini?" mini":""}" data-rvid="${v.id}" title="Waiting on ${esc(who)}${since?" since "+esc(since):""}${v.round>1?`, round ${v.round}`:""}">${RV_HG}${mini&&ms!=null?"":`<span class="rvw">${me?"Waiting on you":"Waiting on "+esc(who)}</span>`}${ms==null?"":`<b>${fmtWait(ms)}</b>`}</span>`}
 function editTimer(v){if(v.status!=="Editing")return "";const p=isPausedV(v),ms=editElapsed(v);
   const arcSvg=`<span class="et-arc"><svg viewBox="0 0 22 22" width="22" height="22" aria-hidden="true"><circle class="et-arc-bg" cx="11" cy="11" r="9"/><circle class="et-arc-fg" cx="11" cy="11" r="9"/></svg><i class="et-arc-dot"></i></span>`;
-  return `<span class="etimer${p?" paused":""}" data-id="${v.id}">${arcSvg}<b>${ms==null?"–":fmtClock(ms)}</b>${p?`<span style="font-size:11px;opacity:.7">paused</span>`:""}<button class="et-btn" data-act="${p?"resumeEdit":"pauseEdit"}" data-id="${v.id}" title="${p?"Resume":"Pause"}">${p?"▶":"⏸"}</button></span>`}
+  const by=v.editBy&&v.editBy!==S.me&&helperAcct(v.editBy)?`<em class="et-by">${esc(dispName(v.editBy))}</em>`:"";
+  return `<span class="etimer${p?" paused":""}" data-id="${v.id}">${arcSvg}${by}<b>${ms==null?"–":fmtClock(ms)}</b>${p?`<span style="font-size:11px;opacity:.7">paused</span>`:""}<button class="et-btn" data-act="${p?"resumeEdit":"pauseEdit"}" data-id="${v.id}" title="${p?"Resume":"Pause"}">${p?"▶":"⏸"}</button></span>`}
 function setStatusFlow(v,st){
-  if(st==="Editing"&&v.status!=="Editing"){const mine=o=>isMember()?mayEdit(o.id):!teamOwned().has(o.id);const others=vids().filter(o=>o.id!==v.id&&o.status==="Editing"&&!isPausedV(o)&&mine(o));if(others.length){others.forEach(o=>pauseVideo(o,true));setTimeout(()=>toast(`Paused the timer on “${others[0].title||"Untitled"}”${others.length>1?` and ${others.length-1} more`:""} while you work on this one`),600)}}
+  if(st==="Editing"&&v.status!=="Editing"){const mine=timerMine;const others=vids().filter(o=>o.id!==v.id&&o.status==="Editing"&&!isPausedV(o)&&mine(o));if(others.length){others.forEach(o=>pauseVideo(o,true));setTimeout(()=>toast(`Paused the timer on “${others[0].title||"Untitled"}”${others.length>1?` and ${others.length-1} more`:""} while you work on this one`),600)}}
   if(!isReviewer()&&["Ready","Scheduled","Approved","In review"].includes(v.status)&&["Editing","Shot","Pending"].includes(st)){askEditorReedit(v,st);return}
   const wantsDone=["Ready","In review","Edited"].includes(st);
   if(st==="Approved"){if(!isReviewer()){toast(`Only ${reviewerName()} can approve`);render();return}approveVideo(v);return}
@@ -6721,7 +6780,7 @@ function setStatusFlow(v,st){
   if(wantsDone&&isReviewer()&&v.status==="In review"){approveVideo(v);return}
   if(st==="Ready"&&(v.status==="Approved"||v.status==="Ready")){if(safeUrl(v.finalLink)){putVideo(withStatus(v,"Ready"));celebrate(v.id,"Ready")}else askLink(v.id);return}
   if(wantsDone&&v.status!=="Approved"&&v.status!=="Ready"&&v.status!=="Scheduled"&&v.status!=="Posted"){sendForReview(v);return}
-  putVideo(withStatus(v,st));celebrate(v.id,st);
+  putVideo(st==="Editing"?{...withStatus(v,st),editBy:S.me||""}:withStatus(v,st));celebrate(v.id,st);
 }
 function bulkStatus(v,st){
   if(["Ready","In review","Edited"].includes(st)&&!["Approved","Ready","Posted"].includes(v.status))return {...withStatus(v,"In review"),round:nextRound(v),submittedAt:Date.now(),editedBy:S.me||""};
@@ -7136,9 +7195,9 @@ document.addEventListener("click",async e=>{
     b.disabled=true;const st=$("#impStep");try{const n=await importFromSheet(u,p,m=>{if(st)st.textContent=m});st.textContent=`Done: ${n} items copied. Reloading…`;toast("Import finished");setTimeout(()=>location.reload(),1500)}
     catch(err){b.disabled=false;if(st)st.textContent="";toast(String(err&&err.message||"Import failed").replace(/^Error: /,""))}}
   else if(act==="pauseEdit"){const v=S.videos[b.dataset.id];if(v){pauseVideo(v);toast("Timer paused")}}
-  else if(act==="resumeEdit"){const v=S.videos[b.dataset.id];if(v){vids().filter(o=>o.id!==v.id&&o.status==="Editing").forEach(o=>pauseVideo(o,true));resumeVideo(v);toast("Timer running again")}}
-  else if(act==="pauseAll"){vids().filter(v=>v.status==="Editing").forEach(v=>pauseVideo(v,true));render();toast("Editing paused. Enjoy your break")}
-  else if(act==="resumeAll"){const ed=vids().filter(v=>v.status==="Editing").sort((a,b)=>(editSession(b)||0)-(editSession(a)||0));if(ed[0])resumeVideo(ed[0],true);render();toast(ed[0]?`Resumed “${ed[0].title||"Untitled"}”`:"Nothing to resume")}
+  else if(act==="resumeEdit"){const v=S.videos[b.dataset.id];if(v){vids().filter(o=>o.id!==v.id&&o.status==="Editing"&&timerMine(o)).forEach(o=>pauseVideo(o,true));resumeVideo(v);toast("Timer running again")}}
+  else if(act==="pauseAll"){vids().filter(v=>v.status==="Editing"&&timerMine(v)).forEach(v=>pauseVideo(v,true));render();toast("Editing paused. Enjoy your break")}
+  else if(act==="resumeAll"){const ed=vids().filter(v=>v.status==="Editing"&&timerMine(v)).sort((a,b)=>(editSession(b)||0)-(editSession(a)||0));if(ed[0])resumeVideo(ed[0],true);render();toast(ed[0]?`Resumed “${ed[0].title||"Untitled"}”`:"Nothing to resume")}
   else if(act==="ovGo"){const g=b.dataset.go;if(g==="cov"){goTab("schedule");return}
     const st=g==="ready"?["Ready"]:g==="edit"?[...EDIT_POOL]:STATUSES.map(s=>s.k).filter(k=>k!=="Posted"&&k!=="Not started");
     S.filter={q:"",st,date:"all",fmt:"all",sched:"any",noLink:false,noPil:false,period:"all"};goTab("videos");
@@ -7238,7 +7297,8 @@ document.addEventListener("click",async e=>{
   else if(act==="editShoot"){if(e.target.closest(".iconbtn[data-act=viewScript],select"))return;openShoot(b.dataset.id)}
   else if(act==="viewScript"){e.stopPropagation();viewScript(b.dataset.id)}
   else if(act==="logShoot"){logShootVideos(b.dataset.id)}
-  else if(act==="tripOpen"){S.tripOpen=!S.tripOpen;render();if(S.tripOpen)setTimeout(()=>{const el=$("#tripPlan");if(el)el.scrollIntoView({behavior:"smooth",block:"start"})},60)}
+  else if(act==="tripGo"){S.tab="order";S.tripOpen=true;render();setTimeout(()=>{const el=$("#tripPlan");if(el)el.scrollIntoView({behavior:"smooth",block:"start"})},80);return}
+  else if(act==="tripOpen"){S.tripOpen=!tripShown();render();if(S.tripOpen)setTimeout(()=>{const el=$("#tripPlan");if(el)el.scrollIntoView({behavior:"smooth",block:"start"})},60)}
   else if(act==="tripWho"){S.tripWho=b.dataset.w;render()}
   else if(act==="tripReset"){S.settings.away=(S.settings.away||[]).map(x=>x.id===b.dataset.id?{...x,assign:{}}:x);putSettings();render();toast("Split evenly again")}
   else if(act==="tripCopy"){const txt=tripListText();try{await navigator.clipboard.writeText(txt);toast("List copied. Paste it in WhatsApp or email")}catch(_){copyText(txt)}}
@@ -7431,7 +7491,7 @@ async function startSession(t,user){
   const hasCopy=!!(cached&&cached.rows&&cached.rows.length);
   if(!loaded&&!hasCopy){document.body.classList.add("fbloading");clearTimeout(window.__slowT);window.__slowT=setTimeout(()=>{const n=document.getElementById("fbLoadNote");if(n)n.textContent="Still loading… a slow connection. It will finish on its own."},9000)}
   token=t;$("#login").hidden=true;S.me=String(user||"").toLowerCase();updateMe();
-  if(isMember()&&!S.memberStart){S.memberStart=1;S.tab="order";S.tripOpen=true;setTimeout(()=>{const nm=memberName();if(nm){S.tripWho=nm;render()}},1500)}$("#sync").textContent="Loading…";
+  if(helperAcct()&&!S.memberStart){S.memberStart=1;S.tab="order";S.tripOpen=true;setTimeout(()=>{const nm=memberName();if(nm){S.tripWho=nm;render()}},1500)}$("#sync").textContent="Loading…";
   S.me=String(user||"").toLowerCase();
 
   const fresh=cached&&cached.user===S.me&&cached.since&&Date.now()-(cached.savedAt||0)<5*86400e3;
