@@ -3555,11 +3555,15 @@ function folderChip(s){
 function carMix(c){const vids=(c&&c.items||[]).filter(x=>/\.(mp4|mov|m4v|webm|avi|mkv)$/i.test(x.name||"")).length,n=(c&&c.count)||0,ph=Math.max(0,n-vids);
   return [ph?`${ph} ${ph===1?"photo":"photos"}`:"",vids?`${vids} ${vids===1?"video":"videos"}`:""].filter(Boolean).join(" + ")||`${n} files`}
 function carView(v,cls){return isCar(v)&&v.car&&v.car.folderId?`<button type="button" class="${cls||"openlink"} car-view" data-act="viewCar" data-id="${v.id}" title="See ${esc(carMix(v.car))}">View ${esc(carMix(v.car))}</button>`:""}
+// with SharePoint uploads, links aren't typed by hand any more: the final opens, or the draft until the final is saved
+function draftBtn(v,cls,lbl){return !isCar(v)&&v.draft&&spOn()?`<button type="button" class="${cls||"openlink"}" data-act="viewDraft" data-id="${v.id}" title="Watch the uploaded draft${v.draft.round>1?", round "+v.draft.round:""}">${lbl||"Open draft"}</button>`:""}
 function linkChip(v){
   const u=safeUrl(v.finalLink),ed=(S.editLinks||{})[v.id];
   const lbl=isCar(v)?"Open post":"Open video";
-  if(u&&!ed)return `<span class="chipset"><a class="gchip play" href="${esc(u)}" target="_blank" rel="noopener noreferrer" title="${esc(u)}">${ICO_P}<span>${lbl}</span></a><button class="gchip ic" data-act="editLink" data-id="${v.id}" title="Change link">${ICO_E}</button></span>`;
-  return `${!ed&&isCar(v)&&v.car?`<span class="chipset">${carView(v,"gchip play")}</span>`:""}<input type="text" class="link-in" value="${esc(v.finalLink||"")}" data-f="finalLink" data-id="${v.id}" placeholder="Paste link" aria-label="Final video link"${ed?" autofocus":""}>`;
+  if(u)return `<span class="chipset"><a class="gchip play" href="${esc(u)}" target="_blank" rel="noopener noreferrer" title="${esc(u)}">${ICO_P}<span>${lbl}</span></a></span>`;
+  if(isCar(v)&&v.car)return `<span class="chipset">${carView(v,"gchip play")}</span>`;
+  if(!isCar(v)&&v.draft&&spOn())return `<span class="chipset">${draftBtn(v,"gchip play",`${ICO_P}<span>Open draft</span>`)}</span>`;
+  return "";
 }
 function folderCell(s){
   if(!s)return `<span class="folder"><code>Add a shot date to get the folder</code></span>`;
@@ -3786,7 +3790,7 @@ function mayWrite(id){return isEdAcct()||(isMember()&&myVideos().has(id))}
 function timerMine(o){if(isMember())return myVideos().has(o.id);if(isEdAcct())return o.editBy===S.me||myVideos().has(o.id);
   return !teamOwned().has(o.id)&&!(o.editBy&&o.editBy!==S.me&&helperAcct(o.editBy))}
 let voT=0;function voNote(){if(Date.now()-voT<2500)return;voT=Date.now();toast(isEdAcct()?"You can change the video status on Edit order and Posting schedule":isMember()?"You can change the status of the videos assigned to you":"View only. Ask Shibli or Zain to make changes")}
-const VIEW_OK=new Set(["tripGo","tripOpen","tripWho","tripCopy","copy","days","dialBack","dialTry","dialType","dlBackup","fclear","ffmt","fnolink","fnopil","fsched","fst","goShoots","goTab","grpToggle","histView","hrange","ideaArch","ideaCopy","ideaPil","ideaType","mExport","mOut","mday","mnav","more","newWin","openCmd","osnOn","osnTest","ovGo","ovMode","ovStatus","plByDay","plMode","playWrapped","printSum","rowMore","schedToday","shView","sumMode","sview","testAlert","vaultLock","vaultOpen","vcopy","viewScript","vshow","clearSel","chpw","freshLoad"]);
+const VIEW_OK=new Set(["viewDraft","viewCar","tripGo","tripOpen","tripWho","tripCopy","copy","days","dialBack","dialTry","dialType","dlBackup","fclear","ffmt","fnolink","fnopil","fsched","fst","goShoots","goTab","grpToggle","histView","hrange","ideaArch","ideaCopy","ideaPil","ideaType","mExport","mOut","mday","mnav","more","newWin","openCmd","osnOn","osnTest","ovGo","ovMode","ovStatus","plByDay","plMode","playWrapped","printSum","rowMore","schedToday","shView","sumMode","sview","testAlert","vaultLock","vaultOpen","vcopy","viewScript","vshow","clearSel","chpw","freshLoad"]);
 const VIEW_FIELDS=["live","plr","sumr","ovr","opt"];
 // Waleed and Hamza also use PB Downloader and the editing timer
 const HELPER_OK=new Set(["dlAdd","dlDo","dlQ","dlCk","dlClear","dlRetry","dlVideo","pauseEdit","resumeEdit","pauseAll","resumeAll","upDraft"]);
@@ -4490,8 +4494,8 @@ function vSchedule(){
     const editing=(S.editLinks||{})[v.id];
     const tags=(isReady&&!hasLink?`<span class="tag warn">No final link</span>`:"")+(v.status!=="Ready"&&v.status!=="Scheduled"&&v.status!=="Posted"?`<span class="tag">Not ready</span>`:"")+(extraTags||"");
     const linkArea=hasLink?
-      `${openLink(v,"Open")}${dlBtn(v)}<button class="openlink edit-lnk" data-act="openLinkDlg" data-id="${v.id}" title="Change link">Edit link</button>`:
-      `${carView(v)}<button class="openlink add-lnk" data-act="openLinkDlg" data-id="${v.id}">+ Add link</button>`;
+      `${openLink(v,"Open")}${dlBtn(v)}`:
+      (isCar(v)&&v.car&&v.car.folderId?carView(v):draftBtn(v));
     const sl=d?`${d}|${tm}|${k}`:"";
     return `<div class="slot filled${k==="C"?" car":""}"${d?` data-slot="${sl}"`:""} data-drag-id="${v.id}"><div class="grip" title="Drag to move">⋮⋮</div><div class="tm">${label}${k==="C"?`<span class="kind">Carousel</span>`:(d&&slotPillar(d,tm))?`<span class="kind pk" style="--pc:${pillarColor(slotPillar(d,tm))}">${esc(slotPillar(d,tm))}</span>`:""}</div><div class="ttl"><b>${esc(v.title||"Untitled")}</b>${pillarTag(v)}${linkArea}<small>${v.shotDate?"Shot "+esc(nice(v.shotDate)):"No shot date"}${tags}</small></div><div>${statusSelect(v)}</div><div>${lockCtl(v)}</div><div class="mv2">${d?`<button data-act="slotMove" data-dir="-1" data-slot="${sl}" aria-label="Move up">↑</button><button data-act="slotMove" data-dir="1" data-slot="${sl}" aria-label="Move down">↓</button>`:""}</div><div><button class="xbtn" data-act="unassign" data-id="${v.id}" aria-label="Remove from schedule" title="Remove">×</button></div></div>`;
   };
@@ -4699,7 +4703,7 @@ function vHistory(){
   const groups={};L.forEach(v=>{const k=v.postDate.slice(0,7);(groups[k]=groups[k]||[]).push(v)});
   const row=v=>`<div class="hrow" data-k="h-${v.id}"><div class="hdate"><b>${+v.postDate.slice(8)}</b><span>${WD[new Date(v.postDate+"T00:00:00").getDay()]}</span></div>
       <div class="etitle"><span class="dot" style="background:${hue(v.shotDate)}"></span><div><b>${esc(v.title||"Untitled")}</b><small>${v.postTime?fmtT(v.postTime):"No time"}, ${esc(v.format||"Reel")}${v.shotDate?`, shot ${esc(nice(v.shotDate))}`:""}</small></div></div>
-      <div class="hrow-link">${openLink(v,isCar(v)?"Open post":"Open video")?`${openLink(v,isCar(v)?"Open post":"Open video")}${dlBtn(v)}<button class="iconbtn hlink-edit" data-act="editLink" data-id="${v.id}" title="Change link" style="margin-left:6px">Edit</button>`:`<span class="hlink-add"><input type="text" class="link-in" value="${esc(v.finalLink||"")}" data-f="finalLink" data-id="${v.id}" placeholder="Paste link…" aria-label="Final video link"><button class="iconbtn" data-act="savehlink" data-id="${v.id}">Save</button></span>`}</div></div>`;
+      <div class="hrow-link">${openLink(v,isCar(v)?"Open post":"Open video")?`${openLink(v,isCar(v)?"Open post":"Open video")}${dlBtn(v)}`:(carView(v)||draftBtn(v))}</div></div>`;
   const body=Object.keys(groups).sort().reverse().map(k=>{const [y,m]=k.split("-").map(Number);
     const gc=groups[k].filter(isCar).length,gr=groups[k].length-gc;
     return `<div class="card"><header><h3>${MONL[m-1]} ${y}</h3><span class="count">${groups[k].length}</span><span class="hgsplit">${gr} ${gr===1?"reel":"reels"} · ${gc} ${gc===1?"carousel":"carousels"}</span></header>${groups[k].map(row).join("")}</div>`}).join("");
@@ -7225,6 +7229,7 @@ document.addEventListener("click",async e=>{
   else if(act==="editLink"){S.editLinks=S.editLinks||{};S.editLinks[b.dataset.id]=true;render();setTimeout(()=>{const i=document.querySelector(`.link-in[data-id="${b.dataset.id}"]`);if(i){i.focus();i.select()}},30)}
   else if(act==="cancelEditLink"){if(S.editLinks)delete S.editLinks[b.dataset.id];render()}
   else if(act==="viewCar"){openGallery(b.dataset.id)}
+  else if(act==="viewDraft"){openReview(b.dataset.id)}
   else if(act==="openLinkDlg"){
     // reuses the same "Add the final video link" dialog as the approval prompt
     const id=b.dataset.id,v=S.videos[id],d=$("#linkDlg"),box=$("#linkBox");if(!d||!v||!box)return;
