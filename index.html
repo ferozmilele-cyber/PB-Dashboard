@@ -2236,7 +2236,9 @@ header.top{animation:headerPop .75s var(--spring) both}
 
 /* view-only (manager) */
 body.viewonly [data-act="openAdd"],body.viewonly .shuffle,body.viewonly [data-act="reshuffle"],body.viewonly [data-act="newShoot"],body.viewonly .addslot,
-body.viewonly .id-add,body.viewonly .away-form,body.viewonly [data-act="backupNow"],body.viewonly .imp,body.viewonly .grip,body.viewonly .mv2,body.viewonly td.c-del,body.viewonly .xbtn{display:none!important}
+body.viewonly .id-add,body.viewonly .away-form,body.viewonly [data-act="backupNow"],body.viewonly .imp,body.viewonly .xbtn{display:none!important}
+/* view-only accounts: keep the empty spaces so rows line up exactly like everyone else's */
+body.viewonly .slot .grip,body.viewonly td.c-del,body.viewonly .mv2{visibility:hidden!important}body.viewonly .erow .grip .g{display:none!important}body.viewonly .slot.filled,body.viewonly .erow{cursor:default!important}
 body.viewonly #main input:not([data-live]):not([data-plr]):not([data-sumr]):not([data-ovr]):not([type=search]),body.viewonly #main textarea{pointer-events:none;background:transparent!important;border-color:transparent!important}
 body.viewonly .stsel{pointer-events:none}
 body.viewonly header.top h1::after{content:"View only";display:inline-block;margin-left:12px;vertical-align:middle;padding:4px 12px;border-radius:999px;background:rgba(12,14,8,.08);font-size:13px;font-weight:700;letter-spacing:0;color:#5f6459}
@@ -2283,11 +2285,31 @@ body.fbloading #fbLoading{display:grid}
 body.viewonly .stsel.mine{pointer-events:auto;box-shadow:0 0 0 2px rgba(170,255,0,.55)}
 body.viewonly.member header.top h1::after{content:"Member"}
 body.viewonly.editor header.top h1::after{content:"Editor"}
+.mv2:empty{pointer-events:none}
+@media (min-width:761px){
+  .slot{grid-template-columns:22px 82px minmax(200px,1fr) auto 76px 0 32px!important}
+  .erow{grid-template-columns:28px minmax(200px,1fr) auto 150px 0!important}
+}
+.stc{display:flex;align-items:center;justify-content:flex-end;gap:8px;min-width:0}.stc .stsel{width:150px;flex:none}
+.stl{display:inline-flex;align-items:center;gap:6px}.stl .openlink{margin:0}
+.slot .tm .kind.pk.none{--pc:#9aa0a6;opacity:.7}
+.ttl .asg-tag,.etitle .asg-tag,td.title .asg-tag{margin-left:6px;vertical-align:1px}
+td.title .asg-tag{display:inline-block;margin:4px 0 0}
+@media (hover:none){.slot.filled,.erow{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}}
+.tw-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.tw-col{padding:14px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.7)}
+.tw-h{display:flex;align-items:center;gap:10px;margin-bottom:10px}.tw-h b{font-size:15px}.tw-h span{margin-left:auto}
+.tw-h em{font-style:normal;font-size:11.5px;font-weight:800;padding:3px 10px;border-radius:999px;background:rgba(12,14,8,.06);color:var(--muted)}.tw-h em.on{background:var(--lime);color:#0B0B0C}
+.tw-n{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}.tw-n span{display:grid;justify-items:center;padding:6px 4px;border-radius:12px;background:rgba(12,14,8,.04);font-size:11.5px;color:var(--muted)}.tw-n b{font-size:18px;color:var(--ink)}
+.tw-v{display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px solid var(--line)}.tw-v>i{width:8px;height:8px;border-radius:50%;flex:none}.tw-v>span{min-width:0;flex:1}
+.tw-v b{display:block;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tw-v small{font-size:12px;color:var(--muted)}.tw-v .etimer{flex:none}
+.tw-more{margin:6px 0 0;font-size:12px;color:var(--muted)}
 .est{display:grid;gap:6px;justify-items:stretch}
 .gsel.asg{height:30px!important;min-height:0!important;font-size:12.5px!important;padding:0 10px!important;border-radius:999px!important;font-weight:700!important}
 .gsel.asg.set{background:rgba(139,114,207,.16)!important;border-color:rgba(139,114,207,.45)!important;color:#5a45a8!important}
-.tag.asg-tag{background:rgba(139,114,207,.16);color:#5a45a8}.tag.asg-tag.me{background:var(--lime);color:#0B0B0C}
-.est .asg-tag{justify-self:start}
+.tag.asg-tag{background:rgba(139,114,207,.16)!important;color:#5a45a8!important;border:0!important;font-weight:700}.tag.asg-tag.me{background:var(--lime)!important;color:#0B0B0C!important}
+body.viewonly [data-act="addRaw"]{display:none!important}
+.est .asg-tag{justify-self:start;padding:3px 10px!important;font-size:11.5px!important;line-height:1.3!important;min-height:0!important;height:auto!important;border-radius:999px!important;box-shadow:none!important}
 .myedits{margin:0 0 18px;padding:16px 18px;border-radius:22px;border:1px solid rgba(123,209,0,.45);background:rgba(170,255,0,.08)}
 .me-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px;margin-bottom:10px}.me-h b{font-size:17px}.me-h span{color:var(--muted);font-size:13px}
 .me-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 14px;align-items:center;padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.75);margin-bottom:6px}
@@ -2922,6 +2944,10 @@ dialog.ig-dlg{width:min(860px,96vw)}
 :root[data-theme="dark"] .tag.asg-tag.me{background:var(--lime)!important;color:#0B0B0C!important}
 :root[data-theme="dark"] .myedits{background:rgba(170,255,0,.05)!important;border-color:rgba(170,255,0,.3)!important}
 :root[data-theme="dark"] .me-row{background:rgba(255,255,255,.03)!important;border-color:var(--line)!important}
+:root[data-theme="dark"] .tw-col{background:rgba(255,255,255,.03)!important;border-color:var(--line)!important}
+:root[data-theme="dark"] .tw-n span{background:rgba(255,255,255,.05)!important}
+:root[data-theme="dark"] .tw-h em{background:rgba(255,255,255,.08)!important}
+:root[data-theme="dark"] .tw-h em.on{background:var(--lime)!important;color:#0B0B0C!important}
 
 /* ================================================================
    iPHONE — minimal layer (v82)
@@ -3112,6 +3138,14 @@ dialog.ig-dlg{width:min(860px,96vw)}
   #main .hstats .hsplit s{display:none}
   #main .hstats .hsplit i{font-size:14px;margin-right:3px}
   #main .hgsplit{display:block;margin:2px 0 0;font-size:11.5px}
+}
+
+/* v124: links sit beside the status on phones too */
+@media (max-width:760px){
+  #main .sday .slot .stc{justify-content:flex-start;flex-wrap:wrap;gap:6px}
+  #main .sday .slot .stc .stsel{flex:1 1 140px;width:auto;min-width:0}
+  #main .sday .slot .stl .openlink{font-size:11px;padding:3px 9px}
+  .tw-grid{grid-template-columns:1fr}
 }
 
 </style>
@@ -3476,7 +3510,8 @@ const PCOL=["#5B7FD1","#D07A52","#3E9C7A","#8B72CF","#C39A2E","#3C98AE"];
 function pillars(){return (S.settings.pillars||[]).filter(Boolean)}
 function pillarOrder(){return (S.settings.pillarOrder||[]).filter(p=>pillars().includes(p))}
 function pillarOn(d){return pillarOrder().length>0&&d>=(S.settings.pillarFrom||"2000-01-01")}
-function slotPillar(d,tm){if(!pillarOn(d))return null;const i=slotsFor(d).indexOf(tm);if(i<0)return null;const O=pillarOrder();return O[i%O.length]}
+function slotPillar(d,tm){return null;   // v124: pillars belong to videos; slots take any pillar
+  if(!pillarOn(d))return null;const i=slotsFor(d).indexOf(tm);if(i<0)return null;const O=pillarOrder();return O[i%O.length]}
 // a reel can only go in a slot of its own pillar, unless "Any pillar in any slot" is on
 function pillarBlock(v,d,tm){if(!v||!isReel(v)||S.settings.pillarForce||!v.pillar)return null;const req=slotPillar(d,tm);return req&&v.pillar!==req?req:null}
 function pillarBlockMsg(v,req){return `That’s a ${req} slot and “${v.title||"Untitled"}” is ${v.pillar}. Turn on “Any pillar in any slot” to place it anyway.`}
@@ -3800,6 +3835,7 @@ function nameOf(u){const n=dispName(u)||u;return n.charAt(0).toUpperCase()+n.sli
 function asgCtl(v){const a=asgOf(v);
   if(canAssign())return `<select class="asg${a?" set":""}" data-asg="${v.id}" aria-label="Who edits this">${editorsList().map(u=>`<option value="${u===ADMIN?"":esc(u)}"${(u===ADMIN?!a:a===u)?" selected":""}>${u===ADMIN?"✎ "+esc(nameOf(u)):"→ "+esc(nameOf(u))}</option>`).join("")}</select>`;
   return a?`<span class="tag asg-tag${a===S.me?" me":""}">${a===S.me?"Assigned to you":"→ "+esc(nameOf(a))}</span>`:""}
+function asgTag(v){const a=asgOf(v);return a?`<span class="tag asg-tag${a===S.me?" me":""}" title="Edited by ${esc(nameOf(a))}">${a===S.me?"You":esc(nameOf(a))}</span>`:""}
 function roleName(u){return u===ADMIN?"Admin":reviewers().includes(u)?"Reviewer":isEdAcct(u)?"Editor":isMember(u)?"Member":VIEW_ONLY.includes(u)?"View only":"Member"}
 // the name this member goes by in the Away plan team list
 function memberName(){const T=new Set();awayList().forEach(a=>tripTeam(a).forEach(n=>T.add(n)));const me=String(S.me||"").toLowerCase(),dn=String(dispName(S.me)||"").toLowerCase();
@@ -3953,10 +3989,10 @@ function planKind(isK,slotsF){
     const onDay=fixed.filter(v=>v.postDate===d);
     const dayShots=new Set(onDay.filter(v=>v.shotDate).map(v=>v.shotDate));
     const dayCast=new Set();onDay.forEach(v=>castOf(v).forEach(n=>dayCast.add(n)));
-    let prevCast=new Set();
+    let prevCast=new Set(),prevP=null;const dayP={};onDay.forEach(v=>{if(v.pillar)dayP[v.pillar]=(dayP[v.pillar]||0)+1});
     for(const tm of slotsF(d)){
       const lockedHere=onDay.filter(v=>v.postTime===tm);
-      if(lockedHere.length){prev=lockedHere[0].shotDate||null;prevCast=new Set(castOf(lockedHere[0]));continue}
+      if(lockedHere.length){prev=lockedHere[0].shotDate||null;prevCast=new Set(castOf(lockedHere[0]));prevP=lockedHere[0].pillar||null;continue}
       if(!future(d,tm))continue;
       if(!cands.length)break;
       const req=reelKind?slotPillar(d,tm):null;
@@ -3966,13 +4002,14 @@ function planKind(isK,slotsF){
       // lowest score wins: the same person twice in a day costs most, then readiness, then back-to-back repeats
       const demand={};cands.forEach(c=>castOf(c).forEach(n=>{demand[n]=(demand[n]||0)+1}));
       const need=v=>Math.min(6,Math.max(0,...castOf(v).filter(n=>!dayCast.has(n)).map(n=>demand[n]||0)));
-      const score=v=>hits(v,dayCast)*10+(TIER[v.status]||0)*3+(v.shotDate&&v.shotDate===prev?3:0)+hits(v,prevCast)*2-need(v)*1.2;
+      const mix=v=>reelKind&&v.pillar?((v.pillar===prevP?4:0)+(dayP[v.pillar]||0)*1.5):0;   // mix the pillars: no back-to-back repeats, both pillars each day
+      const score=v=>hits(v,dayCast)*10+(TIER[v.status]||0)*3+(v.shotDate&&v.shotDate===prev?3:0)+hits(v,prevCast)*2-need(v)*1.2+mix(v);
       const pick=test=>{let best=-1,bs=1e9;cands.forEach((v,idx)=>{if(!test(v))return;const s=score(v)+idx*.001;if(s<bs){bs=s;best=idx}});return best};
       let k=pick(ok);
       if(k<0&&S.settings.allowSame)k=pick(v=>pm(v)&&(!v.shotDate||v.shotDate!==prev));
       if(k<0){prev=null;prevCast=new Set();continue}
       const v=cands.splice(k,1)[0];
-      target[v.id]={d,tm};if(v.shotDate)dayShots.add(v.shotDate);prev=v.shotDate||null;
+      target[v.id]={d,tm};if(v.shotDate)dayShots.add(v.shotDate);prev=v.shotDate||null;prevP=v.pillar||null;if(v.pillar)dayP[v.pillar]=(dayP[v.pillar]||0)+1;
       castOf(v).forEach(n=>dayCast.add(n));prevCast=new Set(castOf(v));
     }
   }
@@ -4152,7 +4189,11 @@ document.addEventListener("pointerdown",e=>{
   if(e.button!==0)return;
   const row=e.target.closest&&(e.target.closest(".sday .slot[data-drag-id]")||e.target.closest(".eday .erow[data-fid]"));if(!row)return;
   if(e.target.closest("select,button,a,input"))return;
-  if(e.pointerType!=="mouse"&&!e.target.closest(".grip"))return;
+  if(e.pointerType!=="mouse"&&!e.target.closest(".grip")){   // phone: press and hold, then drag
+    clearTimeout(LP.t);const x0=e.clientX,y0=e.clientY;LP.x=x0;LP.y=y0;LP.row=row;
+    LP.t=setTimeout(()=>{if(!LP.row)return;const r=row.getBoundingClientRect(),mode=row.classList.contains("erow")?"order":"slot";
+      Object.assign(DR,{row,mode,id:mode==="order"?row.dataset.fid:row.dataset.dragId,sx:x0,sy:y0,ox:x0-r.left,oy:y0-r.top,rect:r,active:false,target:null,raf:0,lp:true,y:y0});   // y set now, so holding still never auto-scrolls
+      startDrag();try{navigator.vibrate&&navigator.vibrate(15)}catch(_){}LP.row=null},420);return}
   const r=row.getBoundingClientRect(),mode=row.classList.contains("erow")?"order":"slot";
   Object.assign(DR,{row,mode,id:mode==="order"?row.dataset.fid:row.dataset.dragId,sx:e.clientX,sy:e.clientY,ox:e.clientX-r.left,oy:e.clientY-r.top,rect:r,active:false,target:null,raf:0});
   if(e.pointerType==="mouse")e.preventDefault();
@@ -4175,21 +4216,32 @@ function startDrag(){
     if(y<edge)window.scrollBy(0,-Math.ceil((edge-y)/6));else if(y>innerHeight-edge)window.scrollBy(0,Math.ceil((y-innerHeight+edge)/6));
     DR.raf=requestAnimationFrame(tick)};DR.raf=requestAnimationFrame(tick);
 }
+const LP={t:0,row:null,x:0,y:0};
+function lpCancel(){clearTimeout(LP.t);LP.row=null}
 document.addEventListener("pointermove",e=>{
+  if(LP.row&&Math.hypot(e.clientX-LP.x,e.clientY-LP.y)>10)lpCancel();
   if(!DR.row)return;
+  if(DR.lp&&e.pointerType!=="mouse")return;   // touch drags are moved by touchmove below
   if(!DR.active){if(Math.hypot(e.clientX-DR.sx,e.clientY-DR.sy)<6)return;startDrag()}
-  e.preventDefault();DR.y=e.clientY;
-  DR.bubble.style.transform=`translate(${e.clientX-DR.ox-DR.rect.left}px,${e.clientY-DR.oy-DR.rect.top}px)`;
-  const el=document.elementFromPoint(e.clientX,e.clientY);
+  e.preventDefault();dragTo(e.clientX,e.clientY)},{passive:false});
+document.addEventListener("touchmove",e=>{if(LP.row){const t=e.touches[0];if(t&&Math.hypot(t.clientX-LP.x,t.clientY-LP.y)>10)lpCancel()}
+  if(!DR.active||!DR.lp)return;e.preventDefault();const t=e.touches[0];if(t)dragTo(t.clientX,t.clientY)},{passive:false});
+document.addEventListener("touchend",()=>{lpCancel();if(DR.lp&&DR.active)endDrag(false)});
+document.addEventListener("touchcancel",()=>{lpCancel();if(DR.lp&&DR.active)endDrag(true)});
+document.addEventListener("contextmenu",e=>{if(DR.lp||(LP.row&&e.target.closest&&e.target.closest(".slot,.erow")))e.preventDefault()});
+function dragTo(cx,cy){
+  DR.y=cy;
+  DR.bubble.style.transform=`translate(${cx-DR.ox-DR.rect.left}px,${cy-DR.oy-DR.rect.top}px)`;
+  const el=document.elementFromPoint(cx,cy);
   if(DR.mode==="order"){
     const s=el&&el.closest(".eday .erow[data-fid]");const t=s&&s!==DR.row?s:null;
-    const after=t?e.clientY>t.getBoundingClientRect().top+t.offsetHeight/2:false;
+    const after=t?cy>t.getBoundingClientRect().top+t.offsetHeight/2:false;
     if(t!==DR.target||after!==DR.after){if(DR.target)DR.target.classList.remove("drop-before","drop-after");DR.target=t;DR.after=after;if(t)t.classList.add(after?"drop-after":"drop-before")}
     return;
   }
   const s=el&&el.closest(".sday .slot[data-slot]");
   if(s!==DR.target){if(DR.target)DR.target.classList.remove("drop-target");DR.target=s&&s!==DR.row?s:null;if(DR.target)DR.target.classList.add("drop-target")}
-},{passive:false});
+}
 function endDrag(cancel){
   if(!DR.row)return;
   const {active,bubble,row,target,id,mode,after,off}=DR;cancelAnimationFrame(DR.raf);
@@ -4212,8 +4264,8 @@ function endDrag(cancel){
   if(cancel||!target){flip({},id,lift);return}
   const before=rowRects();swapInto(id,target.dataset.slot);flip(before,id,lift);
 }
-document.addEventListener("pointerup",()=>endDrag(false));
-document.addEventListener("pointercancel",()=>endDrag(true));
+document.addEventListener("pointerup",e=>{lpCancel();if(DR.lp&&e.pointerType!=="mouse")return;endDrag(false)});
+document.addEventListener("pointercancel",()=>{lpCancel();if(DR.lp)return;endDrag(true)});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&DR.active)endDrag(true)});
 
 /* ---------- views ---------- */
@@ -4292,9 +4344,12 @@ function pillarRange(){
 function pillarStats(){
   const {from,to}=pillarRange();const t=today(),hm=nowHM();const P=pillars();const by={};P.forEach(p=>by[p]={p,need:0,filled:0,hand:0,free:0});const days=[];
   const reels=vids().filter(isReel),live=v=>v.status!=="Posted"&&v.status!=="Not started";
-  for(let d=from>t?from:t,g=0;d<=to&&g<400;d=addDays(d,1),g++){if(!pillarOn(d))continue;const day={d,open:{},need:0};
-    slotsFor(d).forEach(tm=>{if(d===t&&tm<=hm)return;const p=slotPillar(d,tm),r=by[p];if(!r)return;r.need++;day.need++;
-      if(reels.some(x=>x.postDate===d&&x.postTime===tm&&x.pillar===p))r.filled++;else day.open[p]=(day.open[p]||0)+1});
+  // no fixed pillar per time: open reel slots are shared out evenly between the pillars, so the mix stays balanced
+  let rot=0;
+  for(let d=from>t?from:t,g=0;d<=to&&g<400;d=addDays(d,1),g++){const day={d,open:{},need:0};
+    slotsFor(d).forEach(tm=>{if(d===t&&tm<=hm)return;const x=reels.find(x=>x.postDate===d&&x.postTime===tm);
+      if(x&&by[x.pillar]){by[x.pillar].need++;by[x.pillar].filled++;day.need++;return}
+      if(!P.length)return;const p=P[rot++%P.length];by[p].need++;day.need++;day.open.Reel=(day.open.Reel||0)+1});
     if(day.need)days.push(day)}
   reels.filter(live).forEach(v=>{const r=by[v.pillar];if(!r)return;r.hand++;if(!v.postDate)r.free++});
   const rows=P.map(p=>{const r=by[p];return {...r,shoot:Math.max(0,r.need-r.filled-r.free)}});
@@ -4350,7 +4405,7 @@ function vOverview(){
   const noScript=upcomingShoots().filter(s=>!S.scripts[s.id]&&!s.scriptLink).length;
   const shootLine=(lbl,s)=>`<div class="ovs"><span class="ovs-l">${lbl}</span>${s?`<span class="ovs-t"><b>${esc(s.title||"Untitled shoot")}</b><small>${esc(niceW(s.date))}${s.time?", "+fmtT(s.time):""}${(s.videos||[]).length?`, ${s.videos.length} video${s.videos.length===1?"":"s"}`:""}</small></span>${S.scripts[s.id]||s.scriptLink?`<button class="iconbtn" data-act="viewScript" data-id="${s.id}">Script</button>`:`<span class="tag warn">No script</span>`}`:`<span class="ovs-t muted">Nothing planned</span>`}</div>`;
   const shotT=all.filter(v=>v.shotDate===t).length,edT=editedToday();
-  return `${awayBanner()}${tripTodayCard()}
+  return `${awayBanner()}${tripTodayCard()}${teamWorkCard()}
   <section class="panel ov">
     <div class="phead"><h2>${esc(niceW(t))}</h2>
       <div class="ovtoday">${(()=>{const g=shootGoalToday();return `<span>Shot today <b>${shotT}</b>/${g}</span><i style="--p:${Math.min(1,shotT/g)}"></i>`})()}${(()=>{const ep=editPlan();const goal=edT+ep.todayLeft;const s=editStreak();return `<span class="gwrap">${goalRing(edT,ep.todayOff?0:goal)}<span>${ep.todayOff?"Day off":`Edited <b>${edT}</b>/${goal||edT}`}${s>1?`<em class="streak">🔥 ${s}-day streak</em>`:""}</span></span>`})()}<button class="btn ov-copy" data-act="copyPlan" title="Copy today’s shoots, posts and edits as text for WhatsApp or Teams"><svg width="13" height="13" viewBox="0 0 16 16" aria-hidden="true"><rect x="5" y="5" width="9" height="9" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M11 3.5A1.5 1.5 0 0 0 9.5 2h-5A2.5 2.5 0 0 0 2 4.5v5A1.5 1.5 0 0 0 3.5 11" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>Copy today’s plan</button></div></div>
@@ -4430,7 +4485,7 @@ function vVideos(){
   L.forEach(v=>{if(v.status!=="Posted"){main.push(v);return}const k=vidPeriod(v),key=k.slice(0,4)<cy?k.slice(0,4):k.slice(0,7);if(key===cm){main.push(v);return}(G[key]=G[key]||[]).push(v)});
   const rowOf=v=>`<tr class="${S.sel.has(v.id)?"sel":""}${(S.moreRows||{})[v.id]?" open":""}" data-k="v-${v.id}">
     <td class="ck"><input type="checkbox" data-act-ck="${v.id}"${S.sel.has(v.id)?" checked":""} aria-label="Select ${esc(v.title)}"></td>
-    <td class="title"><input type="text" value="${esc(v.title)}" data-f="title" data-id="${v.id}" aria-label="Title"><button class="mob-more" data-act="rowMore" data-id="${v.id}">${(S.moreRows||{})[v.id]?"Less":"Details"}</button>${(v.status==="Re-edit"||EDIT_POOL.includes(v.status))&&v.reviewNote?`<small class="rnote">Changes: ${esc(v.reviewNote)}</small>`:""}${v.status==="In review"&&v.round>1?`<small class="rnote rv">Review round ${v.round}</small>`:""}</td>
+    <td class="title"><input type="text" value="${esc(v.title)}" data-f="title" data-id="${v.id}" aria-label="Title">${asgTag(v)}<button class="mob-more" data-act="rowMore" data-id="${v.id}">${(S.moreRows||{})[v.id]?"Less":"Details"}</button>${(v.status==="Re-edit"||EDIT_POOL.includes(v.status))&&v.reviewNote?`<small class="rnote">Changes: ${esc(v.reviewNote)}</small>`:""}${v.status==="In review"&&v.round>1?`<small class="rnote rv">Review round ${v.round}</small>`:""}</td>
     <td class="c-fmt" data-l="Format"><select data-f="format" data-id="${v.id}" aria-label="Format"><option${v.format!=="Carousel"?" selected":""}>Reel</option><option${v.format==="Carousel"?" selected":""}>Carousel</option></select></td>
     <td class="c-pil" data-l="Pillar">${isCar(v)?`<span class="stat">Carousel</span>`:pillarSelect(`data-f="pillar" data-id="${v.id}" aria-label="Pillar" class="psel" style="--pc:${pillarColor(v.pillar)}"`,v.pillar||"")}</td>
     <td class="c-shot" data-l="Shot on"><input type="date" value="${esc(v.shotDate||"")}" data-f="shotDate" data-id="${v.id}" aria-label="Shot date" class="dt-in" style="--dc:${hue(v.shotDate)}"></td>
@@ -4480,7 +4535,7 @@ function vOrder(){
         <div class="etitle"><span class="dot" style="background:${hue(v.shotDate)}"></span><div><b>${esc(v.title||"Untitled")}</b>${pillarTag(v)}<small>Shot ${esc(v.shotDate?nice(v.shotDate):"date unknown")}${v.postDate?`, posts ${esc(niceW(v.postDate))}${v.postTime?" "+fmtT(v.postTime):""}`:""}${tags}</small></div></div>
         ${v.shotDate||(spOn()&&canUp(v))?`<span class="eacts">${spOn()&&canUp(v)?`<button class="iconbtn up-b" data-act="upDraft" data-id="${v.id}" title="${isCar(v)?"Upload the photos":"Upload the draft"}. It goes to ${esc(reviewerName())} for review">${isCar(v)?`<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="14" height="14" rx="2.5"/><path d="M7 3h12a2 2 0 0 1 2 2v12"/></svg>Photos`:`<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V9M7 13.5l5-5 5 5M5 4h14"/></svg>Draft`}</button>`:""}${!v.shotDate?"":`<button class="iconbtn" data-act="copy" data-text="${esc(folder(v.shotDate))}" title="${esc(folder(v.shotDate))}">Copy path</button>${rawLinkFor(v.shotDate)?`<a class="openlink" href="${esc(rawLinkFor(v.shotDate))}" target="_blank" rel="noopener noreferrer">Open folder</a>`:`<button class="iconbtn" data-act="addRaw" data-d="${v.shotDate}">+ Link</button>`}`}</span>`:"<span></span>"}
         <div class="est">${statusSelect(v)}${asgCtl(v)}</div>
-        <div class="mv2"><button data-act="up" data-i="${idx}" aria-label="Move up"${idx===0?" disabled":""}>↑</button><button data-act="down" data-i="${idx}" aria-label="Move down"${idx===list.length-1?" disabled":""}>↓</button></div>
+        <div class="mv2"></div>
       </div>`}).join("");
     return `<div class="card eday"><header><h3>${esc(dayLabel(g.day))}</h3><span class="count">${g.items.length}</span><div class="mix" aria-label="Shoot day mix">${mix}</div></header>${rows}</div>`;
   }).join("");
@@ -4524,7 +4579,7 @@ function vSchedule(){
       `${openLink(v,"Open")}${dlBtn(v)}`:
       (isCar(v)&&v.car&&v.car.folderId?carView(v):draftBtn(v));
     const sl=d?`${d}|${tm}|${k}`:"";
-    return `<div class="slot filled${k==="C"?" car":""}"${d?` data-slot="${sl}"`:""} data-drag-id="${v.id}"><div class="grip" title="Drag to move">⋮⋮</div><div class="tm">${label}${k==="C"?`<span class="kind">Carousel</span>`:(d&&slotPillar(d,tm))?`<span class="kind pk" style="--pc:${pillarColor(slotPillar(d,tm))}">${esc(slotPillar(d,tm))}</span>`:""}</div><div class="ttl"><b>${esc(v.title||"Untitled")}</b>${pillarTag(v)}${linkArea}<small>${v.shotDate?"Shot "+esc(nice(v.shotDate)):"No shot date"}${tags}</small></div><div>${statusSelect(v)}</div><div>${lockCtl(v)}</div><div class="mv2">${d?`<button data-act="slotMove" data-dir="-1" data-slot="${sl}" aria-label="Move up">↑</button><button data-act="slotMove" data-dir="1" data-slot="${sl}" aria-label="Move down">↓</button>`:""}</div><div><button class="xbtn" data-act="unassign" data-id="${v.id}" aria-label="Remove from schedule" title="Remove">×</button></div></div>`;
+    return `<div class="slot filled${k==="C"?" car":""}"${d?` data-slot="${sl}"`:""} data-drag-id="${v.id}"><div class="grip" title="Drag to move">⋮⋮</div><div class="tm">${label}${k==="C"?`<span class="kind">Carousel</span>`:v.pillar?`<span class="kind pk" style="--pc:${pillarColor(v.pillar)}">${esc(v.pillar)}</span>`:`<span class="kind pk none">No pillar</span>`}</div><div class="ttl"><b>${esc(v.title||"Untitled")}</b>${asgTag(v)}<small>${v.shotDate?"Shot "+esc(nice(v.shotDate)):"No shot date"}${tags}</small></div><div class="stc">${linkArea?`<span class="stl">${linkArea}</span>`:""}${statusSelect(v)}</div><div>${lockCtl(v)}</div><div class="mv2"></div><div><button class="xbtn" data-act="unassign" data-id="${v.id}" aria-label="Remove from schedule" title="Remove">×</button></div></div>`;
   };
   const optsP=req=>{const a=freeR.filter(v=>v.pillar===req),b=freeR.filter(v=>v.pillar!==req);
     return `<option value="">Add ${esc(req)}…</option>`+a.map(v=>`<option value="${v.id}">${esc(v.title||"Untitled")} (${v.status})</option>`).join("")+(b.length&&S.settings.pillarForce?`<optgroup label="Other pillars">${b.map(v=>`<option value="${v.id}">${esc(v.title||"Untitled")} · ${esc(v.pillar||"no pillar")}</option>`).join("")}</optgroup>`:"")};
@@ -4543,7 +4598,7 @@ function vSchedule(){
       if(!here.length)return {tm,k,html:d<t?"":emptyRow(d,tm,k)};
       return here.map(v=>{const same=castOf(v).filter(n=>items.some(o=>o!==v&&castOf(o).includes(n)));
         const req=k==="R"?slotPillar(d,tm):null;
-        return row(v,d,tm,fmtT(tm),k,(req&&v.pillar!==req?`<span class="tag warn">Should be ${esc(req)}</span>`:"")+(v.shotDate&&pool.some(o=>o!==v&&o.shotDate===v.shotDate)?`<span class="tag warn">Same shoot day</span>`:"")+(same.length?`<span class="tag warn">${esc(same.map(n=>n.charAt(0).toUpperCase()+n.slice(1)).join(", "))} twice today</span>`:""))}).join("");
+        return row(v,d,tm,fmtT(tm),k,(v.shotDate&&pool.some(o=>o!==v&&o.shotDate===v.shotDate)?`<span class="tag warn">Same shoot day</span>`:"")+(same.length?`<span class="tag warn">${esc(same.map(n=>n.charAt(0).toUpperCase()+n.slice(1)).join(", "))} twice today</span>`:""))}).join("");
     }).map((x,i)=>typeof x==="string"?{tm:all[i].tm,k:all[i].k,html:x}:x);
     [...reels.filter(v=>!TR.includes(v.postTime)),...cars.filter(v=>!TC.includes(v.postTime))]
       .forEach(v=>parts.push({tm:v.postTime||"99:99",k:kindOf(v),html:row(v,"","",v.postTime?fmtT(v.postTime):"No time",kindOf(v),`<span class="tag">Off-plan time</span>`)}));
@@ -4571,14 +4626,14 @@ function schedShell(free,body){
       ${toggle("data-sset","allowSame",S.settings.allowSame,"Fill gaps with same shoot day")}
       ${toggle("data-opt","readyOnly",S.opts.readyOnly,"Only finished videos")}
       ${toggle("data-sset","autoPostScheduled",S.settings.autoPostScheduled===true,"Scheduled posts become Posted at their time")}
-      ${pillars().length?toggle("data-sset","pillarForce",!!S.settings.pillarForce,"Any pillar in any slot"):""}
+
       ${free.length?`<span class="stat">${free.length} unscheduled</span>`:""}
     </div>
     ${pillarHint()}${body}
   </section>`;
 }
 // slots only know their pillar once the daily reel order is set in Settings
-function pillarHint(){if(!pillars().length)return "";const t=schedFrom();
+function pillarHint(){return "";if(!pillars().length)return "";const t=schedFrom();
   if(!pillarOrder().length)return `<p class="ovnote pl-hint">Reel slots don’t have a pillar yet, so any pillar can land in any slot. Set the daily reel order in Settings, Content pillars. <button class="btn small" data-act="goTab" data-tab-go="settings">Open Settings</button></p>`;
   const from=S.settings.pillarFrom||"";if(from&&from>addDays(t,S.schedDays-1))return `<p class="ovnote pl-hint">The daily pillar order starts ${esc(niceW(from))}. Slots before that take any pillar.</p>`;return ""}
 function monthView(){
@@ -4729,7 +4784,7 @@ function vHistory(){
   const split=list=>{const c=list.filter(isCar).length,r=list.length-c;return `<em class="hsplit"><span><i>${r}</i> ${r===1?"reel":"reels"}</span><s>·</s><span><i>${c}</i> ${c===1?"carousel":"carousels"}</span></em>`};
   const groups={};L.forEach(v=>{const k=v.postDate.slice(0,7);(groups[k]=groups[k]||[]).push(v)});
   const row=v=>`<div class="hrow" data-k="h-${v.id}"><div class="hdate"><b>${+v.postDate.slice(8)}</b><span>${WD[new Date(v.postDate+"T00:00:00").getDay()]}</span></div>
-      <div class="etitle"><span class="dot" style="background:${hue(v.shotDate)}"></span><div><b>${esc(v.title||"Untitled")}</b><small>${v.postTime?fmtT(v.postTime):"No time"}, ${esc(v.format||"Reel")}${v.shotDate?`, shot ${esc(nice(v.shotDate))}`:""}</small></div></div>
+      <div class="etitle"><span class="dot" style="background:${hue(v.shotDate)}"></span><div><b>${esc(v.title||"Untitled")}</b>${asgTag(v)}<small>${v.postTime?fmtT(v.postTime):"No time"}, ${esc(v.format||"Reel")}${v.shotDate?`, shot ${esc(nice(v.shotDate))}`:""}</small></div></div>
       <div class="hrow-link">${openLink(v,isCar(v)?"Open post":"Open video")?`${openLink(v,isCar(v)?"Open post":"Open video")}${dlBtn(v)}`:(carView(v)||draftBtn(v))}</div></div>`;
   const body=Object.keys(groups).sort().reverse().map(k=>{const [y,m]=k.split("-").map(Number);
     const gc=groups[k].filter(isCar).length,gr=groups[k].length-gc;
@@ -4832,14 +4887,14 @@ function vSettings(){
   </section>
   <section class="panel">
     <h2>Content pillars</h2>
-    <p class="sub">Each reel gets a pillar. Reshuffle fills every reel slot with a video of the pillar the daily order asks for.</p>
+    <p class="sub">Each reel gets a pillar. Time slots don’t have a pillar: Reshuffle mixes the pillars through each day and avoids the same pillar back to back.</p>
     <div class="field"><label>Pillars</label>
       <div class="pl-edit">${pillars().map((p,i)=>`<span class="pl-chip" style="--pc:${pillarColor(p)}"><i></i><input type="text" value="${esc(p)}" data-pillar="${i}" aria-label="Pillar name"><button class="xbtn" data-act="rmPillar" data-i="${i}" aria-label="Remove">×</button></span>`).join("")}<button class="btn small" data-act="addPillar">+ Add pillar</button></div></div>
-    <div class="field"><label>Daily reel order</label>
+    <div class="field" hidden><label>Daily reel order</label>
       <div class="pl-order">${(S.settings.pillarOrder||[]).map((p,i)=>`<span class="pl-slot"><small>Reel ${i+1}</small>${pillarSelect(`data-porder="${i}" aria-label="Pillar for reel ${i+1}"`,p,false)}<button class="xbtn" data-act="rmOrder" data-i="${i}" aria-label="Remove">×</button></span>`).join("")}<button class="btn small" data-act="addOrder">+ Add</button></div>
       <span class="hint">The first reel of the day gets the first pillar, the second reel the second, and so on. The order repeats if a day has more reels.</span></div>
-    <div class="field"><label for="pfrom">Follow the order from</label><input id="pfrom" type="date" value="${esc(S.settings.pillarFrom||"")}" data-set="pillarFrom"></div>
-    <div class="switches">${toggle("data-sset","pillarLoose",!!S.settings.pillarLoose,"Use reels without a pillar when a pillar runs out")}</div>
+    <div class="field" hidden><label for="pfrom">Follow the order from</label><input id="pfrom" type="date" value="${esc(S.settings.pillarFrom||"")}" data-set="pillarFrom"></div>
+
   </section>
   <section class="panel">
     <h2>Carousel plan</h2>
@@ -6363,6 +6418,19 @@ function myEditsPanel(){if(!helperAcct())return "";const L=vids().filter(v=>asgO
     <div class="me-a">${["Shot","Pending","Re-edit","Not started"].includes(v.status)?`<button class="btn small primary" data-act="startEdit" data-id="${v.id}">▶ Start editing</button>`:""}${spOn()&&EDIT_POOL.includes(v.status)?`<button class="iconbtn up-b" data-act="upDraft" data-id="${v.id}">${isCar(v)?"Photos":"Upload draft"}</button>`:""}${v.shotDate?`<button class="iconbtn" data-act="copy" data-text="${esc(folder(v.shotDate))}" title="${esc(folder(v.shotDate))}">Copy path</button>`:""}${statusSelect(v)}</div></div>`;
   return `<div class="myedits"><div class="me-h"><b>Your edits</b><span>${todo.length?plural(todo.length,"video")+" to edit":"Nothing waiting"}${rest.length?`, ${rest.length} done or in review`:""}</span></div>
     ${L.length?todo.concat(rest).map(row).join(""):`<p class="sub">When ${esc(nameOf(ADMIN))} or ${esc(reviewerName())} assigns you a video, it shows here and you get a notification.</p>`}</div>`}
+function teamWorkCard(){if(!canAssign())return "";
+  const live=v=>EDIT_POOL.includes(v.status)||v.status==="In review"||v.status==="Approved"||(v.status==="Ready"&&v.approvedAt&&!safeUrl(v.finalLink));
+  const people=editorsList().map(u=>{const mine=v=>u===ADMIN?!asgOf(v):asgOf(v)===u;
+    const L=vids().filter(v=>mine(v)&&(u===ADMIN?["Editing","In review","Re-edit","Approved"].includes(v.status):live(v)))
+      .sort((a,b)=>({Editing:0,"Re-edit":1,Shot:2,Pending:2,"Not started":2,"In review":3,Approved:4,Ready:4}[a.status]??5)-({Editing:0,"Re-edit":1,Shot:2,Pending:2,"Not started":2,"In review":3,Approved:4,Ready:4}[b.status]??5));
+    return {u,L}});
+  if(!people.some(p=>p.L.length)&&!people.slice(1).some(p=>vids().some(v=>asgOf(v)===p.u)))return "";
+  const col=({u,L})=>{const ed=L.filter(v=>v.status==="Editing"),wait=L.filter(v=>["Shot","Pending","Not started","Re-edit"].includes(v.status)),rv=L.filter(v=>v.status==="In review");
+    return `<div class="tw-col"><div class="tw-h">${avatar(u,30)}<b>${esc(nameOf(u))}</b><span>${ed.length?`<em class="on">Editing</em>`:L.length?"":`<em>Free</em>`}</span></div>
+      <div class="tw-n"><span><b>${ed.length}</b>editing</span><span><b>${wait.length}</b>to start</span><span><b>${rv.length}</b>in review</span></div>
+      ${L.slice(0,6).map(v=>`<div class="tw-v"><i style="background:${SC[v.status]||"#888"}"></i><span><b>${esc(v.title||"Untitled")}</b><small>${esc(v.status)}${v.postDate?" · posts "+esc(niceW(v.postDate)):""}</small></span>${v.status==="Editing"?editTimer(v):""}</div>`).join("")}
+      ${L.length>6?`<p class="tw-more">and ${L.length-6} more</p>`:""}</div>`};
+  return `<section class="panel tw"><div class="phead"><h2>Who’s editing what</h2><div class="pactions"><button class="btn small ghost" data-act="goTab" data-tab-go="order">Edit order</button></div></div><div class="tw-grid">${people.map(col).join("")}</div></section>`}
 function tripShown(){const a=editTrip();if(S.tripOpen!=null)return !!S.tripOpen;return !!a&&roleOf(a)==="edit"&&a.from<=addDays(today(),1)&&a.to>=today()}
 function tripPanel(){
   const a=editTrip();if(!a)return "";
@@ -8138,12 +8206,14 @@ const OD=(()=>{
   function place(){if(!pill||pill.hidden)return;const hdr=document.querySelector("header.top");if(!hdr||!hdr.offsetParent){pill.style.visibility="hidden";return}pill.style.visibility="";
     const H=hdr.getBoundingClientRect(),tabs=document.querySelector(".tabs"),T=tabs&&tabs.offsetParent?tabs.getBoundingClientRect():null,h1=hdr.querySelector(".brandrow h1"),B=h1?h1.getBoundingClientRect():null,bar=hdr.querySelector(".brandrow").getBoundingClientRect();
     const pw=pill.offsetWidth,ph=pill.offsetHeight,sy=scrollY,sx=scrollX;let top,left;
-    if(T&&T.width>0&&H.right-T.right>=pw+18){top=T.top+(T.height-ph)/2;left=H.right-pw}
-    else{const acts=hdr.querySelector(".actions").getBoundingClientRect();const sameRow=acts.top<bar.bottom-4;
+    // beside the tabs: the tabs stick to the top while scrolling, so the pill sticks with them (fixed, no lag)
+    if(T&&T.width>0&&H.right-T.right>=pw+18){pill.style.position="fixed";pill.style.top=Math.round(T.top+(T.height-ph)/2)+"px";pill.style.left=Math.round(H.right-pw)+"px";return}
+    pill.style.position="";
+    {const acts=hdr.querySelector(".actions").getBoundingClientRect();const sameRow=acts.top<bar.bottom-4;
       if(!sameRow&&B&&H.right-B.right>=pw+12){top=bar.top+(bar.height-ph)/2;left=H.right-pw}
       else{top=H.top-ph-6<0?H.bottom+6:H.top-ph-6;left=H.right-pw}}
     pill.style.top=Math.round(top+sy)+"px";pill.style.left=Math.round(left+sx)+"px"}
-  function tick(){if(typeof loaded!=="undefined"&&!loaded)return;if(!pill)makePill();const L=list();
+  function tick(){if(typeof loaded!=="undefined"&&!loaded)return;if(!pill)makePill();const L=typeof helperAcct==="function"&&helperAcct()?[]:list();   // posting is Zain's and Shibli's, so editors don't get it
     if(!L.length){if(!pill.hidden){pill.hidden=true}if(dlg&&dlg.open)paintDlg(L);return}
     const newest=L[0],ms=Date.now()-dueMs(newest),compact=innerWidth<640;
     pill.hidden=false;pill.classList.toggle("old",ms>=36e5);pill.classList.toggle("compact",compact);
@@ -8167,7 +8237,9 @@ const OD=(()=>{
       +(L.length>8?`<p class="od-more">and ${L.length-8} more in History</p>`:"")+(can&&L.length>1?`<div class="od-allrow"><button class="btn small ghost" type="button" data-od="all">Mark all ${L.length} as posted</button></div>`:"");
     dlg.querySelectorAll(".od-age").forEach(s=>{s.textContent=fmt(now-+s.dataset.due,true)+" late"})}
   function openDlg2(auto){if(!dlg)makeDlg();const L=list();if(!L.length)return;lastSig="";paintDlg(L);openDlg(dlg);if(auto)try{sfx2&&sfx2("pop")}catch(_){}}
-  setInterval(tick,1000);addEventListener("resize",place);addEventListener("scroll",()=>{},{passive:true});
+  setInterval(tick,1000);addEventListener("resize",place);
+  // follow the header while scrolling (and while it settles), so the pill never lags behind
+  let odRaf=0,odT1=0,odT2=0;addEventListener("scroll",()=>{if(!pill||pill.hidden)return;cancelAnimationFrame(odRaf);odRaf=requestAnimationFrame(place);clearTimeout(odT1);clearTimeout(odT2);odT1=setTimeout(place,180);odT2=setTimeout(place,520)},{passive:true});
   return {tick,list,open:()=>openDlg2()};
 })();
 
