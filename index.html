@@ -2283,6 +2283,18 @@ body.fbloading #fbLoading{display:grid}
 body.viewonly .stsel.mine{pointer-events:auto;box-shadow:0 0 0 2px rgba(170,255,0,.55)}
 body.viewonly.member header.top h1::after{content:"Member"}
 body.viewonly.editor header.top h1::after{content:"Editor"}
+.est{display:grid;gap:6px;justify-items:stretch}
+.gsel.asg{height:30px!important;min-height:0!important;font-size:12.5px!important;padding:0 10px!important;border-radius:999px!important;font-weight:700!important}
+.gsel.asg.set{background:rgba(139,114,207,.16)!important;border-color:rgba(139,114,207,.45)!important;color:#5a45a8!important}
+.tag.asg-tag{background:rgba(139,114,207,.16);color:#5a45a8}.tag.asg-tag.me{background:var(--lime);color:#0B0B0C}
+.est .asg-tag{justify-self:start}
+.myedits{margin:0 0 18px;padding:16px 18px;border-radius:22px;border:1px solid rgba(123,209,0,.45);background:rgba(170,255,0,.08)}
+.me-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px;margin-bottom:10px}.me-h b{font-size:17px}.me-h span{color:var(--muted);font-size:13px}
+.me-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 14px;align-items:center;padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.75);margin-bottom:6px}
+.me-t b{font-size:14.5px}.me-t small{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:3px;font-size:12.5px;color:var(--muted)}
+.me-a{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:8px}.me-a .stsel{min-width:150px}
+@media (max-width:760px){.me-row{grid-template-columns:1fr}.me-a{justify-content:flex-start}.me-a .stsel{flex:1}}
+@media (max-width:600px){.me-a .iconbtn.up-b{font-size:13px;gap:5px}}
 body.viewonly.helper .pactions [data-act="pauseAll"],body.viewonly.helper .pactions [data-act="resumeAll"]{display:inline-flex!important}
 .et-by{font-style:normal;font-size:11px;font-weight:700;opacity:.75;margin-right:2px}
 .tp-days{margin:0 0 14px;padding:12px 14px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.55)}
@@ -2903,6 +2915,13 @@ dialog.ig-dlg{width:min(860px,96vw)}
 :root[data-theme="dark"] .rvtimer{background:rgba(242,193,78,.12)!important;border-color:rgba(242,193,78,.34)!important;color:#F2C14E!important}
 :root[data-theme="dark"] .rvtimer.lv1{background:rgba(255,160,70,.14)!important;border-color:rgba(255,160,70,.42)!important;color:#FFB066!important}
 :root[data-theme="dark"] .rvtimer.lv2{background:rgba(255,92,80,.14)!important;border-color:rgba(255,92,80,.45)!important;color:#FF8A80!important}
+
+/* edit assignments (v123) */
+:root[data-theme="dark"] .gsel.asg.set{background:rgba(139,114,207,.22)!important;border-color:rgba(139,114,207,.5)!important;color:#C3B3F5!important}
+:root[data-theme="dark"] .tag.asg-tag{background:rgba(139,114,207,.22)!important;color:#C3B3F5!important}
+:root[data-theme="dark"] .tag.asg-tag.me{background:var(--lime)!important;color:#0B0B0C!important}
+:root[data-theme="dark"] .myedits{background:rgba(170,255,0,.05)!important;border-color:rgba(170,255,0,.3)!important}
+:root[data-theme="dark"] .me-row{background:rgba(255,255,255,.03)!important;border-color:var(--line)!important}
 
 /* ================================================================
    iPHONE — minimal layer (v82)
@@ -3774,26 +3793,33 @@ function isMember(u){u=String(u==null?S.me:u||"").toLowerCase();return !!u&&MEMB
 function isEdAcct(u){u=String(u==null?S.me:u||"").toLowerCase();return !!u&&EDITORS.some(n=>u===n||u.includes(n))}
 function helperAcct(u){return isMember(u)||isEdAcct(u)}   // Waleed and Hamza: the editing team besides Shibli
 function viewOnly(){return VIEW_ONLY.includes(S.me||"")||isMember()||isEdAcct()}
+function canAssign(){return S.me===ADMIN||isReviewer()}
+function editorsList(){return [ADMIN,...EDITORS,...MEMBERS]}
+function asgOf(v){const a=String(v&&v.assignee||"").toLowerCase();return a&&a!==ADMIN?a:""}
+function nameOf(u){const n=dispName(u)||u;return n.charAt(0).toUpperCase()+n.slice(1)}
+function asgCtl(v){const a=asgOf(v);
+  if(canAssign())return `<select class="asg${a?" set":""}" data-asg="${v.id}" aria-label="Who edits this">${editorsList().map(u=>`<option value="${u===ADMIN?"":esc(u)}"${(u===ADMIN?!a:a===u)?" selected":""}>${u===ADMIN?"✎ "+esc(nameOf(u)):"→ "+esc(nameOf(u))}</option>`).join("")}</select>`;
+  return a?`<span class="tag asg-tag${a===S.me?" me":""}">${a===S.me?"Assigned to you":"→ "+esc(nameOf(a))}</span>`:""}
 function roleName(u){return u===ADMIN?"Admin":reviewers().includes(u)?"Reviewer":isEdAcct(u)?"Editor":isMember(u)?"Member":VIEW_ONLY.includes(u)?"View only":"Member"}
 // the name this member goes by in the Away plan team list
 function memberName(){const T=new Set();awayList().forEach(a=>tripTeam(a).forEach(n=>T.add(n)));const me=String(S.me||"").toLowerCase(),dn=String(dispName(S.me)||"").toLowerCase();
   return [...T].find(n=>{const l=n.toLowerCase();return l===dn||l===me||me.includes(l)||[...MEMBERS,...EDITORS].some(m=>me.includes(m)&&l.includes(m))})||""}
 // videos a member may change: the ones assigned to them in a current or upcoming trip
-function myVideos(){const out=new Set();if(!helperAcct())return out;const nm=memberName();if(!nm)return out;
+function myVideos(){const out=new Set();if(!helperAcct())return out;vids().forEach(v=>{if(asgOf(v)===S.me)out.add(v.id)});const nm=memberName();if(!nm)return out;
   awayList().filter(a=>a.to>=addDays(today(),-1)).forEach(a=>tripRows(a).forEach(r=>{if(r.v&&r.who===nm)out.add(r.v.id)}));return out}
 // videos a teammate edits during a trip (so your own timer never pauses theirs)
-function teamOwned(){const out=new Set();awayList().filter(a=>a.to>=addDays(today(),-1)).forEach(a=>tripRows(a).forEach(r=>{if(r.v&&!["me","before","open"].includes(r.who))out.add(r.v.id)}));return out}
+function teamOwned(){const out=new Set();vids().forEach(v=>{const a=asgOf(v);if(a&&helperAcct(a))out.add(v.id)});awayList().filter(a=>a.to>=addDays(today(),-1)).forEach(a=>tripRows(a).forEach(r=>{if(r.v&&!["me","before","open"].includes(r.who))out.add(r.v.id)}));return out}
 function mayEdit(id){return isEdAcct()?["order","schedule"].includes(S.tab):isMember()&&myVideos().has(id)}
 // may this account save changes to a video (status, timer, uploads)
 function mayWrite(id){return isEdAcct()||(isMember()&&myVideos().has(id))}
 // whose editing timer is it: so pausing yours never pauses a teammate's
 function timerMine(o){if(isMember())return myVideos().has(o.id);if(isEdAcct())return o.editBy===S.me||myVideos().has(o.id);
-  return !teamOwned().has(o.id)&&!(o.editBy&&o.editBy!==S.me&&helperAcct(o.editBy))}
+  return !teamOwned().has(o.id)&&!(o.editBy&&o.editBy!==S.me&&helperAcct(o.editBy))&&!(asgOf(o)&&helperAcct(asgOf(o)))}
 let voT=0;function voNote(){if(Date.now()-voT<2500)return;voT=Date.now();toast(isEdAcct()?"You can change the video status on Edit order and Posting schedule":isMember()?"You can change the status of the videos assigned to you":"View only. Ask Shibli or Zain to make changes")}
 const VIEW_OK=new Set(["viewDraft","viewCar","tripGo","tripOpen","tripWho","tripCopy","copy","days","dialBack","dialTry","dialType","dlBackup","fclear","ffmt","fnolink","fnopil","fsched","fst","goShoots","goTab","grpToggle","histView","hrange","ideaArch","ideaCopy","ideaPil","ideaType","mExport","mOut","mday","mnav","more","newWin","openCmd","osnOn","osnTest","ovGo","ovMode","ovStatus","plByDay","plMode","playWrapped","printSum","rowMore","schedToday","shView","sumMode","sview","testAlert","vaultLock","vaultOpen","vcopy","viewScript","vshow","clearSel","chpw","freshLoad"]);
 const VIEW_FIELDS=["live","plr","sumr","ovr","opt"];
 // Waleed and Hamza also use PB Downloader and the editing timer
-const HELPER_OK=new Set(["dlAdd","dlDo","dlQ","dlCk","dlClear","dlRetry","dlVideo","pauseEdit","resumeEdit","pauseAll","resumeAll","upDraft"]);
+const HELPER_OK=new Set(["startEdit","dlAdd","dlDo","dlQ","dlCk","dlClear","dlRetry","dlVideo","pauseEdit","resumeEdit","pauseAll","resumeAll","upDraft"]);
 function isViewField(el){const d=el&&el.dataset||{};return VIEW_FIELDS.some(k=>k in d)||el.type==="search"||!!(el.closest&&el.closest("#login,#cmd,.tpw,.vault-form"))||!!(helperAcct()&&el.closest&&el.closest(".dl-panel"))}
 document.addEventListener("click",e=>{if(!viewOnly())return;const t=e.target;if(!t.closest)return;
   const g=t.closest(".gsel");if(g&&g._sel&&!isViewField(g._sel)){e.preventDefault();e.stopPropagation();voNote();return}
@@ -4453,7 +4479,7 @@ function vOrder(){
         <div class="num grip" title="Drag to reorder"><span class="n">${idx+1}</span><span class="g">⋮⋮</span></div>
         <div class="etitle"><span class="dot" style="background:${hue(v.shotDate)}"></span><div><b>${esc(v.title||"Untitled")}</b>${pillarTag(v)}<small>Shot ${esc(v.shotDate?nice(v.shotDate):"date unknown")}${v.postDate?`, posts ${esc(niceW(v.postDate))}${v.postTime?" "+fmtT(v.postTime):""}`:""}${tags}</small></div></div>
         ${v.shotDate||(spOn()&&canUp(v))?`<span class="eacts">${spOn()&&canUp(v)?`<button class="iconbtn up-b" data-act="upDraft" data-id="${v.id}" title="${isCar(v)?"Upload the photos":"Upload the draft"}. It goes to ${esc(reviewerName())} for review">${isCar(v)?`<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="14" height="14" rx="2.5"/><path d="M7 3h12a2 2 0 0 1 2 2v12"/></svg>Photos`:`<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V9M7 13.5l5-5 5 5M5 4h14"/></svg>Draft`}</button>`:""}${!v.shotDate?"":`<button class="iconbtn" data-act="copy" data-text="${esc(folder(v.shotDate))}" title="${esc(folder(v.shotDate))}">Copy path</button>${rawLinkFor(v.shotDate)?`<a class="openlink" href="${esc(rawLinkFor(v.shotDate))}" target="_blank" rel="noopener noreferrer">Open folder</a>`:`<button class="iconbtn" data-act="addRaw" data-d="${v.shotDate}">+ Link</button>`}`}</span>`:"<span></span>"}
-        <div>${statusSelect(v)}</div>
+        <div class="est">${statusSelect(v)}${asgCtl(v)}</div>
         <div class="mv2"><button data-act="up" data-i="${idx}" aria-label="Move up"${idx===0?" disabled":""}>↑</button><button data-act="down" data-i="${idx}" aria-label="Move down"${idx===list.length-1?" disabled":""}>↓</button></div>
       </div>`}).join("");
     return `<div class="card eday"><header><h3>${esc(dayLabel(g.day))}</h3><span class="count">${g.items.length}</span><div class="mix" aria-label="Shoot day mix">${mix}</div></header>${rows}</div>`;
@@ -4462,6 +4488,7 @@ function vOrder(){
   return `<section class="panel">
     <div class="phead"><h2>Edit order</h2>
       <div class="pactions">${trip?`<button class="btn small ghost tp-toggle" data-act="tripOpen" aria-pressed="${tripShown()}" title="Who edits what while ${esc(editorName())} is away">✈︎ ${tripShown()?"Hide away plan":"Away plan"}</button>`:""}${(()=>{const ed=vids().filter(v=>v.status==="Editing"&&timerMine(v));if(!ed.length)return "";const run=ed.filter(v=>!isPausedV(v));return run.length?`<button class="btn small" data-act="pauseAll">⏸ Pause editing</button>`:`<button class="btn small primary" data-act="resumeAll">▶ Resume editing</button>`})()}${list.length?`<span class="stat">${list.length} in queue${c?`, ${c} same-day pair${c>1?"s":""}`:""}</span>${Object.keys(S.queue.pins||{}).length?`<button class="btn small ghost" data-act="unpinAll">Unpin all</button>`:""}`:""}<button class="shuffle" data-act="shuffle"${list.length<2?" disabled":""}>Shuffle</button></div></div>
+    ${myEditsPanel()}
     ${tripShown()&&trip?tripPanel():""}
     ${planPanel()}
     <div class="switches">
@@ -6330,6 +6357,12 @@ function tripRows(a){
 function whoLabel(w){return w==="me"?editorName():w==="before"?"Before you leave":w==="open"?"Not assigned":w}
 function tripMineOn(a,P){return tripRows(a).filter(r=>r.P===P&&!r.done&&(r.who==="me"||r.who==="before")).length}
 function tripWorkDay(a,d){return tripRows(a).some(r=>!r.done&&r.who==="me"&&r.by===d)}
+function myEditsPanel(){if(!helperAcct())return "";const L=vids().filter(v=>asgOf(v)===S.me&&!["Posted"].includes(v.status)).sort((a,b)=>(a.postDate||"9999").localeCompare(b.postDate||"9999")||(a.postTime||"").localeCompare(b.postTime||""));
+  const todo=L.filter(v=>EDIT_POOL.includes(v.status)||v.status==="Not started"),rest=L.filter(v=>!todo.includes(v));
+  const row=v=>`<div class="me-row"><div class="me-t"><b>${esc(v.title||"Untitled")}</b>${pillarTag(v)}<small>${v.shotDate?"Shot "+esc(nice(v.shotDate)):"No shot date"}${v.postDate?`, posts ${esc(niceW(v.postDate))}${v.postTime?" "+fmtT(v.postTime):""}`:""}${v.status==="Editing"?editTimer(v):""}${rvTimer(v)}${v.reviewNote&&EDIT_POOL.includes(v.status)?`<span class="tag warn">Changes: ${esc(v.reviewNote.slice(0,90))}</span>`:""}</small></div>
+    <div class="me-a">${["Shot","Pending","Re-edit","Not started"].includes(v.status)?`<button class="btn small primary" data-act="startEdit" data-id="${v.id}">▶ Start editing</button>`:""}${spOn()&&EDIT_POOL.includes(v.status)?`<button class="iconbtn up-b" data-act="upDraft" data-id="${v.id}">${isCar(v)?"Photos":"Upload draft"}</button>`:""}${v.shotDate?`<button class="iconbtn" data-act="copy" data-text="${esc(folder(v.shotDate))}" title="${esc(folder(v.shotDate))}">Copy path</button>`:""}${statusSelect(v)}</div></div>`;
+  return `<div class="myedits"><div class="me-h"><b>Your edits</b><span>${todo.length?plural(todo.length,"video")+" to edit":"Nothing waiting"}${rest.length?`, ${rest.length} done or in review`:""}</span></div>
+    ${L.length?todo.concat(rest).map(row).join(""):`<p class="sub">When ${esc(nameOf(ADMIN))} or ${esc(reviewerName())} assigns you a video, it shows here and you get a notification.</p>`}</div>`}
 function tripShown(){const a=editTrip();if(S.tripOpen!=null)return !!S.tripOpen;return !!a&&roleOf(a)==="edit"&&a.from<=addDays(today(),1)&&a.to>=today()}
 function tripPanel(){
   const a=editTrip();if(!a)return "";
@@ -6368,6 +6401,8 @@ function tripDays(a){const ro=viewOnly(),P=a.perDays||{},out=[];
   for(let d=a.from,g=0;d<=a.to&&g<62;d=addDays(d,1),g++){const n=tripPer(a,d),dt=new Date(d+"T00:00:00"),set=P[d]!=null&&P[d]!=="";
     out.push(`<label class="tp-dn${n?"":" zero"}${set?" set":""}${d===today()?" now":""}" title="${esc(niceW(d))}"><small>${WD[dt.getDay()]}</small><span>${dt.getDate()} ${MON[dt.getMonth()]}</span>${ro?`<b>${n}</b>`:`<input type="number" min="0" max="20" inputmode="numeric" value="${n}" data-tripday="${d}" data-trip="${a.id}" aria-label="${esc(editorName())} edits on ${esc(niceW(d))}">`}</label>`)}
   return `<div class="tp-days"><p class="tp-dl"><b>${esc(editorName())} edits each day</b><span>${ro?"Set by "+esc(editorName())+".":"Change any day. 0 means no editing that day; the team takes the rest."}</span></p><div class="tp-dgrid">${out.join("")}</div></div>`}
+document.addEventListener("change",e=>{const t=e.target;if(!t||!t.dataset||!t.dataset.asg||!canAssign())return;const v=S.videos[t.dataset.asg];if(!v)return;const a=t.value||"";if(asgOf(v)===a)return;
+  putVideo({...v,assignee:a,assignedBy:S.me||"",assignedAt:Date.now()});toast(a?`Assigned to ${nameOf(a)}. They get a notification`:`Back with ${nameOf(ADMIN)}`)},true);
 document.addEventListener("change",e=>{const t=e.target;if(!t||!t.dataset||!t.dataset.tripday||viewOnly())return;const id=t.dataset.trip,d=t.dataset.tripday,n=Math.max(0,Math.min(20,Math.round(+t.value||0)));
   S.settings.away=(S.settings.away||[]).map(x=>x.id===id?{...x,perDays:{...(x.perDays||{}),[d]:n}}:x);putSettings();render();toast(n?`${editorName()} edits ${n} on ${niceW(d)}`:`No editing by ${editorName()} on ${niceW(d)}`)},true);
 // today's and tomorrow's edits during the trip, on the Overview for everyone
@@ -6604,7 +6639,7 @@ function userList(s){return String(s||"").toLowerCase().split(/[,;\s]+/).filter(
 function reviewers(){const L=userList(S.settings.reviewers);return L.length?L:["zain"]}
 function isReviewer(){return reviewers().includes(S.me||"")}
 function isEditor(){return !isReviewer()}
-function isPoster(){const L=userList(S.settings.alertUsers);return !L.length||L.includes(S.me||"")}
+function isPoster(){if(helperAcct())return false;const L=userList(S.settings.alertUsers);return !L.length||L.includes(S.me||"")}
 function reviewerName(){const u=reviewers()[0];const n=dispName(u)||u;return n.charAt(0).toUpperCase()+n.slice(1)}
 function isReadyPost(v){return !!(v&&safeUrl(v.finalLink)&&v.status==="Ready")}
 function alertKind(v){
@@ -6612,21 +6647,25 @@ function alertKind(v){
   // a scheduled post that went live on its own in the last 12 hours: tell everyone once
   if(v.status==="Posted"&&v.autoPosted&&v.autoPostedAt&&Date.now()-v.autoPostedAt<12*3600e3)return "posted";
   if(v.status==="In review"&&isReviewer())return "review";
+  if(asgOf(v)===S.me&&["Shot","Pending","Not started"].includes(v.status))return "assigned";
+  if(["Approved","Ready","Re-edit"].includes(v.status)&&!editsMine(v))return isReadyPost(v)&&isPoster()?"ready":null;
   if((v.status==="Approved"||(v.status==="Ready"&&v.approvedAt))&&!safeUrl(v.finalLink)&&isEditor()&&!(v.finalPending&&Date.now()-v.finalPending<180000))return "approved";
   if(v.status==="Re-edit"&&isEditor())return "reedit";
   if(isReadyPost(v)&&isPoster())return "ready";
   return null;
 }
+// approvals and re-edits go to whoever edits that video
+function editsMine(v){const a=asgOf(v);if(helperAcct())return a===S.me||myVideos().has(v.id);return !(a&&helperAcct(a))}
 function posterName(){const u=userList(S.settings.alertUsers)[0]||reviewers()[0];const n=dispName(u)||u;return n.charAt(0).toUpperCase()+n.slice(1)}
 function dueMs(v){if(!v||!v.postDate||!v.postTime)return null;return new Date(v.postDate+"T"+v.postTime+":00").getTime()}
 // reminders around posting time: 15 minutes before, at posting time, and if it still isn't marked posted 30 minutes later
 function timeKind(v){
-  if(!v||v.status==="Posted")return null;const due=dueMs(v);if(due==null)return null;const mins=(due-Date.now())/60000;
+  if(!v||v.status==="Posted"||helperAcct())return null;const due=dueMs(v);if(due==null)return null;const mins=(due-Date.now())/60000;
   if(isPoster()&&v.status==="Ready"){if(mins>0&&mins<=15)return "soon";if(mins<=0&&mins>-30)return "now";if(mins<=-30&&mins>-2880)return "late"}
   if(!isPoster()){if(mins<=-30&&mins>-2880)return "late";if(mins>0&&mins<=120&&v.status!=="Ready"&&v.status!=="Approved")return "notready"}
   return null;
 }
-function alertKey(v,k){return v.id+"|"+k+"|"+(k==="ready"?safeUrl(v.finalLink):["soon","now","late","notready"].includes(k)?(v.postDate+" "+v.postTime):(v.round||1))}
+function alertKey(v,k){return v.id+"|"+k+"|"+(k==="assigned"?(v.assignedAt||0):k==="ready"?safeUrl(v.finalLink):["soon","now","late","notready"].includes(k)?(v.postDate+" "+v.postTime):(v.round||1))}
 function myAlerts(){const out=[];vids().forEach(v=>{const a=alertKind(v),b=timeKind(v);if(a&&!(a==="ready"&&b))out.push({v,k:a});if(b)out.push({v,k:b})});return out.sort((a,b)=>postKey(a.v).localeCompare(postKey(b.v)))}
 function alId(v,k){return "al-"+v.id+"-"+k}
 function seenKey(){return "seb-seen2-"+(S.me||"me")}
@@ -6641,7 +6680,7 @@ function readyList(){return myAlerts().map(x=>x.v)}
 function pruneAlerts(){const box=$("#alerts");if(!box)return;box.querySelectorAll(".alert:not([data-closing])").forEach(el=>{const v=S.videos[el.dataset.id],k=(el.id.match(/-([a-z]+)$/)||[])[1];
   if(!k||k==="posted")return;if(!v||(alertKind(v)!==k&&timeKind(v)!==k))closeAlert(el)})}
 function updateBell(){try{pruneAlerts()}catch(_){}const L=myAlerts().filter(x=>x.k!=="posted"),n=L.length,e=$("#bellN");if(!e)return;e.hidden=!n;e.textContent=n;const b=$("#bellBtn");b.classList.toggle("has",!!n);
-  const kinds=[...new Set(L.map(x=>x.k))];b.title=n?({review:"Waiting for your review",approved:"Approved, add final link",reedit:"Re-edit requested",ready:"Ready to post",soon:"Posting soon",now:"Post now",late:"Not posted yet",notready:"Due soon, not ready"}[kinds[0]]+(kinds.length>1?" and more":"")):"Nothing waiting"}
+  const kinds=[...new Set(L.map(x=>x.k))];b.title=n?({assigned:"Assigned to you",review:"Waiting for your review",approved:"Approved, add final link",reedit:"Re-edit requested",ready:"Ready to post",soon:"Posting soon",now:"Post now",late:"Not posted yet",notready:"Due soon, not ready"}[kinds[0]]+(kinds.length>1?" and more":"")):"Nothing waiting"}
 function autoPostScheduled(){
   if(S.settings.autoPostScheduled!==true)return;
   const now=Date.now();let n=0;
@@ -6674,7 +6713,9 @@ function showAlert(v,kind){
   const x=`<button class="al-x" data-al="x" aria-label="Dismiss">×</button>`;
   const rev=safeUrl(v.reviewLink);
   let body="";
-  if(kind==="review")body=`<div class="al-top"><span class="al-pill">Review</span>${x}</div>${title}<small>${isCar(v)?"Carousel":"Reel"}, round ${v.round||1}${v.shotDate?", shot "+esc(nice(v.shotDate)):""}</small>
+  if(kind==="assigned")body=`<div class="al-top"><span class="al-pill">Assigned to you</span>${x}</div>${title}<small>${esc(nameOf(v.assignedBy||ADMIN))} gave you this edit. ${v.postDate?"Posts "+when:"Not scheduled yet"}.</small>
+    <div class="al-btns"><button class="al-done" data-al="x">Later</button><button class="al-open" data-al="startedit">Start editing</button></div>`;
+  else if(kind==="review")body=`<div class="al-top"><span class="al-pill">Review</span>${x}</div>${title}<small>${isCar(v)?"Carousel":"Reel"}, round ${v.round||1}${v.shotDate?", shot "+esc(nice(v.shotDate)):""}</small>
     ${hasReview(v)&&spOn()?`<div class="al-btns"><button class="al-open al-watch" data-al="watch">${isCar(v)&&v.car?`▶ View ${v.car.count} photos`:"▶ Watch draft"}</button></div>`:""}
     <div class="al-btns"><button class="al-done" data-al="reedit">Re-edit</button><button class="al-open" data-al="approve">Approve</button></div>`;
   else if(kind==="approved"&&spOn())body=`<div class="al-top"><span class="al-pill">Approved</span>${x}</div>${title}<small>${esc(reviewerName())} approved it. ${isCar(v)?"Upload the photos":"Upload the final version"} and it becomes ready to post.</small>
@@ -6807,7 +6848,7 @@ document.addEventListener("click",e=>{
   else if(k==="upfinal"&&v)openUp(v.id,"final");
   else if(k==="usedraft"&&v)spPromoteDraft(v.id);
   else if(k==="reedit"&&v)askReedit(v);
-  else if(k==="startedit"&&v){putVideo(withStatus(v,"Editing"));toast("Moved to Editing. The notes stay on the video")}
+  else if(k==="startedit"&&v){setStatusFlow(v,"Editing");toast(el.classList.contains("al-assigned")?"Editing started. The timer is running":"Moved to Editing. The notes stay on the video")}
   else if(k==="savelink"&&v){const u=safeUrl(el.querySelector(".al-in").value);if(!u){toast("Paste a link that starts with http");return}
     putVideo({...withStatus(v,"Ready"),finalLink:u});celebrate(v.id,"Ready");toast("Ready to post")}
   if(k==="savelink"&&!(v&&safeUrl(el.querySelector(".al-in").value)))return;
@@ -6827,7 +6868,7 @@ const OSN=("Notification" in window);
 function osOn(){return OSN&&Notification.permission==="granted"&&lsGet("seb-osnotif")!=="off"}
 function osText(v,k){
   const t=v.title||"Untitled",when=v.postDate?`${v.postDate===today()?"today":niceW(v.postDate)}${v.postTime?" at "+fmtT(v.postTime):""}`:"not scheduled yet";
-  return ({review:["Review needed",`${t}. Approve it or ask for a re-edit.`],approved:["Approved, add the final link",`${reviewerName()} approved ${t}.`],
+  return ({assigned:["New edit for you",`${nameOf(v.assignedBy||ADMIN)} assigned ${t}. Posts ${when}.`],review:["Review needed",`${t}. Approve it or ask for a re-edit.`],approved:["Approved, add the final link",`${reviewerName()} approved ${t}.`],
     reedit:["Re-edit requested",`${t}: ${v.reviewNote||"see the notes"}`],ready:["Ready to post",`${t}, posts ${when}`],
     soon:["Posting in 15 minutes",`${t}, posts ${when}`],now:["Post now",`${t}, due ${when}`],late:["Not posted yet",`${t} was due ${when}`],
     posted:["Posted ✓",`${t} went live ${when} as scheduled.`],
@@ -6837,7 +6878,7 @@ function osNotify(v,k,force){
   if(!osOn())return;
   if(!force&&document.hasFocus()&&!document.hidden)return;
   const [title,body]=osText(v,k);
-  const opts={body,icon:"icon-192.png",badge:"icon-192.png",tag:alertKey(v,k),renotify:true,requireInteraction:["now","late","review"].includes(k),
+  const opts={body,icon:"icon-192.png",badge:"icon-192.png",tag:alertKey(v,k),renotify:true,requireInteraction:["now","late","review","assigned"].includes(k),
     data:{id:v.id,k},actions:(k==="ready"&&isPoster())?[{action:"scheduled",title:"Scheduled"},{action:"posted",title:"Posted"}]:(["soon","now","late"].includes(k)&&isPoster())?[{action:"posted",title:"Mark posted"}]:k==="review"?[{action:"approve",title:"Approve"}]:[]};
   const plain=()=>{try{const n=new Notification(title,{body,icon:"icon-192.png",tag:opts.tag});n.onclick=()=>{window.focus();showAlert(v,k);n.close()}}catch(e){}};
   if(navigator.serviceWorker&&navigator.serviceWorker.controller)navigator.serviceWorker.ready.then(r=>r.showNotification(title,opts)).catch(plain);else plain();
@@ -7230,6 +7271,7 @@ document.addEventListener("click",async e=>{
   else if(act==="cancelEditLink"){if(S.editLinks)delete S.editLinks[b.dataset.id];render()}
   else if(act==="viewCar"){openGallery(b.dataset.id)}
   else if(act==="viewDraft"){openReview(b.dataset.id)}
+  else if(act==="startEdit"){const v=S.videos[b.dataset.id];if(v){setStatusFlow(v,"Editing");toast("Editing started. The timer is running")}}
   else if(act==="openLinkDlg"){
     // reuses the same "Add the final video link" dialog as the approval prompt
     const id=b.dataset.id,v=S.videos[id],d=$("#linkDlg"),box=$("#linkBox");if(!d||!v||!box)return;
