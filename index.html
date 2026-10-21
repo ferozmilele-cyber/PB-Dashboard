@@ -2286,6 +2286,9 @@ body.fbloading #fbLoading{display:grid}
 body.viewonly .stsel.mine{pointer-events:auto;box-shadow:0 0 0 2px rgba(170,255,0,.55)}
 body.viewonly.member header.top h1::after{content:"Member"}
 body.viewonly.editor header.top h1::after{content:"Editor"}
+.rvr-l{list-style:none;margin:6px 0 4px;padding:0;display:grid;gap:4px}.rvr-l li{display:flex;justify-content:space-between;gap:10px;font-size:13px}.rvr-l li span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}.rvr-l li em{font-style:normal;font-weight:700;color:#b07a00;flex:none}.rvr-l li.more{color:var(--muted)}
+:root[data-theme="dark"] .rvr-l li em{color:#ffc04d}
+#main table .gsel,#main table .gchip,#main table .stsel{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
 .mv2:empty{pointer-events:none}
 @media (min-width:761px){
   .slot{grid-template-columns:22px 82px minmax(200px,1fr) auto 76px 0 32px!important}
@@ -4501,6 +4504,10 @@ function filtered(){
   else L.sort((a,b)=>vidPeriod(b).localeCompare(vidPeriod(a))||((b.createdAt||0)-(a.createdAt||0)));
   return L;
 }
+const VB={first:30,step:30,rest:[],gen:0};
+function vMore(g){if(g!==VB.gen||S.tab!=="videos"||!VB.rest.length)return;const tb=document.querySelector("#main table tbody");if(!tb)return;
+  tb.insertAdjacentHTML("beforeend",VB.rest.splice(0,VB.step).join(""));try{gxEnhance(tb)}catch(_){}
+  if(VB.rest.length)requestAnimationFrame(()=>setTimeout(()=>vMore(g),0))}
 function vVideos(){
   const all=vids(),f=S.filter;
   [...S.sel].forEach(id=>{if(!S.videos[id])S.sel.delete(id)});
@@ -4540,7 +4547,9 @@ function vVideos(){
     <td class="c-note" data-l="Notes"><input type="text" value="${esc(v.notes||"")}" data-f="notes" data-id="${v.id}" placeholder="Add note" aria-label="Notes" class="note-in"></td>
     <td class="c-del"><button class="xbtn" data-act="del" data-id="${v.id}" title="Delete" aria-label="Delete">×</button></td></tr>`;
   const grpRow=(k,n)=>{const open=expandAll||(S.openGroups||{})[k];return `<tr class="grp${open?" open":""}" data-act="grpToggle" data-g="${k}"><td colspan="12"><span class="grp-ch">▸</span><b>Shot in ${esc(periodLabel(k))}</b><em>${n} posted</em></td></tr>`};
-  const rows=main.map(rowOf).join("")+Object.keys(G).sort().reverse().map(k=>grpRow(k,G[k].length)+((expandAll||(S.openGroups||{})[k])?G[k].map(rowOf).join(""):"")).join("");
+  // big lists draw in batches, so the tab opens straight away instead of freezing while hundreds of rows are built
+  const parts=[...main.map(rowOf),...Object.keys(G).sort().reverse().flatMap(k=>[grpRow(k,G[k].length),...((expandAll||(S.openGroups||{})[k])?G[k].map(rowOf):[])])];
+  const rows=parts.slice(0,VB.first).join("");VB.rest=parts.slice(VB.first);VB.gen++;if(VB.rest.length){const g=VB.gen;setTimeout(()=>vMore(g),60)}
 
   return `<section class="panel">
     <div class="toolbar">
@@ -4957,6 +4966,7 @@ function vSettings(){
     </div>
     ${GAS?`<button class="btn" data-act="testNotify">Send a test email</button>`:""}
     ${typeof IG!=="undefined"?IG.panel():""}
+    ${isReviewer()?`<div class="switches">${toggle("data-sset","rvRemind",S.settings.rvRemind!==false,"Remind me every 20 minutes while videos wait for my review")}</div>`:""}
     ${MUS.settingsHTML()}
     <h3 class="subh" id="spSet">SharePoint uploads</h3>
     <p class="hint sp-intro">Drafts and finals upload straight from the board into SharePoint, a folder for each month. Everyone signs in once with their Milele Microsoft account.</p>
@@ -6329,9 +6339,11 @@ function gxSync(sel){const b=sel._gx;if(!b)return;const t=gxLabel(sel),dc=gxDot(
   b.classList.toggle("ph",!sel.value);const i=b.querySelector("i");i.style.display=dc?"":"none";if(dc)i.style.background=dc;b.disabled=sel.disabled}
 function gxSyncAll(root){(root||document).querySelectorAll("select.gx-hidden").forEach(gxSync)}
 function gxEnhance(root){
-  (root||document).querySelectorAll("select:not(.gx-hidden):not([multiple])").forEach(sel=>{
-    if(sel.closest(".stpop"))return;
-    const w=sel.offsetWidth;const b=document.createElement("button");b.type="button";
+  // read every width first, then build: measuring between DOM changes made big tables (All videos) freeze for seconds
+  const L=[...(root||document).querySelectorAll("select:not(.gx-hidden):not([multiple])")].filter(sel=>!sel.closest(".stpop"));
+  const W=L.map(sel=>sel.offsetWidth);
+  L.forEach((sel,k)=>{
+    const w=W[k];const b=document.createElement("button");b.type="button";
     b.className="gsel "+[...sel.classList].join(" ");const st=sel.getAttribute("style");if(st)b.setAttribute("style",st);
     if(w)b.style.setProperty("--gw",w+"px");b.setAttribute("aria-haspopup","listbox");b.setAttribute("aria-label",sel.getAttribute("aria-label")||"Choose");
     b.innerHTML=`<i></i><span></span>${GX_CHEV}`;sel.classList.add("gx-hidden");sel.tabIndex=-1;sel.setAttribute("aria-hidden","true");
@@ -6796,7 +6808,7 @@ function alertsForMe(){return true}
 function readyList(){return myAlerts().map(x=>x.v)}
 // an alert card that no longer applies (approved from the draft window, posted from the schedule, …) closes by itself
 function pruneAlerts(){const box=$("#alerts");if(!box)return;box.querySelectorAll(".alert:not([data-closing])").forEach(el=>{const v=S.videos[el.dataset.id],k=(el.id.match(/-([a-z]+)$/)||[])[1];
-  if(!k||k==="posted")return;if(!v||(alertKind(v)!==k&&timeKind(v)!==k))closeAlert(el)})}
+  if(!k||k==="posted"||el.id==="al-rvremind")return;if(!v||(alertKind(v)!==k&&timeKind(v)!==k))closeAlert(el)})}
 function updateBell(){try{pruneAlerts()}catch(_){}const L=myAlerts().filter(x=>x.k!=="posted"),n=L.length,e=$("#bellN");if(!e)return;e.hidden=!n;e.textContent=n;const b=$("#bellBtn");b.classList.toggle("has",!!n);
   const kinds=[...new Set(L.map(x=>x.k))];b.title=n?({assigned:"Assigned to you",review:"Waiting for your review",approved:"Approved, add final link",reedit:"Re-edit requested",ready:"Ready to post",soon:"Posting soon",now:"Post now",late:"Not posted yet",notready:"Due soon, not ready"}[kinds[0]]+(kinds.length>1?" and more":"")):"Nothing waiting"}
 function autoPostScheduled(){
@@ -7167,14 +7179,14 @@ function autoFlipRun(root,before){
 /* ---------- sliding pill inside every segmented control ---------- */
 const SEGPOS={};
 function segInds(root){
-  (root||document).querySelectorAll(".seg").forEach(seg=>{
-    const key=seg.getAttribute("aria-label")||"seg";
+  // all reads first, then all writes, with one reflow: one per control made long pages stall
+  const items=[...(root||document).querySelectorAll(".seg")].map(seg=>{
     let ind=seg.querySelector(".seg-ind");if(!ind){ind=document.createElement("span");ind.className="seg-ind";ind.setAttribute("aria-hidden","true");seg.prepend(ind)}
-    const on=seg.querySelector('button[aria-pressed="true"]');if(!on){ind.style.opacity=0;return}
-    const to={l:on.offsetLeft,w:on.offsetWidth},from=SEGPOS[key];
-    ind.style.transition="none";ind.style.left=(from?from.l:to.l)+"px";ind.style.width=(from?from.w:to.w)+"px";ind.style.opacity=1;
-    void ind.offsetWidth;ind.style.transition="";ind.style.left=to.l+"px";ind.style.width=to.w+"px";SEGPOS[key]=to;
-  });
+    return {seg,ind,key:seg.getAttribute("aria-label")||"seg",on:seg.querySelector('button[aria-pressed="true"]')}});
+  items.forEach(x=>{if(x.on)x.to={l:x.on.offsetLeft,w:x.on.offsetWidth}});
+  items.forEach(x=>{if(!x.on){x.ind.style.opacity=0;return}const from=SEGPOS[x.key];x.ind.style.transition="none";x.ind.style.left=(from?from.l:x.to.l)+"px";x.ind.style.width=(from?from.w:x.to.w)+"px";x.ind.style.opacity=1});
+  if(items.some(x=>x.on))void document.body.offsetWidth;
+  items.forEach(x=>{if(!x.on)return;x.ind.style.transition="";x.ind.style.left=x.to.l+"px";x.ind.style.width=x.to.w+"px";SEGPOS[x.key]=x.to});
 }
 /* ---------- nav hover pill follows the pointer ---------- */
 (function(){
@@ -8615,6 +8627,36 @@ const MUS=(()=>{
         <span class="hint">${S.settings.auddToken?"✓ Music ID is on for the whole team.":"Not set yet."}</span></div>`}
   function musicTag(v){return v&&v.music&&v.music.title?`<span class="tag mus-tag" title="${esc(v.music.title)} – ${esc(v.music.artist||"")}">♪ ${esc(v.music.title)}</span>`:""}
   return {listen,fromFile,fromLink,fromJob,fromVideo,panel,settingsHTML,musicTag,st,close};
+})();
+
+/* ================= v128: review reminder — Zain gets a nudge every 20 minutes while videos wait for review ================= */
+const RVR=(()=>{
+  const KEY="pb-rv-remind",EVERY=()=>Math.max(5,+(S.settings.rvRemindMins||20))*60000;
+  const waiting=()=>vids().filter(v=>v.status==="In review").sort((a,b)=>(reviewSince(a)||0)-(reviewSince(b)||0));
+  function card(L){const box=$("#alerts");if(!box)return;const old=document.getElementById("al-rvremind");if(old)old.remove();
+    const el=document.createElement("div");el.className="alert al-review al-rvr";el.id="al-rvremind";el.setAttribute("role","alert");
+    const now=Date.now(),first=L[0];
+    el.innerHTML=`<div class="al-top"><span class="al-pill">Reminder</span><button class="al-x" data-rvr="x" aria-label="Dismiss">×</button></div>
+      <b class="al-t">${L.length===1?"1 video is":L.length+" videos are"} waiting for your review</b>
+      <ul class="rvr-l">${L.slice(0,4).map(v=>`<li><span>${esc(v.title||"Untitled")}</span><em>${reviewSince(v)?fmtWait(now-reviewSince(v)):""}</em></li>`).join("")}${L.length>4?`<li class="more">and ${L.length-4} more</li>`:""}</ul>
+      <div class="al-btns"><button class="al-done" data-rvr="x">Later</button><button class="al-open" data-rvr="watch" data-id="${first.id}">${hasReview(first)&&spOn()?"▶ Watch the first":"Open review"}</button></div>`;
+    const bar=box.querySelector(".al-bar");if(bar)bar.after(el);else box.prepend(el);box.scrollTop=0;alertsLayout()}
+  function notify(L){if(!osOn())return;const t=`${L.length===1?"1 video":L.length+" videos"} waiting for your review`,body=L.slice(0,3).map(v=>v.title||"Untitled").join(", ")+(L.length>3?"…":"");
+    const opts={body,icon:"icon-192.png",badge:"icon-192.png",tag:"pb-rv-remind",renotify:true,requireInteraction:true,data:{id:L[0].id,k:"review"}};
+    const plain=()=>{try{const n=new Notification(t,{body,icon:"icon-192.png",tag:"pb-rv-remind"});n.onclick=()=>{window.focus();n.close()}}catch(_){}};
+    if(navigator.serviceWorker&&navigator.serviceWorker.controller)navigator.serviceWorker.ready.then(r=>r.showNotification(t,opts)).catch(plain);else plain()}
+  function tick(){if(typeof loaded!=="undefined"&&!loaded)return;if(!isReviewer()||S.settings.rvRemind===false)return;
+    const L=waiting();if(!L.length){lsSet(KEY,null);const c=document.getElementById("al-rvremind");if(c&&!c.dataset.closing)closeAlert(c);return}
+    const last=+(lsGet(KEY)||0),now=Date.now();
+    // the clock starts when something is waiting; the first nudge comes 20 minutes later (the new-review pop-up covers the start)
+    if(!last){lsSet(KEY,String(now));return}
+    if(now-last<EVERY())return;
+    lsSet(KEY,String(now));card(L);notify(L);try{chime()}catch(_){}}
+  document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-rvr]");if(!b)return;const el=b.closest(".alert");
+    if(b.dataset.rvr==="watch"){const v=S.videos[b.dataset.id];if(v){if(hasReview(v)&&spOn())openReview(v.id);else{S.tab="schedule";render()}}}
+    if(el)closeAlert(el)});
+  setInterval(tick,30000);setTimeout(tick,4000);
+  return {tick,waiting};
 })();
 
 })();
