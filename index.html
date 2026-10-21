@@ -2239,7 +2239,8 @@ body.viewonly [data-act="openAdd"],body.viewonly .shuffle,body.viewonly [data-ac
 body.viewonly .id-add,body.viewonly .away-form,body.viewonly [data-act="backupNow"],body.viewonly .imp,body.viewonly .xbtn{display:none!important}
 /* view-only accounts: keep the empty spaces so rows line up exactly like everyone else's */
 body.viewonly .slot .grip,body.viewonly td.c-del,body.viewonly .mv2{visibility:hidden!important}body.viewonly .erow .grip .g{display:none!important}body.viewonly .slot.filled,body.viewonly .erow{cursor:default!important}
-body.viewonly #main input:not([data-live]):not([data-plr]):not([data-sumr]):not([data-ovr]):not([type=search]),body.viewonly #main textarea{pointer-events:none;background:transparent!important;border-color:transparent!important}
+body.viewonly #main input:not([data-live]):not([data-plr]):not([data-sumr]):not([data-ovr]):not([type=search]):not(#dlIn):not(#musLink):not(#musFile),body.viewonly #main textarea:not(#dlIn){pointer-events:none;background:transparent!important;border-color:transparent!important}
+/* the Downloader and the song finder stay usable for everyone */
 body.viewonly .stsel{pointer-events:none}
 body.viewonly header.top h1::after{content:"View only";display:inline-block;margin-left:12px;vertical-align:middle;padding:4px 12px;border-radius:999px;background:rgba(12,14,8,.08);font-size:13px;font-weight:700;letter-spacing:0;color:#5f6459}
 body.viewonly #importBtn,body.viewonly [data-act="mImport"]{display:none!important}
