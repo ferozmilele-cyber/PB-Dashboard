@@ -2304,6 +2304,35 @@ td.title .asg-tag{display:inline-flex!important;align-items:center;width:auto!im
 .tw-v{display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px solid var(--line)}.tw-v>i{width:8px;height:8px;border-radius:50%;flex:none}.tw-v>span{min-width:0;flex:1}
 .tw-v b{display:block;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tw-v small{font-size:12px;color:var(--muted)}.tw-v .etimer{flex:none}
 .tw-more{margin:6px 0 0;font-size:12px;color:var(--muted)}
+/* ===== v126: Music ID ===== */
+.mus-ways{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.mus-way{min-width:0;width:100%;grid-template-columns:minmax(0,1fr)}.mus-lrow{min-width:0}
+.mus-way{all:unset;box-sizing:border-box;display:grid;align-content:start;gap:4px;padding:16px;border-radius:20px;border:1px solid var(--glass-border,rgba(255,255,255,.95));background:rgba(255,255,255,.72);box-shadow:0 1px 2px rgba(20,24,10,.05),inset 0 1px 0 #fff;-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);cursor:pointer;transition:transform .25s var(--spring,ease),box-shadow .25s}
+.mus-way:hover:not([disabled]):not(.off):not(.mus-linkw){transform:translateY(-2px);box-shadow:0 10px 26px rgba(20,30,8,.1),inset 0 1px 0 #fff}
+.mus-way[disabled],.mus-way.off{opacity:.5;cursor:not-allowed}
+.mus-way.mus-linkw{cursor:default}
+.mw-i{font-size:22px;line-height:1;margin-bottom:4px}.mus-way b{font-size:15px}.mus-way small{font-size:12.5px;color:var(--muted);line-height:1.35}
+.mus-lrow{display:flex;gap:8px;margin-top:8px}.mus-lrow input{flex:1;min-width:0;height:34px;border:1px solid var(--line);border-radius:999px;padding:0 14px;background:rgba(255,255,255,.9);font:inherit;font-size:13px;color:var(--ink)}
+.mus-hist{margin-top:16px}.mh-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}.mh-h b{font-size:13px;color:var(--muted)}
+.mh-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)}.mh-row img,.mh-row>i,.mh-row>.mh-a{width:40px;height:40px;border-radius:10px;object-fit:cover;flex:none;display:grid;place-items:center;font-style:normal;background:rgba(170,255,0,.18)}
+.mh-row>span{flex:1;min-width:0}.mh-row b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mh-row small{font-size:12px;color:var(--muted)}
+dialog.mus-dlg{width:min(440px,calc(100vw - 32px));border:0;border-radius:28px;padding:0;background:rgba(250,251,247,.92);-webkit-backdrop-filter:blur(30px) saturate(160%);backdrop-filter:blur(30px) saturate(160%);box-shadow:0 30px 80px rgba(10,14,4,.25),inset 0 1px 0 #fff;color:var(--ink)}
+dialog.mus-dlg form{position:relative;padding:26px 22px 18px}
+dialog.mus-dlg .od-x{top:12px;right:12px}
+.mus-wait{display:grid;justify-items:center;text-align:center;gap:8px;padding:10px 6px 6px}.mus-wait b{font-size:18px}.mus-wait small{font-size:13px;color:var(--muted);max-width:320px}
+.mus-ring{--p:0;width:96px;height:96px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--lime) calc(var(--p)*360deg),rgba(12,14,8,.08) 0);position:relative;margin-bottom:6px;animation:musPulse 1.6s ease-in-out infinite}
+.mus-ring::before{content:"";position:absolute;inset:7px;border-radius:50%;background:#0B0B0C}
+.mus-ring span{position:relative;color:var(--lime);font-size:34px;font-weight:800}
+.mus-ring.off{animation:none;background:rgba(12,14,8,.08)}.mus-ring.off span{color:#fff}
+@keyframes musPulse{0%,100%{box-shadow:0 0 0 0 rgba(170,255,0,.35)}50%{box-shadow:0 0 0 14px rgba(170,255,0,0)}}
+@media (prefers-reduced-motion:reduce){.mus-ring{animation:none}}
+.mus-res{display:flex;gap:16px;align-items:center;padding:6px 0 4px}
+.mus-art{width:104px;height:104px;border-radius:18px;object-fit:cover;flex:none;box-shadow:0 12px 30px rgba(10,14,4,.25)}.mus-art.none{display:grid;place-items:center;background:#0B0B0C;color:var(--lime);font-size:40px}
+.mus-t{min-width:0;display:grid;gap:3px}.mus-t small{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#4c7a00}.mus-t b{font-size:21px;line-height:1.2}.mus-t span{font-size:14px;color:var(--muted)}
+.mus-links{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 4px}
+dialog.mus-dlg .foot{display:flex;gap:8px;align-items:center;margin-top:16px}
+.tag.mus-tag{background:rgba(170,255,0,.12)!important;color:#3d6400!important;border:1px solid rgba(123,209,0,.35)!important;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:-3px}
+@media (max-width:760px){.mus-ways{grid-template-columns:minmax(0,1fr)}.mus-res{flex-direction:column;text-align:center}.mus-t{justify-items:center}.mus-links{justify-content:center}}
+
 .est{display:grid;gap:6px;justify-items:stretch}
 .gsel.asg{height:30px!important;min-height:0!important;font-size:12.5px!important;padding:0 10px!important;border-radius:999px!important;font-weight:700!important}
 .gsel.asg.set{background:rgba(139,114,207,.16)!important;border-color:rgba(139,114,207,.45)!important;color:#5a45a8!important}
@@ -2950,6 +2979,15 @@ dialog.ig-dlg{width:min(860px,96vw)}
 :root[data-theme="dark"] .tw-n span{background:rgba(255,255,255,.05)!important}
 :root[data-theme="dark"] .tw-h em{background:rgba(255,255,255,.08)!important}
 :root[data-theme="dark"] .tw-h em.on{background:var(--lime)!important;color:#0B0B0C!important}
+/* music id (v126) */
+:root[data-theme="dark"] .mus-way{background:rgba(255,255,255,.04)!important;border-color:var(--line)!important;box-shadow:none!important}
+:root[data-theme="dark"] .mus-lrow input{background:var(--d-field)!important;border-color:var(--d-line2)!important;color:var(--ink)!important}
+:root[data-theme="dark"] dialog.mus-dlg{background:rgba(20,26,36,.92)!important;box-shadow:0 30px 80px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.06)!important}
+:root[data-theme="dark"] .mus-ring{background:conic-gradient(var(--lime) calc(var(--p)*360deg),rgba(255,255,255,.1) 0)!important}
+:root[data-theme="dark"] .mus-ring.off{background:rgba(255,255,255,.1)!important}
+:root[data-theme="dark"] .mus-ring::before{background:#0B0F15!important}
+:root[data-theme="dark"] .mus-t small{color:var(--lime)!important}
+:root[data-theme="dark"] .tag.mus-tag{background:rgba(170,255,0,.1)!important;color:var(--lime)!important;border-color:rgba(170,255,0,.28)!important}
 
 /* ================================================================
    iPHONE — minimal layer (v82)
@@ -3560,6 +3598,7 @@ function stMenuItems(v){
       out.push({v:"__upfinal",label:C?"Upload photos…":"Upload final…",c:"#3E9C5E",hint:"Becomes ready to post"})}
   }
   if(hasReview(v)&&spOn())out.push({v:"__watch",label:isCar(v)&&v.car?"▶ View photos":"▶ Watch draft",c:"#0B0B0C"});
+  if(!isCar(v)&&spOn()&&((v.final&&v.final.itemId)||(v.draft&&v.draft.itemId)||isSpUrl(safeUrl(v.finalLink)||"")))out.push({v:"__music",label:"♪ What’s the song?",c:"#8B72CF",hint:v.music&&v.music.title?v.music.title:"Find the music in it"});
   if(!ST_MAIN.includes(v.status))out.push({v:v.status,label:v.status,c:SC[v.status]||"#888",cur:true});
   ST_MAIN.forEach(k=>out.push({v:k,label:k==="In review"&&v.status!=="In review"?"Send for review":k,c:SC[k],cur:k===v.status}));
   return out;
@@ -3588,6 +3627,7 @@ document.addEventListener("click",e=>{const o=e.target.closest&&e.target.closest
     if(val==="__upfinal"){openUp(v.id,"final");return}
     if(val==="__usedraft"){spPromoteDraft(v.id);return}
     if(val==="__igpost"){IG.open(v.id);return}
+    if(val==="__music"){MUS.fromVideo(v.id);return}
     // with SharePoint set up, sending for review means uploading the draft
     if(val==="In review"&&spOn()&&canUp(v)&&!isReviewer()&&EDIT_POOL.includes(v.status)){openUp(v.id,"draft");return}
     if(val==="__logre"){askEditorReedit(v,v.status);return}if(val===v.status)return;setStatusFlow(v,val);return}
@@ -3854,11 +3894,11 @@ function mayWrite(id){return isEdAcct()||(isMember()&&myVideos().has(id))}
 function timerMine(o){if(isMember())return myVideos().has(o.id);if(isEdAcct())return o.editBy===S.me||myVideos().has(o.id);
   return !teamOwned().has(o.id)&&!(o.editBy&&o.editBy!==S.me&&helperAcct(o.editBy))&&!(asgOf(o)&&helperAcct(asgOf(o)))}
 let voT=0;function voNote(){if(Date.now()-voT<2500)return;voT=Date.now();toast(isEdAcct()?"You can change the video status on Edit order and Posting schedule":isMember()?"You can change the status of the videos assigned to you":"View only. Ask Shibli or Zain to make changes")}
-const VIEW_OK=new Set(["edWho","viewDraft","viewCar","tripGo","tripOpen","tripWho","tripCopy","copy","days","dialBack","dialTry","dialType","dlBackup","fclear","ffmt","fnolink","fnopil","fsched","fst","goShoots","goTab","grpToggle","histView","hrange","ideaArch","ideaCopy","ideaPil","ideaType","mExport","mOut","mday","mnav","more","newWin","openCmd","osnOn","osnTest","ovGo","ovMode","ovStatus","plByDay","plMode","playWrapped","printSum","rowMore","schedToday","shView","sumMode","sview","testAlert","vaultLock","vaultOpen","vcopy","viewScript","vshow","clearSel","chpw","freshLoad"]);
+const VIEW_OK=new Set(["musListen","musLink","musClear","musJob","edWho","viewDraft","viewCar","tripGo","tripOpen","tripWho","tripCopy","copy","days","dialBack","dialTry","dialType","dlBackup","fclear","ffmt","fnolink","fnopil","fsched","fst","goShoots","goTab","grpToggle","histView","hrange","ideaArch","ideaCopy","ideaPil","ideaType","mExport","mOut","mday","mnav","more","newWin","openCmd","osnOn","osnTest","ovGo","ovMode","ovStatus","plByDay","plMode","playWrapped","printSum","rowMore","schedToday","shView","sumMode","sview","testAlert","vaultLock","vaultOpen","vcopy","viewScript","vshow","clearSel","chpw","freshLoad"]);
 const VIEW_FIELDS=["live","plr","sumr","ovr","opt"];
 // Waleed and Hamza also use PB Downloader and the editing timer
 const HELPER_OK=new Set(["startEdit","dlAdd","dlDo","dlQ","dlCk","dlClear","dlRetry","dlVideo","pauseEdit","resumeEdit","pauseAll","resumeAll","upDraft"]);
-function isViewField(el){const d=el&&el.dataset||{};return VIEW_FIELDS.some(k=>k in d)||el.type==="search"||!!(el.closest&&el.closest("#login,#cmd,.tpw,.vault-form"))||!!(helperAcct()&&el.closest&&el.closest(".dl-panel"))}
+function isViewField(el){const d=el&&el.dataset||{};return VIEW_FIELDS.some(k=>k in d)||el.type==="search"||!!(el.closest&&el.closest("#login,#cmd,.tpw,.vault-form"))||!!(helperAcct()&&el.closest&&el.closest(".dl-panel"))||!!(el.closest&&el.closest(".mus-panel,#musDlg"))}
 document.addEventListener("click",e=>{if(!viewOnly())return;const t=e.target;if(!t.closest)return;
   const g=t.closest(".gsel");if(g&&g._sel&&!isViewField(g._sel)){e.preventDefault();e.stopPropagation();voNote();return}
   const b=t.closest("[data-act]");if(b&&b.dataset.act==="stMenu"&&mayEdit(b.dataset.id))return;
@@ -4487,7 +4527,7 @@ function vVideos(){
   L.forEach(v=>{if(v.status!=="Posted"){main.push(v);return}const k=vidPeriod(v),key=k.slice(0,4)<cy?k.slice(0,4):k.slice(0,7);if(key===cm){main.push(v);return}(G[key]=G[key]||[]).push(v)});
   const rowOf=v=>`<tr class="${S.sel.has(v.id)?"sel":""}${(S.moreRows||{})[v.id]?" open":""}" data-k="v-${v.id}">
     <td class="ck"><input type="checkbox" data-act-ck="${v.id}"${S.sel.has(v.id)?" checked":""} aria-label="Select ${esc(v.title)}"></td>
-    <td class="title"><input type="text" value="${esc(v.title)}" data-f="title" data-id="${v.id}" aria-label="Title">${asgTag(v)}<button class="mob-more" data-act="rowMore" data-id="${v.id}">${(S.moreRows||{})[v.id]?"Less":"Details"}</button>${(v.status==="Re-edit"||EDIT_POOL.includes(v.status))&&v.reviewNote?`<small class="rnote">Changes: ${esc(v.reviewNote)}</small>`:""}${v.status==="In review"&&v.round>1?`<small class="rnote rv">Review round ${v.round}</small>`:""}</td>
+    <td class="title"><input type="text" value="${esc(v.title)}" data-f="title" data-id="${v.id}" aria-label="Title">${asgTag(v)}${MUS.musicTag(v)}<button class="mob-more" data-act="rowMore" data-id="${v.id}">${(S.moreRows||{})[v.id]?"Less":"Details"}</button>${(v.status==="Re-edit"||EDIT_POOL.includes(v.status))&&v.reviewNote?`<small class="rnote">Changes: ${esc(v.reviewNote)}</small>`:""}${v.status==="In review"&&v.round>1?`<small class="rnote rv">Review round ${v.round}</small>`:""}</td>
     <td class="c-fmt" data-l="Format"><select data-f="format" data-id="${v.id}" aria-label="Format"><option${v.format!=="Carousel"?" selected":""}>Reel</option><option${v.format==="Carousel"?" selected":""}>Carousel</option></select></td>
     <td class="c-pil" data-l="Pillar">${isCar(v)?`<span class="stat">Carousel</span>`:pillarSelect(`data-f="pillar" data-id="${v.id}" aria-label="Pillar" class="psel" style="--pc:${pillarColor(v.pillar)}"`,v.pillar||"")}</td>
     <td class="c-shot" data-l="Shot on"><input type="date" value="${esc(v.shotDate||"")}" data-f="shotDate" data-id="${v.id}" aria-label="Shot date" class="dt-in" style="--dc:${hue(v.shotDate)}"></td>
@@ -4582,7 +4622,7 @@ function vSchedule(){
       `${openLink(v,"Open")}${dlBtn(v)}`:
       (isCar(v)&&v.car&&v.car.folderId?carView(v):draftBtn(v));
     const sl=d?`${d}|${tm}|${k}`:"";
-    return `<div class="slot filled${k==="C"?" car":""}"${d?` data-slot="${sl}"`:""} data-drag-id="${v.id}"><div class="grip" title="Drag to move">⋮⋮</div><div class="tm">${label}${k==="C"?`<span class="kind">Carousel</span>`:v.pillar?`<span class="kind pk" style="--pc:${pillarColor(v.pillar)}">${esc(v.pillar)}</span>`:`<span class="kind pk none">No pillar</span>`}</div><div class="ttl"><b>${esc(v.title||"Untitled")}</b>${asgTag(v)}<small>${v.shotDate?"Shot "+esc(nice(v.shotDate)):"No shot date"}${tags}</small></div><div class="stc">${linkArea?`<span class="stl">${linkArea}</span>`:""}${statusSelect(v)}</div><div>${lockCtl(v)}</div><div class="mv2"></div><div><button class="xbtn" data-act="unassign" data-id="${v.id}" aria-label="Remove from schedule" title="Remove">×</button></div></div>`;
+    return `<div class="slot filled${k==="C"?" car":""}"${d?` data-slot="${sl}"`:""} data-drag-id="${v.id}"><div class="grip" title="Drag to move">⋮⋮</div><div class="tm">${label}${k==="C"?`<span class="kind">Carousel</span>`:v.pillar?`<span class="kind pk" style="--pc:${pillarColor(v.pillar)}">${esc(v.pillar)}</span>`:`<span class="kind pk none">No pillar</span>`}</div><div class="ttl"><b>${esc(v.title||"Untitled")}</b>${asgTag(v)}${MUS.musicTag(v)}<small>${v.shotDate?"Shot "+esc(nice(v.shotDate)):"No shot date"}${tags}</small></div><div class="stc">${linkArea?`<span class="stl">${linkArea}</span>`:""}${statusSelect(v)}</div><div>${lockCtl(v)}</div><div class="mv2"></div><div><button class="xbtn" data-act="unassign" data-id="${v.id}" aria-label="Remove from schedule" title="Remove">×</button></div></div>`;
   };
   const optsP=req=>{const a=freeR.filter(v=>v.pillar===req),b=freeR.filter(v=>v.pillar!==req);
     return `<option value="">Add ${esc(req)}…</option>`+a.map(v=>`<option value="${v.id}">${esc(v.title||"Untitled")} (${v.status})</option>`).join("")+(b.length&&S.settings.pillarForce?`<optgroup label="Other pillars">${b.map(v=>`<option value="${v.id}">${esc(v.title||"Untitled")} · ${esc(v.pillar||"no pillar")}</option>`).join("")}</optgroup>`:"")};
@@ -4916,6 +4956,7 @@ function vSettings(){
     </div>
     ${GAS?`<button class="btn" data-act="testNotify">Send a test email</button>`:""}
     ${typeof IG!=="undefined"?IG.panel():""}
+    ${MUS.settingsHTML()}
     <h3 class="subh" id="spSet">SharePoint uploads</h3>
     <p class="hint sp-intro">Drafts and finals upload straight from the board into SharePoint, a folder for each month. Everyone signs in once with their Milele Microsoft account.</p>
     <div class="field"><label for="spcid">Application (client) ID</label><input id="spcid" type="text" value="${esc(S.settings.spClientId||SP_DEF.clientId)}" data-set="spClientId" placeholder="From IT, e.g. 1a2b3c4d-…" spellcheck="false"${S.me===ADMIN?"":" readonly"}></div>
@@ -4993,7 +5034,7 @@ function dlCard(j){
   const meta=[dlSrc(j),who,i.duration_string,qn].filter(Boolean).map(esc).join(" · ");
   const th=i.thumbnail?` style="background-image:url('${esc(i.thumbnail).replace(/'/g,"%27")}')"`:"";
   let st,acts;
-  if(j.state==="done"){st=`<span class="dl-st ok">Saved</span>`;acts=`<button class="iconbtn dl-dark" data-act="dlDo" data-a="play" data-id="${j.id}">Play</button><button class="iconbtn" data-act="dlDo" data-a="show" data-id="${j.id}">Show in folder</button>`}
+  if(j.state==="done"){st=`<span class="dl-st ok">Saved</span>`;acts=`<button class="iconbtn" data-act="musJob" data-id="${j.id}" title="What’s the song in this video?">♪ Song</button><button class="iconbtn dl-dark" data-act="dlDo" data-a="play" data-id="${j.id}">Play</button><button class="iconbtn" data-act="dlDo" data-a="show" data-id="${j.id}">Show in folder</button>`}
   else if(j.state==="error"||j.state==="canceled"){st=`<span class="dl-st ${j.state==="error"?"bad":""}">${esc(j.state==="error"?j.error:"Stopped")}</span>`;acts=`<button class="iconbtn dl-dark" data-act="dlDo" data-a="retry" data-id="${j.id}">Try again</button><button class="iconbtn" data-act="dlDo" data-a="remove" data-id="${j.id}">Remove</button>`}
   else{st=`<span class="dl-st">${j.state==="starting"?"Getting the video…":j.state==="merging"?"Finishing…":"0%"}</span>`;acts=`<button class="iconbtn" data-act="dlDo" data-a="cancel" data-id="${j.id}">Stop</button>`}
   return `<article class="dl-job" id="dlj${j.id}"><div class="dl-th"${th}><span>${esc(dlSrc(j))}</span></div>
@@ -5014,7 +5055,7 @@ function vDownloader(){
   const seg=(act,list,cur,lbl)=>`<div class="seg" role="group" aria-label="${lbl}">${list.map(([k,l])=>`<button data-act="${act}" data-v="${k}" aria-pressed="${cur===k}">${l}</button>`).join("")}</div>`;
   const n=DLR.jobs.filter(j=>!dlDone(j)).length,fin=DLR.jobs.some(dlDone);
   setTimeout(dlStart,0);
-  return `<section class="panel dl-panel">
+  return `${MUS.panel()}<section class="panel dl-panel">
     <div class="phead"><h2>Downloader</h2><span class="dl-pill ${DLR.ok?"on":DLR.ok===false?"off":""}" id="dlPill">${DLR.ok?"Connected":DLR.ok===false?(DLR.why==="blocked"?"Blocked":"Not running"):"Connecting…"}</span>
       <div class="pactions"><button class="btn small" data-act="dlDo" data-a="show"${DLR.ok?"":" disabled"}>Open folder</button></div></div>
     <p class="dl-sub">Instagram, TikTok, YouTube, Facebook and more. Saved to Downloads › PB Downloads on this PC. SharePoint links download through your Microsoft sign-in.</p>
@@ -5038,6 +5079,7 @@ function dlPaint(){
     if(st&&j.state==="working"){const p=Math.round(j.pct||0),ok=s=>s&&!/Unknown|^NA$/i.test(s);st.textContent=`${j.pass>1&&j.quality!=="audio"?"Sound ":""}${p}%${ok(j.speed)?" · "+j.speed:""}${ok(j.eta)?" · "+j.eta+" left":""}`}})}
 async function dlPoll(){
   clearTimeout(DLR.timer);DLR.timer=null;
+  if(typeof MUS!=="undefined"&&MUS.st.busy){DLR.timer=setTimeout(dlPoll,2500);return}   // PB Downloader is busy finding a song
   if(S.tab!=="downloader"||document.hidden)return;
   try{const d=await dlApi("state");DLR.ok=true;DLR.why="";DLR.jobs=d.jobs||[];DLR.folder=d.folder||""}catch(e){DLR.ok=false;DLR.why=(await dlReachable())?"blocked":"off"}
   dlPaint();
@@ -7347,6 +7389,10 @@ document.addEventListener("click",async e=>{
   else if(act==="viewCar"){openGallery(b.dataset.id)}
   else if(act==="viewDraft"){openReview(b.dataset.id)}
   else if(act==="edWho"){S.edWho=b.dataset.w;render()}
+  else if(act==="musListen"){MUS.listen()}
+  else if(act==="musLink"){const i=document.getElementById("musLink");MUS.fromLink(i?i.value:"")}
+  else if(act==="musJob"){MUS.fromJob(b.dataset.id)}
+  else if(act==="musClear"){lsSet("pb-music-hist",null);render()}
   else if(act==="startEdit"){const v=S.videos[b.dataset.id];if(v){setStatusFlow(v,"Editing");toast("Editing started. The timer is running")}}
   else if(act==="openLinkDlg"){
     // reuses the same "Add the final video link" dialog as the approval prompt
@@ -7503,6 +7549,7 @@ document.addEventListener("change",e=>{
     else if(k==="pillarFrom"){S.settings.pillarFrom=t.value}
     else if(k==="editLead"){S.settings.editLead=+t.value}
     else if(k==="reviewers"){S.settings.reviewers=t.value.trim()}
+    else if(k==="auddToken"){if(S.me!==ADMIN)return;S.settings.auddToken=t.value.trim()}
     else if(/^sp[A-Z]/.test(k)){S.settings[k]=t.value.trim();MS.drive=null;MS.carBase=null}
     else{const n=parseInt(t.value,10);if(n>0)S.settings[k]=n}
     putSettings();render();return;
@@ -8435,6 +8482,138 @@ const IG=(()=>{
   document.addEventListener("input",e=>{if(e.target&&e.target.id==="igtok"){try{const v=e.target.value.trim();v?localStorage.setItem("pb-ig-token",v):localStorage.removeItem("pb-ig-token")}catch(_){}}});
   setTimeout(preload,3000);
   return {ready,open,panel,preload,_g:g};
+})();
+
+/* ================= v126: Music ID — "What's the song?" (AudD) ================= */
+const MUS=(()=>{
+  const tok=()=>String(S.settings.auddToken||"").trim();
+  const HKEY="pb-music-hist";let dlg=null,run=0;const st={busy:false};
+  const hist=()=>{try{return JSON.parse(lsGet(HKEY)||"[]")||[]}catch(_){return []}};
+  function pushHist(r){const k=(r.title+"|"+r.artist).toLowerCase();const L=hist().filter(x=>(x.title+"|"+x.artist).toLowerCase()!==k);L.unshift(r);lsSet(HKEY,JSON.stringify(L.slice(0,12)))}
+  const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+  const pickMime=()=>{for(const m of ["audio/webm;codecs=opus","audio/webm","audio/mp4","audio/ogg"]){try{if(window.MediaRecorder&&MediaRecorder.isTypeSupported(m))return m}catch(_){}}return ""};
+  const extOf=t=>/mp4/.test(t)?"m4a":/ogg/.test(t)?"ogg":"webm";
+  const blobB64=b=>new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(String(r.result).split(",")[1]||"");r.onerror=no;r.readAsDataURL(b)});
+  function errText(e){const c=e&&+e.error_code;
+    if(c===900||c===901)return "The AudD token in Settings isn’t right. Ask Shibili to check it.";
+    if(c===902)return "This month’s AudD searches are used up. Top up the AudD plan to keep going.";
+    if(c===300||c===500)return "Couldn’t hear enough music. Try another part of the video, or hold the phone closer.";
+    if(c===400)return "That file is too big to send. Try “Listen” or a shorter clip.";
+    return (e&&e.error_message)||"Something went wrong. Try again."}
+  function norm(j){if(!j||typeof j!=="object")throw new Error("No answer from AudD");if(j.status==="error")throw new Error(errText(j.error));
+    const r=Array.isArray(j.result)?j.result[0]:j.result;if(!r)return null;
+    const am=r.apple_music||{},sp=r.spotify||{},imgs=(sp.album&&sp.album.images)||[];
+    const art=(am.artwork&&am.artwork.url?am.artwork.url.replace("{w}","300").replace("{h}","300"):"")||((imgs[1]||imgs[0]||{}).url)||"";
+    return {title:r.title||"Unknown",artist:r.artist||"",album:r.album||"",date:r.release_date||"",art,link:safeUrl(r.song_link)||"",
+      spotify:safeUrl(sp.external_urls&&sp.external_urls.spotify)||"",apple:safeUrl(am.url)||"",at:Date.now()}}
+  // ask AudD straight from the browser; if the browser blocks it, PB Downloader on this PC asks instead
+  async function ask(blob,name){
+    const fd=new FormData();fd.append("api_token",tok());fd.append("file",blob,name);fd.append("return","apple_music,spotify");
+    let j=null;try{const r=await fetch("https://api.audd.io/",{method:"POST",body:fd});j=await r.json()}catch(_){j=null}
+    if(j)return j;
+    return viaPBD({audio:await blobB64(blob),name})}
+  async function viaPBD(body){
+    try{return await dlApi("music",{...body,token:tok(),cookies:"auto"},120000)}
+    catch(e){let up=false;try{const p=await dlApi("ping");up=!!p&&!p.music}catch(_){}
+      throw new Error(up?"Update PB Downloader to use this (get the new PB-Downloader.zip from the Downloader tab).":"Couldn’t reach AudD from this browser, and PB Downloader isn’t running on this PC. Start PB Downloader and try again.")}}
+  // record a few seconds of a video's sound without playing it out loud
+  async function clipFromMedia(src,cross,startFrac,secs,onTick){
+    const v=document.createElement("video");if(cross)v.crossOrigin="anonymous";v.preload="auto";v.playsInline=true;v.src=src;
+    await new Promise((ok,no)=>{v.onloadedmetadata=ok;v.onerror=()=>no(new Error("load"));setTimeout(()=>no(new Error("load")),30000)});
+    const dur=isFinite(v.duration)?v.duration:0;secs=Math.min(secs,Math.max(4,dur||secs));
+    const at=Math.max(0,Math.min(dur*startFrac,dur-secs-0.2));if(at>0){v.currentTime=at;await new Promise(r=>{v.onseeked=r;setTimeout(r,8000)})}
+    const AC=window.AudioContext||window.webkitAudioContext,ac=new AC(),node=ac.createMediaElementSource(v),dest=ac.createMediaStreamDestination();node.connect(dest);
+    const mime=pickMime(),mr=new MediaRecorder(dest.stream,mime?{mimeType:mime}:undefined),ch=[];mr.ondataavailable=e=>{if(e.data&&e.data.size)ch.push(e.data)};
+    const stopped=new Promise(r=>mr.onstop=r);mr.start(500);await v.play();
+    for(let i=0;i<secs*4;i++){await sleep(250);onTick&&onTick((i+1)/(secs*4))}
+    mr.stop();v.pause();await stopped;try{ac.close()}catch(_){}v.removeAttribute("src");v.load();
+    return new Blob(ch,{type:mr.mimeType||"audio/webm"})}
+  /* ---------- the window ---------- */
+  function mk(){dlg=document.createElement("dialog");dlg.id="musDlg";dlg.className="mus-dlg";dlg.setAttribute("aria-label","What's the song?");
+    dlg.innerHTML=`<form method="dialog"><button class="od-x" type="button" data-mus="close" aria-label="Close" title="Close">×</button><div class="mus-body"></div></form>`;document.body.appendChild(dlg);
+    dlg.addEventListener("click",e=>{if(e.target===dlg){close();return}const b=e.target.closest("[data-mus]");if(!b)return;e.preventDefault();const k=b.dataset.mus;
+      if(k==="close")close();else if(k==="again"&&dlg._again)dlg._again(b.dataset.part);else if(k==="copy"){const r=dlg._res;if(r){navigator.clipboard&&navigator.clipboard.writeText(`${r.title} – ${r.artist}`);toast("Song name copied")}}
+      else if(k==="save"&&dlg._vid&&dlg._res)saveTo(dlg._vid,dlg._res)})}
+  function close(){run++;st.busy=false;if(dlg&&dlg.open){try{softClose?softClose(dlg,"x"):dlg.close()}catch(_){dlg.close()}}}
+  function show(html){if(!dlg)mk();dlg.querySelector(".mus-body").innerHTML=html;if(!dlg.open)openDlg(dlg)}
+  const ring=(p,lbl,sub)=>`<div class="mus-wait"><div class="mus-ring" style="--p:${p||0}"><span>♪</span></div><b>${esc(lbl)}</b><small>${esc(sub||"")}</small></div>`;
+  function setRing(p){const r=dlg&&dlg.querySelector(".mus-ring");if(r)r.style.setProperty("--p",p)}
+  const yt=r=>"https://www.youtube.com/results?search_query="+encodeURIComponent(`${r.artist} ${r.title}`);
+  function card(r,vid){const v=vid&&S.videos[vid],can=v&&(!viewOnly()||mayWrite(v.id));
+    return `<div class="mus-res">${r.art?`<img class="mus-art" src="${esc(r.art)}" alt="" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:this.className+' none',textContent:'♪'}))">`:`<div class="mus-art none">♪</div>`}
+      <div class="mus-t"><small>Found it</small><b>${esc(r.title)}</b><span>${esc(r.artist)}${r.album&&r.album!==r.title?` · ${esc(r.album)}`:""}${r.date?` · ${esc(r.date.slice(0,4))}`:""}</span></div></div>
+      <div class="mus-links">${r.spotify?`<a class="btn small" href="${esc(r.spotify)}" target="_blank" rel="noopener noreferrer">Spotify</a>`:""}${r.apple?`<a class="btn small" href="${esc(r.apple)}" target="_blank" rel="noopener noreferrer">Apple Music</a>`:""}<a class="btn small" href="${esc(yt(r))}" target="_blank" rel="noopener noreferrer">YouTube</a>${r.link?`<a class="btn small ghost" href="${esc(r.link)}" target="_blank" rel="noopener noreferrer">All links</a>`:""}</div>
+      <div class="foot"><button class="btn ghost" type="button" data-mus="copy">Copy name</button><span style="flex:1"></span>${can?`<button class="btn" type="button" data-mus="save">${v.music&&v.music.title===r.title?"✓ Saved on the video":"Save on the video"}</button>`:""}<button class="btn primary" type="button" data-mus="close">Done</button></div>`}
+  function failed(msg,canRetry){return `<div class="mus-wait bad"><div class="mus-ring off"><span>♪</span></div><b>${esc(msg)}</b></div>
+      <div class="foot">${canRetry?`<button class="btn" type="button" data-mus="again" data-part="mid">Try another part</button>`:""}<span style="flex:1"></span><button class="btn primary" type="button" data-mus="close">OK</button></div>`}
+  function noMatch(canRetry){return `<div class="mus-wait"><div class="mus-ring off"><span>?</span></div><b>No match</b><small>It may be original music, a sped-up edit, or the voice is louder than the song.</small></div>
+      <div class="foot">${canRetry?`<button class="btn" type="button" data-mus="again" data-part="end">Try another part</button>`:""}<span style="flex:1"></span><button class="btn primary" type="button" data-mus="close">OK</button></div>`}
+  async function go(title,work,{vid=null,retry=null}={}){
+    if(!tok()){show(failed(S.me===ADMIN?"Add your AudD token in Settings › Music ID first.":"Music ID isn’t set up yet. Ask Shibili to add the AudD token in Settings."));return}
+    const my=++run;st.busy=true;if(!dlg)mk();dlg._vid=vid;dlg._res=null;dlg._again=retry;
+    show(ring(0,title,"Hold on…"));
+    try{const j=await work(my);if(my!==run)return;const r=norm(j);
+      if(!r){show(noMatch(!!retry));return}
+      r.src=title;if(vid)r.vid=vid;pushHist(r);dlg._res=r;show(card(r,vid));try{sfx2("pop")}catch(_){}paintPanel()}
+    catch(e){if(my!==run)return;show(failed(String(e&&e.message||e).replace(/^Error: /,""),!!retry&&!/token|PB Downloader|used up/.test(String(e&&e.message))))}
+    finally{if(my===run)st.busy=false}}
+  /* ---------- the ways in ---------- */
+  async function listen(){
+    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia||!window.MediaRecorder){show(failed("This browser can’t use the microphone. Try Chrome or Safari."));return}
+    go("Listening…",async my=>{let s;try{s=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}})}catch(_){throw new Error("Allow the microphone for this site, then try again.")}
+      const mime=pickMime(),mr=new MediaRecorder(s,mime?{mimeType:mime}:undefined),ch=[];mr.ondataavailable=e=>{if(e.data&&e.data.size)ch.push(e.data)};const done=new Promise(r=>mr.onstop=r);mr.start(500);
+      const sub=dlg.querySelector(".mus-wait small");for(let i=0;i<40;i++){await sleep(250);if(my!==run)break;setRing((i+1)/40);if(sub)sub.textContent=`Hold the phone near the music · ${Math.ceil((40-i-1)/4)}s`}
+      mr.stop();s.getTracks().forEach(t=>t.stop());await done;if(my!==run)return null;
+      const b=dlg.querySelector(".mus-wait b"),sm=dlg.querySelector(".mus-wait small");if(b)b.textContent="Finding the song…";if(sm)sm.textContent="";
+      const blob=new Blob(ch,{type:mr.mimeType||"audio/webm"});return ask(blob,"listen."+extOf(blob.type))})}
+  function fromFile(file,part){if(!file)return;const frac=part==="end"?0.65:part==="mid"?0.45:0.25;
+    go(`“${file.name}”`,async my=>{
+      if(file.size<=9e6&&!part)return ask(file,file.name);
+      const url=URL.createObjectURL(file);
+      try{const sm=dlg.querySelector(".mus-wait small");if(sm)sm.textContent="Listening to the video…";
+        const blob=await clipFromMedia(url,false,frac,12,p=>{if(my===run)setRing(p)});
+        const b=dlg.querySelector(".mus-wait b");if(b)b.textContent="Finding the song…";return ask(blob,"clip."+extOf(blob.type))}
+      finally{URL.revokeObjectURL(url)}},{retry:p=>fromFile(file,p)})}
+  function fromLink(link,part){link=String(link||"").trim();if(!/^https?:\/\//.test(link)){toast("Paste a link that starts with http");return}
+    const from=part==="end"?30:part==="mid"?15:0;
+    go("Getting the sound from the link…",async()=>{const sm=dlg.querySelector(".mus-wait small");if(sm)sm.textContent="PB Downloader is fetching a few seconds of it";
+      return viaPBD({url:link,from})},{retry:p=>fromLink(link,p)})}
+  function fromJob(id,part){const from=part==="end"?30:part==="mid"?15:0;
+    go("Listening to the saved video…",async()=>viaPBD({id,from}),{retry:p=>fromJob(id,p)})}
+  function fromVideo(id,part){const v=S.videos[id];if(!v)return;const frac=part==="end"?0.65:part==="mid"?0.45:0.25;
+    go(`“${v.title||"Untitled"}”`,async my=>{
+      const ref=v.final&&v.final.itemId?v.final:v.draft&&v.draft.itemId?v.draft:null,link=safeUrl(v.finalLink)||(v.draft&&v.draft.webUrl)||"";
+      if(!ref&&!link)throw new Error("This video has no uploaded draft or final yet.");
+      await msApp();if(!msAccount())throw new Error("Sign in to Microsoft first (Settings › SharePoint), then try again.");
+      const it=await spResolve(ref,link),u=it&&it["@microsoft.graph.downloadUrl"];if(!u)throw new Error("SharePoint didn’t give a link to the file.");
+      const sm=dlg.querySelector(".mus-wait small");if(sm)sm.textContent="Listening to the video…";
+      try{const blob=await clipFromMedia(u,true,frac,12,p=>{if(my===run)setRing(p)});const b=dlg.querySelector(".mus-wait b");if(b)b.textContent="Finding the song…";return await ask(blob,"clip."+extOf(blob.type))}
+      catch(e){if(/load/.test(String(e&&e.message)))return viaPBD({url:u,direct:true,from:Math.round((it.video&&it.video.duration?it.video.duration/1000:40)*frac)});throw e}},
+      {vid:id,retry:p=>fromVideo(id,p)})}
+  function saveTo(id,r){const v=S.videos[id];if(!v)return;putVideo({...v,music:{title:r.title,artist:r.artist,link:r.link||r.spotify||"",spotify:r.spotify||"",art:r.art||"",at:Date.now(),by:S.me||""}});
+    toast("Saved. The song shows on the video");const b=dlg&&dlg.querySelector('[data-mus="save"]');if(b)b.textContent="✓ Saved on the video"}
+  /* ---------- the panel on the Downloader tab ---------- */
+  function panel(){const H=hist(),on=!!tok();
+    return `<section class="panel mus-panel" id="musPanel"><div class="phead"><h2>♪ What’s the song?</h2><span class="sub">Like Shazam: finds the music in a reel, a video file, or playing around you</span></div>
+      ${on?"":`<p class="ovnote">${S.me===ADMIN?`Add your AudD token to switch this on. <button class="btn small" data-act="goTab" data-tab-go="settings">Open Settings</button>`:"Music ID isn’t set up yet. Ask Shibili to add the AudD token in Settings."}</p>`}
+      <div class="mus-ways">
+        <button type="button" class="mus-way" data-act="musListen"${on?"":" disabled"}><span class="mw-i">🎙</span><b>Listen</b><small>Hold the phone near the music for 10 seconds</small></button>
+        <label class="mus-way${on?"":" off"}"><input type="file" id="musFile" accept="audio/*,video/*,.mov,.mp4,.m4a,.mp3" hidden${on?"":" disabled"}><span class="mw-i">🎞</span><b>From a file</b><small>A reel or video saved on this computer or phone</small></label>
+        <div class="mus-way mus-linkw"><span class="mw-i">🔗</span><b>From a link</b><small>Instagram, TikTok or YouTube. Needs PB Downloader on this PC</small>
+          <div class="mus-lrow"><input type="url" id="musLink" placeholder="Paste a link" autocomplete="off" spellcheck="false"${on?"":" disabled"}><button type="button" class="btn small primary" data-act="musLink"${on?"":" disabled"}>Find</button></div></div>
+      </div>
+      ${H.length?`<div class="mus-hist"><div class="mh-h"><b>Recent</b><button type="button" class="linkbtn" data-act="musClear">Clear</button></div>${H.map(r=>`<div class="mh-row">${r.art?`<img class="mh-a" src="${esc(r.art)}" alt="" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:this.className+' none',textContent:'♪'}))">`:`<i>♪</i>`}<span><b>${esc(r.title)}</b><small>${esc(r.artist)}${r.vid&&S.videos[r.vid]?` · from “${esc(S.videos[r.vid].title||"Untitled")}”`:""}</small></span>${r.spotify?`<a class="openlink" href="${esc(r.spotify)}" target="_blank" rel="noopener noreferrer">Spotify</a>`:""}<a class="openlink" href="${esc(yt(r))}" target="_blank" rel="noopener noreferrer">YouTube</a></div>`).join("")}</div>`:""}
+    </section>`}
+  function paintPanel(){const el=document.getElementById("musPanel");if(el)el.outerHTML=panel()}
+  document.addEventListener("change",e=>{if(e.target&&e.target.id==="musFile"){const f=e.target.files&&e.target.files[0];e.target.value="";fromFile(f)}},true);
+  document.addEventListener("keydown",e=>{if(e.target&&e.target.id==="musLink"&&e.key==="Enter"){e.preventDefault();fromLink(e.target.value)}});
+  function settingsHTML(){const adm=S.me===ADMIN;
+    return `<h3 class="subh" id="musSet">Music ID</h3>
+      <p class="hint">“What’s the song?” uses AudD. Sign up at dashboard.audd.io (300 free searches, then about $5 a month for 1,000) and paste the API token here.</p>
+      <div class="field"><label for="audtok">AudD API token</label><input id="audtok" type="${adm?"password":"text"}" value="${adm?esc(S.settings.auddToken||""):S.settings.auddToken?"Set":"Not set"}" data-set="auddToken" placeholder="Paste the token" autocomplete="off" spellcheck="false"${adm?"":" readonly"}>
+        <span class="hint">${S.settings.auddToken?"✓ Music ID is on for the whole team.":"Not set yet."}</span></div>`}
+  function musicTag(v){return v&&v.music&&v.music.title?`<span class="tag mus-tag" title="${esc(v.music.title)} – ${esc(v.music.artist||"")}">♪ ${esc(v.music.title)}</span>`:""}
+  return {listen,fromFile,fromLink,fromJob,fromVideo,panel,settingsHTML,musicTag,st,close};
 })();
 
 })();
