@@ -5170,7 +5170,7 @@ function vDownloader(){
   const seg=(act,list,cur,lbl)=>`<div class="seg" role="group" aria-label="${lbl}">${list.map(([k,l])=>`<button data-act="${act}" data-v="${k}" aria-pressed="${cur===k}">${l}</button>`).join("")}</div>`;
   const n=DLR.jobs.filter(j=>!dlDone(j)).length,fin=DLR.jobs.some(dlDone);
   setTimeout(dlStart,0);
-  return `${MUS.panel()}<section class="panel dl-panel">
+  return `<section class="panel dl-panel">
     <div class="phead"><h2>Downloader</h2><span class="dl-pill ${DLR.ok?"on":DLR.ok===false?"off":""}" id="dlPill">${DLR.ok?"Connected":DLR.ok===false?(DLR.why==="blocked"?"Blocked":"Not running"):"Connecting…"}</span>
       <div class="pactions"><button class="btn small" data-act="dlDo" data-a="show"${DLR.ok?"":" disabled"}>Open folder</button></div></div>
     <p class="dl-sub">Instagram, TikTok, YouTube, Facebook and more. Saved to Downloads › PB Downloads on this PC. SharePoint links download through your Microsoft sign-in.</p>
@@ -5181,7 +5181,8 @@ function vDownloader(){
     <p class="dl-hint">Instagram asks you to log in? Pick the browser where you’re signed in. Firefox works best; close Edge or Chrome fully first.</p>
   </section>
   <section class="panel"><div class="phead"><h2>Downloads${n?` <span class="count">${n}</span>`:""}</h2><div class="pactions"><button class="btn small" data-act="dlClear"${fin?"":" hidden"}>Clear finished</button></div></div>
-    <div class="dl-list" id="dlJobs">${dlJobsHTML()}</div></section>`}
+    <div class="dl-list" id="dlJobs">${dlJobsHTML()}</div></section>
+  ${MUS.panel()}`}
 function dlPaint(){
   const box=document.getElementById("dlJobs");if(!box)return;
   const sig=(DLR.ok===null?"n":DLR.ok?"y":"x"+DLR.why)+DLR.jobs.map(j=>j.id+j.state+(j.info?1:0)).join();
