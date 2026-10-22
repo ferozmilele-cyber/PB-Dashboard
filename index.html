@@ -2311,6 +2311,28 @@ td.title .asg-tag{display:inline-flex!important;align-items:center;width:auto!im
 .tw-v{display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px solid var(--line)}.tw-v>i{width:8px;height:8px;border-radius:50%;flex:none}.tw-v>span{min-width:0;flex:1}
 .tw-v b{display:block;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tw-v small{font-size:12px;color:var(--muted)}.tw-v .etimer{flex:none}
 .tw-more{margin:6px 0 0;font-size:12px;color:var(--muted)}
+/* ===== v132: Raw footage ===== */
+nav.tabs .tab-n{display:inline-grid;place-items:center;min-width:18px;height:18px;margin-left:6px;padding:0 5px;border-radius:999px;background:#D0694A;color:#fff;font-style:normal;font-size:11px;font-weight:800;line-height:1;vertical-align:1px}
+#moreMenu [data-n]::after{content:attr(data-n);margin-left:8px;padding:1px 7px;border-radius:999px;background:#D0694A;color:#fff;font-size:11px;font-weight:800}
+body.prime [data-tab="raw"],body.prime [data-tab-go="raw"],body.prime #rwCard{display:none!important}
+.rw-h{font-size:12.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:4px 2px 10px}
+.rw-waits{display:grid;gap:10px;margin-bottom:18px}
+.rw-card .rw-waits{margin-bottom:0}
+.rw-wait{--p:0;position:relative;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:14px;padding:12px 14px;border-radius:18px;border:1px solid rgba(208,105,74,.35);background:rgba(208,105,74,.07);overflow:hidden}
+.rw-wait.busy{border-color:rgba(123,209,0,.5);background:rgba(170,255,0,.08)}
+.rw-wait.busy::after{content:"";position:absolute;left:0;bottom:0;height:3px;width:calc(var(--p)*100%);background:var(--lime-deep,#7BD100);transition:width .3s}
+.rw-wm{min-width:0;display:grid;gap:2px}.rw-wm b{font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rw-wm small{font-size:12.5px;color:var(--muted)}
+.rw-dt{display:none}
+.rw-wa{display:flex;align-items:center;gap:6px}.rw-who{font-size:12.5px;font-weight:600;color:var(--muted)}
+.rw-to{font-size:13px;color:var(--muted);margin:0 0 12px;padding:10px 12px;border-radius:12px;background:rgba(12,14,8,.04);overflow-wrap:anywhere}.rw-to b{color:var(--ink)}
+.rw-day{display:grid;gap:6px;margin-bottom:12px}.rw-day[hidden]{display:none}.rw-day select{height:40px}
+.rw-note{font-size:12.5px;color:var(--muted);margin:10px 0 0}
+.rw-zip{--p:0;position:relative;display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:10px 14px;margin-bottom:14px;border-radius:14px;background:rgba(170,255,0,.1);border:1px solid rgba(123,209,0,.45);overflow:hidden}
+.rw-zip::after{content:"";position:absolute;left:0;bottom:0;height:3px;width:calc(var(--p)*100%);background:var(--lime-deep,#7BD100);transition:width .3s}
+.rw-zip small{font-size:13px;font-weight:700}.rw-zip span{font-size:12.5px;color:var(--muted)}
+.rw-set .as-cover{aspect-ratio:16/9}
+@media (max-width:600px){.rw-wait{grid-template-columns:minmax(0,1fr) auto}.rw-wait .slate{display:none}.rw-dt{display:inline}.rw-dh>b{width:100%;order:-1}}
+
 /* ===== v129: Asset library ===== */
 .as-cats{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin:4px 0 14px}
 .as-cat{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:9px;padding:12px 14px;border-radius:18px;border:1px solid var(--glass-border,rgba(255,255,255,.95));background:rgba(255,255,255,.7);box-shadow:0 1px 2px rgba(20,24,10,.05),inset 0 1px 0 #fff;cursor:pointer;min-width:0;transition:transform .25s var(--spring,ease),background .25s,box-shadow .25s}
@@ -3063,6 +3085,9 @@ dialog.ig-dlg{width:min(860px,96vw)}
 :root[data-theme="dark"] .as-setname input,:root[data-theme="dark"] .asp-r input{background:var(--d-field)!important;border-color:var(--d-line2)!important;color:var(--ink)!important}
 :root[data-theme="dark"] .asp-r{background:rgba(255,255,255,.05)!important}
 :root[data-theme="dark"] .as-load i{background:linear-gradient(90deg,rgba(255,255,255,.04),rgba(255,255,255,.09),rgba(255,255,255,.04))!important;background-size:200% 100%!important}
+:root[data-theme="dark"] .rw-wait{background:rgba(208,105,74,.1)!important;border-color:rgba(208,105,74,.4)!important}
+:root[data-theme="dark"] .rw-wait.busy,:root[data-theme="dark"] .rw-zip{background:rgba(170,255,0,.07)!important;border-color:rgba(170,255,0,.35)!important}
+:root[data-theme="dark"] .rw-to{background:rgba(255,255,255,.05)!important}
 
 /* ================================================================
    iPHONE — minimal layer (v82)
@@ -3298,7 +3323,7 @@ dialog.ig-dlg{width:min(860px,96vw)}
       <button class="btn" id="logoutBtn">Sign out</button>
       <button class="btn primary" data-act="openAdd">Log a shoot</button>
       <button class="morebtn" id="moreBtn" data-act="more" aria-label="More" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="5" cy="12" r="1.8" fill="currentColor"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/><circle cx="19" cy="12" r="1.8" fill="currentColor"/></svg></button>
-      <div class="moremenu" id="moreMenu" hidden><button data-act="wsSwitch" id="wsMore" hidden></button><button data-act="goTab" data-tab-go="assets">Asset library</button><button data-act="goTab" data-tab-go="downloader">Downloader</button><button data-act="mImport">Import CSV</button><button data-act="mExport">Export CSV</button><button data-act="mOut" class="danger">Sign out</button></div>
+      <div class="moremenu" id="moreMenu" hidden><button data-act="wsSwitch" id="wsMore" hidden></button><button data-act="goTab" data-tab-go="raw">Raw footage</button><button data-act="goTab" data-tab-go="assets">Asset library</button><button data-act="goTab" data-tab-go="downloader">Downloader</button><button data-act="mImport">Import CSV</button><button data-act="mExport">Export CSV</button><button data-act="mOut" class="danger">Sign out</button></div>
     </div>
   </header>
 
@@ -3308,6 +3333,7 @@ dialog.ig-dlg{width:min(860px,96vw)}
     <button role="tab" data-tab="order">Edit order</button>
     <button role="tab" data-tab="schedule">Posting schedule</button>
     <button role="tab" data-tab="shoots">Shoot plan</button>
+    <button role="tab" data-tab="raw">Raw footage</button>
     <button role="tab" data-tab="ideas">Content bank</button>
     <button role="tab" data-tab="history">History</button>
     <button role="tab" data-tab="downloader">Downloader</button>
@@ -3765,7 +3791,7 @@ function setRawPath(d,pth){
   Object.values(S.shoots||{}).filter(s=>s.date===d&&s.rawPath!==pth).forEach(s=>putShoot({...s,rawPath:pth},true));
   render();toast(pth?`Folder saved for ${niceW(d)}`:"Folder cleared, using your folder pattern");
 }
-function rawLinkFor(d){if(!d)return "";const v=vids().find(x=>x.shotDate===d&&safeUrl(x.rawLink));if(v)return safeUrl(v.rawLink);const s=Object.values(S.shoots||{}).find(x=>x.date===d&&safeUrl(x.rawLink));return s?safeUrl(s.rawLink):""}
+function rawLinkFor(d){if(!d)return "";const v=vids().find(x=>x.shotDate===d&&safeUrl(x.rawLink));if(v)return safeUrl(v.rawLink);const s0=Object.values(S.shoots||{}).find(x=>x.date===d&&x.rawUp&&safeUrl(x.rawUp.url));if(s0&&!Object.values(S.shoots||{}).some(x=>x.date===d&&safeUrl(x.rawLink)))return safeUrl(s0.rawUp.url);const s=Object.values(S.shoots||{}).find(x=>x.date===d&&safeUrl(x.rawLink));return s?safeUrl(s.rawLink):""}
 function setRawLink(d,u){
   vids().filter(v=>v.shotDate===d&&v.rawLink!==u).forEach(v=>putVideo({...v,rawLink:u},true));
   Object.values(S.shoots||{}).filter(s=>s.date===d&&s.rawLink!==u).forEach(s=>putShoot({...s,rawLink:u},true));
@@ -4002,7 +4028,7 @@ function mayWrite(id){return isEdAcct()||(isMember()&&myVideos().has(id))}
 function timerMine(o){if(isMember())return myVideos().has(o.id);if(isEdAcct())return o.editBy===S.me||myVideos().has(o.id);
   return !teamOwned().has(o.id)&&!(o.editBy&&o.editBy!==S.me&&helperAcct(o.editBy))&&!(asgOf(o)&&helperAcct(asgOf(o)))}
 let voT=0;function voNote(){if(Date.now()-voT<2500)return;voT=Date.now();toast(isEdAcct()?"You can change the video status on Edit order and Posting schedule":isMember()?"You can change the status of the videos assigned to you":PRIME?"View only. Ask Waleed or Dorota to make changes":"View only. Ask Shibli or Zain to make changes")}
-const VIEW_OK=new Set(["asCat","asOpenSet","asBack","asRefresh","asSignin","asUpload","asView","asPlay","asDl","asDel","asDlAll","asDelSet","wsSwitch","musListen","musLink","musClear","musJob","edWho","viewDraft","viewCar","tripGo","tripOpen","tripWho","tripCopy","copy","days","dialBack","dialTry","dialType","dlBackup","fclear","ffmt","fnolink","fnopil","fsched","fst","goShoots","goTab","grpToggle","histView","hrange","ideaArch","ideaCopy","ideaPil","ideaType","mExport","mOut","mday","mnav","more","newWin","openCmd","osnOn","osnTest","ovGo","ovMode","ovStatus","plByDay","plMode","playWrapped","printSum","rowMore","schedToday","shView","sumMode","sview","testAlert","vaultLock","vaultOpen","vcopy","viewScript","vshow","clearSel","chpw","freshLoad"]);
+const VIEW_OK=new Set(["rawUp","rawSkip","rawDay","rawBack","rawRefresh","rawSignin","rawZip","rawEach","asCat","asOpenSet","asBack","asRefresh","asSignin","asUpload","asView","asPlay","asDl","asDel","asDlAll","asDelSet","wsSwitch","musListen","musLink","musClear","musJob","edWho","viewDraft","viewCar","tripGo","tripOpen","tripWho","tripCopy","copy","days","dialBack","dialTry","dialType","dlBackup","fclear","ffmt","fnolink","fnopil","fsched","fst","goShoots","goTab","grpToggle","histView","hrange","ideaArch","ideaCopy","ideaPil","ideaType","mExport","mOut","mday","mnav","more","newWin","openCmd","osnOn","osnTest","ovGo","ovMode","ovStatus","plByDay","plMode","playWrapped","printSum","rowMore","schedToday","shView","sumMode","sview","testAlert","vaultLock","vaultOpen","vcopy","viewScript","vshow","clearSel","chpw","freshLoad"]);
 const VIEW_FIELDS=["live","plr","sumr","ovr","opt"];
 // Waleed and Hamza also use PB Downloader and the editing timer
 const HELPER_OK=new Set(["startEdit","dlAdd","dlDo","dlQ","dlCk","dlClear","dlRetry","dlVideo","pauseEdit","resumeEdit","pauseAll","resumeAll","upDraft"]);
@@ -4555,7 +4581,7 @@ function vOverview(){
   const noScript=upcomingShoots().filter(s=>!S.scripts[s.id]&&!s.scriptLink).length;
   const shootLine=(lbl,s)=>`<div class="ovs"><span class="ovs-l">${lbl}</span>${s?`<span class="ovs-t"><b>${esc(s.title||"Untitled shoot")}</b><small>${esc(niceW(s.date))}${s.time?", "+fmtT(s.time):""}${(s.videos||[]).length?`, ${s.videos.length} video${s.videos.length===1?"":"s"}`:""}</small></span>${S.scripts[s.id]||s.scriptLink?`<button class="iconbtn" data-act="viewScript" data-id="${s.id}">Script</button>`:`<span class="tag warn">No script</span>`}`:`<span class="ovs-t muted">Nothing planned</span>`}</div>`;
   const shotT=all.filter(v=>v.shotDate===t).length,edT=editedToday();
-  return `${awayBanner()}${tripTodayCard()}${teamWorkCard()}
+  return `${awayBanner()}${rawSafe(()=>RAW.card())}${tripTodayCard()}${teamWorkCard()}
   <section class="panel ov">
     <div class="phead"><h2>${esc(niceW(t))}</h2>
       <div class="ovtoday">${(()=>{const g=shootGoalToday();return `<span>Shot today <b>${shotT}</b>/${g}</span><i style="--p:${Math.min(1,shotT/g)}"></i>`})()}${(()=>{const ep=editPlan();const goal=edT+ep.todayLeft;const s=editStreak();return `<span class="gwrap">${goalRing(edT,ep.todayOff?0:goal)}<span>${ep.todayOff?"Day off":`Edited <b>${edT}</b>/${goal||edT}`}${s>1?`<em class="streak">🔥 ${s}-day streak</em>`:""}</span></span>`})()}<button class="btn ov-copy" data-act="copyPlan" title="Copy today’s shoots, posts and edits as text for WhatsApp or Teams"><svg width="13" height="13" viewBox="0 0 16 16" aria-hidden="true"><rect x="5" y="5" width="9" height="9" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M11 3.5A1.5 1.5 0 0 0 9.5 2h-5A2.5 2.5 0 0 0 2 4.5v5A1.5 1.5 0 0 0 3.5 11" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>Copy today’s plan</button></div></div>
@@ -5337,7 +5363,7 @@ function upPaint(){let el=document.getElementById("upPill");
     const total=j.file&&j.file.size,p=total?Math.min(100,Math.floor(100*j.sent/total)):100,busy=["Starting","Uploading","Saving"].includes(j.state);
     const cls="up-j "+j.state.toLowerCase();if(c.className!==cls)c.className=cls;
     const set=(sel,prop,val)=>{const x=c.querySelector(sel);if(x[prop]!==val)x[prop]=val;return x};
-    set(".up-h b","textContent",j.title);set(".up-h span","textContent",j.kind==="asset"?"assets":j.kind==="final"?"final":j.kind==="carousel"?"photos":"draft");
+    set(".up-h b","textContent",j.title);set(".up-h span","textContent",j.kind==="asset"?"assets":j.kind==="raw"?"raw footage":j.kind==="final"?"final":j.kind==="carousel"?"photos":"draft");
     set(".up-l","innerHTML",j.state==="Failed"?`<span class="up-bad">${esc(j.error)}</span>`:j.state==="Sent"?`<span class="up-ok">✓ ${esc(j.msg||"Uploaded")}</span>`:j.state==="Uploading"?`<b class="up-p">${p}%</b> · ${fmtMB(j.sent)} of ${fmtMB(total)}`:j.state==="Saving"?(j.file?"Finishing…":"Saving the approved draft as the final…"):"Starting…");
     const bar=c.querySelector(".up-bar");bar.hidden=!busy;bar.classList.toggle("busy",busy&&!j.file);const w=(j.state==="Starting"?3:j.state==="Saving"?100:p)+"%";if(bar.firstChild.style.width!==w)bar.firstChild.style.width=w;
     c.querySelector(".up-x").hidden=busy;
@@ -5894,6 +5920,7 @@ const GR=(()=>{
 (function(){let n=0,t=0;document.addEventListener("click",e=>{const l=e.target.closest&&e.target.closest(".hdr-pb");if(!l)return;const now=Date.now();n=now-t<600?n+1:1;t=now;
   l.animate&&l.animate([{transform:"scale(1)"},{transform:"scale(.9) rotate(-6deg)"},{transform:"scale(1)"}],{duration:220});if(n>=5){n=0;ARC.open()}})})();
 /* ---------- render ---------- */
+function rawSafe(f){try{return f()}catch(_){return ""}}
 function isTyping(){const a=document.activeElement;return a&&a.closest&&a.closest("#main")&&!a.dataset.live&&(a.tagName==="TEXTAREA"||(a.tagName==="INPUT"&&/^(text|number)$/.test(a.type)))}
 let VT_ON=false;
 function render(){
@@ -5908,12 +5935,12 @@ function render(){
   const autoFlip=!S.animate&&!RM&&m.firstElementChild&&m.dataset.tab===S.tab;
   const before=autoFlip?keyRects(m):null;
   m.dataset.tab=S.tab;
-  m.innerHTML=S.tab==="overview"?vOverview():S.tab==="videos"?vVideos():S.tab==="order"?vOrder():S.tab==="schedule"?vSchedule():S.tab==="history"?vHistory():S.tab==="shoots"?vShoots():S.tab==="ideas"?vIdeas():S.tab==="downloader"?vDownloader():S.tab==="assets"?AS.panel():vSettings();
+  m.innerHTML=S.tab==="overview"?vOverview():S.tab==="videos"?vVideos():S.tab==="order"?vOrder():S.tab==="schedule"?vSchedule():S.tab==="history"?vHistory():S.tab==="shoots"?vShoots():S.tab==="ideas"?vIdeas():S.tab==="downloader"?vDownloader():S.tab==="assets"?AS.panel():S.tab==="raw"?rawSafe(()=>RAW.panel()):vSettings();
   if(S.animate){const mode=S.animate;S.animate=false;if(mode==="m")setTimeout(()=>countUp(m),80);else enterMotion(m,mode==="vt")}
   else if(before)autoFlipRun(m,before);
   segInds(m);
   document.querySelectorAll(".mbar button").forEach(b=>b.setAttribute("aria-current",b.dataset.mtab===S.tab?"page":"false"));
-  updateBell();updateMe();
+  updateBell();updateMe();rawSafe(()=>setTimeout(RAW.tick,700));
   if(S.tab==="settings"){loadBackups();loadTeam();if(spOn()&&!MS.app)msApp().then(()=>{if(S.tab==="settings")render()},()=>{})}
   moveInd();
   window.scrollTo(0,y);
@@ -5975,7 +6002,7 @@ function cmdSources(){
     sub:`${v.status}${v.shotDate?", shot "+nice(v.shotDate):""}${v.postDate?", posts "+niceW(v.postDate)+(v.postTime?" "+fmtT(v.postTime):""):""}${isCar(v)?", carousel":""}`,dot:SC[v.status],v}));
   shoots().forEach(s=>items.push({type:"shoot",id:s.id,title:s.title||"Untitled shoot",hay:((s.title||"")+" "+(s.location||"")+" "+(s.cast||"")+" "+(s.videos||[]).join(" ")).toLowerCase(),
     sub:`Shoot, ${niceW(s.date)}${s.time?" "+fmtT(s.time):""}${s.location?", "+s.location:""}`,dot:hue(s.date),s}));
-  [["overview","Go to Overview"],["videos","Go to All videos"],["order","Go to Edit order"],["schedule","Go to Posting schedule"],["shoots","Go to Shoot plan"],["ideas","Go to Content bank"],["history","Go to History"],["downloader","Go to Downloader"],["assets","Go to Asset library"],["settings","Go to Settings"]]
+  [["overview","Go to Overview"],["videos","Go to All videos"],["order","Go to Edit order"],["schedule","Go to Posting schedule"],["shoots","Go to Shoot plan"],["raw","Go to Raw footage"],["ideas","Go to Content bank"],["history","Go to History"],["downloader","Go to Downloader"],["assets","Go to Asset library"],["settings","Go to Settings"]]
     .forEach(([k,l])=>items.push({type:"tab",id:k,title:l,hay:l.toLowerCase(),sub:"Page"}));
   items.push({type:"act",id:"log",title:"Log a shoot",hay:"log a shoot add videos new",sub:"Action"});
   items.push({type:"act",id:"plan",title:"Plan a shoot",hay:"plan a shoot schedule shoot script",sub:"Action"});
@@ -7743,7 +7770,9 @@ dlg.addEventListener("close",()=>{
   const rec=recordShootDay(sd,L);
   if(rawIn)setTimeout(()=>{safeUrl(rawIn)?setRawLink(sd,link):setRawPath(sd,rawIn)},0);
   if(rec==="auto")setTimeout(()=>toast(`${niceW(sd)} added to the shoot history as an unplanned shoot`),1800);
-  if(!pth&&!link&&S.settings.askFolder!==false)setTimeout(()=>askRaw(sd,vids().filter(v=>v.shotDate===sd).length),450);
+  const rawOn=rawSafe(()=>RAW.on()&&spOn());
+  if(rawOn)rawSafe(()=>RAW.need(sd));
+  else if(!pth&&!link&&S.settings.askFolder!==false)setTimeout(()=>askRaw(sd,vids().filter(v=>v.shotDate===sd).length),450);
   if(S.settings.autoOnLog&&L.length){
     const r=planReshuffle();
     if(r.changes.length){applyReshuffle(r);toast(`Added ${L.length} and reshuffled ${r.changes.length} post${r.changes.length>1?"s":""}`,"Undo reshuffle",undoReshuffle);return}
@@ -7892,7 +7921,7 @@ if(!GAS){
   const go=()=>{if(started)return;started=true;const t=lsGet("seb-token");
     if(t)startSession(t,lsGet("seb-user")||"");else if(QKEY)keyLogin(QKEY);else showLogin()};
   const qs=new URLSearchParams(location.search);const v=qs.get("view");
-  if(v&&["overview","videos","order","schedule","shoots","ideas","history","downloader","assets","settings"].includes(v)){S.tab=v;render()}
+  if(v&&["overview","videos","order","schedule","shoots","raw","ideas","history","downloader","assets","settings"].includes(v)){S.tab=v;render()}
   QKEY=null;   // old quick-login links: Firebase keeps you signed in, so the key is simply ignored
   if(qs.get("key")){qs.delete("key");try{history.replaceState(null,"",location.pathname+(qs.toString()?"?"+qs:""))}catch(e){}}
   go();
@@ -8956,7 +8985,185 @@ const AS=(()=>{
     else if(a==="asView")view(id);else if(a==="asPlay")play(id);else if(a==="asDl")dl(id);else if(a==="asDel")del(id);else if(a==="asDlAll")dlAll();else if(a==="asDelSet")delSet();else return;
     e.preventDefault()});
   document.addEventListener("input",e=>{if(e.target&&e.target.id==="asQ"){st.q=e.target.value;const bd=document.getElementById("asBody");if(bd)bd.innerHTML=body()}});
-  return {panel,load,st,CATS,root};
+  return {panel,load,st,CATS,root,list,view,dl,fresh,find,thumbOf,kindOf,sizeTx,dateTx,baseName};
+})();
+
+/* ================= v132: Raw footage — after a shoot is logged, Shibli or Hamza uploads the camera files to SharePoint; everyone can view and download them (one by one or as a zip) ================= */
+const RAW=(()=>{
+  const UPL=["shibili","hamza"];
+  const on=()=>!PRIME;
+  const canUp=()=>on()&&UPL.includes(S.me||"");
+  const canSkip=()=>on()&&["shibili","zain"].includes(S.me||"");
+  const root=()=>String(S.settings.spRaw||"").trim().replace(/^\/+|\/+$/g,"")||spRoot()+"/Raw footage";
+  const st={day:null,busy:{},zip:null,err:"",seen:null,popFor:null};
+  const SEEN_K="pb-raw-seen";
+  function seen(){if(st.seen)return st.seen;try{st.seen=new Set(JSON.parse(localStorage.getItem(SEEN_K)||"[]"))}catch(_){st.seen=new Set()}return st.seen}
+  function markSeen(d){seen().add(d);try{localStorage.setItem(SEEN_K,JSON.stringify([...seen()].slice(-60)))}catch(_){}}
+  // ---------- shoot days ----------
+  const recs=d=>shoots().filter(s=>s.date===d&&s.status!=="Cancelled");
+  const upOf=d=>{const r=recs(d).map(s=>s.rawUp).filter(Boolean);return r.sort((a,b)=>(b.at||0)-(a.at||0))[0]||null};
+  const needOf=d=>recs(d).find(s=>s.rawNeed)||null;
+  function pending(){const ds=[...new Set(shoots().filter(s=>s.rawNeed&&s.status!=="Cancelled").map(s=>s.date))];return ds.filter(d=>!upOf(d)).sort().reverse()}
+  function titleOf(d){const L=recs(d).filter(s=>!s.auto&&s.title).map(s=>s.title);return L.length?[...new Set(L)].join(" + "):""}
+  function vidsOf(d){return vids().filter(v=>v.shotDate===d)}
+  function folderName(d){const u=upOf(d);if(u&&u.folder)return u.folder;const t=titleOf(d);return spName(d+(t?" "+t:"")).slice(0,90)}
+  const pathOf=d=>root()+"/"+folderName(d);
+  const ago=t=>{if(!t)return "";const m=Math.round((Date.now()-t)/60000);return m<1?"just now":m<60?m+" min ago":m<1440?Math.round(m/60)+" h ago":Math.round(m/1440)+" d ago"};
+  const who=u=>u?(u===S.me?"you":nameOf(u)):"";
+  const sizeTx=b=>AS.sizeTx(b);
+  /* called right after a shoot is logged on this device */
+  function need(d){if(!on()||!d||upOf(d))return;const by=S.me||"";
+    recs(d).forEach(s=>{if(!s.rawNeed)putShoot({...s,rawNeed:true,rawBy:by,rawAt:Date.now()},true)});
+    if(canUp()){markSeen(d);setTimeout(()=>openUp(d,true),500)}
+    else setTimeout(()=>toast(`Shibli or Hamza will get a reminder to upload the raw files for ${niceW(d)}`),2200)}
+  function skip(d){if(!canSkip())return;recs(d).forEach(s=>{if(s.rawNeed)putShoot({...s,rawNeed:false,rawSkip:S.me||""},true)});markSeen(d);render();toast(`${niceW(d)}: no raw upload needed`)}
+  // ---------- the pop-up on Shibli's and Hamza's screens ----------
+  function tick(){if(!canUp()||!spOn())return paintBadge();paintBadge();
+    if(document.querySelector("dialog[open]")||isTyping())return;
+    const d=pending().find(d=>!seen().has(d)&&!st.busy[d]&&Date.now()-((needOf(d)||{}).rawAt||0)<4*86400000);
+    if(d){markSeen(d);openUp(d,true)}}
+  function paintBadge(){const b=document.querySelector('nav.tabs [data-tab="raw"]');if(!b)return;const n=on()?pending().length:0;
+    let e=b.querySelector(".tab-n");if(!n){e&&e.remove();return}if(!e){e=document.createElement("em");e.className="tab-n";b.appendChild(e)}e.textContent=n;
+    const m=document.querySelector('#moreMenu [data-tab-go="raw"]');if(m)m.dataset.n=n}
+  // ---------- uploading ----------
+  let ud=null;const U={d:null,files:[]};
+  function upDlg(){if(ud)return ud;ud=document.createElement("dialog");ud.id="rawDlg2";ud.className="wide rw-up";
+    ud.innerHTML=`<form method="dialog"><h2 id="rwT">Upload the raw footage</h2><p class="sub" id="rwSub"></p>
+      <label class="field rw-day" id="rwDayF"><span class="as-lbl">Shoot day</span><select id="rwDay" aria-label="Shoot day"></select></label>
+      <div class="rw-to" id="rwTo"></div>
+      <label class="up-drop as-drop" id="rwDrop"><input type="file" id="rwFiles" multiple hidden><span class="up-ic"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V5M7 9.5l5-5 5 5M5 19h14"/></svg></span><b>Drop the camera files here</b><span>or click to choose. Pick all the clips from the card at once.</span></label>
+      <div class="as-picked" id="rwPicked"></div>
+      <p class="rw-note">Keep this tab open while it uploads. You can carry on working on the board.</p>
+      <div class="foot"><button class="btn" type="button" data-rwu="later">Later</button><span style="flex:1"></span><button class="btn primary" type="button" data-rwu="go" id="rwGo" disabled>Upload</button></div></form>`;
+    document.body.appendChild(ud);
+    ud.addEventListener("click",e=>{const b=e.target.closest("[data-rwu]");if(!b)return;e.preventDefault();
+      if(b.dataset.rwu==="later"){ud.close();if(pending().includes(U.d))toast("Saved for later. It stays in Raw footage until it’s uploaded")}
+      else if(b.dataset.rwu==="go")start();else if(b.dataset.rwu==="rm"){U.files.splice(+b.dataset.i,1);paintPicked()}});
+    ud.addEventListener("change",e=>{if(e.target.id==="rwFiles"){U.files.push(...e.target.files);e.target.value="";paintPicked()}else if(e.target.id==="rwDay"){U.d=e.target.value;head()}});
+    const dz=ud.querySelector("#rwDrop");["dragenter","dragover"].forEach(t=>dz.addEventListener(t,e=>{e.preventDefault();dz.classList.add("over")}));
+    ["dragleave","drop"].forEach(t=>dz.addEventListener(t,e=>{e.preventDefault();dz.classList.remove("over")}));
+    dz.addEventListener("drop",e=>{U.files.push(...((e.dataTransfer&&e.dataTransfer.files)||[]));paintPicked()});
+    return ud}
+  function head(){const d=upDlg(),day=U.d,n=vidsOf(day).length,nd=needOf(day),u=upOf(day),t=titleOf(day);
+    d.querySelector("#rwT").textContent=u?"Add more raw footage":"Upload the raw footage";
+    d.querySelector("#rwSub").textContent=[`Shoot on ${niceW(day)}${t?` · ${t}`:""}`,n?`${n} video${n===1?"":"s"}`:"",nd&&nd.rawBy?`logged by ${who(nd.rawBy)}`:"",u?`${u.n} file${u.n===1?"":"s"} already uploaded`:""].filter(Boolean).join(" · ");
+    d.querySelector("#rwTo").innerHTML=`Saves to SharePoint › ${esc(root().split("/").slice(-2).join(" › "))} › <b>${esc(folderName(day))}</b>`}
+  function dayChoices(cur){const t=today();const ds=[...new Set([...pending(),...shoots().filter(s=>s.status==="Done"&&s.date<=t).map(s=>s.date),cur].filter(Boolean))].sort().reverse().slice(0,40);
+    return ds.map(d=>`<option value="${d}"${d===cur?" selected":""}>${esc(niceW(d))}${titleOf(d)?" · "+esc(titleOf(d)):""}${pending().includes(d)?" · waiting":upOf(d)?" · uploaded":""}</option>`).join("")}
+  function openUp(day,auto){if(!canUp())return;if(!spOn()){toast("Set up SharePoint first in Settings › SharePoint");return}
+    const d=upDlg();U.d=day||pending()[0]||today();U.files=[];
+    d.querySelector("#rwDay").innerHTML=dayChoices(U.d);d.querySelector("#rwDayF").hidden=!!(auto||day);
+    head();paintPicked();d.returnValue="";if(!d.open)openDlg(d);if(auto)try{typeof sfx2==="function"&&sfx2("pop")}catch(_){}}
+  function paintPicked(){const d=upDlg(),tot=U.files.reduce((a,f)=>a+f.size,0);
+    const ic=f=>{const k=AS.kindOf({name:f.name,file:{mimeType:f.type}});return k==="video"?"▶":k==="audio"?"♪":k==="image"?"🖼":"📄"};
+    d.querySelector("#rwPicked").innerHTML=U.files.length?`<div class="asp-h">${U.files.length} ${U.files.length===1?"file":"files"} · ${sizeTx(tot)}</div>`+U.files.map((f,i)=>`<div class="asp-r"><span class="asp-i">${ic(f)}</span><b>${esc(f.name)}</b><small>${sizeTx(f.size)}</small><button type="button" class="iconbtn" data-rwu="rm" data-i="${i}" aria-label="Remove">×</button></div>`).join(""):"";
+    const g=d.querySelector("#rwGo");g.disabled=!U.files.length||!U.d;g.textContent=U.files.length?`Upload ${U.files.length} ${U.files.length===1?"file":"files"} · ${sizeTx(tot)}`:"Upload"}
+  function start(){const d=upDlg(),day=U.d,files=U.files.slice();if(!files.length||!day)return;d.close();
+    const folder=pathOf(day),fname=folderName(day),tot=files.reduce((a,f)=>a+f.size,0);
+    const job={id:"r"+Date.now(),kind:"raw",title:`Raw · ${niceW(day)}`,file:{size:tot},sent:0,state:"Starting"};
+    job.retry=()=>run(job,day,folder,fname,files);UP.list.push(job);st.busy[day]=job;run(job,day,folder,fname,files)}
+  async function run(job,day,folder,fname,files){Object.assign(job,{sent:0,state:"Starting",error:""});st.busy[day]=job;upPaint();paint();
+    try{const drive=await spDrive();await spEnsure(drive,folder);job.state="Uploading";upPaint();let done=0;
+      for(const f of files){
+        const ses=await gjson(`/drives/${drive}/root:/${encP(folder+"/"+spName(f.name))}:/createUploadSession`,{method:"POST",body:{item:{"@microsoft.graph.conflictBehavior":"rename"}}});
+        let item=null;
+        for(let a=0;a<f.size||(a===0&&f.size===0);a+=SP_CHUNK){const b=Math.min(f.size,a+SP_CHUNK);let tries=0;
+          for(;;){try{const j=await putChunk(ses.uploadUrl,f,a,b,n=>{job.sent=done+n;upPaintSoon();paintBusySoon()});if(j&&j.id)item=j;break}
+            catch(err){if(++tries>4||(err.status&&err.status<500&&err.status!==429))throw err;await new Promise(r=>setTimeout(r,2000*tries))}}
+          if(f.size===0)break}
+        if(!item)throw new Error(`SharePoint didn’t confirm “${f.name}”`);done+=f.size;job.sent=done;upPaintSoon()}
+      let url="";try{const it=await gjson(`/drives/${drive}/root:/${encP(folder)}`);url=it.webUrl||""}catch(_){}
+      const prev=upOf(day)||{n:0,size:0};
+      const up={folder:fname,n:(prev.n||0)+files.length,size:(prev.size||0)+files.reduce((a,f)=>a+f.size,0),at:Date.now(),by:S.me||"",url:safeUrl(url)||prev.url||""};
+      const L=recs(day);if(L.length)L.forEach(s=>putShoot({...s,rawNeed:false,rawUp:up},true));
+      else recordShootDay(day,[],true)&&recs(day).forEach(s=>putShoot({...s,rawNeed:false,rawUp:up},true));
+      job.state="Sent";job.msg=`${files.length} ${files.length===1?"file":"files"} saved to Raw footage › ${fname}`;delete st.busy[day];upPaint();
+      toast(`Raw footage uploaded for ${niceW(day)}`);AS.st.cache[root()]&&delete AS.st.cache[root()];delete AS.st.cache[folder];render();
+      setTimeout(()=>{UP.list=UP.list.filter(j=>j!==job);upPaint()},7000)}
+    catch(e){job.state="Failed";job.error=e.message||"Upload failed";job.signin=!!e.signin;upPaint();paint();toast(`Raw upload failed: ${job.error}`)}}
+  let bT=0;function paintBusySoon(){if(bT)return;bT=setTimeout(()=>{bT=0;document.querySelectorAll("[data-rwbusy]").forEach(el=>{const j=st.busy[el.dataset.rwbusy];if(j)el.style.setProperty("--p",j.file.size?j.sent/j.file.size:0);const t=el.querySelector("small");if(t&&j)t.textContent=`Uploading ${Math.round(100*(j.file.size?j.sent/j.file.size:0))}% · ${sizeTx(j.sent)} of ${sizeTx(j.file.size)}`})},300)}
+  // ---------- download all as one zip ----------
+  async function zipLib(){if(window.__clientZip)return window.__clientZip;return window.__clientZip=await import("https://cdn.jsdelivr.net/npm/client-zip@2.4.6/index.js")}
+  async function dlZip(fn){
+    const files=((AS.st.cache[root()+"/"+fn]||{}).items||[]).filter(x=>!x.folder);if(!files.length)return;if(st.zip){toast("A zip is already downloading");return}
+    const name=spName(`Raw ${fn}`)+".zip",tot=files.reduce((a,x)=>a+(x.size||0),0);
+    let out=null;
+    if(window.showSaveFilePicker){try{const h=await window.showSaveFilePicker({suggestedName:name,types:[{description:"Zip file",accept:{"application/zip":[".zip"]}}]});out=await h.createWritable()}catch(e){if(e&&e.name==="AbortError")return;out=null}}
+    if(!out&&tot>1.8*1073741824){toast(`This shoot is ${sizeTx(tot)}, too big to zip in this browser. Use Chrome or Edge on a computer, or download the files one by one`);return}
+    st.zip={d:fn,done:0,total:tot};paint();
+    try{const {downloadZip}=await zipLib();
+      async function* gen(){for(const x of files){const it=await AS.fresh(x),u=it["@microsoft.graph.downloadUrl"];if(!u)throw new Error(`No download link for “${x.name}”`);
+        const r=await fetch(u);if(!r.ok)throw new Error(`Couldn’t read “${x.name}” (${r.status})`);
+        yield {name:x.name,input:r,size:x.size,lastModified:new Date(x.lastModifiedDateTime||x.createdDateTime||Date.now())}}}
+      const count=new TransformStream({transform(ch,c){st.zip.done+=ch.byteLength;zipPaintSoon();c.enqueue(ch)}});
+      const body=downloadZip(gen()).body.pipeThrough(count);
+      if(out)await body.pipeTo(out);
+      else{const blob=await new Response(body).blob();const u=URL.createObjectURL(blob);saveUrl(u,name);setTimeout(()=>URL.revokeObjectURL(u),60000)}
+      toast(`Zip ready: ${name}`)}
+    catch(e){try{out&&out.abort&&await out.abort()}catch(_){}toast(e.message||"Zip download failed")}
+    finally{st.zip=null;paint()}}
+  let zT=0;function zipPaintSoon(){if(zT)return;zT=setTimeout(()=>{zT=0;const el=document.getElementById("rwZip");if(el&&st.zip){const p=st.zip.total?Math.min(1,st.zip.done/st.zip.total):0;el.style.setProperty("--p",p);el.querySelector("small").textContent=`Zipping ${Math.round(p*100)}% · ${sizeTx(st.zip.done)} of ${sizeTx(st.zip.total)}`}},300)}
+  async function dlAll(fn){const files=((AS.st.cache[root()+"/"+fn]||{}).items||[]).filter(x=>!x.folder);if(!files.length)return;
+    toast(`Downloading ${files.length} files. Allow multiple downloads if the browser asks`);
+    for(const x of files){try{const it=await AS.fresh(x);if(it["@microsoft.graph.downloadUrl"])saveUrl(it["@microsoft.graph.downloadUrl"],it.name)}catch(_){}await new Promise(r=>setTimeout(r,800))}}
+  // ---------- reading SharePoint ----------
+  async function load(force){if(!on()||!spOn())return;try{await msApp()}catch(e){st.err=e.message;paint();return}if(!msAccount()){paint();return}
+    st.err="";
+    try{const L=await AS.list(root(),force);
+      if(st.day)await AS.list(root()+"/"+st.day,force);
+      L.filter(x=>x.folder&&!AS.st.cache[root()+"/"+x.name]).slice(0,24).forEach(x=>AS.list(root()+"/"+x.name).then(()=>paintSoon()).catch(()=>{}))}
+    catch(e){st.err=e.signin?"":(e.message||"Couldn’t open the raw footage")}
+    paint()}
+  let pT=0;function paintSoon(){clearTimeout(pT);pT=setTimeout(paint,120)}
+  function paint(){paintBadge();const el=document.getElementById("rwPanel");if(el&&S.tab==="raw")el.outerHTML=panel(true);const c=document.getElementById("rwCard");if(c&&S.tab==="overview")c.outerHTML=card()}
+  // ---------- the page ----------
+  function waitCard(d){const nd=needOf(d)||{},n=vidsOf(d).length,t=titleOf(d),j=st.busy[d];
+    return `<div class="rw-wait${j?" busy":""}"${j?` data-rwbusy="${d}" style="--p:${j.file.size?j.sent/j.file.size:0}"`:""}>${slate(d)}<div class="rw-wm"><b><span class="rw-dt">${esc(niceW(d))} · </span>${esc(t||"Raw files needed")}</b>
+      <small>${j?(j.state==="Failed"?`Upload stopped: ${esc(j.error||"")}`:`Uploading ${Math.round(100*(j.file.size?j.sent/j.file.size:0))}% · ${sizeTx(j.sent)} of ${sizeTx(j.file.size)}`):[n?`${n} video${n===1?"":"s"}`:"",nd.rawBy?`logged by ${esc(who(nd.rawBy))}`:"",ago(nd.rawAt)].filter(Boolean).join(" · ")}</small></div>
+      <div class="rw-wa">${j?"":canUp()?`<button class="btn small primary" data-act="rawUp" data-d="${d}">Upload raw</button>`:`<span class="rw-who">Waiting for Shibli or Hamza</span>`}${!j&&canSkip()?`<button class="iconbtn" data-act="rawSkip" data-d="${d}" title="No raw upload needed for this shoot" aria-label="No raw upload needed">×</button>`:""}</div></div>`}
+  function card(){if(!on())return "";const P=pending();if(!P.length)return `<div id="rwCard" hidden></div>`;
+    return `<section class="panel rw-card" id="rwCard"><div class="phead"><h2>Raw footage to upload</h2><span class="sub">${canUp()?"Upload the camera files so the team can find them later":"Shibli or Hamza will upload them to SharePoint"}</span><div class="pactions"><button class="btn small ghost" data-act="goTab" data-tab-go="raw">Open Raw footage</button></div></div>
+      <div class="rw-waits">${P.slice(0,4).map(waitCard).join("")}</div>${P.length>4?`<p class="tw-more">+${P.length-4} more in Raw footage</p>`:""}</section>`}
+  function dayLabel(name){const m=/^(\d{4}-\d{2}-\d{2})\s*(.*)$/.exec(name||"");return m?{d:m[1],t:m[2]}:{d:"",t:name}}
+  function body(){
+    if(!spOn())return `<div class="empty"><b>SharePoint isn’t set up yet</b>Raw footage is kept in SharePoint. Set it up in Settings › SharePoint.</div>`;
+    if(!MS.app)return `<div class="as-load">${Array.from({length:4},()=>`<i></i>`).join("")}</div>`;
+    if(!msAccount())return `<div class="as-sign"><b>Sign in with your Milele Microsoft account to see the raw footage</b><span>The files are in the Marketing SharePoint, so you see exactly what you can open there.</span><button class="btn primary" data-act="rawSignin">Sign in with Microsoft</button></div>`;
+    if(st.err)return `<div class="empty"><b>Couldn’t open the raw footage</b>${esc(st.err)}<div style="margin-top:12px"><button class="btn small" data-act="rawRefresh">Try again</button></div></div>`;
+    if(st.day)return dayView(st.day);
+    const items=(AS.st.cache[root()]||{}).items;
+    if(!items)return `<div class="as-load">${Array.from({length:4},()=>`<i></i>`).join("")}</div>`;
+    const sets=items.filter(x=>x.folder).sort((a,b)=>String(b.name).localeCompare(String(a.name)));
+    if(!sets.length)return `<div class="empty"><b>No raw footage yet</b>${canUp()?"After a shoot is logged you’ll be asked to upload the camera files. They show up here for the whole team.":"After each shoot, Shibli or Hamza uploads the camera files and they show up here."}</div>`;
+    return `<div class="as-sets">${sets.map(x=>{const inner=(AS.st.cache[root()+"/"+x.name]||{}).items||[],cover=inner.find(i=>AS.thumbOf(i)),n=x.folder.childCount!=null?x.folder.childCount:inner.length,L=dayLabel(x.name);
+      return `<button type="button" class="as-set rw-set" data-act="rawDay" data-n="${esc(x.name)}"><span class="as-cover"${cover?` style="background-image:url('${esc(AS.thumbOf(cover)).replace(/'/g,"%27")}')"`:""}>${cover?"":`<i>🎞</i>`}<em>${n} ${n===1?"file":"files"}${x.size?" · "+sizeTx(x.size):""}</em></span><b>${esc(L.d?niceW(L.d):L.t)}</b><small>${esc(L.d?(L.t||"Shoot"):AS.dateTx(x.lastModifiedDateTime))}</small></button>`}).join("")}</div>`}
+  function dayView(name){const p=root()+"/"+name,items=(AS.st.cache[p]||{}).items,files=(items||[]).filter(x=>!x.folder),L=dayLabel(name),tot=files.reduce((a,x)=>a+(x.size||0),0),z=st.zip;
+    const sp=(((AS.st.cache[root()]||{}).items||[]).find(x=>x.name===name)||{}).webUrl;
+    return `<div class="as-sethead rw-dh"><button class="btn small ghost" data-act="rawBack">‹ All shoots</button><b>${esc(L.d?niceW(L.d):name)}</b><span>${esc(L.t||"")}${items?` · ${files.length} ${files.length===1?"file":"files"} · ${sizeTx(tot)}`:""}</span>
+      <span style="flex:1"></span>${files.length?`<button class="btn small primary" data-act="rawZip" data-d="${esc(name)}"${z?" disabled":""}>⬇ Download all (.zip)</button><button class="btn small" data-act="rawEach" data-d="${esc(name)}">⬇ One by one</button>`:""}${sp?`<a class="btn small ghost" href="${esc(sp)}" target="_blank" rel="noopener noreferrer">Open in SharePoint</a>`:""}${canUp()&&L.d?`<button class="btn small" data-act="rawUp" data-d="${L.d}">＋ Add more</button>`:""}</div>
+      ${z?`<div class="rw-zip" id="rwZip" style="--p:${z.total?z.done/z.total:0}"><small>Zipping ${Math.round(100*(z.total?z.done/z.total:0))}% · ${sizeTx(z.done)} of ${sizeTx(z.total)}</small><span>Keep this tab open until it finishes</span></div>`:""}
+      ${!items?`<div class="as-load">${Array.from({length:6},()=>`<i></i>`).join("")}</div>`:files.length?`<div class="as-grid">${files.map(tile).join("")}</div>`:`<div class="empty"><b>This folder is empty</b></div>`}`}
+  function tile(x){const k=AS.kindOf(x),th=AS.thumbOf(x);
+    return `<div class="as-tile" data-id="${x.id}"><button type="button" class="as-th${th?"":" none"}" data-act="asView" data-id="${x.id}"${th?` style="background-image:url('${esc(th).replace(/'/g,"%27")}')"`:""} aria-label="View ${esc(x.name)}">${k==="video"?`<span class="as-play">▶</span>`:th?"":`<i>${k==="audio"?"♪":k==="image"?"🖼":"🎞"}</i>`}</button>
+      <div class="as-tm"><b title="${esc(x.name)}">${esc(x.name)}</b><small>${esc(sizeTx(x.size))}</small></div>
+      <div class="as-ta"><button class="iconbtn" data-act="asDl" data-id="${x.id}" title="Download">⬇</button></div></div>`}
+  function panel(painting){if(!on())return `<section class="panel"><div class="empty"><b>Raw footage is on the Personal Branding board</b></div></section>`;
+    if(!painting)setTimeout(()=>{if(!spOn())return;if(!MS.app){msApp().then(()=>{msAccount()?load():paint()},e=>{st.err=e.message;paint()});return}if(msAccount()&&!AS.st.cache[root()]&&!st.err)load()},0);
+    const P=pending();
+    return `<section class="panel as-panel rw-panel" id="rwPanel"><div class="phead"><h2>Raw footage</h2><span class="sub">Camera files from every shoot. Saved in SharePoint › ${esc(root().split("/").slice(-2).join(" › "))}</span>
+      <div class="pactions">${msAccount()?`<button class="btn small ghost" data-act="rawRefresh" title="Check SharePoint for new files">↻ Refresh</button>`:""}${canUp()?`<button class="btn small primary" data-act="rawUp">＋ Upload raw</button>`:""}</div></div>
+      ${P.length&&!st.day?`<div class="rw-h">Waiting for upload</div><div class="rw-waits">${P.map(waitCard).join("")}</div><div class="rw-h">Uploaded</div>`:""}
+      <div id="rwBody">${body()}</div></section>`}
+  // ---------- clicks ----------
+  document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-act^='raw']");if(!b)return;const a=b.dataset.act,d=b.dataset.d;
+    if(a==="rawUp")openUp(d||"");else if(a==="rawSkip")skip(d);
+    else if(a==="rawDay"){st.day=b.dataset.n;paint();load()}
+    else if(a==="rawBack"){st.day=null;paint()}
+    else if(a==="rawRefresh"){Object.keys(AS.st.cache).forEach(k=>{if(k.startsWith(root()))delete AS.st.cache[k]});st.err="";paint();load(true)}
+    else if(a==="rawSignin")msSignIn(()=>{paint();load(true)});
+    else if(a==="rawZip")dlZip(d);else if(a==="rawEach")dlAll(d);else return;
+    e.preventDefault()});
+  return {on,canUp,need,tick,card,panel,pending,openUp,root,st};
 })();
 
 })();
