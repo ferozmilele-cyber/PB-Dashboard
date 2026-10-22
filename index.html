@@ -2286,6 +2286,9 @@ body.fbloading #fbLoading{display:grid}
 body.viewonly .stsel.mine{pointer-events:auto;box-shadow:0 0 0 2px rgba(170,255,0,.55)}
 body.viewonly.member header.top h1::after{content:"Member"}
 body.viewonly.editor header.top h1::after{content:"Editor"}
+.ws-btn{display:inline-flex;align-items:center;gap:7px}.ws-btn[hidden],#wsMore[hidden]{display:none!important}.ws-l{white-space:nowrap}@media (max-width:1300px){.ws-btn .ws-l{display:none}.ws-btn{padding-left:13px;padding-right:13px}}@media (max-width:760px){#wsBtn{display:none!important}}.ws-sw{font-weight:800;opacity:.7}
+body.prime header.top h1::before{content:"PRIME";display:inline-block;margin-right:12px;vertical-align:middle;padding:4px 10px;border-radius:999px;background:#0B0B0C;color:var(--lime);font-size:12px;font-weight:800;letter-spacing:.12em}
+body.prime .hdr-pb{filter:grayscale(1) contrast(1.1)}
 .rvr-l{list-style:none;margin:6px 0 4px;padding:0;display:grid;gap:4px}.rvr-l li{display:flex;justify-content:space-between;gap:10px;font-size:13px}.rvr-l li span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}.rvr-l li em{font-style:normal;font-weight:700;color:#b07a00;flex:none}.rvr-l li.more{color:var(--muted)}
 :root[data-theme="dark"] .rvr-l li em{color:#ffc04d}
 #main table .gsel,#main table .gchip,#main table .stsel{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
@@ -2308,6 +2311,62 @@ td.title .asg-tag{display:inline-flex!important;align-items:center;width:auto!im
 .tw-v{display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px solid var(--line)}.tw-v>i{width:8px;height:8px;border-radius:50%;flex:none}.tw-v>span{min-width:0;flex:1}
 .tw-v b{display:block;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tw-v small{font-size:12px;color:var(--muted)}.tw-v .etimer{flex:none}
 .tw-more{margin:6px 0 0;font-size:12px;color:var(--muted)}
+/* ===== v129: Asset library ===== */
+.as-cats{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin:4px 0 14px}
+.as-cat{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:9px;padding:12px 14px;border-radius:18px;border:1px solid var(--glass-border,rgba(255,255,255,.95));background:rgba(255,255,255,.7);box-shadow:0 1px 2px rgba(20,24,10,.05),inset 0 1px 0 #fff;cursor:pointer;min-width:0;transition:transform .25s var(--spring,ease),background .25s,box-shadow .25s}
+.as-cat:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(20,30,8,.08),inset 0 1px 0 #fff}
+.as-cat b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}.as-ci{font-size:18px;line-height:1}
+.as-cat em{margin-left:auto;font-style:normal;font-size:12px;font-weight:800;padding:2px 8px;border-radius:999px;background:rgba(12,14,8,.06);color:var(--muted)}
+.as-cat.on{background:var(--lime);border-color:transparent;box-shadow:0 6px 18px rgba(150,230,0,.35)}.as-cat.on em{background:rgba(11,11,12,.12);color:#0B0B0C}.as-cat.on b{color:#0B0B0C}
+.as-tools{display:flex;align-items:center;gap:14px;margin-bottom:14px}.as-tools input{flex:0 1 320px;min-width:0}.as-hint{font-size:12.5px;color:var(--muted)}
+.as-sign{display:grid;justify-items:start;gap:8px;padding:22px;border-radius:20px;border:1px dashed var(--line);background:rgba(255,255,255,.5)}.as-sign span{color:var(--muted);font-size:13.5px}
+.as-load{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}.as-load i{height:150px;border-radius:18px;background:linear-gradient(90deg,rgba(12,14,8,.05),rgba(12,14,8,.1),rgba(12,14,8,.05));background-size:200% 100%;animation:asSh 1.2s linear infinite}
+@keyframes asSh{to{background-position:-200% 0}}
+.as-sets{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+.as-set{all:unset;box-sizing:border-box;display:grid;gap:4px;cursor:pointer;border-radius:20px;padding:8px 8px 12px;border:1px solid var(--glass-border,rgba(255,255,255,.95));background:rgba(255,255,255,.72);box-shadow:0 1px 2px rgba(20,24,10,.05);transition:transform .25s var(--spring,ease),box-shadow .25s}
+.as-set:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(20,30,8,.12)}
+.as-cover{position:relative;aspect-ratio:16/10;border-radius:14px;background:#0B0B0C center/cover no-repeat;display:grid;place-items:center;overflow:hidden;margin-bottom:6px}
+.as-cover i{font-style:normal;font-size:30px;opacity:.8}.as-cover em{position:absolute;right:8px;bottom:8px;font-style:normal;font-size:11.5px;font-weight:800;padding:3px 9px;border-radius:999px;background:rgba(11,11,12,.72);color:var(--lime);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.as-set b{font-size:14.5px;padding:0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.as-set small{font-size:12px;color:var(--muted);padding:0 4px}
+.as-sethead{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:14px}.as-sethead>b{font-size:18px}.as-sethead>span{color:var(--muted);font-size:13px}
+.danger-t{color:#c0392b!important}
+.as-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}.as-grid.logos{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+.as-tile{display:grid;gap:6px;padding:8px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.7)}
+.as-th{all:unset;cursor:pointer;position:relative;aspect-ratio:16/10;border-radius:12px;background:#0B0B0C center/cover no-repeat;display:grid;place-items:center}
+.as-grid.logos .as-th{aspect-ratio:1;background-color:#f1f3ee;background-size:contain;background-origin:content-box;padding:14px;box-sizing:border-box}
+.as-th.none{background:rgba(12,14,8,.06)}.as-th i{font-style:normal;font-size:28px}
+.as-play{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:rgba(170,255,0,.92);color:#0B0B0C;font-size:14px;box-shadow:0 6px 18px rgba(0,0,0,.35)}
+.as-tm{display:flex;align-items:baseline;gap:8px;min-width:0;padding:0 2px}.as-tm b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1}.as-tm small{font-size:11.5px;color:var(--muted);flex:none}
+.as-ta{display:flex;gap:6px;padding:0 2px}
+.as-list{display:grid;gap:8px}
+.as-row{display:grid;grid-template-columns:44px minmax(0,1fr) auto;align-items:center;gap:12px;padding:10px 12px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.7)}
+.as-row.playing{border-color:rgba(123,209,0,.6);box-shadow:0 0 0 3px rgba(170,255,0,.18)}
+.as-pl{all:unset;cursor:pointer;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:#0B0B0C;color:var(--lime);font-size:14px;font-weight:800}
+.as-rm{min-width:0}.as-rm b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.as-rm small{font-size:12px;color:var(--muted)}
+.as-wave{--p:0;height:4px;border-radius:99px;margin-top:6px;background:linear-gradient(90deg,var(--lime) calc(var(--p)*100%),rgba(12,14,8,.1) 0)}
+.as-ra{display:flex;align-items:center;gap:8px}
+dialog.as-view{width:min(920px,calc(100vw - 32px));border:0;border-radius:26px;padding:0;background:rgba(14,18,24,.94);color:#fff;-webkit-backdrop-filter:blur(30px);backdrop-filter:blur(30px);box-shadow:0 30px 80px rgba(0,0,0,.45)}
+dialog.as-view form{position:relative;padding:18px}
+.asv-m{display:grid;place-items:center;min-height:240px;max-height:72vh;border-radius:16px;overflow:hidden;background:#000}
+.asv-m video,.asv-m img{max-width:100%;max-height:72vh;display:block}.asv-load{padding:40px;color:#c9cdc4;font-size:14px}
+.asv-aud{display:grid;justify-items:center;gap:16px;padding:40px;width:100%}.asv-aud i{font-style:normal;font-size:56px;color:var(--lime)}.asv-aud audio{width:min(520px,100%)}
+.asv-f{display:flex;align-items:center;gap:10px;margin-top:12px}.asv-f b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+dialog.as-view .od-x{top:24px;right:24px;z-index:3;background:rgba(255,255,255,.14);color:#fff}
+.as-upcats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:6px 0 14px}
+.as-upcat{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.7);cursor:pointer;font-weight:700;font-size:13.5px}
+.as-upcat.on{background:var(--lime);border-color:transparent;color:#0B0B0C}
+.as-setname{display:grid;gap:6px;margin-bottom:12px}.as-setname[hidden]{display:none}.as-lbl{font-size:12.5px;font-weight:700;color:var(--muted)}
+.as-setname input{height:40px;border:1px solid var(--line);border-radius:12px;padding:0 12px;font:inherit;font-size:14px;background:rgba(255,255,255,.9);color:var(--ink)}
+.as-drop.over{border-color:var(--lime-deep,#7BD100);background:rgba(170,255,0,.1)}
+.as-picked{display:grid;gap:6px;margin-top:10px;max-height:260px;overflow:auto}.asp-h{font-size:12.5px;font-weight:700;color:var(--muted)}.asp-h span{font-weight:500}
+.asp-r{display:grid;grid-template-columns:28px minmax(0,1fr) auto 30px;align-items:center;gap:8px;padding:6px 8px;border-radius:12px;background:rgba(12,14,8,.04)}
+.asp-r b{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.asp-r input{height:32px;min-width:0;border:1px solid var(--line);border-radius:10px;padding:0 10px;font:inherit;font-size:13px;background:#fff;color:var(--ink)}
+.asp-r small{font-size:12px;color:var(--muted)}.asp-i{text-align:center}
+@media (max-width:900px){.as-cats{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:600px){.as-cats{grid-template-columns:repeat(2,minmax(0,1fr))}.as-tools{flex-direction:column;align-items:stretch}.as-tools input{flex:none}
+  .as-row{grid-template-columns:40px minmax(0,1fr)}.as-ra{grid-column:2}.as-pl{width:40px;height:40px}.as-sets{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.as-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .as-upcats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
 /* ===== v126: Music ID ===== */
 .mus-ways{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.mus-way{min-width:0;width:100%;grid-template-columns:minmax(0,1fr)}.mus-lrow{min-width:0}
 .mus-way{all:unset;box-sizing:border-box;display:grid;align-content:start;gap:4px;padding:16px;border-radius:20px;border:1px solid var(--glass-border,rgba(255,255,255,.95));background:rgba(255,255,255,.72);box-shadow:0 1px 2px rgba(20,24,10,.05),inset 0 1px 0 #fff;-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);cursor:pointer;transition:transform .25s var(--spring,ease),box-shadow .25s}
@@ -2993,6 +3052,18 @@ dialog.ig-dlg{width:min(860px,96vw)}
 :root[data-theme="dark"] .mus-t small{color:var(--lime)!important}
 :root[data-theme="dark"] .tag.mus-tag{background:rgba(170,255,0,.1)!important;color:var(--lime)!important;border-color:rgba(170,255,0,.28)!important}
 
+/* asset library (v129) */
+:root[data-theme="dark"] .as-cat,:root[data-theme="dark"] .as-set,:root[data-theme="dark"] .as-tile,:root[data-theme="dark"] .as-row,:root[data-theme="dark"] .as-upcat{background:rgba(255,255,255,.04)!important;border-color:var(--line)!important;box-shadow:none!important}
+:root[data-theme="dark"] .as-cat.on,:root[data-theme="dark"] .as-upcat.on{background:var(--lime)!important;border-color:transparent!important}
+:root[data-theme="dark"] .as-cat em{background:rgba(255,255,255,.08)!important}
+:root[data-theme="dark"] .as-sign{background:rgba(255,255,255,.03)!important}
+:root[data-theme="dark"] .as-grid.logos .as-th{background-color:#e9ece6!important}
+:root[data-theme="dark"] .as-th.none{background:rgba(255,255,255,.06)!important}
+:root[data-theme="dark"] .as-wave{background:linear-gradient(90deg,var(--lime) calc(var(--p)*100%),rgba(255,255,255,.12) 0)!important}
+:root[data-theme="dark"] .as-setname input,:root[data-theme="dark"] .asp-r input{background:var(--d-field)!important;border-color:var(--d-line2)!important;color:var(--ink)!important}
+:root[data-theme="dark"] .asp-r{background:rgba(255,255,255,.05)!important}
+:root[data-theme="dark"] .as-load i{background:linear-gradient(90deg,rgba(255,255,255,.04),rgba(255,255,255,.09),rgba(255,255,255,.04))!important;background-size:200% 100%!important}
+
 /* ================================================================
    iPHONE — minimal layer (v82)
    Phones get the essentials only: titles, times, status and the main
@@ -3210,7 +3281,7 @@ dialog.ig-dlg{width:min(860px,96vw)}
     <div class="brandrow">
       <span class="hdr-pb"><img src="icon-192.png?v=94" alt="PB" width="64" height="64"></span>
       <div>
-      <h1>PB Dashboard</h1>
+      <h1 id="brandH">PB Dashboard</h1>
       <p id="subline">Fahad Riaz, content production</p>
       </div>
     </div>
@@ -3222,11 +3293,12 @@ dialog.ig-dlg{width:min(860px,96vw)}
       <input type="file" id="importFile" accept=".csv,text/csv" hidden>
       <button class="btn" id="exportBtn">Export CSV</button>
       
+      <button class="btn ws-btn" id="wsBtn" data-act="wsSwitch" hidden></button>
       <button class="btn theme-tog" id="themeBtn" aria-label="Toggle dark mode" title="Toggle dark mode"><svg id="themeIcon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg></button>
       <button class="btn" id="logoutBtn">Sign out</button>
       <button class="btn primary" data-act="openAdd">Log a shoot</button>
       <button class="morebtn" id="moreBtn" data-act="more" aria-label="More" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="5" cy="12" r="1.8" fill="currentColor"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/><circle cx="19" cy="12" r="1.8" fill="currentColor"/></svg></button>
-      <div class="moremenu" id="moreMenu" hidden><button data-act="mImport">Import CSV</button><button data-act="mExport">Export CSV</button><button data-act="mOut" class="danger">Sign out</button></div>
+      <div class="moremenu" id="moreMenu" hidden><button data-act="wsSwitch" id="wsMore" hidden></button><button data-act="goTab" data-tab-go="assets">Asset library</button><button data-act="goTab" data-tab-go="downloader">Downloader</button><button data-act="mImport">Import CSV</button><button data-act="mExport">Export CSV</button><button data-act="mOut" class="danger">Sign out</button></div>
     </div>
   </header>
 
@@ -3239,6 +3311,7 @@ dialog.ig-dlg{width:min(860px,96vw)}
     <button role="tab" data-tab="ideas">Content bank</button>
     <button role="tab" data-tab="history">History</button>
     <button role="tab" data-tab="downloader">Downloader</button>
+    <button role="tab" data-tab="assets">Assets</button>
     <button role="tab" data-tab="settings">Settings</button>
   </nav>
 
@@ -3580,7 +3653,7 @@ function statusSelect(v){
 }
 function stMenuItems(v){
   const out=[];
-  if(isReviewer()){   // Zain only needs the decisions; the editing steps are Shibli's
+  if(isReviewer()&&!PRIME){   // Zain only needs the decisions; the editing steps are Shibli's (in Prime, both do everything)
     out.push({v:v.status,label:v.status==="In review"?"In review (now)":v.status,c:SC[v.status]||"#888",cur:true});
     if(hasReview(v)&&spOn())out.push({v:"__watch",label:isCar(v)&&v.car?"▶ View photos":"▶ Watch draft",c:"#0B0B0C",hint:isCar(v)&&v.car?v.car.count+" photos":v.draft.round>1?"Round "+v.draft.round:"Watch or download"});
     if(!["Ready","Scheduled","Posted"].includes(v.status))out.push({v:"__approve",label:"Approve",c:"#3E9C5E",hint:"Goes to Ready"});
@@ -3738,11 +3811,24 @@ let token=null,since=0,pending=new Map(),inflight=new Map(),flushT=null,pollT=nu
 const FB_CONFIG={apiKey:"AIzaSyAb6oX0GBaUyMrOg4gktH3bOxrCYXupMrs",authDomain:"shoot-edit-board.firebaseapp.com",projectId:"shoot-edit-board",
   storageBucket:"shoot-edit-board.firebasestorage.app",messagingSenderId:"527953591815",appId:"1:527953591815:web:1bc8669fc95f109d7f34a2"};
 // sign-in email -> board username (keeps photos, reviewer, poster and all settings linked to the right person)
-const FB_TEAM={"muhammed.shibili@milele.com":"shibili","zain.ulabdin@milele.com":"zain","zain.nawaz@milele.com":"nawaz","waleed.farid@milele.com":"waleed","hamza.rajpoot@milele.com":"hamza"};
+const FB_TEAM={"muhammed.shibili@milele.com":"shibili","zain.ulabdin@milele.com":"zain","zain.nawaz@milele.com":"nawaz","waleed.farid@milele.com":"waleed","hamza.rajpoot@milele.com":"hamza","dorota.zeleszkiewicz@milele.com":"dorota"};
 const VIEW_ONLY=["nawaz"];   // the manager: can see everything, can't change anything
 const MEMBERS=["waleed"];    // editors helping out: see everything, change only the videos assigned to them in the Away plan
 const EDITORS=["hamza"];     // editors: see everything, change video status on Edit order and Posting schedule, run the editing timer
-const ADMIN="shibili";
+/* Milele Prime: a second board inside the same app, with its own videos, plans and settings.
+   Waleed and Dorota run it (both can do everything); Shibili, Zain and Zain Nawaz can open it to look. */
+const PRIME_TEAM=["waleed","dorota"];
+const PRIME_VIEW=["shibili","zain","nawaz"];
+const PRIME_ONLY=["dorota"];                       // these accounts only have the Prime board
+const WS=(()=>{try{return localStorage.getItem("pb-ws")==="prime"?"prime":"pb"}catch(_){return "pb"}})();
+const PRIME=WS==="prime";
+const CN=c=>PRIME&&!["profiles","games"].includes(c)?"p_"+c:c;   // Prime keeps its data in its own collections
+const KS=k=>PRIME?k+"-prime":k;                                  // and its own copy on this device
+const canPrime=u=>PRIME_TEAM.includes(u)||PRIME_VIEW.includes(u);
+const canPB=u=>!!u&&!PRIME_ONLY.includes(u);
+const ADMIN=PRIME?"waleed":"shibili";
+function isAdm(){return PRIME?PRIME_TEAM.includes(S.me||""):S.me==="shibili"}
+if(PRIME){document.body.classList.add("prime");document.title="Milele Prime";const h=document.getElementById("brandH"),sl=document.getElementById("subline");if(h)h.textContent="Milele Prime";if(sl)sl.textContent="Milele Prime, content production"}
 const COLS=["videos","shoots","scripts","profiles","ideas","meta"];
 const OLD_API=API;   // the Google Sheet link, kept only for the one-time import
 let FBR=null;const T0=performance.now(),TIMES={};function mark(k){if(!(k in TIMES))TIMES[k]=Math.round(performance.now()-T0)}
@@ -3759,36 +3845,36 @@ async function fbMe(){const F=fbBoot();await F.ready;const u=F.auth.currentUser;
 function fbRow(c,doc){const v=doc.data()||{};let data=null;try{data=v.j?JSON.parse(v.j):null}catch(e){}return {collection:c,id:doc.id,deleted:!!v.x,data}}
 // live updates: anything a teammate saves arrives here within a second
 function fbListen(from){const F=fbBoot();if(F.listening)return;F.listening=true;
-  COLS.forEach(c=>F.db.collection(c).where("u",">",from).onSnapshot(snap=>{let n=0;
+  COLS.forEach(c=>F.db.collection(CN(c)).where("u",">",from).onSnapshot(snap=>{let n=0;
     snap.docChanges().forEach(ch=>{if(ch.type==="removed"||ch.doc.metadata.hasPendingWrites)return;const r=fbRow(c,ch.doc);
       if(c==="meta"&&r.id==="sys"){F.sys=r.data||{};return}F.buf.push(r);n++});
     if(n&&typeof pollNow==="function")setTimeout(pollNow,0)},err=>console.warn("listen",c,err)))}
 async function fbWrite(ops,by){const F=fbBoot(),now=Date.now();
   for(let i=0;i<ops.length;i+=400){const b=F.db.batch();
-    ops.slice(i,i+400).forEach(o=>{const ref=F.db.collection(o.collection).doc(String(o.id));
+    ops.slice(i,i+400).forEach(o=>{const ref=F.db.collection(CN(o.collection)).doc(String(o.id));
       b.set(ref,o.op==="delete"?{j:"null",u:now,x:true,by}:{j:JSON.stringify(o.data||{}),u:now,x:false,by})});
     const p=b.commit();p.catch(e=>console.warn("save",e));
     // offline: Firestore keeps the write on this device and sends it when the connection is back
     await Promise.race([p,new Promise(r=>setTimeout(r,8000))])}}
-async function fbSetSys(patch){const F=fbBoot();F.sys={...(F.sys||{}),...patch};await F.db.collection("meta").doc("sys").set({j:JSON.stringify(F.sys),u:Date.now(),x:false})}
-async function fbAllRows(){const F=fbBoot(),rows=[];for(const c of COLS){const s=await F.db.collection(c).get();
+async function fbSetSys(patch){const F=fbBoot();F.sys={...(F.sys||{}),...patch};await F.db.collection(CN("meta")).doc("sys").set({j:JSON.stringify(F.sys),u:Date.now(),x:false})}
+async function fbAllRows(){const F=fbBoot(),rows=[];for(const c of COLS){const s=await F.db.collection(CN(c)).get();
   s.forEach(d=>{const v=d.data()||{};if(c==="meta"&&d.id==="sys"){try{F.sys=JSON.parse(v.j||"{}")}catch(e){}return}rows.push({c,id:d.id,j:v.j,x:!!v.x})})}return rows}
 function fbBkName(label){const d=new Date(),p=n=>String(n).padStart(2,"0");return `Backup ${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}.${p(d.getMinutes())}${label?" "+label:""}`}
 async function fbBackup(label){const F=fbBoot(),rows=(await fbAllRows()).filter(r=>!r.x),str=JSON.stringify(rows),name=fbBkName(label);
-  const id=name.replace(/[^\w.-]+/g,"_")+"_"+Math.random().toString(36).slice(2,6),ref=F.db.collection("backups").doc(id),CH=300000,parts=Math.max(1,Math.ceil(str.length/CH));
+  const id=name.replace(/[^\w.-]+/g,"_")+"_"+Math.random().toString(36).slice(2,6),ref=F.db.collection(CN("backups")).doc(id),CH=300000,parts=Math.max(1,Math.ceil(str.length/CH));
   for(let i=0;i<parts;i++)await ref.collection("parts").doc(String(i)).set({s:str.slice(i*CH,(i+1)*CH)});
   await ref.set({name,at:Date.now(),parts,rows:rows.length});await fbSetSys({lastBackup:Date.now()});
-  const all=await F.db.collection("backups").get(),L=[];all.forEach(d=>L.push({id:d.id,...d.data()}));L.sort((a,b)=>b.at-a.at);
-  for(const o of L.slice(12)){for(let i=0;i<(o.parts||1);i++)await F.db.collection("backups").doc(o.id).collection("parts").doc(String(i)).delete();await F.db.collection("backups").doc(o.id).delete()}
+  const all=await F.db.collection(CN("backups")).get(),L=[];all.forEach(d=>L.push({id:d.id,...d.data()}));L.sort((a,b)=>b.at-a.at);
+  for(const o of L.slice(12)){for(let i=0;i<(o.parts||1);i++)await F.db.collection(CN("backups")).doc(o.id).collection("parts").doc(String(i)).delete();await F.db.collection(CN("backups")).doc(o.id).delete()}
   return name}
-async function fbRestore(name){const F=fbBoot(),all=await F.db.collection("backups").get();let hit=null;all.forEach(d=>{const v=d.data();if(v.name===name)hit={id:d.id,...v}});
+async function fbRestore(name){const F=fbBoot(),all=await F.db.collection(CN("backups")).get();let hit=null;all.forEach(d=>{const v=d.data();if(v.name===name)hit={id:d.id,...v}});
   if(!hit)throw new Error("Backup not found");
   await fbBackup("before restore");
-  let str="";for(let i=0;i<(hit.parts||1);i++){const p=await F.db.collection("backups").doc(hit.id).collection("parts").doc(String(i)).get();str+=(p.data()||{}).s||""}
+  let str="";for(let i=0;i<(hit.parts||1);i++){const p=await F.db.collection(CN("backups")).doc(hit.id).collection("parts").doc(String(i)).get();str+=(p.data()||{}).s||""}
   const rows=JSON.parse(str),keep=new Set(rows.map(r=>r.c+"/"+r.id)),now=Date.now();
   const ops=rows.map(r=>({c:r.c,id:r.id,v:{j:r.j,u:now,x:false,by:"restore"}}));
   (await fbAllRows()).forEach(r=>{if(!r.x&&!keep.has(r.c+"/"+r.id))ops.push({c:r.c,id:r.id,v:{j:"null",u:now,x:true,by:"restore"}})});
-  for(let i=0;i<ops.length;i+=300){const b=F.db.batch();ops.slice(i,i+300).forEach(o=>b.set(F.db.collection(o.c).doc(o.id),o.v));await b.commit()}
+  for(let i=0;i<ops.length;i+=300){const b=F.db.batch();ops.slice(i,i+300).forEach(o=>b.set(F.db.collection(CN(o.c)).doc(o.id),o.v));await b.commit()}
   await fbSetSys({restoredAt:now});return {restoredAt:now,rows:rows.length}}
 async function call(fn,...a){
   const F=fbBoot();
@@ -3801,29 +3887,29 @@ async function call(fn,...a){
   if(fn==="makeDeviceKey"||fn==="revokeDeviceKeys")throw new Error("Not needed any more: the app keeps you signed in on each device.");
   const me=await fbMe(),my=fbUser(me);
   if(fn==="loadAll"){const rows=[];let snaps=null;
-    try{const cs=await Promise.all(COLS.map(c=>F.db.collection(c).get({source:"cache"}).then(s=>[c,s])));if(cs.some(([c,s])=>c==="videos"&&s.size>0))snaps=cs}catch(e){}
+    try{const cs=await Promise.all(COLS.map(c=>F.db.collection(CN(c)).get({source:"cache"}).then(s=>[c,s])));if(cs.some(([c,s])=>c==="videos"&&s.size>0))snaps=cs}catch(e){}
     TIMES.src=snaps?"this device":"the cloud";mark("data");
-    if(snaps){setTimeout(async()=>{try{const ss=await Promise.all(COLS.map(c=>F.db.collection(c).get({source:"server"}).then(s=>[c,s])));
+    if(snaps){setTimeout(async()=>{try{const ss=await Promise.all(COLS.map(c=>F.db.collection(CN(c)).get({source:"server"}).then(s=>[c,s])));
         ss.forEach(([c,s])=>s.forEach(d=>{const r=fbRow(c,d);if(c==="meta"&&r.id==="sys"){F.sys=r.data||{};return}F.buf.push(r)}));mark("cloud");if(typeof pollNow==="function")pollNow()}catch(e){TIMES.err=String(e&&e.message||e)}},50)}
-    else{snaps=await Promise.all(COLS.map(c=>F.db.collection(c).get().then(s=>[c,s])));mark("cloud")}
+    else{snaps=await Promise.all(COLS.map(c=>F.db.collection(CN(c)).get().then(s=>[c,s])));mark("cloud")}
     snaps.forEach(([c,s])=>s.forEach(d=>{const r=fbRow(c,d);if(c==="meta"&&r.id==="sys"){F.sys=r.data||{};return}if(!r.deleted)rows.push(r)}));
     fbListen(Date.now()-60000);
     if(!VIEW_ONLY.includes(my)&&Date.now()-Number(F.sys.lastBackup||0)>7*86400e3&&rows.length)setTimeout(()=>fbBackup("weekly").catch(()=>{}),20000);
     return {rows,now:Date.now()}}
   if(fn==="changes"){if(!F.listening){const since=Number(a[1]||0),rows=[];
-      const snaps=await Promise.all(COLS.map(c=>F.db.collection(c).where("u",">",since).get().then(s=>[c,s])));
+      const snaps=await Promise.all(COLS.map(c=>F.db.collection(CN(c)).where("u",">",since).get().then(s=>[c,s])));
       snaps.forEach(([c,s])=>s.forEach(d=>{const r=fbRow(c,d);if(c==="meta"&&r.id==="sys"){F.sys=r.data||{};return}rows.push(r)}));
       fbListen(Date.now()-5000);return {rows,now:Date.now(),restoredAt:Number(F.sys.restoredAt||0)}}
     return {rows:F.buf.splice(0),now:Date.now(),restoredAt:Number(F.sys.restoredAt||0)}}
   if(fn==="save"){await fbWrite(a[1]||[],my);return {now:Date.now()}}
-  if(fn==="listUsers")return {me:my,admin:ADMIN,users:[...new Set(Object.values(FB_TEAM))]};
+  if(fn==="listUsers")return {me:my,admin:ADMIN,users:PRIME?[...PRIME_TEAM]:[...new Set(Object.values(FB_TEAM))].filter(canPB)};
   if(fn==="changePassword"){const target=String(a[1]||my).toLowerCase(),nw=String(a[3]||"");
     if(target!==my){if(my!==ADMIN)throw new Error("Only the admin can reset someone else’s password");const em=Object.keys(FB_TEAM).find(k=>FB_TEAM[k]===target);if(!em)throw new Error("User not found");
       await F.auth.sendPasswordResetEmail(em);return {sent:em}}
     if(nw.length<6)throw new Error("Use at least 6 characters");
     try{await me.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(me.email,String(a[2]||"")));await me.updatePassword(nw);return true}
     catch(err){throw new Error(/wrong-password|invalid-credential/.test(String(err&&err.code))?"Current password is wrong":"Couldn’t change it. Sign out and in again, then retry.")}}
-  if(fn==="listBackups"){const all=await F.db.collection("backups").get(),items=[];all.forEach(d=>{const v=d.data();items.push({name:v.name,rows:v.rows||0,at:v.at||0})});
+  if(fn==="listBackups"){const all=await F.db.collection(CN("backups")).get(),items=[];all.forEach(d=>{const v=d.data();items.push({name:v.name,rows:v.rows||0,at:v.at||0})});
     items.sort((x,y)=>y.at-x.at);return {last:Number(F.sys.lastBackup||0),items}}
   if(fn==="backupNow")return fbBackup("manual");
   if(fn==="restoreBackup")return fbRestore(a[1]);
@@ -3863,19 +3949,20 @@ async function fbImportRows(rows,step){
   const F=fbBoot();await fbMe();const now=Date.now();let i=0,done=0;
   while(i<rows.length){const b=F.db.batch();let size=0,n=0;
     while(i<rows.length&&n<300){const x=rows[i],j=JSON.stringify(x.data||{});if(n&&size+j.length>3500000)break;
-      b.set(F.db.collection(x.collection).doc(String(x.id)),{j,u:now,x:false,by:"import"});size+=j.length;n++;i++}
+      b.set(F.db.collection(CN(x.collection)).doc(String(x.id)),{j,u:now,x:false,by:"import"});size+=j.length;n++;i++}
     await b.commit();done+=n;step(`Copied ${done} of ${rows.length}…`)}
   await fbSetSys({importedAt:now,importedRows:rows.length});return rows.length}
+if(PRIME)Object.assign(S.settings,{spBase:"Milele - Marketing Department/Milele Prime/Videos",reviewers:PRIME_TEAM.join(", "),alertUsers:PRIME_TEAM.join(", ")});
 function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
 function lsSet(k,v){try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}}
 function saveLocal(){try{localStorage.setItem("seb-free-demo",JSON.stringify({videos:S.videos,settings:S.settings,queue:S.queue,shoots:S.shoots,scripts:S.scripts,profiles:S.profiles}))}catch(e){}}
 function loadLocal(){try{const r=JSON.parse(localStorage.getItem("seb-free-demo")||"null");if(r){S.videos=r.videos||{};S.shoots=r.shoots||{};S.scripts=r.scripts||{};S.profiles=r.profiles||{};Object.assign(S.settings,r.settings||{});S.queue=r.queue||S.queue}}catch(e){}}
-function isMember(u){u=String(u==null?S.me:u||"").toLowerCase();return !!u&&MEMBERS.some(n=>u===n||u.includes(n))}
-function isEdAcct(u){u=String(u==null?S.me:u||"").toLowerCase();return !!u&&EDITORS.some(n=>u===n||u.includes(n))}
+function isMember(u){if(PRIME)return false;u=String(u==null?S.me:u||"").toLowerCase();return !!u&&MEMBERS.some(n=>u===n||u.includes(n))}
+function isEdAcct(u){if(PRIME)return false;u=String(u==null?S.me:u||"").toLowerCase();return !!u&&EDITORS.some(n=>u===n||u.includes(n))}
 function helperAcct(u){return isMember(u)||isEdAcct(u)}   // Waleed and Hamza: the editing team besides Shibli
-function viewOnly(){return VIEW_ONLY.includes(S.me||"")||isMember()||isEdAcct()}
-function canAssign(){return S.me===ADMIN||isReviewer()}
-function editorsList(){return [ADMIN,...EDITORS,...MEMBERS]}
+function viewOnly(){if(PRIME)return !PRIME_TEAM.includes(S.me||"");return VIEW_ONLY.includes(S.me||"")||isMember()||isEdAcct()}
+function canAssign(){return isAdm()||isReviewer()}
+function editorsList(){return PRIME?[...PRIME_TEAM]:[ADMIN,...EDITORS,...MEMBERS]}
 function asgOf(v){const a=String(v&&v.assignee||"").toLowerCase();return a&&a!==ADMIN?a:""}
 function nameOf(u){const n=dispName(u)||u;return n.charAt(0).toUpperCase()+n.slice(1)}
 function asgCtl(v){const a=asgOf(v);
@@ -3898,7 +3985,7 @@ function mayWrite(id){return isEdAcct()||(isMember()&&myVideos().has(id))}
 function timerMine(o){if(isMember())return myVideos().has(o.id);if(isEdAcct())return o.editBy===S.me||myVideos().has(o.id);
   return !teamOwned().has(o.id)&&!(o.editBy&&o.editBy!==S.me&&helperAcct(o.editBy))&&!(asgOf(o)&&helperAcct(asgOf(o)))}
 let voT=0;function voNote(){if(Date.now()-voT<2500)return;voT=Date.now();toast(isEdAcct()?"You can change the video status on Edit order and Posting schedule":isMember()?"You can change the status of the videos assigned to you":"View only. Ask Shibli or Zain to make changes")}
-const VIEW_OK=new Set(["musListen","musLink","musClear","musJob","edWho","viewDraft","viewCar","tripGo","tripOpen","tripWho","tripCopy","copy","days","dialBack","dialTry","dialType","dlBackup","fclear","ffmt","fnolink","fnopil","fsched","fst","goShoots","goTab","grpToggle","histView","hrange","ideaArch","ideaCopy","ideaPil","ideaType","mExport","mOut","mday","mnav","more","newWin","openCmd","osnOn","osnTest","ovGo","ovMode","ovStatus","plByDay","plMode","playWrapped","printSum","rowMore","schedToday","shView","sumMode","sview","testAlert","vaultLock","vaultOpen","vcopy","viewScript","vshow","clearSel","chpw","freshLoad"]);
+const VIEW_OK=new Set(["asCat","asOpenSet","asBack","asRefresh","asSignin","asUpload","asView","asPlay","asDl","asDel","asDlAll","asDelSet","wsSwitch","musListen","musLink","musClear","musJob","edWho","viewDraft","viewCar","tripGo","tripOpen","tripWho","tripCopy","copy","days","dialBack","dialTry","dialType","dlBackup","fclear","ffmt","fnolink","fnopil","fsched","fst","goShoots","goTab","grpToggle","histView","hrange","ideaArch","ideaCopy","ideaPil","ideaType","mExport","mOut","mday","mnav","more","newWin","openCmd","osnOn","osnTest","ovGo","ovMode","ovStatus","plByDay","plMode","playWrapped","printSum","rowMore","schedToday","shView","sumMode","sview","testAlert","vaultLock","vaultOpen","vcopy","viewScript","vshow","clearSel","chpw","freshLoad"]);
 const VIEW_FIELDS=["live","plr","sumr","ovr","opt"];
 // Waleed and Hamza also use PB Downloader and the editing timer
 const HELPER_OK=new Set(["startEdit","dlAdd","dlDo","dlQ","dlCk","dlClear","dlRetry","dlVideo","pauseEdit","resumeEdit","pauseAll","resumeAll","upDraft"]);
@@ -3918,8 +4005,8 @@ function enqueue(op,collection,id,data){
   $("#sync").textContent="Saving…";
   clearTimeout(flushT);flushT=setTimeout(flush,250);
 }
-function savePendingLocal(){try{const all=[...inflight.values(),...pending.values()];lsSet("seb-pending",all.length?JSON.stringify(all):null)}catch(e){}}
-function restorePendingLocal(){try{const L=JSON.parse(lsGet("seb-pending")||"null");if(!Array.isArray(L)||!L.length)return;
+function savePendingLocal(){try{const all=[...inflight.values(),...pending.values()];lsSet(KS("seb-pending"),all.length?JSON.stringify(all):null)}catch(e){}}
+function restorePendingLocal(){try{const L=JSON.parse(lsGet(KS("seb-pending"))||"null");if(!Array.isArray(L)||!L.length)return;
   L.forEach(o=>{const k=o.collection+"/"+o.id;if(pending.has(k))return;applyDoc({collection:o.collection,id:o.id,deleted:o.op==="delete",data:o.data});pending.set(k,o)});$("#sync").textContent="Saving changes from last time…";clearTimeout(flushT);flushT=setTimeout(flush,300)}catch(e){}}
 async function flush(){
   flushT=null;if(!pending.size)return;
@@ -3947,7 +4034,7 @@ const IDB={p:null,open(){return this.p||(this.p=new Promise((res,rej)=>{const r=
   set(k,v){return this.open().then(d=>new Promise(res=>{const t=d.transaction("kv","readwrite");v==null?t.objectStore("kv").delete(k):t.objectStore("kv").put(v,k);t.oncomplete=t.onerror=()=>res()})).catch(()=>{})}};
 const CROWS=new Map();let crT=0;
 function cacheRow(row){const k=row.collection+"/"+row.id;if(row.deleted)CROWS.delete(k);else CROWS.set(k,{collection:row.collection,id:row.id,data:row.data});
-  clearTimeout(crT);crT=setTimeout(()=>{IDB.set("cache",{user:S.me,since,savedAt:Date.now(),rows:[...CROWS.values()]})},900)}
+  clearTimeout(crT);crT=setTimeout(()=>{IDB.set(KS("cache"),{user:S.me,since,savedAt:Date.now(),rows:[...CROWS.values()]})},900)}
 function applyDoc(row){
   const k=row.collection+"/"+row.id;if(pending.has(k)||inflight.has(k))return;cacheRow(row);
   if(row.collection==="videos"){if(row.deleted)delete S.videos[row.id];else{const d={...row.data,id:row.id};if(d.status==="Edited")d.status="In review";S.videos[row.id]=d}}
@@ -4970,14 +5057,14 @@ function vSettings(){
     ${MUS.settingsHTML()}
     <h3 class="subh" id="spSet">SharePoint uploads</h3>
     <p class="hint sp-intro">Drafts and finals upload straight from the board into SharePoint, a folder for each month. Everyone signs in once with their Milele Microsoft account.</p>
-    <div class="field"><label for="spcid">Application (client) ID</label><input id="spcid" type="text" value="${esc(S.settings.spClientId||SP_DEF.clientId)}" data-set="spClientId" placeholder="From IT, e.g. 1a2b3c4d-…" spellcheck="false"${S.me===ADMIN?"":" readonly"}></div>
-    <div class="field"><label for="sptid">Directory (tenant) ID</label><input id="sptid" type="text" value="${esc(S.settings.spTenantId||SP_DEF.tenantId)}" data-set="spTenantId" placeholder="From IT, e.g. 9f8e7d6c-…" spellcheck="false"${S.me===ADMIN?"":" readonly"}></div>
+    <div class="field"><label for="spcid">Application (client) ID</label><input id="spcid" type="text" value="${esc(S.settings.spClientId||SP_DEF.clientId)}" data-set="spClientId" placeholder="From IT, e.g. 1a2b3c4d-…" spellcheck="false"${isAdm()?"":" readonly"}></div>
+    <div class="field"><label for="sptid">Directory (tenant) ID</label><input id="sptid" type="text" value="${esc(S.settings.spTenantId||SP_DEF.tenantId)}" data-set="spTenantId" placeholder="From IT, e.g. 9f8e7d6c-…" spellcheck="false"${isAdm()?"":" readonly"}></div>
     <details class="sp-more"><summary>Folders</summary>
-      <div class="field"><label for="spsite">SharePoint site</label><input id="spsite" type="text" value="${esc(S.settings.spSite||SP_DEF.site)}" data-set="spSite" spellcheck="false"${S.me===ADMIN?"":" readonly"}></div>
-      <div class="field"><label for="spbase">Videos folder</label><input id="spbase" type="text" value="${esc(S.settings.spBase||SP_DEF.base)}" data-set="spBase" spellcheck="false"${S.me===ADMIN?"":" readonly"}><span class="hint">Inside Documents. Each month gets its own folder here, like Oct.</span></div>
-      <div class="field"><label for="spcar">Carousels folder</label><input id="spcar" type="text" value="${esc(S.settings.spCarBase||"")}" data-set="spCarBase" placeholder="Found by itself: the Carousels folder next to Videos" spellcheck="false"${S.me===ADMIN?"":" readonly"}><span class="hint">Each carousel gets its own folder here, named like “${esc(carFolderName({title:"iPhone Giveaway",postDate:today()}))}”, with the photos numbered 01, 02, 03…</span></div>
-      <div class="field"><label for="spdr">Drafts folder</label><input id="spdr" type="text" value="${esc(S.settings.spDrafts||SP_DEF.drafts)}" data-set="spDrafts" spellcheck="false"${S.me===ADMIN?"":" readonly"}></div>
-      <div class="field"><label for="spfi">Finals folder</label><input id="spfi" type="text" value="${esc(S.settings.spFinal||SP_DEF.final)}" data-set="spFinal" spellcheck="false"${S.me===ADMIN?"":" readonly"}><span class="hint">Example: …/Videos/${esc(spMonth({postDate:today()}))}/${esc(spCfg().drafts)} and …/Videos/${esc(spMonth({postDate:today()}))}/${esc(spCfg().final)}</span></div>
+      <div class="field"><label for="spsite">SharePoint site</label><input id="spsite" type="text" value="${esc(S.settings.spSite||SP_DEF.site)}" data-set="spSite" spellcheck="false"${isAdm()?"":" readonly"}></div>
+      <div class="field"><label for="spbase">Videos folder</label><input id="spbase" type="text" value="${esc(S.settings.spBase||SP_DEF.base)}" data-set="spBase" spellcheck="false"${isAdm()?"":" readonly"}><span class="hint">Inside Documents. Each month gets its own folder here, like Oct.</span></div>
+      <div class="field"><label for="spcar">Carousels folder</label><input id="spcar" type="text" value="${esc(S.settings.spCarBase||"")}" data-set="spCarBase" placeholder="Found by itself: the Carousels folder next to Videos" spellcheck="false"${isAdm()?"":" readonly"}><span class="hint">Each carousel gets its own folder here, named like “${esc(carFolderName({title:"iPhone Giveaway",postDate:today()}))}”, with the photos numbered 01, 02, 03…</span></div>
+      <div class="field"><label for="spdr">Drafts folder</label><input id="spdr" type="text" value="${esc(S.settings.spDrafts||SP_DEF.drafts)}" data-set="spDrafts" spellcheck="false"${isAdm()?"":" readonly"}></div>
+      <div class="field"><label for="spfi">Finals folder</label><input id="spfi" type="text" value="${esc(S.settings.spFinal||SP_DEF.final)}" data-set="spFinal" spellcheck="false"${isAdm()?"":" readonly"}><span class="hint">Example: …/Videos/${esc(spMonth({postDate:today()}))}/${esc(spCfg().drafts)} and …/Videos/${esc(spMonth({postDate:today()}))}/${esc(spCfg().final)}</span></div>
     </details>
     <div class="sp-state">${!spOn()?`<span class="dl-pill off">Not set up</span>`:msAccount()?`<span class="dl-pill on">Signed in as ${esc(msAccount().username)}</span><button class="btn small" data-ms="test">Test</button><button class="btn small ghost" data-ms="switch">Switch account</button>`:`<span class="dl-pill">Not signed in</span><button class="btn small primary" data-ms="signin">Sign in with Microsoft</button>`}</div>
     <h3 class="subh">Pop-up alerts on the board</h3>
@@ -5232,7 +5319,7 @@ function upPaint(){let el=document.getElementById("upPill");
     const total=j.file&&j.file.size,p=total?Math.min(100,Math.floor(100*j.sent/total)):100,busy=["Starting","Uploading","Saving"].includes(j.state);
     const cls="up-j "+j.state.toLowerCase();if(c.className!==cls)c.className=cls;
     const set=(sel,prop,val)=>{const x=c.querySelector(sel);if(x[prop]!==val)x[prop]=val;return x};
-    set(".up-h b","textContent",j.title);set(".up-h span","textContent",j.kind==="final"?"final":j.kind==="carousel"?"photos":"draft");
+    set(".up-h b","textContent",j.title);set(".up-h span","textContent",j.kind==="asset"?"assets":j.kind==="final"?"final":j.kind==="carousel"?"photos":"draft");
     set(".up-l","innerHTML",j.state==="Failed"?`<span class="up-bad">${esc(j.error)}</span>`:j.state==="Sent"?`<span class="up-ok">✓ ${esc(j.msg||"Uploaded")}</span>`:j.state==="Uploading"?`<b class="up-p">${p}%</b> · ${fmtMB(j.sent)} of ${fmtMB(total)}`:j.state==="Saving"?(j.file?"Finishing…":"Saving the approved draft as the final…"):"Starting…");
     const bar=c.querySelector(".up-bar");bar.hidden=!busy;bar.classList.toggle("busy",busy&&!j.file);const w=(j.state==="Starting"?3:j.state==="Saving"?100:p)+"%";if(bar.firstChild.style.width!==w)bar.firstChild.style.width=w;
     c.querySelector(".up-x").hidden=busy;
@@ -5240,6 +5327,7 @@ function upPaint(){let el=document.getElementById("upPill");
   })}
 document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-upa]");if(!b)return;const j=UP.list.find(x=>x.id===b.dataset.j);if(!j)return;
   if(b.dataset.upa==="drop"){UP.list=UP.list.filter(x=>x!==j);upPaint()}
+  else if(j.retry){b.dataset.upa==="signin"?msSignIn(j.retry):j.retry()}
   else if(j.promote){UP.list=UP.list.filter(x=>x!==j);b.dataset.upa==="signin"?msSignIn(()=>spPromoteDraft(j.vid)):spPromoteDraft(j.vid)}
   else if(b.dataset.upa==="signin")msSignIn(()=>spUpload(j.vid,j.kind,j.file,j));
   else spUpload(j.vid,j.kind,j.file,j)});
@@ -5247,7 +5335,7 @@ window.addEventListener("beforeunload",e=>{if(UP.list.some(j=>["Starting","Uploa
 /* the upload window: drop a file, or (for a draft) send without one, or (for a final) paste a link */
 const UPD={id:null,kind:"draft"};
 function upMsHTML(){
-  if(!spOn())return `<div class="up-ms off">SharePoint isn’t set up yet. ${S.me===ADMIN?"Add the two IDs in Settings › SharePoint.":"Ask Shibili to finish the SharePoint setup."}</div>`;
+  if(!spOn())return `<div class="up-ms off">SharePoint isn’t set up yet. ${isAdm()?"Add the two IDs in Settings › SharePoint.":"Ask Shibili to finish the SharePoint setup."}</div>`;
   const a=msAccount();
   return a?`<div class="up-ms on"><span>Signed in as <b>${esc(a.username)}</b></span><button type="button" class="linkbtn" data-ms="switch">Switch account</button></div>`
     :`<div class="up-ms"><span>Sign in with your Milele Microsoft account to upload.</span><button type="button" class="btn small primary" data-ms="signin">Sign in with Microsoft</button></div>`}
@@ -5801,7 +5889,7 @@ function render(){
   const autoFlip=!S.animate&&!RM&&m.firstElementChild&&m.dataset.tab===S.tab;
   const before=autoFlip?keyRects(m):null;
   m.dataset.tab=S.tab;
-  m.innerHTML=S.tab==="overview"?vOverview():S.tab==="videos"?vVideos():S.tab==="order"?vOrder():S.tab==="schedule"?vSchedule():S.tab==="history"?vHistory():S.tab==="shoots"?vShoots():S.tab==="ideas"?vIdeas():S.tab==="downloader"?vDownloader():vSettings();
+  m.innerHTML=S.tab==="overview"?vOverview():S.tab==="videos"?vVideos():S.tab==="order"?vOrder():S.tab==="schedule"?vSchedule():S.tab==="history"?vHistory():S.tab==="shoots"?vShoots():S.tab==="ideas"?vIdeas():S.tab==="downloader"?vDownloader():S.tab==="assets"?AS.panel():vSettings();
   if(S.animate){const mode=S.animate;S.animate=false;if(mode==="m")setTimeout(()=>countUp(m),80);else enterMotion(m,mode==="vt")}
   else if(before)autoFlipRun(m,before);
   segInds(m);
@@ -5868,7 +5956,7 @@ function cmdSources(){
     sub:`${v.status}${v.shotDate?", shot "+nice(v.shotDate):""}${v.postDate?", posts "+niceW(v.postDate)+(v.postTime?" "+fmtT(v.postTime):""):""}${isCar(v)?", carousel":""}`,dot:SC[v.status],v}));
   shoots().forEach(s=>items.push({type:"shoot",id:s.id,title:s.title||"Untitled shoot",hay:((s.title||"")+" "+(s.location||"")+" "+(s.cast||"")+" "+(s.videos||[]).join(" ")).toLowerCase(),
     sub:`Shoot, ${niceW(s.date)}${s.time?" "+fmtT(s.time):""}${s.location?", "+s.location:""}`,dot:hue(s.date),s}));
-  [["overview","Go to Overview"],["videos","Go to All videos"],["order","Go to Edit order"],["schedule","Go to Posting schedule"],["shoots","Go to Shoot plan"],["ideas","Go to Content bank"],["history","Go to History"],["downloader","Go to Downloader"],["settings","Go to Settings"]]
+  [["overview","Go to Overview"],["videos","Go to All videos"],["order","Go to Edit order"],["schedule","Go to Posting schedule"],["shoots","Go to Shoot plan"],["ideas","Go to Content bank"],["history","Go to History"],["downloader","Go to Downloader"],["assets","Go to Asset library"],["settings","Go to Settings"]]
     .forEach(([k,l])=>items.push({type:"tab",id:k,title:l,hay:l.toLowerCase(),sub:"Page"}));
   items.push({type:"act",id:"log",title:"Log a shoot",hay:"log a shoot add videos new",sub:"Action"});
   items.push({type:"act",id:"plan",title:"Plan a shoot",hay:"plan a shoot schedule shoot script",sub:"Action"});
@@ -5922,7 +6010,7 @@ document.addEventListener("keydown",e=>{
 });
 
 /* ---------- team: profile photos, names, passwords ---------- */
-let TEAM={at:0,data:(()=>{try{return JSON.parse(lsGet("seb-team")||"null")}catch(e){return null}})()};
+let TEAM={at:0,data:(()=>{try{return JSON.parse(lsGet(KS("seb-team"))||"null")}catch(e){return null}})()};
 function prof(u){return (S.profiles||{})[u]||{}}
 function dispName(u){return prof(u).name||u||"You"}
 function initials(u){const n=dispName(u).trim().split(/\s+/);return ((n[0]||"?")[0]+(n.length>1?n[n.length-1][0]:"")).toUpperCase()}
@@ -5930,12 +6018,14 @@ function avatar(u,size,extra){
   const p=prof(u),s=size||36;
   return `<span class="ava${extra?" "+extra:""}" style="--s:${s}px" title="${esc(dispName(u))}">${p.photo?`<img src="${esc(p.photo)}" alt="">`:`<span class="ini">${esc(initials(u))}</span>`}</span>`;
 }
-function updateMe(){const b=$("#meBtn");if(!b)return;if(!S.me){b.hidden=true;return}b.hidden=false;b.innerHTML=avatar(S.me,34)+`<span>${esc(dispName(S.me))}</span>`}
+function wsPaint(){const two=!!S.me&&canPB(S.me)&&canPrime(S.me),lbl=PRIME?"PB board":"Milele Prime";
+  ["wsBtn","wsMore"].forEach(id=>{const b=document.getElementById(id);if(!b)return;b.hidden=!two;b.innerHTML=`<span class="ws-sw" aria-hidden="true">⇄</span><span class="ws-l">${lbl}</span>`;b.setAttribute("aria-label",lbl);b.title=PRIME?"Back to Fahad’s PB board":"Open the Milele Prime board"})}
+function updateMe(){wsPaint();const b=$("#meBtn");if(!b)return;if(!S.me){b.hidden=true;return}b.hidden=false;b.innerHTML=avatar(S.me,34)+`<span>${esc(dispName(S.me))}</span>`}
 function putProfile(u,data){const cur={...prof(u),...data,updatedAt:Date.now()};S.profiles[u]=cur;if(GAS)enqueue("set","profiles",u,cur);else saveLocal();render();updateMe()}
 function loadTeam(force){
   if(!GAS){if(!TEAM.data){TEAM.data={me:S.me||"me",admin:S.me||"me",users:[S.me||"me"]};if(S.tab==="settings")setTimeout(render,0)}return}
   if(!token||(!force&&TEAM.data&&Date.now()-TEAM.at<60000))return;
-  TEAM.at=Date.now();call("listUsers",token).then(d=>{const same=JSON.stringify(d)===JSON.stringify(TEAM.data);TEAM.data=d;lsSet("seb-team",JSON.stringify(d));if(!same&&S.tab==="settings")render()}).catch(()=>{});
+  TEAM.at=Date.now();call("listUsers",token).then(d=>{const same=JSON.stringify(d)===JSON.stringify(TEAM.data);TEAM.data=d;lsSet(KS("seb-team"),JSON.stringify(d));if(!same&&S.tab==="settings")render()}).catch(()=>{});
 }
 function canEditUser(u){const d=TEAM.data;return !!d&&(u===d.me||d.admin===d.me)}
 function teamPanel(){
@@ -6766,9 +6856,9 @@ $("#shootDlg").addEventListener("close",()=>{if($("#shootDlg").returnValue==="ok
 /* ---------- ready-to-post pop-ups ---------- */
 /* ---------- review flow: editor sends for review, reviewer approves or asks for a re-edit ---------- */
 function userList(s){return String(s||"").toLowerCase().split(/[,;\s]+/).filter(Boolean)}
-function reviewers(){const L=userList(S.settings.reviewers);return L.length?L:["zain"]}
+function reviewers(){const L=userList(S.settings.reviewers);return L.length?L:PRIME?[...PRIME_TEAM]:["zain"]}
 function isReviewer(){return reviewers().includes(S.me||"")}
-function isEditor(){return !isReviewer()}
+function isEditor(){return PRIME?PRIME_TEAM.includes(S.me||""):!isReviewer()}
 function isPoster(){if(helperAcct())return false;const L=userList(S.settings.alertUsers);return !L.length||L.includes(S.me||"")}
 function reviewerName(){const u=reviewers()[0];const n=dispName(u)||u;return n.charAt(0).toUpperCase()+n.slice(1)}
 function isReadyPost(v){return !!(v&&safeUrl(v.finalLink)&&v.status==="Ready")}
@@ -6776,7 +6866,7 @@ function alertKind(v){
   if(!v)return null;
   // a scheduled post that went live on its own in the last 12 hours: tell everyone once
   if(v.status==="Posted"&&v.autoPosted&&v.autoPostedAt&&Date.now()-v.autoPostedAt<12*3600e3)return "posted";
-  if(v.status==="In review"&&isReviewer())return "review";
+  if(v.status==="In review"&&isReviewer()&&!(PRIME&&v.editedBy===S.me))return "review";
   if(asgOf(v)===S.me&&["Shot","Pending","Not started"].includes(v.status))return "assigned";
   if(["Approved","Ready","Re-edit"].includes(v.status)&&!editsMine(v))return isReadyPost(v)&&isPoster()?"ready":null;
   if((v.status==="Approved"||(v.status==="Ready"&&v.approvedAt))&&!safeUrl(v.finalLink)&&isEditor()&&!(v.finalPending&&Date.now()-v.finalPending<180000))return "approved";
@@ -7352,7 +7442,7 @@ document.addEventListener("click",async e=>{
   else if(act==="restoreBk"){const n=b.dataset.n;if(!await ask("Restore this backup?",`The board goes back to how it was at ${n.replace(/^Backup /,"")}. A copy of the current state is saved first, so you can undo this.`,"Restore",true))return;
     toast("Restoring…");flush().then(()=>call("restoreBackup",token,n)).then(r=>{S.knownRestore=r.restoredAt;return call("loadAll",token)}).then(r=>{S.videos={};S.shoots={};S.scripts={};S.profiles={};S.ideas={};r.rows.forEach(applyDoc);render();loadBackups(true);toast("Backup restored")}).catch(e=>toast(String(e&&e.message||"Restore failed").replace(/^Error: /,"")))}
   else if(act==="ovH"){S.ovH=+b.dataset.n;render()}
-  else if(act==="goTab"){goTab(b.dataset.tabGo)}
+  else if(act==="goTab"){const mm=$("#moreMenu");if(mm&&!mm.hidden){mm.hidden=true;$("#moreBtn").setAttribute("aria-expanded","false")}goTab(b.dataset.tabGo)}
   else if(act==="ovStatus"){S.filter={q:"",st:[b.dataset.s],date:"all",fmt:"all",sched:"any",noLink:false};goTab("videos")}
   else if(act==="unpin"){e.stopPropagation();const p={...(S.queue.pins||{})};delete p[b.dataset.id];S.queue={...S.queue,pins:p};putQueue();render();toast("Unpinned. Shuffle can move it again")}
   else if(act==="unpinAll"){S.queue={...S.queue,pins:{}};putQueue();render();toast("All unpinned")}
@@ -7365,7 +7455,7 @@ document.addEventListener("click",async e=>{
     b.disabled=true;call("changePassword",token,u,od?od.value:"",nw.value).then(()=>{toast(self?"Password changed":`Password reset for ${dispName(u)}`);nw.value="";if(od)od.value=""}).catch(err=>toast(String(err&&err.message||"Couldn’t change it").replace(/^Error: /,""))).finally(()=>{b.disabled=false})}
   else if(act==="addRaw"){askRaw(b.dataset.d)}
   else if(act==="showImport"){S.showImport=true;render()}
-  else if(act==="freshLoad"){await flush();["seb-cache","seb-pending"].forEach(k=>lsSet(k,null));await IDB.set("cache",null);toast("Loading everything fresh…");setTimeout(()=>location.reload(),400)}
+  else if(act==="freshLoad"){await flush();["seb-cache",KS("seb-pending")].forEach(k=>lsSet(k,null));await IDB.set(KS("cache"),null);toast("Loading everything fresh…");setTimeout(()=>location.reload(),400)}
   else if(act==="fbImportFile"){const f=$("#impFile").files[0];if(!f){toast("Choose the CSV file first");return}b.disabled=true;const st=$("#impStep");
     try{const text=await f.text();const rows=rowsFromFile(f.name,text);st.textContent=`Found ${rows.length} items. Copying…`;const n=await fbImportRows(rows,m=>{st.textContent=m});
       st.textContent=`Done: ${n} items copied. Reloading…`;toast("Import finished");setTimeout(()=>location.reload(),1500)}
@@ -7402,6 +7492,7 @@ document.addEventListener("click",async e=>{
   else if(act==="viewCar"){openGallery(b.dataset.id)}
   else if(act==="viewDraft"){openReview(b.dataset.id)}
   else if(act==="edWho"){S.edWho=b.dataset.w;render()}
+  else if(act==="wsSwitch"){const mm=$("#moreMenu");if(mm)mm.hidden=true;b.disabled=true;toast(PRIME?"Opening the PB board…":"Opening Milele Prime…");try{await flush()}catch(_){}lsSet("pb-ws",PRIME?null:"prime");setTimeout(()=>location.reload(),250)}
   else if(act==="musListen"){MUS.listen()}
   else if(act==="musLink"){const i=document.getElementById("musLink");MUS.fromLink(i?i.value:"")}
   else if(act==="musJob"){MUS.fromJob(b.dataset.id)}
@@ -7562,7 +7653,7 @@ document.addEventListener("change",e=>{
     else if(k==="pillarFrom"){S.settings.pillarFrom=t.value}
     else if(k==="editLead"){S.settings.editLead=+t.value}
     else if(k==="reviewers"){S.settings.reviewers=t.value.trim()}
-    else if(k==="auddToken"){if(S.me!==ADMIN)return;S.settings.auddToken=t.value.trim()}
+    else if(k==="auddToken"){if(!isAdm())return;S.settings.auddToken=t.value.trim()}
     else if(/^sp[A-Z]/.test(k)){S.settings[k]=t.value.trim();MS.drive=null;MS.carBase=null}
     else{const n=parseInt(t.value,10);if(n>0)S.settings[k]=n}
     putSettings();render();return;
@@ -7675,7 +7766,9 @@ function keyLogin(key){
 }
 function sessionExpired(){token=null;lsSet("seb-token",null);clearInterval(pollT);if(QKEY&&!keyTried){keyLogin(QKEY);return}showLogin("Your session ended. Please sign in again.")}
 async function startSession(t,user){
-  let cached=await IDB.get("cache");mark("copy");
+  {const u=String(user||"").toLowerCase(),want=!canPB(u)?"prime":(PRIME&&!canPrime(u))?"pb":WS;
+   if(want!==WS){lsSet("pb-ws",want==="prime"?"prime":null);location.reload();return}}
+  let cached=await IDB.get(KS("cache"));mark("copy");
   const hasCopy=!!(cached&&cached.rows&&cached.rows.length);
   if(!loaded&&!hasCopy){document.body.classList.add("fbloading");clearTimeout(window.__slowT);window.__slowT=setTimeout(()=>{const n=document.getElementById("fbLoadNote");if(n)n.textContent="Still loading… a slow connection. It will finish on its own."},9000)}
   token=t;$("#login").hidden=true;S.me=String(user||"").toLowerCase();updateMe();
@@ -7726,7 +7819,7 @@ $("#loginForm").addEventListener("submit",async e=>{
   catch(err){const m=String(err&&err.message||"");$("#loginErr").textContent=/wrong username|password/i.test(m)?"Wrong username or password.":m||"Couldn’t sign in. Please try again."}
   finally{clearTimeout(slow);btn.disabled=false}
 });
-$("#logoutBtn").addEventListener("click",async()=>{await flush();if(token)try{await call("logout",token)}catch(e){}token=null;lsSet("seb-token",null);lsSet("seb-cache",null);await IDB.set("cache",null);lsSet("seb-team",null);lsSet("seb-bk",null);lsSet("seb-pending",null);location.replace(location.origin+location.pathname)});
+$("#logoutBtn").addEventListener("click",async()=>{await flush();if(token)try{await call("logout",token)}catch(e){}token=null;lsSet("seb-token",null);lsSet("seb-cache",null);await IDB.set(KS("cache"),null);lsSet(KS("seb-team"),null);lsSet("seb-bk",null);lsSet(KS("seb-pending"),null);location.replace(location.origin+location.pathname)});
 
 /* ── Dark mode toggle ── */
 (function(){
@@ -7769,7 +7862,7 @@ if(!GAS){
   const go=()=>{if(started)return;started=true;const t=lsGet("seb-token");
     if(t)startSession(t,lsGet("seb-user")||"");else if(QKEY)keyLogin(QKEY);else showLogin()};
   const qs=new URLSearchParams(location.search);const v=qs.get("view");
-  if(v&&["overview","videos","order","schedule","shoots","ideas","history","downloader","settings"].includes(v)){S.tab=v;render()}
+  if(v&&["overview","videos","order","schedule","shoots","ideas","history","downloader","assets","settings"].includes(v)){S.tab=v;render()}
   QKEY=null;   // old quick-login links: Firebase keeps you signed in, so the key is simply ignored
   if(qs.get("key")){qs.delete("key");try{history.replaceState(null,"",location.pathname+(qs.toString()?"?"+qs:""))}catch(e){}}
   go();
@@ -8394,7 +8487,7 @@ const IG=(()=>{
   const cfg=()=>S.settings.ig||{};
   const ver=()=>(S.settings.igApiVer||"v23.0").replace(/^([0-9])/,"v$1");
   const on=()=>!!S.settings.igAppId;
-  const ready=()=>(on()||!!pasted())&&!!cfg().igId&&S.me===ADMIN;          // only the admin posts during the experiment
+  const ready=()=>(on()||!!pasted())&&!!cfg().igId&&isAdm();          // only the admin posts during the experiment
   function loadSdk(){if(sdk)return sdk;sdk=new Promise((res,rej)=>{if(!on())return rej(new Error("Add the Meta App ID in Settings first"));
       window.fbAsyncInit=()=>{try{FB.init({appId:S.settings.igAppId,version:ver(),xfbml:false,cookie:true,status:true});res(window.FB)}catch(e){rej(e)}};
       const s=document.createElement("script");s.src="https://connect.facebook.net/en_US/sdk.js";s.async=true;s.crossOrigin="anonymous";s.onerror=()=>{sdk=null;rej(new Error("Couldn’t load Facebook sign-in. Check the internet"))};document.head.appendChild(s)});
@@ -8424,7 +8517,7 @@ const IG=(()=>{
       const a=p.instagram_business_account;S.settings.ig={pageId:p.id,pageName:p.name,igId:a.id,username:a.username,pic:a.profile_picture_url||"",by:S.me,at:Date.now()};putSettings();pageTok=p.access_token;render();toast(`Connected to @${a.username}`)}
     catch(e){toast(e.message||"Couldn’t connect")}}
   function disconnect(){try{localStorage.removeItem("pb-ig-token")}catch(_){}S.settings.ig=null;putSettings();pageTok=null;render();toast("Instagram disconnected")}
-  function panel(){const c=cfg(),adm=S.me===ADMIN;
+  function panel(){const c=cfg(),adm=isAdm();
     return `<h3 class="subh" id="igSet">Instagram posting <span class="tag">Experiment</span></h3>
       <p class="hint sp-intro">Post reels straight from the board to one Instagram account. Use a secondary account while we test. It needs to be a professional (Business or Creator) account linked to a Facebook Page.</p>
       <div class="field"><label for="igapp">Meta App ID</label><input id="igapp" type="text" value="${esc(S.settings.igAppId||"")}" data-set="igAppId" placeholder="From developers.facebook.com, e.g. 1234567890123456" spellcheck="false"${adm?"":" readonly"}></div>
@@ -8562,7 +8655,7 @@ const MUS=(()=>{
   function noMatch(canRetry){return `<div class="mus-wait"><div class="mus-ring off"><span>?</span></div><b>No match</b><small>It may be original music, a sped-up edit, or the voice is louder than the song.</small></div>
       <div class="foot">${canRetry?`<button class="btn" type="button" data-mus="again" data-part="end">Try another part</button>`:""}<span style="flex:1"></span><button class="btn primary" type="button" data-mus="close">OK</button></div>`}
   async function go(title,work,{vid=null,retry=null}={}){
-    if(!tok()){show(failed(S.me===ADMIN?"Add your AudD token in Settings › Music ID first.":"Music ID isn’t set up yet. Ask Shibili to add the AudD token in Settings."));return}
+    if(!tok()){show(failed(isAdm()?"Add your AudD token in Settings › Music ID first.":"Music ID isn’t set up yet. Ask Shibili to add the AudD token in Settings."));return}
     const my=++run;st.busy=true;if(!dlg)mk();dlg._vid=vid;dlg._res=null;dlg._again=retry;
     show(ring(0,title,"Hold on…"));
     try{const j=await work(my);if(my!==run)return;const r=norm(j);
@@ -8608,7 +8701,7 @@ const MUS=(()=>{
   /* ---------- the panel on the Downloader tab ---------- */
   function panel(){const H=hist(),on=!!tok();
     return `<section class="panel mus-panel" id="musPanel"><div class="phead"><h2>♪ What’s the song?</h2><span class="sub">Like Shazam: finds the music in a reel, a video file, or playing around you</span></div>
-      ${on?"":`<p class="ovnote">${S.me===ADMIN?`Add your AudD token to switch this on. <button class="btn small" data-act="goTab" data-tab-go="settings">Open Settings</button>`:"Music ID isn’t set up yet. Ask Shibili to add the AudD token in Settings."}</p>`}
+      ${on?"":`<p class="ovnote">${isAdm()?`Add your AudD token to switch this on. <button class="btn small" data-act="goTab" data-tab-go="settings">Open Settings</button>`:"Music ID isn’t set up yet. Ask Shibili to add the AudD token in Settings."}</p>`}
       <div class="mus-ways">
         <button type="button" class="mus-way" data-act="musListen"${on?"":" disabled"}><span class="mw-i">🎙</span><b>Listen</b><small>Hold the phone near the music for 10 seconds</small></button>
         <label class="mus-way${on?"":" off"}"><input type="file" id="musFile" accept="audio/*,video/*,.mov,.mp4,.m4a,.mp3" hidden${on?"":" disabled"}><span class="mw-i">🎞</span><b>From a file</b><small>A reel or video saved on this computer or phone</small></label>
@@ -8620,7 +8713,7 @@ const MUS=(()=>{
   function paintPanel(){const el=document.getElementById("musPanel");if(el)el.outerHTML=panel()}
   document.addEventListener("change",e=>{if(e.target&&e.target.id==="musFile"){const f=e.target.files&&e.target.files[0];e.target.value="";fromFile(f)}},true);
   document.addEventListener("keydown",e=>{if(e.target&&e.target.id==="musLink"&&e.key==="Enter"){e.preventDefault();fromLink(e.target.value)}});
-  function settingsHTML(){const adm=S.me===ADMIN;
+  function settingsHTML(){const adm=isAdm();
     return `<h3 class="subh" id="musSet">Music ID</h3>
       <p class="hint">“What’s the song?” uses AudD. Sign up at dashboard.audd.io (300 free searches, then about $5 a month for 1,000) and paste the API token here.</p>
       <div class="field"><label for="audtok">AudD API token</label><input id="audtok" type="${adm?"password":"text"}" value="${adm?esc(S.settings.auddToken||""):S.settings.auddToken?"Set":"Not set"}" data-set="auddToken" placeholder="Paste the token" autocomplete="off" spellcheck="false"${adm?"":" readonly"}>
@@ -8657,6 +8750,183 @@ const RVR=(()=>{
     if(el)closeAlert(el)});
   setInterval(tick,30000);setTimeout(tick,4000);
   return {tick,waiting};
+})();
+
+/* ================= v129: Asset library — music, sound effects, B-roll and photos of Fahad, logos — kept in SharePoint, shared by both boards ================= */
+const AS=(()=>{
+  const CATS=[
+    {k:"broll",name:"B-roll",folder:"B-roll",sets:true,accept:"video/*,.mov,.mp4,.m4v,.mxf",ico:"🎬",hint:"Clips of Fahad. Each upload gets its own named folder"},
+    {k:"photos",name:"Photos",folder:"Photos",sets:true,accept:"image/*,.heic,.heif,.raw,.cr2,.cr3,.nef,.arw",ico:"📷",hint:"Pictures of Fahad. Each upload gets its own named folder"},
+    {k:"music",name:"Music",folder:"Music",accept:"audio/*,video/*,.mp3,.wav,.m4a,.aac,.mp4,.mov",ico:"🎵",hint:"Songs and tracks, audio or video files"},
+    {k:"sfx",name:"Sound effects",folder:"Sound effects",accept:"audio/*,video/*,.mp3,.wav,.m4a,.aac,.mp4,.mov",ico:"🔊",hint:"Whooshes, hits, risers, the sounds you use all the time"},
+    {k:"logos",name:"Logos",folder:"Logos",accept:"image/*,.svg,.ai,.eps,.pdf,.psd,.png",ico:"◆",hint:"Milele, Fahad and partner logos"},
+    {k:"other",name:"Other",folder:"Other",accept:"",ico:"📁",hint:"Fonts, templates, presets, anything else"}];
+  const cat=k=>CATS.find(c=>c.k===k)||CATS[0];
+  const st={cat:"broll",set:null,q:"",cache:{},loading:{},err:"",upCat:null};
+  const root=()=>String(S.settings.spAssets||"").trim().replace(/^\/+|\/+$/g,"")||SP_DEF.base.split("/").slice(0,-1).join("/")+"/Assets";
+  const pathOf=(c,set)=>root()+"/"+cat(c).folder+(set?"/"+set:"");
+  const canUp=()=>!!S.me&&S.me!=="nawaz";
+  const canDel=()=>["shibili","zain"].includes(S.me||"");
+  const kindOf=it=>{const n=String(it.name||"").toLowerCase(),m=(it.file&&it.file.mimeType)||"";
+    if(it.folder)return "folder";if(/^video\//.test(m)||/\.(mp4|mov|m4v|webm|mkv|avi|mxf)$/.test(n))return "video";if(/^audio\//.test(m)||/\.(mp3|wav|m4a|aac|ogg|flac|aif|aiff)$/.test(n))return "audio";
+    if(/^image\//.test(m)||/\.(jpe?g|png|gif|webp|heic|heif|svg|tiff?)$/.test(n))return "image";return "file"};
+  const thumbOf=it=>{const t=it.thumbnails&&it.thumbnails[0];return t&&(t.large||t.medium||t.small)?((t.large||t.medium||t.small).url):""};
+  const sizeTx=b=>!b?"":b<1048576?Math.max(1,Math.round(b/1024))+" KB":b<1073741824?(b/1048576).toFixed(b<10485760?1:0)+" MB":(b/1073741824).toFixed(1)+" GB";
+  const dateTx=t=>{if(!t)return "";const d=new Date(t);return d.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:d.getFullYear()===new Date().getFullYear()?undefined:"numeric"})};
+  const baseName=n=>String(n||"").replace(/\.[a-z0-9]{1,5}$/i,"");
+  // ---------- reading SharePoint ----------
+  async function list(path,force){
+    const c=st.cache[path];if(c&&!force&&Date.now()-c.at<120000)return c.items;
+    if(st.loading[path])return st.loading[path];
+    st.loading[path]=(async()=>{const drive=await spDrive();let items=[];
+      try{let url=`/drives/${drive}/root:/${encP(path)}:/children?$expand=thumbnails&$top=200&$orderby=lastModifiedDateTime desc`;
+        for(let g=0;url&&g<10;g++){const r=await gjson(url);items=items.concat(r.value||[]);url=r["@odata.nextLink"]||""}}
+      catch(e){if(e.status!==404)throw e}
+      st.cache[path]={at:Date.now(),items};return items})();
+    try{return await st.loading[path]}finally{delete st.loading[path]}}
+  async function load(force){if(!spOn())return;try{await msApp()}catch(e){st.err=e.message;paint();return}if(!msAccount()){paint();return}
+    st.err="";paint();
+    try{await list(pathOf(st.cat),force);if(st.set)await list(pathOf(st.cat,st.set),force);
+      // a cover picture for each named set (first file inside)
+      if(cat(st.cat).sets){const sets=(st.cache[pathOf(st.cat)]||{}).items||[];sets.filter(x=>x.folder&&!st.cache[pathOf(st.cat,x.name)]).slice(0,24).forEach(x=>list(pathOf(st.cat,x.name)).then(()=>paintSoon()).catch(()=>{}))}}
+    catch(e){st.err=e.message||"Couldn’t open the asset library";if(e.signin)st.err="";}
+    paint()}
+  let pT=0;function paintSoon(){clearTimeout(pT);pT=setTimeout(paint,120)}
+  // ---------- the page ----------
+  function counts(){const o={};CATS.forEach(c=>{const L=(st.cache[pathOf(c.k)]||{}).items;o[c.k]=L?L.filter(x=>c.sets?x.folder:!x.folder).length:null});return o}
+  function head(){const n=counts();
+    return `<div class="phead"><h2>Asset library</h2><span class="sub">Music, sound effects, B-roll and photos of Fahad, logos. Saved in SharePoint › ${esc(root().split("/").slice(-2).join(" › "))}</span>
+      <div class="pactions">${msAccount()?`<button class="btn small ghost" data-act="asRefresh" title="Check SharePoint for new files">↻ Refresh</button>`:""}${canUp()&&msAccount()?`<button class="btn small primary" data-act="asUpload">＋ Upload</button>`:""}</div></div>
+      <div class="as-cats" role="tablist">${CATS.map(c=>`<button type="button" class="as-cat${st.cat===c.k?" on":""}" data-act="asCat" data-k="${c.k}" aria-pressed="${st.cat===c.k}"><span class="as-ci">${c.ico}</span><b>${esc(c.name)}</b>${n[c.k]!=null?`<em>${n[c.k]}</em>`:""}</button>`).join("")}</div>`}
+  function body(){
+    if(!spOn())return `<div class="empty"><b>SharePoint isn’t set up yet</b>The asset library lives in SharePoint. Set it up in Settings › SharePoint.</div>`;
+    if(!MS.app)return `<div class="as-load">${Array.from({length:6},()=>`<i></i>`).join("")}</div>`;
+    if(!msAccount())return `<div class="as-sign"><b>Sign in with your Milele Microsoft account to see the assets</b><span>Everything is stored in the Marketing SharePoint, so you see exactly what you can open there.</span><button class="btn primary" data-act="asSignin">Sign in with Microsoft</button></div>`;
+    if(st.err)return `<div class="empty"><b>Couldn’t open the asset library</b>${esc(st.err)}<div style="margin-top:12px"><button class="btn small" data-act="asRefresh">Try again</button></div></div>`;
+    const c=cat(st.cat),items=(st.cache[pathOf(st.cat)]||{}).items;
+    if(!items)return `<div class="as-load">${Array.from({length:6},()=>`<i></i>`).join("")}</div>`;
+    const q=st.q.trim().toLowerCase(),match=x=>!q||String(x.name).toLowerCase().includes(q);
+    if(c.sets&&st.set)return setView(c);
+    if(c.sets){const sets=items.filter(x=>x.folder&&match(x));
+      if(!sets.length)return emptyCat(c,q);
+      return `<div class="as-sets">${sets.map(x=>{const inner=(st.cache[pathOf(c.k,x.name)]||{}).items||[],cover=inner.find(i=>thumbOf(i)),n=x.folder.childCount||inner.length;
+        return `<button type="button" class="as-set" data-act="asOpenSet" data-n="${esc(x.name)}"><span class="as-cover"${cover?` style="background-image:url('${esc(thumbOf(cover)).replace(/'/g,"%27")}')"`:""}>${cover?"":`<i>${c.ico}</i>`}<em>${n} ${n===1?(c.k==="broll"?"clip":"photo"):(c.k==="broll"?"clips":"photos")}</em></span><b>${esc(x.name)}</b><small>${esc(dateTx(x.lastModifiedDateTime||x.createdDateTime))}</small></button>`}).join("")}</div>`}
+    const files=items.filter(x=>!x.folder&&match(x));
+    if(!files.length)return emptyCat(c,q);
+    if(c.k==="logos")return `<div class="as-grid logos">${files.map(tile).join("")}</div>`;
+    return `<div class="as-list">${files.map(row).join("")}</div>`}
+  function emptyCat(c,q){return `<div class="empty"><b>${q?"Nothing matches":"No "+esc(c.name.toLowerCase())+" yet"}</b>${q?"Try another word.":canUp()?`Upload the first ones and they appear here for the whole team.<div style="margin-top:12px"><button class="btn small primary" data-act="asUpload">＋ Upload ${esc(c.name.toLowerCase())}</button></div>`:""}</div>`}
+  function setView(c){const items=(st.cache[pathOf(c.k,st.set)]||{}).items;const files=(items||[]).filter(x=>!x.folder);
+    return `<div class="as-sethead"><button class="btn small ghost" data-act="asBack">‹ All ${esc(c.name.toLowerCase())}</button><b>${esc(st.set)}</b><span>${items?files.length+" "+(files.length===1?"file":"files"):""}</span>
+      <span style="flex:1"></span>${files.length?`<button class="btn small" data-act="asDlAll">⬇ Download all</button>`:""}${canUp()?`<button class="btn small" data-act="asUpload" data-set="${esc(st.set)}">＋ Add more</button>`:""}${canDel()?`<button class="btn small ghost danger-t" data-act="asDelSet">Delete set</button>`:""}</div>
+      ${!items?`<div class="as-load">${Array.from({length:6},()=>`<i></i>`).join("")}</div>`:files.length?`<div class="as-grid">${files.map(tile).join("")}</div>`:`<div class="empty"><b>This set is empty</b></div>`}`}
+  function tile(x){const k=kindOf(x),th=thumbOf(x);
+    return `<div class="as-tile" data-id="${x.id}"><button type="button" class="as-th${th?"":" none"}" data-act="asView" data-id="${x.id}"${th?` style="background-image:url('${esc(th).replace(/'/g,"%27")}')"`:""} aria-label="View ${esc(x.name)}">${k==="video"?`<span class="as-play">▶</span>`:th?"":`<i>${k==="audio"?"♪":k==="image"?"🖼":"📄"}</i>`}</button>
+      <div class="as-tm"><b title="${esc(x.name)}">${esc(baseName(x.name))}</b><small>${esc(sizeTx(x.size))}</small></div>
+      <div class="as-ta"><button class="iconbtn" data-act="asDl" data-id="${x.id}" title="Download">⬇</button>${canDel()?`<button class="iconbtn" data-act="asDel" data-id="${x.id}" title="Delete">🗑</button>`:""}</div></div>`}
+  function row(x){const k=kindOf(x);
+    return `<div class="as-row" data-id="${x.id}"><button type="button" class="as-pl" data-act="asPlay" data-id="${x.id}" aria-label="Play ${esc(x.name)}">${k==="audio"||k==="video"?"▶":k==="image"?"🖼":"📄"}</button>
+      <div class="as-rm"><b title="${esc(x.name)}">${esc(baseName(x.name))}</b><small>${esc([String(x.name).split(".").pop().toUpperCase(),sizeTx(x.size),dateTx(x.lastModifiedDateTime||x.createdDateTime),x.createdBy&&x.createdBy.user&&x.createdBy.user.displayName].filter(Boolean).join(" · "))}</small>
+      <div class="as-wave" hidden></div></div>
+      <div class="as-ra"><button class="btn small" data-act="asDl" data-id="${x.id}">⬇ Download</button>${canDel()?`<button class="iconbtn" data-act="asDel" data-id="${x.id}" title="Delete">🗑</button>`:""}</div></div>`}
+  function panel(){setTimeout(()=>{const p=pathOf(st.cat);if(!spOn())return;if(!MS.app){msApp().then(()=>{msAccount()?load():paint()},e=>{st.err=e.message;paint()});return}if(msAccount()&&!st.cache[p]&&!st.loading[p]&&!st.err)load()},0);
+    return `<section class="panel as-panel" id="asPanel">${head()}
+      <div class="toolbar as-tools"><input type="search" id="asQ" placeholder="Search ${esc(cat(st.cat).name.toLowerCase())}" value="${esc(st.q)}" aria-label="Search assets"><span class="as-hint">${esc(cat(st.cat).hint)}</span></div>
+      <div id="asBody">${body()}</div></section>`}
+  function paint(){const el=document.getElementById("asPanel");if(!el||S.tab!=="assets")return;el.outerHTML=panel()}
+  const find=id=>{for(const k in st.cache){const it=(st.cache[k].items||[]).find(x=>x.id===id);if(it)return it}return null};
+  // ---------- viewing, playing, downloading ----------
+  async function fresh(it){if(it["@microsoft.graph.downloadUrl"]&&Date.now()-(st.cache_at||0)<45*60000)return it;const drive=await spDrive();return spItem(drive,it.id)}
+  let pv=null;
+  function viewer(){if(pv)return pv;pv=document.createElement("dialog");pv.id="asView";pv.className="as-view";
+    pv.innerHTML=`<form method="dialog"><button class="od-x" type="button" data-asv="x" aria-label="Close">×</button><div class="asv-m"></div><div class="asv-f"><b></b><span style="flex:1"></span><a class="btn small" target="_blank" rel="noopener noreferrer" data-asv="sp">Open in SharePoint</a><button class="btn small primary" type="button" data-asv="dl">⬇ Download</button></div></form>`;
+    document.body.appendChild(pv);
+    pv.addEventListener("click",e=>{if(e.target===pv){closeV();return}const b=e.target.closest("[data-asv]");if(!b)return;if(b.dataset.asv==="x"){e.preventDefault();closeV()}else if(b.dataset.asv==="dl"){e.preventDefault();dl(pv.dataset.id)}});
+    pv.addEventListener("close",()=>{const m=pv.querySelector("video,audio");if(m)m.pause()});return pv}
+  function closeV(){if(!pv)return;const m=pv.querySelector("video,audio");if(m)m.pause();try{softClose(pv,"x")}catch(_){pv.close()}}
+  async function view(id){const it0=find(id);if(!it0)return;const d=viewer();d.dataset.id=id;const k=kindOf(it0);
+    d.querySelector(".asv-f b").textContent=it0.name;d.querySelector('[data-asv="sp"]').href=it0.webUrl||"#";
+    d.querySelector(".asv-m").innerHTML=`<div class="asv-load">Loading…</div>`;if(!d.open)openDlg(d);
+    try{const it=await fresh(it0),u=it["@microsoft.graph.downloadUrl"];if(!u)throw new Error("SharePoint didn’t give a link to the file");
+      d.querySelector(".asv-m").innerHTML=k==="video"?`<video src="${esc(u)}" controls autoplay playsinline></video>`:k==="audio"?`<div class="asv-aud"><i>♪</i><audio src="${esc(u)}" controls autoplay></audio></div>`:k==="image"&&!/\.(heic|heif|tiff?|raw|cr2|cr3|nef|arw)$/i.test(it.name)?`<img src="${esc(u)}" alt="">`:thumbOf(it0)?`<img src="${esc(thumbOf(it0))}" alt="">`:`<div class="asv-load">No preview for this file type. Download it to open.</div>`}
+    catch(e){d.querySelector(".asv-m").innerHTML=`<div class="asv-load">${esc(e.message||"Couldn’t load it")}</div>`}}
+  let playing=null;
+  async function play(id){const it0=find(id);if(!it0)return;const k=kindOf(it0);if(k==="image"||k==="video"){view(id);return}if(k!=="audio"){dl(id);return}
+    const rowEl=document.querySelector(`.as-row[data-id="${id}"]`);
+    if(playing&&playing.id===id){if(playing.a.paused)playing.a.play();else playing.a.pause();sync();return}
+    if(playing){playing.a.pause();playing=null}
+    try{const it=await fresh(it0),u=it["@microsoft.graph.downloadUrl"];const a=new Audio(u);a.onended=()=>{playing=null;sync()};a.ontimeupdate=()=>{const w=document.querySelector(`.as-row[data-id="${id}"] .as-wave`);if(w&&a.duration)w.style.setProperty("--p",a.currentTime/a.duration)};
+      playing={id,a};await a.play();sync()}catch(e){toast(e.message||"Couldn’t play it");playing=null;sync()}
+    function sync(){document.querySelectorAll(".as-row").forEach(r=>{const on=playing&&r.dataset.id===playing.id&&!playing.a.paused;r.classList.toggle("playing",!!on);const b=r.querySelector(".as-pl");if(b&&kindOf(find(r.dataset.id)||{})==="audio")b.textContent=on?"❚❚":"▶";const w=r.querySelector(".as-wave");if(w)w.hidden=!(playing&&r.dataset.id===playing.id)})}}
+  async function dl(id){const it0=find(id);if(!it0)return;try{const it=await fresh(it0);const u=it["@microsoft.graph.downloadUrl"];if(!u)throw new Error("SharePoint didn’t give a download link");saveUrl(u,it.name);toast(`Downloading “${it.name}”`)}catch(e){toast(e.message||"Download failed")}}
+  async function dlAll(){const items=((st.cache[pathOf(st.cat,st.set)]||{}).items||[]).filter(x=>!x.folder);if(!items.length)return;
+    toast(`Downloading ${items.length} files from “${st.set}”. Allow multiple downloads if the browser asks`);
+    for(let i=0;i<items.length;i++){try{const it=await fresh(items[i]);if(it["@microsoft.graph.downloadUrl"])saveUrl(it["@microsoft.graph.downloadUrl"],it.name)}catch(_){}await new Promise(r=>setTimeout(r,700))}}
+  async function del(id){const it=find(id);if(!it||!canDel())return;if(!await ask("Delete this file?",`“${it.name}” is removed from SharePoint for everyone. It goes to the SharePoint recycle bin, so it can be restored there for a while.`,"Delete"))return;
+    try{const drive=await spDrive();await gjson(`/drives/${drive}/items/${it.id}`,{method:"DELETE"});Object.values(st.cache).forEach(c=>c.items=(c.items||[]).filter(x=>x.id!==id));toast("Deleted");paint()}catch(e){toast(e.message||"Couldn’t delete it")}}
+  async function delSet(){const c=cat(st.cat),f=((st.cache[pathOf(c.k)]||{}).items||[]).find(x=>x.folder&&x.name===st.set);if(!f||!canDel())return;
+    if(!await ask("Delete this whole set?",`“${st.set}” and everything in it is removed from SharePoint for everyone. It goes to the SharePoint recycle bin.`,"Delete set"))return;
+    try{const drive=await spDrive();await gjson(`/drives/${drive}/items/${f.id}`,{method:"DELETE"});delete st.cache[pathOf(c.k,st.set)];st.cache[pathOf(c.k)].items=st.cache[pathOf(c.k)].items.filter(x=>x.id!==f.id);st.set=null;toast("Set deleted");paint()}catch(e){toast(e.message||"Couldn’t delete it")}}
+  // ---------- uploading ----------
+  let ud=null;const U={files:[]};
+  function upDlg(){if(ud)return ud;ud=document.createElement("dialog");ud.id="asUpDlg";ud.className="wide as-up";
+    ud.innerHTML=`<form method="dialog"><h2>Upload to the asset library</h2><p class="sub">Files go to SharePoint › ${esc(root().split("/").slice(-2).join(" › "))}, sorted into the right folder for you.</p>
+      <div class="as-upcats">${CATS.map(c=>`<button type="button" class="as-upcat" data-upc="${c.k}"><span>${c.ico}</span>${esc(c.name)}</button>`).join("")}</div>
+      <label class="field as-setname"><span class="as-lbl">Name this set</span><input type="text" id="asSetName" placeholder="e.g. Fahad at the showroom, G63 walkaround" autocomplete="off" maxlength="80"><span class="hint" id="asSetHint"></span></label>
+      <label class="up-drop as-drop" id="asDrop"><input type="file" id="asFiles" multiple hidden><span class="up-ic"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V5M7 9.5l5-5 5 5M5 19h14"/></svg></span><b>Drop files here</b><span>or click to choose. You can pick several at once.</span></label>
+      <div class="as-picked" id="asPicked"></div>
+      <div class="foot"><button class="btn" value="cancel" type="button" data-asu="cancel">Cancel</button><span style="flex:1"></span><button class="btn primary" type="button" data-asu="go" id="asGo" disabled>Upload</button></div></form>`;
+    document.body.appendChild(ud);
+    ud.addEventListener("click",e=>{const c=e.target.closest("[data-upc]");if(c){setCat(c.dataset.upc);return}const b=e.target.closest("[data-asu]");if(!b)return;e.preventDefault();
+      if(b.dataset.asu==="cancel")ud.close();else if(b.dataset.asu==="go")start();else if(b.dataset.asu==="rm"){U.files.splice(+b.dataset.i,1);paintPicked()}});
+    ud.addEventListener("change",e=>{if(e.target.id==="asFiles"){U.files.push(...[...e.target.files].map(f=>({f,name:baseName(f.name)})));e.target.value="";paintPicked()}});
+    ud.addEventListener("input",e=>{if(e.target.id==="asSetName")check();if(e.target.dataset&&e.target.dataset.fn!=null){U.files[+e.target.dataset.fn].name=e.target.value;check()}});
+    const dz=ud.querySelector("#asDrop");["dragenter","dragover"].forEach(t=>dz.addEventListener(t,e=>{e.preventDefault();dz.classList.add("over")}));
+    ["dragleave","drop"].forEach(t=>dz.addEventListener(t,e=>{e.preventDefault();dz.classList.remove("over")}));
+    dz.addEventListener("drop",e=>{const L=[...((e.dataTransfer&&e.dataTransfer.files)||[])];U.files.push(...L.map(f=>({f,name:baseName(f.name)})));paintPicked()});
+    return ud}
+  function setCat(k){st.upCat=k;const c=cat(k),d=upDlg();d.querySelectorAll("[data-upc]").forEach(b=>b.classList.toggle("on",b.dataset.upc===k));
+    d.querySelector(".as-setname").hidden=!c.sets;d.querySelector("#asFiles").accept=c.accept;
+    const sets=((st.cache[pathOf(k)]||{}).items||[]).filter(x=>x.folder).map(x=>x.name);
+    d.querySelector("#asSetHint").textContent=c.sets?(sets.length?"Use an existing name to add to that set. Each new name makes a new folder.":"A new folder is made with this name."):"";
+    paintPicked()}
+  function paintPicked(){const d=upDlg(),c=cat(st.upCat||"broll"),tot=U.files.reduce((a,x)=>a+x.f.size,0);
+    d.querySelector("#asPicked").innerHTML=U.files.length?`<div class="asp-h">${U.files.length} ${U.files.length===1?"file":"files"} · ${sizeTx(tot)}${c.sets?"":` · <span>You can rename each one before it uploads</span>`}</div>`+U.files.map((x,i)=>`<div class="asp-r"><span class="asp-i">${kindOf({name:x.f.name,file:{mimeType:x.f.type}})==="video"?"▶":kindOf({name:x.f.name,file:{mimeType:x.f.type}})==="audio"?"♪":kindOf({name:x.f.name,file:{mimeType:x.f.type}})==="image"?"🖼":"📄"}</span>${c.sets?`<b>${esc(x.f.name)}</b>`:`<input type="text" value="${esc(x.name)}" data-fn="${i}" aria-label="File name">`}<small>${sizeTx(x.f.size)}</small><button type="button" class="iconbtn" data-asu="rm" data-i="${i}" aria-label="Remove">×</button></div>`).join(""):"";
+    check()}
+  function check(){const d=upDlg(),c=cat(st.upCat||"broll"),nm=d.querySelector("#asSetName").value.trim();
+    d.querySelector("#asGo").disabled=!U.files.length||(c.sets&&!nm)||U.files.some(x=>!c.sets&&!x.name.trim());
+    d.querySelector("#asGo").textContent=U.files.length?`Upload ${U.files.length} ${U.files.length===1?"file":"files"}`:"Upload"}
+  function openUp(set){if(!canUp())return;const d=upDlg();U.files=[];d.querySelector("#asSetName").value=set||"";setCat(st.cat);openDlg(d);setTimeout(()=>{const i=d.querySelector(cat(st.cat).sets&&!set?"#asSetName":"#asDrop");i&&i.focus&&i.focus()},80)}
+  function start(){const d=upDlg(),c=cat(st.upCat||"broll"),set=c.sets?spName(d.querySelector("#asSetName").value):"",files=U.files.slice();if(!files.length)return;d.close();
+    const folder=pathOf(c.k,set),tot=files.reduce((a,x)=>a+x.f.size,0);
+    const job={id:"a"+Date.now(),kind:"asset",asset:true,title:c.sets?`${c.name}: ${set}`:`${c.name}: ${files.length===1?files[0].name:files.length+" files"}`,file:{size:tot},sent:0,state:"Starting"};
+    job.retry=()=>run(job,c,set,folder,files);UP.list.push(job);run(job,c,set,folder,files)}
+  async function run(job,c,set,folder,files){Object.assign(job,{sent:0,state:"Starting",error:""});upPaint();
+    try{const drive=await spDrive();await spEnsure(drive,folder);job.state="Uploading";upPaint();let done=0;
+      for(const x of files){const ext=((x.f.name.match(/\.[a-z0-9]{1,5}$/i)||[""])[0]).toLowerCase(),name=c.sets?spName(baseName(x.f.name))+ext:spName(x.name)+ext;
+        const ses=await gjson(`/drives/${drive}/root:/${encP(folder+"/"+name)}:/createUploadSession`,{method:"POST",body:{item:{"@microsoft.graph.conflictBehavior":"rename"}}});
+        let item=null;
+        for(let a=0;a<x.f.size||(a===0&&x.f.size===0);a+=SP_CHUNK){const b=Math.min(x.f.size,a+SP_CHUNK);let tries=0;
+          for(;;){try{const j=await putChunk(ses.uploadUrl,x.f,a,b,n=>{job.sent=done+n;upPaintSoon()});if(j&&j.id)item=j;break}
+            catch(err){if(++tries>3||(err.status&&err.status<500&&err.status!==429))throw err;await new Promise(r=>setTimeout(r,1500*tries))}}
+          if(x.f.size===0)break}
+        if(!item)throw new Error(`SharePoint didn’t confirm “${x.f.name}”`);done+=x.f.size;job.sent=done;upPaintSoon()}
+      job.state="Sent";job.msg=`${files.length} ${files.length===1?"file":"files"} added to ${c.sets?set:c.name}`;upPaint();toast(`Uploaded to the asset library: ${c.sets?set:c.name}`);
+      delete st.cache[pathOf(c.k)];if(set)delete st.cache[pathOf(c.k,set)];st.cat=c.k;if(c.sets)st.set=set;if(S.tab==="assets")load(true);
+      setTimeout(()=>{UP.list=UP.list.filter(j=>j!==job);upPaint()},7000)}
+    catch(e){job.state="Failed";job.error=e.message||"Upload failed";job.signin=!!e.signin;upPaint();toast(`Upload failed: ${job.error}`)}}
+  // ---------- clicks ----------
+  document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-act^='as']");if(!b)return;const a=b.dataset.act,id=b.dataset.id;
+    if(a==="asCat"){st.cat=b.dataset.k;st.set=null;st.q="";paint();load()}
+    else if(a==="asOpenSet"){st.set=b.dataset.n;paint();load()}
+    else if(a==="asBack"){st.set=null;paint()}
+    else if(a==="asRefresh"){st.cache={};paint();load(true)}
+    else if(a==="asSignin")msSignIn(()=>{paint();load(true)});
+    else if(a==="asUpload")openUp(b.dataset.set||"");
+    else if(a==="asView")view(id);else if(a==="asPlay")play(id);else if(a==="asDl")dl(id);else if(a==="asDel")del(id);else if(a==="asDlAll")dlAll();else if(a==="asDelSet")delSet();else return;
+    e.preventDefault()});
+  document.addEventListener("input",e=>{if(e.target&&e.target.id==="asQ"){st.q=e.target.value;const bd=document.getElementById("asBody");if(bd)bd.innerHTML=body()}});
+  return {panel,load,st,CATS,root};
 })();
 
 })();
