@@ -2303,7 +2303,7 @@ body.prime .hdr-pb{filter:grayscale(1) contrast(1.1)}
 .ttl .asg-tag,.etitle .asg-tag,td.title .asg-tag{margin-left:6px;vertical-align:1px}
 td.title .asg-tag{display:inline-flex!important;align-items:center;width:auto!important;height:auto!important;min-width:0!important;min-height:0!important;margin:4px 0 0!important;padding:2px 9px!important;font-size:11.5px!important;line-height:1.4!important;border-radius:999px!important;position:static!important}
 @media (hover:none){.slot.filled,.erow{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}}
-.tw-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.tw-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:14px}.tw-col{min-width:0}
 .tw-col{padding:14px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.7)}
 .tw-h{display:flex;align-items:center;gap:10px;margin-bottom:10px}.tw-h b{font-size:15px}.tw-h span{margin-left:auto}
 .tw-h em{font-style:normal;font-size:11.5px;font-weight:800;padding:3px 10px;border-radius:999px;background:rgba(12,14,8,.06);color:var(--muted)}.tw-h em.on{background:var(--lime);color:#0B0B0C}
@@ -3428,7 +3428,7 @@ dialog.ig-dlg{width:min(860px,96vw)}
 <dialog id="reDlg">
   <form method="dialog">
     <span class="al-pill warn">Re-edit?</span>
-    <h2 style="margin-top:10px">Is this a re-edit Zain asked for?</h2>
+    <h2 style="margin-top:10px" id="reAskH">Is this a re-edit Zain asked for?</h2>
     <p class="sub" id="reFor"></p>
     <textarea id="reNote" rows="3" placeholder="What did he ask to change? (optional)" style="min-height:90px"></textarea>
     <div class="foot"><button class="btn" value="cancel" formnovalidate>Cancel</button><span style="flex:1"></span><button class="btn" value="no">No, just editing</button><button class="btn primary" value="ok">Yes, re-edit</button></div>
@@ -3483,7 +3483,7 @@ dialog.ig-dlg{width:min(860px,96vw)}
       <b>Drop the video here</b><span>or click to choose a file</span></label>
     <p class="up-where" id="upWhere"></p>
     <details class="up-alt" id="upAlt"><summary>Paste a link instead</summary><div class="up-linkrow"><input class="copybox" id="upLink" type="url" placeholder="Paste the SharePoint link" autocomplete="off"><button class="btn" value="link">Save link</button></div></details>
-    <div class="foot"><button class="btn" value="cancel">Cancel</button><button class="btn ghost" value="nofile" id="upNoFile" title="Send for review without uploading a file">Send without a file</button><button class="btn primary" value="usedraft" id="upUseDraft" hidden title="Copies the draft Zain approved into the Final folder. Nothing to upload">Use approved draft</button></div>
+    <div class="foot"><button class="btn" value="cancel">Cancel</button><button class="btn ghost" value="nofile" id="upNoFile" title="Send for review without uploading a file">Send without a file</button><button class="btn primary" value="usedraft" id="upUseDraft" hidden title="Copies the approved draft into the Final folder. Nothing to upload">Use approved draft</button></div>
   </form>
 </dialog>
 <dialog id="draftDlg" class="wide">
@@ -3653,7 +3653,22 @@ function statusSelect(v){
 }
 function stMenuItems(v){
   const out=[];
-  if(isReviewer()&&!PRIME){   // Zain only needs the decisions; the editing steps are Shibli's (in Prime, both do everything)
+  if(PRIME&&isReviewer()){   // Waleed: approve Dorota's drafts; his own videos skip review
+    const ownFinal=spOn()&&canUp(v)&&!isCar(v);
+    if(v.status==="In review"){
+      if(hasReview(v)&&spOn())out.push({v:"__watch",label:isCar(v)&&v.car?"▶ View photos":"▶ Watch draft",c:"#0B0B0C",hint:v.editedBy&&v.editedBy!==S.me?"From "+nameOf(v.editedBy):""});
+      out.push({v:"__approve",label:"Approve",c:"#3E9C5E",hint:"Goes to Ready"});out.push({v:"Re-edit",label:"Re-edit…",c:SC["Re-edit"],hint:"Send back with notes"})}
+    if((v.status==="Approved"||(v.status==="Ready"&&v.approvedAt))&&!safeUrl(v.finalLink)&&spOn()&&canUp(v)){
+      if(!isCar(v)&&v.draft&&v.draft.itemId)out.push({v:"__usedraft",label:"Use approved draft",c:"#3E9C5E",hint:"Saved as the final, ready to post"});
+      out.push({v:"__upfinal",label:isCar(v)?"Upload photos…":"Upload final…",c:"#3E9C5E",hint:"Becomes ready to post"})}
+    if(ownFinal&&["Ready","Scheduled"].includes(v.status)&&!v.approvedAt)out.push({v:"__upfinal",label:safeUrl(v.finalLink)?"Replace final…":"Upload final…",c:"#3E9C5E",hint:"The finished video"});
+    if(isCar(v)&&spOn()&&canUp(v)&&["Shot","Editing","Re-edit","Pending","Ready"].includes(v.status))out.push({v:"__updraft",label:v.car?"Replace photos…":"Upload photos…",c:"#D1A23A",hint:"The carousel photos"});
+    if(typeof IG!=="undefined"&&IG.ready()&&!isCar(v)&&((v.final&&v.final.itemId)||safeUrl(v.finalLink))&&!(v.posts&&v.posts.ig))out.push({v:"__igpost",label:"Post to Instagram",c:"#d62976"});
+    if(!["Shot","Editing","Ready","Scheduled","Posted","In review"].includes(v.status))out.push({v:v.status,label:v.status,c:SC[v.status]||"#888",cur:true});
+    ["Shot","Editing","Ready","Scheduled","Posted"].forEach(k=>out.push({v:k,label:k==="Ready"&&v.status!=="Ready"&&!(v.final&&v.final.itemId)&&spOn()&&!isCar(v)?"Ready (upload final)":k,c:SC[k],cur:k===v.status}));
+    return out;
+  }
+  if(isReviewer()&&!PRIME){   // Zain only needs the decisions; the editing steps are Shibli's
     out.push({v:v.status,label:v.status==="In review"?"In review (now)":v.status,c:SC[v.status]||"#888",cur:true});
     if(hasReview(v)&&spOn())out.push({v:"__watch",label:isCar(v)&&v.car?"▶ View photos":"▶ Watch draft",c:"#0B0B0C",hint:isCar(v)&&v.car?v.car.count+" photos":v.draft.round>1?"Round "+v.draft.round:"Watch or download"});
     if(!["Ready","Scheduled","Posted"].includes(v.status))out.push({v:"__approve",label:"Approve",c:"#3E9C5E",hint:"Goes to Ready"});
@@ -3665,7 +3680,7 @@ function stMenuItems(v){
   else if(isReviewer()&&["Ready","Scheduled","Approved"].includes(v.status))out.push({v:"Re-edit",label:"Re-edit…",c:SC["Re-edit"],hint:"Send it back with notes"});
   if(typeof IG!=="undefined"&&IG.ready()&&!isCar(v)&&((v.final&&v.final.itemId)||safeUrl(v.finalLink))&&!(v.posts&&v.posts.ig))out.push({v:"__igpost",label:"Post to Instagram",c:"#d62976",hint:"@"+((S.settings.ig||{}).username||"")});
   // the editor can record a re-edit Zain asked for in person, after the fact
-  if(!isReviewer()&&["Shot","Editing","Pending"].includes(v.status)&&(v.submittedAt||v.approvedAt))out.push({v:"__logre",label:"Log as re-edit…",c:SC["Re-edit"],hint:"If Zain asked for changes"});
+  if(!isReviewer()&&["Shot","Editing","Pending"].includes(v.status)&&(v.submittedAt||v.approvedAt))out.push({v:"__logre",label:"Log as re-edit…",c:SC["Re-edit"],hint:`If ${reviewerName()} asked for changes`});
   if(spOn()&&canUp(v)){
     const C=isCar(v);
     if(EDIT_POOL.includes(v.status))out.push({v:"__updraft",label:C?"Upload photos…":"Upload draft…",c:"#D1A23A",hint:`Goes to ${reviewerName()} for review`});
@@ -3816,7 +3831,9 @@ const VIEW_ONLY=["nawaz"];   // the manager: can see everything, can't change an
 const MEMBERS=["waleed"];    // editors helping out: see everything, change only the videos assigned to them in the Away plan
 const EDITORS=["hamza"];     // editors: see everything, change video status on Edit order and Posting schedule, run the editing timer
 /* Milele Prime: a second board inside the same app, with its own videos, plans and settings.
-   Waleed and Dorota run it (both can do everything); Shibili, Zain and Zain Nawaz can open it to look. */
+   Waleed edits and approves (his own videos need no review); Dorota edits and sends hers to Waleed.
+   Both can plan and change settings; Shibili, Zain and Zain Nawaz can open it to look. */
+const PRIME_LEAD="waleed";
 const PRIME_TEAM=["waleed","dorota"];
 const PRIME_VIEW=["shibili","zain","nawaz"];
 const PRIME_ONLY=["dorota"];                       // these accounts only have the Prime board
@@ -3952,7 +3969,7 @@ async function fbImportRows(rows,step){
       b.set(F.db.collection(CN(x.collection)).doc(String(x.id)),{j,u:now,x:false,by:"import"});size+=j.length;n++;i++}
     await b.commit();done+=n;step(`Copied ${done} of ${rows.length}…`)}
   await fbSetSys({importedAt:now,importedRows:rows.length});return rows.length}
-if(PRIME)Object.assign(S.settings,{spBase:"Milele - Marketing Department/Milele Prime/Videos",reviewers:PRIME_TEAM.join(", "),alertUsers:PRIME_TEAM.join(", ")});
+if(PRIME)Object.assign(S.settings,{spBase:"Milele - Marketing Department/Milele Prime/Videos",reviewers:PRIME_LEAD,alertUsers:PRIME_LEAD});
 function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
 function lsSet(k,v){try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}}
 function saveLocal(){try{localStorage.setItem("seb-free-demo",JSON.stringify({videos:S.videos,settings:S.settings,queue:S.queue,shoots:S.shoots,scripts:S.scripts,profiles:S.profiles}))}catch(e){}}
@@ -3984,7 +4001,7 @@ function mayWrite(id){return isEdAcct()||(isMember()&&myVideos().has(id))}
 // whose editing timer is it: so pausing yours never pauses a teammate's
 function timerMine(o){if(isMember())return myVideos().has(o.id);if(isEdAcct())return o.editBy===S.me||myVideos().has(o.id);
   return !teamOwned().has(o.id)&&!(o.editBy&&o.editBy!==S.me&&helperAcct(o.editBy))&&!(asgOf(o)&&helperAcct(asgOf(o)))}
-let voT=0;function voNote(){if(Date.now()-voT<2500)return;voT=Date.now();toast(isEdAcct()?"You can change the video status on Edit order and Posting schedule":isMember()?"You can change the status of the videos assigned to you":"View only. Ask Shibli or Zain to make changes")}
+let voT=0;function voNote(){if(Date.now()-voT<2500)return;voT=Date.now();toast(isEdAcct()?"You can change the video status on Edit order and Posting schedule":isMember()?"You can change the status of the videos assigned to you":PRIME?"View only. Ask Waleed or Dorota to make changes":"View only. Ask Shibli or Zain to make changes")}
 const VIEW_OK=new Set(["asCat","asOpenSet","asBack","asRefresh","asSignin","asUpload","asView","asPlay","asDl","asDel","asDlAll","asDelSet","wsSwitch","musListen","musLink","musClear","musJob","edWho","viewDraft","viewCar","tripGo","tripOpen","tripWho","tripCopy","copy","days","dialBack","dialTry","dialType","dlBackup","fclear","ffmt","fnolink","fnopil","fsched","fst","goShoots","goTab","grpToggle","histView","hrange","ideaArch","ideaCopy","ideaPil","ideaType","mExport","mOut","mday","mnav","more","newWin","openCmd","osnOn","osnTest","ovGo","ovMode","ovStatus","plByDay","plMode","playWrapped","printSum","rowMore","schedToday","shView","sumMode","sview","testAlert","vaultLock","vaultOpen","vcopy","viewScript","vshow","clearSel","chpw","freshLoad"]);
 const VIEW_FIELDS=["live","plr","sumr","ovr","opt"];
 // Waleed and Hamza also use PB Downloader and the editing timer
@@ -5105,7 +5122,7 @@ function vSettings(){
       <span class="hint">Days you edit. Posts on your days off are covered the work day before. Take a single day off from the Edit order tab.</span></div>
     <div class="field"><label>Shoot days</label>
       <div class="wds" role="group" aria-label="Shoot days">${[1,2,3,4,5,6,0].map(w=>`<button class="wd" data-act="shootday" data-w="${w}" aria-pressed="${shootWdSet().includes(w)}">${WD[w].slice(0,2)}</button>`).join("")}</div>
-      <span class="hint">Days Fahad can shoot. Time away targets are shared across these days only.</span></div>
+      <span class="hint">${PRIME?"Days you can shoot":"Days Fahad can shoot"}. Time away targets are shared across these days only.</span></div>
     <div class="field"><label for="elead">Finish edits</label>
       <select id="elead" data-set="editLead"><option value="1"${(S.settings.editLead==null?1:+S.settings.editLead)===1?" selected":""}>A day before they post</option><option value="0"${+S.settings.editLead===0&&S.settings.editLead!=null?" selected":""}>On the day they post</option></select></div>
     <div class="switches">${toggle("data-sset","editCountAll",S.settings.editCountAll!==false,"Count carousels in the edit target")}</div>
@@ -5275,7 +5292,7 @@ async function spUpload(id,kind,file,job){
     const cur=S.videos[id];if(!cur)throw new Error("The video was deleted from the board");
     if(kind==="draft"){sendForReview({...cur,draft:info});job.state="Sent";job.msg=`Sent to ${reviewerName()}`}
     else{let link=item.webUrl;try{const l=await gjson(`/drives/${drive}/items/${item.id}/createLink`,{method:"POST",body:{type:"view",scope:"organization"}});link=(l.link&&l.link.webUrl)||link}catch(_){}
-      const ok=["Approved","Ready"].includes(cur.status);putVideo(ok?{...withStatus(cur,"Ready"),finalLink:link,final:info}:{...cur,finalLink:link,final:info});
+      const ok=["Approved","Ready"].includes(cur.status)||(PRIME&&isReviewer()&&!["Scheduled","Posted"].includes(cur.status));putVideo(ok?{...withStatus(cur,"Ready"),finalLink:link,final:info}:{...cur,finalLink:link,final:info});
       if(ok)celebrate(id,"Ready");job.state="Sent";job.msg=ok?"Ready to post":"Final saved";toast(`Final of “${cur.title||"Untitled"}” uploaded${ok?". It’s ready to post":""}`)}
     job.file=null;setTimeout(()=>{UP.list=UP.list.filter(j=>j!==job);upPaint()},7000);
   }catch(e){job.state="Failed";job.error=e.message||"Upload failed";job.signin=!!e.signin;
@@ -5335,13 +5352,14 @@ window.addEventListener("beforeunload",e=>{if(UP.list.some(j=>["Starting","Uploa
 /* the upload window: drop a file, or (for a draft) send without one, or (for a final) paste a link */
 const UPD={id:null,kind:"draft"};
 function upMsHTML(){
-  if(!spOn())return `<div class="up-ms off">SharePoint isn’t set up yet. ${isAdm()?"Add the two IDs in Settings › SharePoint.":"Ask Shibili to finish the SharePoint setup."}</div>`;
+  if(!spOn())return `<div class="up-ms off">SharePoint isn’t set up yet. ${isAdm()?"Add the two IDs in Settings › SharePoint.":`Ask ${nameOf(ADMIN)} to finish the SharePoint setup.`}</div>`;
   const a=msAccount();
   return a?`<div class="up-ms on"><span>Signed in as <b>${esc(a.username)}</b></span><button type="button" class="linkbtn" data-ms="switch">Switch account</button></div>`
     :`<div class="up-ms"><span>Sign in with your Milele Microsoft account to upload.</span><button type="button" class="btn small primary" data-ms="signin">Sign in with Microsoft</button></div>`}
 function openUpload(id,kind){const v=S.videos[id];if(!v)return;UPD.id=id;UPD.kind=kind;const d=$("#upDlg");
   const round=kind==="draft"?nextRound(v):(v.round||1);
   $("#upTitle").textContent=kind==="final"?"Upload the final video":"Upload the draft";
+  if(kind==="final"&&PRIME&&isReviewer()&&!["Approved","Ready","Scheduled","Posted"].includes(v.status)){setTimeout(()=>{const f=$("#upFor");if(f)f.textContent=`“${v.title||"Untitled"}”. Upload the finished video and it becomes Ready to post. No review needed for your own videos.`},0)}
   $("#upFor").textContent=kind==="final"?`“${v.title||"Untitled"}” is approved. ${!isCar(v)&&v.draft&&v.draft.itemId?"Use the approved draft as the final, or upload a different file.":"The final link is added by itself and it becomes ready to post."}`:`“${v.title||"Untitled"}”${round>1?`, round ${round}`:""}. It goes to ${reviewerName()} for review as soon as it’s uploaded.`;
   $("#upWhere").textContent=spOn()?`Saved to SharePoint › …/${spCfg().base.split("/").slice(-1)[0]}/${spMonth(v)}/${kind==="final"?spCfg().final:spCfg().drafts}`:"";
   $("#upMs").innerHTML=upMsHTML();$("#upDrop").classList.toggle("off",!(spOn()&&msAccount()));
@@ -6012,7 +6030,7 @@ document.addEventListener("keydown",e=>{
 /* ---------- team: profile photos, names, passwords ---------- */
 let TEAM={at:0,data:(()=>{try{return JSON.parse(lsGet(KS("seb-team"))||"null")}catch(e){return null}})()};
 function prof(u){return (S.profiles||{})[u]||{}}
-function dispName(u){return prof(u).name||u||"You"}
+function dispName(u){const n=prof(u).name;if(n)return n;u=String(u||"");return u?u.charAt(0).toUpperCase()+u.slice(1):"You"}
 function initials(u){const n=dispName(u).trim().split(/\s+/);return ((n[0]||"?")[0]+(n.length>1?n[n.length-1][0]:"")).toUpperCase()}
 function avatar(u,size,extra){
   const p=prof(u),s=size||36;
@@ -6568,7 +6586,8 @@ function myEditsPanel(){if(!helperAcct())return "";const L=vids().filter(v=>asgO
     ${L.length?todo.concat(rest).map(row).join(""):`<p class="sub">When ${esc(nameOf(ADMIN))} or ${esc(reviewerName())} assigns you a video, it shows here and you get a notification.</p>`}</div>`}
 function teamWorkCard(){if(!canAssign())return "";
   const live=v=>EDIT_POOL.includes(v.status)||v.status==="In review"||v.status==="Approved"||(v.status==="Ready"&&v.approvedAt&&!safeUrl(v.finalLink));
-  const people=editorsList().map(u=>{const mine=v=>u===ADMIN?!asgOf(v):asgOf(v)===u;
+  const owner=vOwner;
+  const people=editorsList().map(u=>{const mine=v=>PRIME?owner(v)===u:(u===ADMIN?!asgOf(v):asgOf(v)===u);
     const L=vids().filter(v=>mine(v)&&(u===ADMIN?["Editing","In review","Re-edit","Approved"].includes(v.status):live(v)))
       .sort((a,b)=>({Editing:0,"Re-edit":1,Shot:2,Pending:2,"Not started":2,"In review":3,Approved:4,Ready:4}[a.status]??5)-({Editing:0,"Re-edit":1,Shot:2,Pending:2,"Not started":2,"In review":3,Approved:4,Ready:4}[b.status]??5));
     return {u,L}});
@@ -6580,8 +6599,10 @@ function teamWorkCard(){if(!canAssign())return "";
       ${L.length>6?`<p class="tw-more">and ${L.length-6} more</p>`:""}</div>`};
   return `<section class="panel tw"><div class="phead"><h2>Who’s editing what</h2><div class="pactions"><button class="btn small ghost" data-act="goTab" data-tab-go="order">Edit order</button></div></div><div class="tw-grid">${people.map(col).join("")}</div></section>`}
 // Edit order filter: everyone, or one editor's videos (yours shows as "Mine")
-function edShow(v){const f=S.edWho||"all";if(f==="all")return true;return f===ADMIN?!asgOf(v):asgOf(v)===f}
-function edWhoChips(list){const f=S.edWho||"all",n=u=>list.filter(x=>u===ADMIN?!asgOf(x.v):asgOf(x.v)===u).length;
+// who is on a video: the assignment first; in Prime also whoever is editing it or sent the draft
+function vOwner(v){return asgOf(v)||(PRIME?(v.editedBy||v.editBy||(v.draft&&v.draft.by)||""):"")||ADMIN}
+function edShow(v){const f=S.edWho||"all";if(f==="all")return true;if(PRIME)return vOwner(v)===f;return f===ADMIN?!asgOf(v):asgOf(v)===f}
+function edWhoChips(list){const f=S.edWho||"all",n=u=>list.filter(x=>PRIME?vOwner(x.v)===u:(u===ADMIN?!asgOf(x.v):asgOf(x.v)===u)).length;
   return `<div class="ed-who" role="group" aria-label="Show"><button class="fchip" data-act="edWho" data-w="all" aria-pressed="${f==="all"}">All <em>${list.length}</em></button>${editorsList().map(u=>`<button class="fchip" data-act="edWho" data-w="${esc(u)}" aria-pressed="${f===u}">${u===S.me?"Mine":esc(nameOf(u))} <em>${n(u)}</em></button>`).join("")}</div>`}
 function tripShown(){const a=editTrip();if(S.tripOpen!=null)return !!S.tripOpen;return !!a&&roleOf(a)==="edit"&&a.from<=addDays(today(),1)&&a.to>=today()}
 function tripPanel(){
@@ -6856,10 +6877,10 @@ $("#shootDlg").addEventListener("close",()=>{if($("#shootDlg").returnValue==="ok
 /* ---------- ready-to-post pop-ups ---------- */
 /* ---------- review flow: editor sends for review, reviewer approves or asks for a re-edit ---------- */
 function userList(s){return String(s||"").toLowerCase().split(/[,;\s]+/).filter(Boolean)}
-function reviewers(){const L=userList(S.settings.reviewers);return L.length?L:PRIME?[...PRIME_TEAM]:["zain"]}
+function reviewers(){if(PRIME)return [PRIME_LEAD];const L=userList(S.settings.reviewers);return L.length?L:["zain"]}
 function isReviewer(){return reviewers().includes(S.me||"")}
 function isEditor(){return PRIME?PRIME_TEAM.includes(S.me||""):!isReviewer()}
-function isPoster(){if(helperAcct())return false;const L=userList(S.settings.alertUsers);return !L.length||L.includes(S.me||"")}
+function isPoster(){if(PRIME)return S.me===PRIME_LEAD;if(helperAcct())return false;const L=userList(S.settings.alertUsers);return !L.length||L.includes(S.me||"")}
 function reviewerName(){const u=reviewers()[0];const n=dispName(u)||u;return n.charAt(0).toUpperCase()+n.slice(1)}
 function isReadyPost(v){return !!(v&&safeUrl(v.finalLink)&&v.status==="Ready")}
 function alertKind(v){
@@ -6875,7 +6896,7 @@ function alertKind(v){
   return null;
 }
 // approvals and re-edits go to whoever edits that video
-function editsMine(v){const a=asgOf(v);if(helperAcct())return a===S.me||myVideos().has(v.id);return !(a&&helperAcct(a))}
+function editsMine(v){if(PRIME)return (v.editedBy||v.editBy||"")===S.me;const a=asgOf(v);if(helperAcct())return a===S.me||myVideos().has(v.id);return !(a&&helperAcct(a))}
 function posterName(){const u=userList(S.settings.alertUsers)[0]||reviewers()[0];const n=dispName(u)||u;return n.charAt(0).toUpperCase()+n.slice(1)}
 function dueMs(v){if(!v||!v.postDate||!v.postTime)return null;return new Date(v.postDate+"T"+v.postTime+":00").getTime()}
 // reminders around posting time: 15 minutes before, at posting time, and if it still isn't marked posted 30 minutes later
@@ -6910,6 +6931,7 @@ function autoPostScheduled(){
 const PROMO_TRIED=new Set();
 function autoPromote(){if(!spOn()||!isEditor()||viewOnly())return;
   vids().forEach(v=>{if(PROMO_TRIED.has(v.id)||isCar(v)||!v.draft||!v.draft.itemId||safeUrl(v.finalLink))return;
+    if(PRIME&&(v.editedBy||v.draft.by||"")!==S.me)return;
     if(!(v.status==="Approved"||(v.status==="Ready"&&v.approvedAt)))return;if(v.finalPending&&Date.now()-v.finalPending<180000)return;if(!canUp(v))return;
     PROMO_TRIED.add(v.id);putVideo({...v,finalPending:Date.now()},true);spPromoteDraft(v.id)})}
 function checkAlerts(){
@@ -7014,7 +7036,7 @@ function sendForReview(v){
   toast(`Sent to ${reviewerName()} for review${round>1?`, round ${round}`:""}`,"Undo",()=>{putVideo(prev);toast("Moved back")});
 }
 function askEditorReedit(v,st){
-  const d=$("#reDlg");$("#reFor").textContent=`“${v.title||"Untitled"}”`;const box=$("#reNote");box.value="";d.returnValue="";
+  const d=$("#reDlg");$("#reFor").textContent=`“${v.title||"Untitled"}”`;{const h=document.getElementById("reAskH");if(h)h.textContent=`Is this a re-edit ${reviewerName()} asked for?`}const box=$("#reNote");box.value="";d.returnValue="";
   d.addEventListener("close",()=>{const r=d.returnValue,cur=S.videos[v.id];if(!cur)return;
     if(r==="ok"){const note=box.value.trim();putVideo({...withStatus(cur,st),reviewNote:note||cur.reviewNote||"",reviewLog:hist(cur,"re-edit",note),reeditByEditor:true});scribbleFx();toast(`Recorded as a re-edit${note?" with notes":""}`)}
     else if(r==="no"){if(st!==cur.status)putVideo(withStatus(cur,st));else render()}
@@ -7042,6 +7064,13 @@ function editTimer(v){if(v.status!=="Editing")return "";const p=isPausedV(v),ms=
   const by=v.editBy&&v.editBy!==S.me&&helperAcct(v.editBy)?`<em class="et-by">${esc(dispName(v.editBy))}</em>`:"";
   return `<span class="etimer${p?" paused":""}" data-id="${v.id}">${arcSvg}${by}<b>${ms==null?"–":fmtClock(ms)}</b>${p?`<span style="font-size:11px;opacity:.7">paused</span>`:""}<button class="et-btn" data-act="${p?"resumeEdit":"pauseEdit"}" data-id="${v.id}" title="${p?"Resume":"Pause"}">${p?"▶":"⏸"}</button></span>`}
 function setStatusFlow(v,st){
+  if(PRIME&&isReviewer()&&st==="Ready"&&v.status!=="Ready"){
+    if(v.status==="In review"){approveVideo(v);return}
+    if(isCar(v)||(v.final&&v.final.itemId)||!spOn()){putVideo(withStatus(v,"Ready"));celebrate(v.id,"Ready");return}
+    openUp(v.id,"final");return}
+  if(PRIME&&isReviewer()&&["Shot","Editing","Pending","Posted","Scheduled"].includes(st)&&v.status!=="In review"){
+    if(st==="Editing"&&v.status!=="Editing"){const others=vids().filter(o=>o.id!==v.id&&o.status==="Editing"&&!isPausedV(o)&&timerMine(o));others.forEach(o=>pauseVideo(o,true))}
+    putVideo(st==="Editing"?{...withStatus(v,st),editBy:S.me||""}:withStatus(v,st));celebrate(v.id,st);return}
   if(st==="Editing"&&v.status!=="Editing"){const mine=timerMine;const others=vids().filter(o=>o.id!==v.id&&o.status==="Editing"&&!isPausedV(o)&&mine(o));if(others.length){others.forEach(o=>pauseVideo(o,true));setTimeout(()=>toast(`Paused the timer on “${others[0].title||"Untitled"}”${others.length>1?` and ${others.length-1} more`:""} while you work on this one`),600)}}
   if(!isReviewer()&&["Ready","Scheduled","Approved","In review"].includes(v.status)&&["Editing","Shot","Pending"].includes(st)){askEditorReedit(v,st);return}
   const wantsDone=["Ready","In review","Edited"].includes(st);
@@ -8601,7 +8630,7 @@ const MUS=(()=>{
   const extOf=t=>/mp4/.test(t)?"m4a":/ogg/.test(t)?"ogg":"webm";
   const blobB64=b=>new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(String(r.result).split(",")[1]||"");r.onerror=no;r.readAsDataURL(b)});
   function errText(e){const c=e&&+e.error_code;
-    if(c===900||c===901)return "The AudD token in Settings isn’t right. Ask Shibili to check it.";
+    if(c===900||c===901)return `The AudD token in Settings isn’t right. Ask ${nameOf(ADMIN)} to check it.`;
     if(c===902)return "This month’s AudD searches are used up. Top up the AudD plan to keep going.";
     if(c===300||c===500)return "Couldn’t hear enough music. Try another part of the video, or hold the phone closer.";
     if(c===400)return "That file is too big to send. Try “Listen” or a shorter clip.";
@@ -8655,7 +8684,7 @@ const MUS=(()=>{
   function noMatch(canRetry){return `<div class="mus-wait"><div class="mus-ring off"><span>?</span></div><b>No match</b><small>It may be original music, a sped-up edit, or the voice is louder than the song.</small></div>
       <div class="foot">${canRetry?`<button class="btn" type="button" data-mus="again" data-part="end">Try another part</button>`:""}<span style="flex:1"></span><button class="btn primary" type="button" data-mus="close">OK</button></div>`}
   async function go(title,work,{vid=null,retry=null}={}){
-    if(!tok()){show(failed(isAdm()?"Add your AudD token in Settings › Music ID first.":"Music ID isn’t set up yet. Ask Shibili to add the AudD token in Settings."));return}
+    if(!tok()){show(failed(isAdm()?"Add your AudD token in Settings › Music ID first.":`Music ID isn’t set up yet. Ask ${nameOf(ADMIN)} to add the AudD token in Settings.`));return}
     const my=++run;st.busy=true;if(!dlg)mk();dlg._vid=vid;dlg._res=null;dlg._again=retry;
     show(ring(0,title,"Hold on…"));
     try{const j=await work(my);if(my!==run)return;const r=norm(j);
@@ -8701,7 +8730,7 @@ const MUS=(()=>{
   /* ---------- the panel on the Downloader tab ---------- */
   function panel(){const H=hist(),on=!!tok();
     return `<section class="panel mus-panel" id="musPanel"><div class="phead"><h2>♪ What’s the song?</h2><span class="sub">Like Shazam: finds the music in a reel, a video file, or playing around you</span></div>
-      ${on?"":`<p class="ovnote">${isAdm()?`Add your AudD token to switch this on. <button class="btn small" data-act="goTab" data-tab-go="settings">Open Settings</button>`:"Music ID isn’t set up yet. Ask Shibili to add the AudD token in Settings."}</p>`}
+      ${on?"":`<p class="ovnote">${isAdm()?`Add your AudD token to switch this on. <button class="btn small" data-act="goTab" data-tab-go="settings">Open Settings</button>`:`Music ID isn’t set up yet. Ask ${nameOf(ADMIN)} to add the AudD token in Settings.`}</p>`}
       <div class="mus-ways">
         <button type="button" class="mus-way" data-act="musListen"${on?"":" disabled"}><span class="mw-i">🎙</span><b>Listen</b><small>Hold the phone near the music for 10 seconds</small></button>
         <label class="mus-way${on?"":" off"}"><input type="file" id="musFile" accept="audio/*,video/*,.mov,.mp4,.m4a,.mp3" hidden${on?"":" disabled"}><span class="mw-i">🎞</span><b>From a file</b><small>A reel or video saved on this computer or phone</small></label>
