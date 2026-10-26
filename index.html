@@ -2324,7 +2324,6 @@ body.prime [data-tab="raw"],body.prime [data-tab-go="raw"],body.prime #rwCard{di
 .rw-wm{min-width:0;display:grid;gap:2px}.rw-wm b{font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rw-wm small{font-size:12.5px;color:var(--muted)}
 .asg-self{margin-left:6px;white-space:nowrap}
 body.viewonly #main .asg-self{display:inline-flex!important;pointer-events:auto!important;visibility:visible!important}
-.prime-tag{background:#0B0B0C!important;color:#AAFF00!important;border-color:transparent!important;font-weight:800;letter-spacing:.04em}
 .rw-dt{display:none}
 .rw-wa{display:flex;align-items:center;gap:6px}.rw-who{font-size:12.5px;font-weight:600;color:var(--muted)}
 .rw-to{font-size:13px;color:var(--muted);margin:0 0 12px;padding:10px 12px;border-radius:12px;background:rgba(12,14,8,.04);overflow-wrap:anywhere}.rw-to b{color:var(--ink)}
@@ -2345,6 +2344,24 @@ body.prime [data-tab="community"],body.prime [data-tab-go="community"]{display:n
 #commDlg textarea{width:100%;box-sizing:border-box;min-height:120px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;font:inherit;font-size:14px;background:rgba(255,255,255,.9);color:var(--ink)}
 #commDlg select{height:40px}
 #commDlg .field{display:grid;gap:6px;margin-bottom:12px}
+
+/* ===== v137: Share with a teammate ===== */
+dialog.shr-dlg{width:min(560px,calc(100vw - 32px))}
+.shr-ppl{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 16px}
+.shr-p{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:9px;padding:7px 14px 7px 7px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.7);cursor:pointer;font-size:14px;transition:background .15s,transform .15s}
+.shr-p:hover{transform:translateY(-1px)}.shr-p.on{background:var(--lime);border-color:transparent;color:#0B0B0C;box-shadow:0 6px 16px rgba(150,230,0,.3)}
+.shr-p:focus-visible{outline:2px solid var(--lime-deep,#7BD100);outline-offset:2px}
+.shr-note{display:grid;gap:6px}.shr-note textarea{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:12px;padding:10px 12px;font:inherit;font-size:14px;background:rgba(255,255,255,.9);color:var(--ink);resize:vertical}
+.shr-hint{font-size:12.5px;color:var(--muted);margin:10px 0 0}
+.shr-list{display:grid;gap:10px}
+.shr-row{padding:10px 12px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.65)}
+.shr-top{display:grid;grid-template-columns:64px minmax(0,1fr) auto;align-items:center;gap:14px}
+.shr-th{width:64px;height:64px;border-radius:14px;background:#0B0B0C center/cover no-repeat;display:grid;place-items:center;color:var(--lime);font-size:20px}
+.shr-m{min-width:0;display:grid;gap:3px}.shr-m b{font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.shr-m small{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted)}
+.shr-msg{margin:2px 0 0;font-size:13px;color:var(--ink);font-style:italic}
+.shr-a{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.shr-grid{margin-top:12px}
+@media (max-width:600px){.shr-top{grid-template-columns:52px minmax(0,1fr)}.shr-th{width:52px;height:52px}.shr-a{grid-column:1/-1;justify-content:flex-start}}
 
 /* ===== v129: Asset library ===== */
 .as-cats{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin:4px 0 14px}
@@ -3103,6 +3120,9 @@ dialog.ig-dlg{width:min(860px,96vw)}
 :root[data-theme="dark"] .rw-to{background:rgba(255,255,255,.05)!important}
 :root[data-theme="dark"] .comm-plan{background:rgba(255,255,255,.04)!important;border-color:var(--line)!important}
 :root[data-theme="dark"] #commDlg textarea{background:var(--d-field)!important;border-color:var(--d-line2)!important;color:var(--ink)!important}
+:root[data-theme="dark"] .shr-row,:root[data-theme="dark"] .shr-p{background:rgba(255,255,255,.04)!important;border-color:var(--line)!important}
+:root[data-theme="dark"] .shr-p.on{background:var(--lime)!important;color:#0B0B0C!important}
+:root[data-theme="dark"] .shr-note textarea{background:var(--d-field)!important;border-color:var(--d-line2)!important;color:var(--ink)!important}
 
 /* ================================================================
    iPHONE — minimal layer (v82)
@@ -3698,7 +3718,7 @@ function statusSelect(v){
   return `<button type="button" class="status stsel${mayEdit(v.id)?" mine":""}" data-act="stMenu" data-id="${v.id}" data-stsel="${v.id}" style="--c:${SC[v.status]||"#888"}" aria-haspopup="listbox" aria-label="Status: ${esc(v.status)}"><i></i><span>${esc(v.status)}</span><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>${rvTimer(v)}`;
 }
 function stMenuItems(v){const out=stMenuItems0(v);
-  if(rawSafe(()=>TOP.can(v))){const i=out.findIndex(it=>ST_MAIN.includes(it.v));const it={v:"__toPrime",label:v.toPrime?"↻ Send to Milele Prime again":"→ Send to Milele Prime",c:"#0B0B0C",hint:v.toPrime?"Sent "+niceW(new Date(v.toPrime.at).toISOString().slice(0,10)):"For Dorota and Waleed to post"};out.splice(i<0?out.length:i,0,it)}
+  if(rawSafe(()=>SHR.can(v))){const i=out.findIndex(it=>ST_MAIN.includes(it.v));out.splice(i<0?out.length:i,0,{v:"__share",label:"✉ Share with…",c:"#8B72CF",hint:isCar(v)?"Send the photos to a teammate":"Send the final video to a teammate"})}
   return out}
 function stMenuItems0(v){
   const out=[];
@@ -3769,7 +3789,7 @@ document.addEventListener("click",e=>{const o=e.target.closest&&e.target.closest
     if(val==="__usedraft"){spPromoteDraft(v.id);return}
     if(val==="__igpost"){IG.open(v.id);return}
     if(val==="__music"){MUS.fromVideo(v.id);return}
-    if(val==="__toPrime"){TOP.send(v);return}
+    if(val==="__share"){SHR.open(v);return}
     // with SharePoint set up, sending for review means uploading the draft
     if(val==="In review"&&spOn()&&canUp(v)&&!isReviewer()&&EDIT_POOL.includes(v.status)){openUp(v.id,"draft");return}
     if(val==="__logre"){askEditorReedit(v,v.status);return}if(val===v.status)return;setStatusFlow(v,val);return}
@@ -4045,8 +4065,7 @@ document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest
   if(b.dataset.act==="asgSelf"){if(a&&a!==S.me){toast(`${nameOf(a)} already has this one`);return}if(!SELF_OK(v))return;
     putVideo({...v,assignee:S.me,assignedBy:S.me,assignedAt:Date.now()});toast(`“${v.title||"Untitled"}” is yours. It’s in Your edits`)}
   else{if(a!==S.me)return;putVideo({...v,assignee:"",assignedBy:S.me,assignedAt:Date.now()});toast("Given back. It’s not assigned to anyone now")}});
-function asgTag(v){return asgTag0(v)+rawSafe(()=>TOP.tag(v))}
-function asgTag0(v){const a=asgOf(v);return a?`<span class="tag asg-tag${a===S.me?" me":""}" title="Edited by ${esc(nameOf(a))}">${a===S.me?"You":esc(nameOf(a))}</span>`:""}
+function asgTag(v){const a=asgOf(v);return a?`<span class="tag asg-tag${a===S.me?" me":""}" title="Edited by ${esc(nameOf(a))}">${a===S.me?"You":esc(nameOf(a))}</span>`:""}
 function roleName(u){return u===ADMIN?"Admin":reviewers().includes(u)?"Reviewer":isEdAcct(u)?"Editor":isMember(u)?"Member":VIEW_ONLY.includes(u)?"View only":"Member"}
 // the name this member goes by in the Away plan team list
 function memberName(){const T=new Set();awayList().forEach(a=>tripTeam(a).forEach(n=>T.add(n)));const me=String(S.me||"").toLowerCase(),dn=String(dispName(S.me)||"").toLowerCase();
@@ -4063,7 +4082,7 @@ function mayWrite(id){return isEdAcct()||(isMember()&&myVideos().has(id))}
 function timerMine(o){if(isMember())return myVideos().has(o.id);if(isEdAcct())return o.editBy===S.me||myVideos().has(o.id);
   return !teamOwned().has(o.id)&&!(o.editBy&&o.editBy!==S.me&&helperAcct(o.editBy))&&!(asgOf(o)&&helperAcct(asgOf(o)))}
 let voT=0;function voNote(){if(Date.now()-voT<2500)return;voT=Date.now();toast(isEdAcct()?"You can change the video status on Edit order and Posting schedule":isMember()?"You can change the status of the videos assigned to you":PRIME?"View only. Ask Waleed or Dorota to make changes":"View only. Ask Shibli or Zain to make changes")}
-const VIEW_OK=new Set(["asgSelf","asgDrop","rawUp","rawSkip","rawDay","rawBack","rawRefresh","rawSignin","rawZip","rawEach","asCat","asOpenSet","asBack","asRefresh","asSignin","asUpload","asView","asPlay","asDl","asDel","asDlAll","asDelSet","wsSwitch","musListen","musLink","musClear","musJob","edWho","viewDraft","viewCar","tripGo","tripOpen","tripWho","tripCopy","copy","days","dialBack","dialTry","dialType","dlBackup","fclear","ffmt","fnolink","fnopil","fsched","fst","goShoots","goTab","grpToggle","histView","hrange","ideaArch","ideaCopy","ideaPil","ideaType","mExport","mOut","mday","mnav","more","newWin","openCmd","osnOn","osnTest","ovGo","ovMode","ovStatus","plByDay","plMode","playWrapped","printSum","rowMore","schedToday","shView","sumMode","sview","testAlert","vaultLock","vaultOpen","vcopy","viewScript","vshow","clearSel","chpw","freshLoad"]);
+const VIEW_OK=new Set(["shrView","shrDl","shrHide","shrSignin","asgSelf","asgDrop","rawUp","rawSkip","rawDay","rawBack","rawRefresh","rawSignin","rawZip","rawEach","asCat","asOpenSet","asBack","asRefresh","asSignin","asUpload","asView","asPlay","asDl","asDel","asDlAll","asDelSet","wsSwitch","musListen","musLink","musClear","musJob","edWho","viewDraft","viewCar","tripGo","tripOpen","tripWho","tripCopy","copy","days","dialBack","dialTry","dialType","dlBackup","fclear","ffmt","fnolink","fnopil","fsched","fst","goShoots","goTab","grpToggle","histView","hrange","ideaArch","ideaCopy","ideaPil","ideaType","mExport","mOut","mday","mnav","more","newWin","openCmd","osnOn","osnTest","ovGo","ovMode","ovStatus","plByDay","plMode","playWrapped","printSum","rowMore","schedToday","shView","sumMode","sview","testAlert","vaultLock","vaultOpen","vcopy","viewScript","vshow","clearSel","chpw","freshLoad"]);
 const VIEW_FIELDS=["live","plr","sumr","ovr","opt"];
 // Waleed and Hamza also use PB Downloader and the editing timer
 const HELPER_OK=new Set(["startEdit","dlAdd","dlDo","dlQ","dlCk","dlClear","dlRetry","dlVideo","pauseEdit","resumeEdit","pauseAll","resumeAll","upDraft"]);
@@ -4616,7 +4635,7 @@ function vOverview(){
   const noScript=upcomingShoots().filter(s=>!S.scripts[s.id]&&!s.scriptLink).length;
   const shootLine=(lbl,s)=>`<div class="ovs"><span class="ovs-l">${lbl}</span>${s?`<span class="ovs-t"><b>${esc(s.title||"Untitled shoot")}</b><small>${esc(niceW(s.date))}${s.time?", "+fmtT(s.time):""}${(s.videos||[]).length?`, ${s.videos.length} video${s.videos.length===1?"":"s"}`:""}</small></span>${S.scripts[s.id]||s.scriptLink?`<button class="iconbtn" data-act="viewScript" data-id="${s.id}">Script</button>`:`<span class="tag warn">No script</span>`}`:`<span class="ovs-t muted">Nothing planned</span>`}</div>`;
   const shotT=all.filter(v=>v.shotDate===t).length,edT=editedToday();
-  return `${awayBanner()}${rawSafe(()=>RAW.card())}${tripTodayCard()}${teamWorkCard()}
+  return `${awayBanner()}${rawSafe(()=>SHR.card())}${rawSafe(()=>RAW.card())}${tripTodayCard()}${teamWorkCard()}
   <section class="panel ov">
     <div class="phead"><h2>${esc(niceW(t))}</h2>
       <div class="ovtoday">${(()=>{const g=shootGoalToday();return `<span>Shot today <b>${shotT}</b>/${g}</span><i style="--p:${Math.min(1,shotT/g)}"></i>`})()}${(()=>{const ep=editPlan();const goal=edT+ep.todayLeft;const s=editStreak();return `<span class="gwrap">${goalRing(edT,ep.todayOff?0:goal)}<span>${ep.todayOff?"Day off":`Edited <b>${edT}</b>/${goal||edT}`}${s>1?`<em class="streak">🔥 ${s}-day streak</em>`:""}</span></span>`})()}<button class="btn ov-copy" data-act="copyPlan" title="Copy today’s shoots, posts and edits as text for WhatsApp or Teams"><svg width="13" height="13" viewBox="0 0 16 16" aria-hidden="true"><rect x="5" y="5" width="9" height="9" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M11 3.5A1.5 1.5 0 0 0 9.5 2h-5A2.5 2.5 0 0 0 2 4.5v5A1.5 1.5 0 0 0 3.5 11" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>Copy today’s plan</button></div></div>
@@ -5975,7 +5994,7 @@ function render(){
   else if(before)autoFlipRun(m,before);
   segInds(m);
   document.querySelectorAll(".mbar button").forEach(b=>b.setAttribute("aria-current",b.dataset.mtab===S.tab?"page":"false"));
-  updateBell();updateMe();rawSafe(()=>setTimeout(RAW.tick,700));
+  updateBell();updateMe();rawSafe(()=>setTimeout(RAW.tick,700));if(loaded)rawSafe(()=>SHR.start());
   if(S.tab==="settings"){loadBackups();loadTeam();if(spOn()&&!MS.app)msApp().then(()=>{if(S.tab==="settings")render()},()=>{})}
   moveInd();
   window.scrollTo(0,y);
@@ -6951,7 +6970,6 @@ function alertKind(v){
   if(!v)return null;
   // a scheduled post that went live on its own in the last 12 hours: tell everyone once
   if(v.status==="Posted"&&v.autoPosted&&v.autoPostedAt&&Date.now()-v.autoPostedAt<12*3600e3)return "posted";
-  if(PRIME&&v.sharedFrom&&v.status==="Ready"&&!v.postDate&&PRIME_TEAM.includes(S.me||""))return "shared";
   if(v.status==="In review"&&isReviewer()&&!(PRIME&&v.editedBy===S.me))return "review";
   if(asgOf(v)===S.me&&v.assignedBy!==S.me&&["Shot","Pending","Not started"].includes(v.status))return "assigned";
   if(["Approved","Ready","Re-edit"].includes(v.status)&&!editsMine(v))return isReadyPost(v)&&isPoster()?"ready":null;
@@ -6986,7 +7004,7 @@ function readyList(){return myAlerts().map(x=>x.v)}
 function pruneAlerts(){const box=$("#alerts");if(!box)return;box.querySelectorAll(".alert:not([data-closing])").forEach(el=>{const v=S.videos[el.dataset.id],k=(el.id.match(/-([a-z]+)$/)||[])[1];
   if(!k||k==="posted"||el.id==="al-rvremind")return;if(!v||(alertKind(v)!==k&&timeKind(v)!==k))closeAlert(el)})}
 function updateBell(){try{pruneAlerts()}catch(_){}const L=myAlerts().filter(x=>x.k!=="posted"),n=L.length,e=$("#bellN");if(!e)return;e.hidden=!n;e.textContent=n;const b=$("#bellBtn");b.classList.toggle("has",!!n);
-  const kinds=[...new Set(L.map(x=>x.k))];b.title=n?({assigned:"Assigned to you",review:"Waiting for your review",approved:"Approved, add final link",reedit:"Re-edit requested",ready:"Ready to post",shared:"Sent from PB",soon:"Posting soon",now:"Post now",late:"Not posted yet",notready:"Due soon, not ready"}[kinds[0]]+(kinds.length>1?" and more":"")):"Nothing waiting"}
+  const kinds=[...new Set(L.map(x=>x.k))];b.title=n?({assigned:"Assigned to you",review:"Waiting for your review",approved:"Approved, add final link",reedit:"Re-edit requested",ready:"Ready to post",soon:"Posting soon",now:"Post now",late:"Not posted yet",notready:"Due soon, not ready"}[kinds[0]]+(kinds.length>1?" and more":"")):"Nothing waiting"}
 function autoPostScheduled(){
   if(S.settings.autoPostScheduled!==true)return;
   const now=Date.now();let n=0;
@@ -7020,9 +7038,7 @@ function showAlert(v,kind){
   const x=`<button class="al-x" data-al="x" aria-label="Dismiss">×</button>`;
   const rev=safeUrl(v.reviewLink);
   let body="";
-  if(kind==="shared")body=`<div class="al-top"><span class="al-pill">From PB</span>${x}</div>${title}<small>${esc(nameOf(v.sharedFrom.by||ADMIN))} sent this ${isCar(v)?"carousel":"video"} for Milele Prime. It’s ready to post.</small>
-    <div class="al-btns"><button class="al-done" data-al="x">Later</button><a class="al-open" href="${esc(safeUrl(v.finalLink))}" target="_blank" rel="noopener noreferrer" data-al="open">Open files</a></div>`;
-  else if(kind==="assigned")body=`<div class="al-top"><span class="al-pill">Assigned to you</span>${x}</div>${title}<small>${esc(nameOf(v.assignedBy||ADMIN))} gave you this edit. ${v.postDate?"Posts "+when:"Not scheduled yet"}.</small>
+  if(kind==="assigned")body=`<div class="al-top"><span class="al-pill">Assigned to you</span>${x}</div>${title}<small>${esc(nameOf(v.assignedBy||ADMIN))} gave you this edit. ${v.postDate?"Posts "+when:"Not scheduled yet"}.</small>
     <div class="al-btns"><button class="al-done" data-al="x">Later</button><button class="al-open" data-al="startedit">Start editing</button></div>`;
   else if(kind==="review")body=`<div class="al-top"><span class="al-pill">Review</span>${x}</div>${title}<small>${kindName(v)}, round ${v.round||1}${v.shotDate?", shot "+esc(nice(v.shotDate)):""}</small>
     ${hasReview(v)&&spOn()?`<div class="al-btns"><button class="al-open al-watch" data-al="watch">${isCar(v)&&v.car?`▶ View ${v.car.count} photos`:"▶ Watch draft"}</button></div>`:""}
@@ -7185,7 +7201,7 @@ function osOn(){return OSN&&Notification.permission==="granted"&&lsGet("seb-osno
 function osText(v,k){
   const t=v.title||"Untitled",when=v.postDate?`${v.postDate===today()?"today":niceW(v.postDate)}${v.postTime?" at "+fmtT(v.postTime):""}`:"not scheduled yet";
   return ({assigned:["New edit for you",`${nameOf(v.assignedBy||ADMIN)} assigned ${t}. Posts ${when}.`],review:["Review needed",`${t}. Approve it or ask for a re-edit.`],approved:["Approved, add the final link",`${reviewerName()} approved ${t}.`],
-    reedit:["Re-edit requested",`${t}: ${v.reviewNote||"see the notes"}`],ready:["Ready to post",`${t}, posts ${when}`],shared:["Sent from PB",`${nameOf((v.sharedFrom||{}).by||ADMIN)} sent ${t} for Milele Prime. Ready to post.`],
+    reedit:["Re-edit requested",`${t}: ${v.reviewNote||"see the notes"}`],ready:["Ready to post",`${t}, posts ${when}`],
     soon:["Posting in 15 minutes",`${t}, posts ${when}`],now:["Post now",`${t}, due ${when}`],late:["Not posted yet",`${t} was due ${when}`],
     posted:["Posted ✓",`${t} went live ${when} as scheduled.`],
     notready:["Due soon, not ready",`${t} posts ${when}, still ${v.status}`]})[k]||["PB Dashboard",t];
@@ -9242,34 +9258,98 @@ const COMM=(()=>{
   return {open,planBlock};
 })();
 
-/* ================= v137: Send to Milele Prime — Shibli or Zain hands a finished PB video or carousel to Dorota and Waleed ================= */
-const TOP=(()=>{
-  const PRIME_BASE="Milele - Marketing Department/Milele Prime/Videos/From PB";
-  const can=v=>!PRIME&&!!v&&["shibili","zain"].includes(S.me||"")&&spOn()&&hasFiles(v);
-  const hasFiles=v=>!!((v.car&&v.car.folderId)||(v.final&&v.final.itemId)||(v.draft&&v.draft.itemId)||safeUrl(v.finalLink));
-  async function send(v){if(!can(v))return;
-    const again=!!v.toPrime,what=isCar(v)?"carousel":"video";
-    if(!await ask(again?"Send it to Milele Prime again?":"Send to Milele Prime?",`A copy of the ${isCar(v)?"photos":"video"} goes to SharePoint › Milele Prime › Videos › From PB, and “${v.title||"Untitled"}” shows up on Dorota and Waleed’s board as ready to post. They get a notification.`,again?"Send again":"Send",true))return;
-    toast(`Sending “${v.title||"Untitled"}” to Milele Prime…`);
-    try{let link=safeUrl(v.finalLink)||"";const drive=await spDrive();
-      const folder=PRIME_BASE+"/"+spName(v.title||"Untitled");await spEnsure(drive,folder);
-      const dest=await gjson(`/drives/${drive}/root:/${encP(folder)}?$select=id,webUrl`);
-      let ids=[];
-      if(v.car&&v.car.folderId){const r=await gjson(`/drives/${drive}/items/${v.car.folderId}/children?$select=id,name,file&$top=200`);ids=(r.value||[]).filter(x=>x.file).map(x=>x.id)}
-      else if(v.final&&v.final.itemId)ids=[v.final.itemId];
-      else if(v.draft&&v.draft.itemId)ids=[v.draft.itemId];
-      for(const id of ids)await gjson(`/drives/${drive}/items/${id}/copy?@microsoft.graph.conflictBehavior=replace`,{method:"POST",body:{parentReference:{driveId:drive,id:dest.id}}});
-      if(ids.length)link=dest.webUrl||link;
-      if(!link)throw new Error("This one has no uploaded files yet");
-      const now=Date.now(),pid="pb-"+v.id;
-      const rec={title:v.title||"Untitled",format:isCar(v)?"Carousel":"Reel",pillar:"",status:"Ready",postDate:"",postTime:"",notes:`From the PB board, sent by ${nameOf(S.me)}`,
-        finalLink:link,approvedAt:now,createdAt:now,editedOn:today(),sharedFrom:{id:v.id,by:S.me||"",at:now}};
-      const F=fbBoot();await F.db.collection("p_videos").doc(pid).set({j:JSON.stringify(rec),u:now,x:false,by:S.me||""});
-      putVideo({...v,toPrime:{at:now,by:S.me||"",link}});
-      toast(`Sent to Milele Prime. Dorota and Waleed can post “${v.title||"Untitled"}” now`)}
-    catch(e){const m=String(e&&(e.code||e.message)||"");toast(/permission/i.test(m)?"Milele Prime didn’t accept it yet. The Firebase rules need the update from Claude":`Couldn’t send it: ${e.message||m}`)}}
-  const tag=v=>!PRIME&&v&&v.toPrime?`<span class="tag prime-tag" title="Sent to Milele Prime ${esc(niceW(new Date(v.toPrime.at).toISOString().slice(0,10)))}">Prime</span>`:"";
-  return {can,send,tag};
+/* ================= v137: Share with a teammate — send a finished video or the carousel photos to one person, like a personal message; they watch and download it from its original SharePoint folder ================= */
+const SHR=(()=>{
+  const st={list:[],on:false,open:{},busy:false};
+  const HIDE_K="pb-shr-hidden",SEEN_K="pb-shr-seen";
+  const rd=k=>{try{return new Set(JSON.parse(localStorage.getItem(k)||"[]"))}catch(_){return new Set()}};
+  const wr=(k,s)=>{try{localStorage.setItem(k,JSON.stringify([...s].slice(-300)))}catch(_){}};
+  const emailOf=u=>Object.keys(FB_TEAM).find(k=>FB_TEAM[k]===u)||"";
+  const myEmail=()=>{try{return String(fbBoot().auth.currentUser.email||"").toLowerCase()}catch(_){return ""}};
+  const people=()=>[...new Set(Object.values(FB_TEAM))].filter(u=>u&&u!==S.me);
+  const ago=t=>{const m=Math.round((Date.now()-t)/60000);return m<1?"just now":m<60?m+" min ago":m<1440?Math.round(m/60)+" h ago":Math.round(m/1440)+" d ago"};
+  const finalOf=v=>v&&((isCar(v)&&v.car&&v.car.folderId)||(v.final&&v.final.itemId)||(isSpUrl(safeUrl(v.finalLink)||"")&&safeUrl(v.finalLink)));
+  const can=v=>!!S.me&&S.me!=="nawaz"&&spOn()&&!!finalOf(v);
+  // ---------- sending ----------
+  let dl=null;const D={v:null,to:new Set()};
+  function dlg(){if(dl)return dl;dl=document.createElement("dialog");dl.id="shrDlg";dl.className="shr-dlg";
+    dl.innerHTML=`<form method="dialog"><h2 id="shrT">Share</h2><p class="sub" id="shrSub"></p>
+      <div class="shr-ppl" id="shrPpl" role="group" aria-label="Send to"></div>
+      <label class="field shr-note"><span class="as-lbl">Message (optional)</span><textarea id="shrNote" rows="3" placeholder="e.g. For the Prime reel, use the first 10 seconds"></textarea></label>
+      <p class="shr-hint">Only the people you pick see it. They can watch it and download it from its folder, and edit their own copy.</p>
+      <div class="foot"><button class="btn" type="button" data-sh="x">Cancel</button><span style="flex:1"></span><button class="btn primary" type="button" data-sh="go" id="shrGo" disabled>Share</button></div></form>`;
+    document.body.appendChild(dl);
+    dl.addEventListener("click",e=>{const p=e.target.closest("[data-shp]");if(p){const u=p.dataset.shp;D.to.has(u)?D.to.delete(u):D.to.add(u);paintPpl();return}
+      const b=e.target.closest("[data-sh]");if(!b)return;e.preventDefault();if(b.dataset.sh==="x")dl.close();else send()});
+    return dl}
+  function paintPpl(){const d=dlg();d.querySelector("#shrPpl").innerHTML=people().map(u=>`<button type="button" class="shr-p${D.to.has(u)?" on":""}" data-shp="${esc(u)}" aria-pressed="${D.to.has(u)}">${avatar(u,28)}<b>${esc(nameOf(u))}</b></button>`).join("");
+    const g=d.querySelector("#shrGo");g.disabled=!D.to.size;g.textContent=D.to.size?`Share with ${[...D.to].map(nameOf).join(", ")}`:"Share"}
+  function open(v,who){if(!can(v))return;D.v=v;D.to=new Set(who?[who]:[]);const d=dlg();
+    d.querySelector("#shrT").textContent=`Share “${v.title||"Untitled"}”`;
+    d.querySelector("#shrSub").textContent=isCar(v)?"The final carousel photos, straight from their folder.":"The final video, straight from its folder.";
+    d.querySelector("#shrNote").value="";paintPpl();openDlg(d)}
+  async function items(drive,v){
+    if(isCar(v)&&v.car&&v.car.folderId){const r=await gjson(`/drives/${drive}/items/${v.car.folderId}/children?$top=200`);return (r.value||[]).filter(x=>x.file)}
+    if(v.final&&v.final.itemId)return [await gjson(`/drives/${drive}/items/${v.final.itemId}`)];
+    const link=safeUrl(v.finalLink);const b64=btoa(unescape(encodeURIComponent(link))).replace(/=+$/,"").replace(/\//g,"_").replace(/\+/g,"-");
+    const it=await gjson(`/shares/u!${b64}/driveItem`);if(it.folder){const r=await gjson(`/drives/${it.parentReference.driveId}/items/${it.id}/children?$top=200`);return (r.value||[]).filter(x=>x.file)}return [it]}
+  async function send(){const v=D.v,to=[...D.to],note=dlg().querySelector("#shrNote").value.trim();if(!v||!to.length||st.busy)return;st.busy=true;dl.close();
+    toast(`Sharing “${v.title||"Untitled"}”…`);
+    try{const drive=await spDrive();const L=await items(drive,v);if(!L.length)throw new Error("No final files found for it");
+      const dId=(L[0].parentReference&&L[0].parentReference.driveId)||drive;
+      const F=fbBoot(),me=myEmail(),now=Date.now();let warn=0;
+      for(const u of to){const em=emailOf(u);if(!em)continue;
+        for(const it of L){try{await gjson(`/drives/${dId}/items/${it.id}/invite`,{method:"POST",body:{recipients:[{email:em}],roles:["read"],requireSignIn:true,sendInvitation:false}})}catch(e){warn++}}
+        const id="s"+now.toString(36)+Math.random().toString(36).slice(2,6);
+        const rec={title:v.title||"Untitled",kind:isCar(v)?"carousel":"video",from:S.me||"",toU:u,at:now,note,drive:dId,board:PRIME?"prime":"pb",vid:v.id,
+          files:L.map(x=>({id:x.id,name:x.name,size:x.size||0,mime:(x.file&&x.file.mimeType)||""})),webUrl:L.length===1?(L[0].webUrl||""):((L[0].parentReference&&L[0].parentReference.path)?"":"")};
+        await F.db.collection("shares").doc(id).set({to:em,from:me,u:now,x:false,j:JSON.stringify(rec)})}
+      toast(warn?`Shared, but SharePoint didn’t give access to ${warn} file${warn>1?"s":""}. They may need you to share it in SharePoint too`:`Shared with ${to.map(nameOf).join(", ")}. They get it right away`)}
+    catch(e){const m=String(e&&(e.code||e.message)||"");toast(/permission/i.test(m)?"Sharing isn’t switched on yet. The Firebase rules need the update from Claude":`Couldn’t share it: ${e.message||m}`)}
+    finally{st.busy=false}}
+  // ---------- receiving ----------
+  function start(){if(st.on)return;let F;try{F=fbBoot()}catch(_){return}const me=myEmail();if(!me||!F||!F.db)return;st.on=true;
+    try{F.db.collection("shares").where("to","==",me).onSnapshot(snap=>{st.list=(snap.docs||[]).map(d=>{try{const x=d.data();return x.x?null:{id:d.id,...JSON.parse(x.j)}}catch(_){return null}}).filter(Boolean).sort((a,b)=>b.at-a.at);fresh();paint()},err=>{console.warn("shares",err);st.on=false})}catch(e){st.on=false}}
+  function mine(){const h=rd(HIDE_K);return st.list.filter(s=>!h.has(s.id))}
+  function fresh(){const seen=rd(SEEN_K),box=$("#alerts");if(!box)return;
+    mine().filter(s=>!seen.has(s.id)&&Date.now()-s.at<7*86400000).slice(0,3).forEach(s=>{seen.add(s.id);if(document.getElementById("al-shr-"+s.id))return;
+      const el=document.createElement("div");el.className="alert al-review al-shr";el.id="al-shr-"+s.id;el.setAttribute("role","alert");
+      el.innerHTML=`<div class="al-top"><span class="al-pill">Shared with you</span><button class="al-x" data-shra="x" aria-label="Dismiss">×</button></div><b class="al-t">${esc(s.title)}</b>
+        <small>${esc(nameOf(s.from))} sent you the ${s.kind==="carousel"?`carousel photos (${s.files.length})`:"final video"}.${s.note?` “${esc(s.note)}”`:""}</small>
+        <div class="al-btns"><button class="al-done" data-shra="x">Later</button><button class="al-open" data-shra="view" data-sid="${s.id}">${s.kind==="carousel"?"View photos":"▶ Watch"}</button></div>`;
+      const bar=box.querySelector(".al-bar");if(bar)bar.after(el);else box.prepend(el);try{alertsLayout()}catch(_){}try{chime()}catch(_){}
+      try{if(typeof osOn==="function"&&osOn()&&document.hidden)new Notification("Shared with you",{body:`${nameOf(s.from)} sent you ${s.title}`,icon:"icon-192.png",tag:"shr-"+s.id})}catch(_){}});
+    wr(SEEN_K,seen)}
+  document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-shra]");if(!b)return;const el=b.closest(".alert");
+    if(b.dataset.shra==="view"){S.tab="overview";st.open[b.dataset.sid]=true;render();setTimeout(()=>{view(b.dataset.sid);const c=document.getElementById("shr-"+b.dataset.sid);if(c)c.scrollIntoView({behavior:"smooth",block:"center"})},120)}
+    if(el)try{closeAlert(el)}catch(_){el.remove()}});
+  async function load(s){const k="share:"+s.id;if(AS.st.cache[k])return AS.st.cache[k].items;
+    const L=[];for(const f of s.files){try{L.push(await gjson(`/drives/${s.drive}/items/${f.id}?$expand=thumbnails`))}catch(e){L.push({id:f.id,name:f.name,size:f.size,file:{mimeType:f.mime},_err:e.status||1})}}
+    AS.st.cache[k]={at:Date.now(),items:L};return L}
+  async function view(sid){const s=st.list.find(x=>x.id===sid);if(!s)return;st.open[sid]=true;
+    if(!msAccount()){paint();return}
+    try{const L=await load(s);paint();if(s.kind!=="carousel"&&L[0]&&!L[0]._err)AS.view(L[0].id);else if(L.every(x=>x._err))toast("You don’t have access to this file in SharePoint yet. Ask "+nameOf(s.from)+" to share it again")}
+    catch(e){toast(e.message||"Couldn’t open it")}}
+  async function dlAll(sid){const s=st.list.find(x=>x.id===sid);if(!s)return;const L=await load(s).catch(()=>[]);
+    if(L.length>1)toast(`Downloading ${L.length} files. Allow multiple downloads if the browser asks`);
+    for(const it of L){if(it._err)continue;AS.dl(it.id);await new Promise(r=>setTimeout(r,700))}}
+  // ---------- the "Shared with you" card on Overview ----------
+  function card(){const L=mine();if(!L.length)return `<div id="shrCard" hidden></div>`;
+    return `<section class="panel shr-card" id="shrCard"><div class="phead"><h2>Shared with you</h2><span class="sub">Videos and photos your team sent you. Only you see these.</span></div>
+      <div class="shr-list">${L.slice(0,8).map(row).join("")}</div>${L.length>8?`<p class="tw-more">and ${L.length-8} older</p>`:""}</section>`}
+  function row(s){const L=(AS.st.cache["share:"+s.id]||{}).items,o=st.open[s.id],th=L&&L.map(x=>AS.thumbOf(x)).find(Boolean);
+    return `<div class="shr-row" id="shr-${s.id}"><div class="shr-top"><span class="shr-th"${th?` style="background-image:url('${esc(th).replace(/'/g,"%27")}')"`:""}>${th?"":s.kind==="carousel"?"🖼":"▶"}</span>
+      <div class="shr-m"><b>${esc(s.title)}</b><small>${avatar(s.from,18)} ${esc(nameOf(s.from))} · ${s.kind==="carousel"?s.files.length+" photo"+(s.files.length===1?"":"s"):"final video"} · ${ago(s.at)}</small>${s.note?`<p class="shr-msg">“${esc(s.note)}”</p>`:""}</div>
+      <div class="shr-a">${msAccount()?`<button class="btn small primary" data-act="shrView" data-sid="${s.id}">${s.kind==="carousel"?(o?"Hide":"View photos"):"▶ Watch"}</button><button class="btn small" data-act="shrDl" data-sid="${s.id}">⬇ Download</button>`:`<button class="btn small primary" data-act="shrSignin">Sign in with Microsoft to view</button>`}<button class="iconbtn" data-act="shrHide" data-sid="${s.id}" title="Remove from this list" aria-label="Remove">×</button></div></div>
+      ${o&&s.kind==="carousel"&&L?`<div class="as-grid shr-grid">${L.map(x=>x._err?`<div class="as-tile"><div class="as-th none"><i>🔒</i></div><div class="as-tm"><b>${esc(x.name)}</b><small>No access</small></div></div>`:`<div class="as-tile"><button type="button" class="as-th${AS.thumbOf(x)?"":" none"}" data-act="asView" data-id="${x.id}"${AS.thumbOf(x)?` style="background-image:url('${esc(AS.thumbOf(x)).replace(/'/g,"%27")}')"`:""} aria-label="View ${esc(x.name)}">${AS.kindOf(x)==="video"?`<span class="as-play">▶</span>`:AS.thumbOf(x)?"":"<i>🖼</i>"}</button><div class="as-tm"><b title="${esc(x.name)}">${esc(x.name)}</b><small>${esc(AS.sizeTx(x.size))}</small></div><div class="as-ta"><button class="iconbtn" data-act="asDl" data-id="${x.id}" title="Download">⬇</button></div></div>`).join("")}</div>`:""}</div>`}
+  function paint(){const c=document.getElementById("shrCard");if(c&&S.tab==="overview")c.outerHTML=card();
+    mine().forEach(s=>{if(msAccount()&&!AS.st.cache["share:"+s.id]&&!s._loading){s._loading=1;load(s).then(()=>{const c2=document.getElementById("shrCard");if(c2&&S.tab==="overview")c2.outerHTML=card()}).catch(()=>{})}})}
+  document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-act^='shr']");if(!b)return;e.preventDefault();const a=b.dataset.act,sid=b.dataset.sid;
+    if(a==="shrView"){const s=st.list.find(x=>x.id===sid);if(s&&s.kind==="carousel"&&st.open[sid]){st.open[sid]=false;paint()}else view(sid)}
+    else if(a==="shrDl")dlAll(sid);
+    else if(a==="shrHide"){const h=rd(HIDE_K);h.add(sid);wr(HIDE_K,h);paint()}
+    else if(a==="shrSignin")msSignIn(()=>paint())});
+  return {can,open,start,card,st};
 })();
 
 })();
