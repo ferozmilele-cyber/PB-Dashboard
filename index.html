@@ -2324,6 +2324,7 @@ body.prime [data-tab="raw"],body.prime [data-tab-go="raw"],body.prime #rwCard{di
 .rw-wm{min-width:0;display:grid;gap:2px}.rw-wm b{font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rw-wm small{font-size:12.5px;color:var(--muted)}
 .asg-self{margin-left:6px;white-space:nowrap}
 body.viewonly #main .asg-self{display:inline-flex!important;pointer-events:auto!important;visibility:visible!important}
+.prime-tag{background:#0B0B0C!important;color:#AAFF00!important;border-color:transparent!important;font-weight:800;letter-spacing:.04em}
 .rw-dt{display:none}
 .rw-wa{display:flex;align-items:center;gap:6px}.rw-who{font-size:12.5px;font-weight:600;color:var(--muted)}
 .rw-to{font-size:13px;color:var(--muted);margin:0 0 12px;padding:10px 12px;border-radius:12px;background:rgba(12,14,8,.04);overflow-wrap:anywhere}.rw-to b{color:var(--ink)}
@@ -3696,7 +3697,10 @@ const ST_MAIN=["Shot","Editing","In review","Ready","Scheduled","Posted"];
 function statusSelect(v){
   return `<button type="button" class="status stsel${mayEdit(v.id)?" mine":""}" data-act="stMenu" data-id="${v.id}" data-stsel="${v.id}" style="--c:${SC[v.status]||"#888"}" aria-haspopup="listbox" aria-label="Status: ${esc(v.status)}"><i></i><span>${esc(v.status)}</span><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>${rvTimer(v)}`;
 }
-function stMenuItems(v){
+function stMenuItems(v){const out=stMenuItems0(v);
+  if(rawSafe(()=>TOP.can(v))){const i=out.findIndex(it=>ST_MAIN.includes(it.v));const it={v:"__toPrime",label:v.toPrime?"↻ Send to Milele Prime again":"→ Send to Milele Prime",c:"#0B0B0C",hint:v.toPrime?"Sent "+niceW(new Date(v.toPrime.at).toISOString().slice(0,10)):"For Dorota and Waleed to post"};out.splice(i<0?out.length:i,0,it)}
+  return out}
+function stMenuItems0(v){
   const out=[];
   if(PRIME&&isReviewer()){   // Waleed: approve Dorota's drafts; his own videos skip review
     const ownFinal=spOn()&&canUp(v)&&!isCar(v);
@@ -3765,6 +3769,7 @@ document.addEventListener("click",e=>{const o=e.target.closest&&e.target.closest
     if(val==="__usedraft"){spPromoteDraft(v.id);return}
     if(val==="__igpost"){IG.open(v.id);return}
     if(val==="__music"){MUS.fromVideo(v.id);return}
+    if(val==="__toPrime"){TOP.send(v);return}
     // with SharePoint set up, sending for review means uploading the draft
     if(val==="In review"&&spOn()&&canUp(v)&&!isReviewer()&&EDIT_POOL.includes(v.status)){openUp(v.id,"draft");return}
     if(val==="__logre"){askEditorReedit(v,v.status);return}if(val===v.status)return;setStatusFlow(v,val);return}
@@ -4040,7 +4045,8 @@ document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest
   if(b.dataset.act==="asgSelf"){if(a&&a!==S.me){toast(`${nameOf(a)} already has this one`);return}if(!SELF_OK(v))return;
     putVideo({...v,assignee:S.me,assignedBy:S.me,assignedAt:Date.now()});toast(`“${v.title||"Untitled"}” is yours. It’s in Your edits`)}
   else{if(a!==S.me)return;putVideo({...v,assignee:"",assignedBy:S.me,assignedAt:Date.now()});toast("Given back. It’s not assigned to anyone now")}});
-function asgTag(v){const a=asgOf(v);return a?`<span class="tag asg-tag${a===S.me?" me":""}" title="Edited by ${esc(nameOf(a))}">${a===S.me?"You":esc(nameOf(a))}</span>`:""}
+function asgTag(v){return asgTag0(v)+rawSafe(()=>TOP.tag(v))}
+function asgTag0(v){const a=asgOf(v);return a?`<span class="tag asg-tag${a===S.me?" me":""}" title="Edited by ${esc(nameOf(a))}">${a===S.me?"You":esc(nameOf(a))}</span>`:""}
 function roleName(u){return u===ADMIN?"Admin":reviewers().includes(u)?"Reviewer":isEdAcct(u)?"Editor":isMember(u)?"Member":VIEW_ONLY.includes(u)?"View only":"Member"}
 // the name this member goes by in the Away plan team list
 function memberName(){const T=new Set();awayList().forEach(a=>tripTeam(a).forEach(n=>T.add(n)));const me=String(S.me||"").toLowerCase(),dn=String(dispName(S.me)||"").toLowerCase();
@@ -6945,6 +6951,7 @@ function alertKind(v){
   if(!v)return null;
   // a scheduled post that went live on its own in the last 12 hours: tell everyone once
   if(v.status==="Posted"&&v.autoPosted&&v.autoPostedAt&&Date.now()-v.autoPostedAt<12*3600e3)return "posted";
+  if(PRIME&&v.sharedFrom&&v.status==="Ready"&&!v.postDate&&PRIME_TEAM.includes(S.me||""))return "shared";
   if(v.status==="In review"&&isReviewer()&&!(PRIME&&v.editedBy===S.me))return "review";
   if(asgOf(v)===S.me&&v.assignedBy!==S.me&&["Shot","Pending","Not started"].includes(v.status))return "assigned";
   if(["Approved","Ready","Re-edit"].includes(v.status)&&!editsMine(v))return isReadyPost(v)&&isPoster()?"ready":null;
@@ -6979,7 +6986,7 @@ function readyList(){return myAlerts().map(x=>x.v)}
 function pruneAlerts(){const box=$("#alerts");if(!box)return;box.querySelectorAll(".alert:not([data-closing])").forEach(el=>{const v=S.videos[el.dataset.id],k=(el.id.match(/-([a-z]+)$/)||[])[1];
   if(!k||k==="posted"||el.id==="al-rvremind")return;if(!v||(alertKind(v)!==k&&timeKind(v)!==k))closeAlert(el)})}
 function updateBell(){try{pruneAlerts()}catch(_){}const L=myAlerts().filter(x=>x.k!=="posted"),n=L.length,e=$("#bellN");if(!e)return;e.hidden=!n;e.textContent=n;const b=$("#bellBtn");b.classList.toggle("has",!!n);
-  const kinds=[...new Set(L.map(x=>x.k))];b.title=n?({assigned:"Assigned to you",review:"Waiting for your review",approved:"Approved, add final link",reedit:"Re-edit requested",ready:"Ready to post",soon:"Posting soon",now:"Post now",late:"Not posted yet",notready:"Due soon, not ready"}[kinds[0]]+(kinds.length>1?" and more":"")):"Nothing waiting"}
+  const kinds=[...new Set(L.map(x=>x.k))];b.title=n?({assigned:"Assigned to you",review:"Waiting for your review",approved:"Approved, add final link",reedit:"Re-edit requested",ready:"Ready to post",shared:"Sent from PB",soon:"Posting soon",now:"Post now",late:"Not posted yet",notready:"Due soon, not ready"}[kinds[0]]+(kinds.length>1?" and more":"")):"Nothing waiting"}
 function autoPostScheduled(){
   if(S.settings.autoPostScheduled!==true)return;
   const now=Date.now();let n=0;
@@ -7013,7 +7020,9 @@ function showAlert(v,kind){
   const x=`<button class="al-x" data-al="x" aria-label="Dismiss">×</button>`;
   const rev=safeUrl(v.reviewLink);
   let body="";
-  if(kind==="assigned")body=`<div class="al-top"><span class="al-pill">Assigned to you</span>${x}</div>${title}<small>${esc(nameOf(v.assignedBy||ADMIN))} gave you this edit. ${v.postDate?"Posts "+when:"Not scheduled yet"}.</small>
+  if(kind==="shared")body=`<div class="al-top"><span class="al-pill">From PB</span>${x}</div>${title}<small>${esc(nameOf(v.sharedFrom.by||ADMIN))} sent this ${isCar(v)?"carousel":"video"} for Milele Prime. It’s ready to post.</small>
+    <div class="al-btns"><button class="al-done" data-al="x">Later</button><a class="al-open" href="${esc(safeUrl(v.finalLink))}" target="_blank" rel="noopener noreferrer" data-al="open">Open files</a></div>`;
+  else if(kind==="assigned")body=`<div class="al-top"><span class="al-pill">Assigned to you</span>${x}</div>${title}<small>${esc(nameOf(v.assignedBy||ADMIN))} gave you this edit. ${v.postDate?"Posts "+when:"Not scheduled yet"}.</small>
     <div class="al-btns"><button class="al-done" data-al="x">Later</button><button class="al-open" data-al="startedit">Start editing</button></div>`;
   else if(kind==="review")body=`<div class="al-top"><span class="al-pill">Review</span>${x}</div>${title}<small>${kindName(v)}, round ${v.round||1}${v.shotDate?", shot "+esc(nice(v.shotDate)):""}</small>
     ${hasReview(v)&&spOn()?`<div class="al-btns"><button class="al-open al-watch" data-al="watch">${isCar(v)&&v.car?`▶ View ${v.car.count} photos`:"▶ Watch draft"}</button></div>`:""}
@@ -7176,7 +7185,7 @@ function osOn(){return OSN&&Notification.permission==="granted"&&lsGet("seb-osno
 function osText(v,k){
   const t=v.title||"Untitled",when=v.postDate?`${v.postDate===today()?"today":niceW(v.postDate)}${v.postTime?" at "+fmtT(v.postTime):""}`:"not scheduled yet";
   return ({assigned:["New edit for you",`${nameOf(v.assignedBy||ADMIN)} assigned ${t}. Posts ${when}.`],review:["Review needed",`${t}. Approve it or ask for a re-edit.`],approved:["Approved, add the final link",`${reviewerName()} approved ${t}.`],
-    reedit:["Re-edit requested",`${t}: ${v.reviewNote||"see the notes"}`],ready:["Ready to post",`${t}, posts ${when}`],
+    reedit:["Re-edit requested",`${t}: ${v.reviewNote||"see the notes"}`],ready:["Ready to post",`${t}, posts ${when}`],shared:["Sent from PB",`${nameOf((v.sharedFrom||{}).by||ADMIN)} sent ${t} for Milele Prime. Ready to post.`],
     soon:["Posting in 15 minutes",`${t}, posts ${when}`],now:["Post now",`${t}, due ${when}`],late:["Not posted yet",`${t} was due ${when}`],
     posted:["Posted ✓",`${t} went live ${when} as scheduled.`],
     notready:["Due soon, not ready",`${t} posts ${when}, still ${v.status}`]})[k]||["PB Dashboard",t];
@@ -9231,6 +9240,36 @@ const COMM=(()=>{
   document.addEventListener("toggle",e=>{if(e.target&&e.target.classList&&e.target.classList.contains("comm-plan"))S.commPlanOpen=e.target.open},true);
   document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest('[data-act="commNew"]');if(!b)return;e.preventDefault();open()});
   return {open,planBlock};
+})();
+
+/* ================= v137: Send to Milele Prime — Shibli or Zain hands a finished PB video or carousel to Dorota and Waleed ================= */
+const TOP=(()=>{
+  const PRIME_BASE="Milele - Marketing Department/Milele Prime/Videos/From PB";
+  const can=v=>!PRIME&&!!v&&["shibili","zain"].includes(S.me||"")&&spOn()&&hasFiles(v);
+  const hasFiles=v=>!!((v.car&&v.car.folderId)||(v.final&&v.final.itemId)||(v.draft&&v.draft.itemId)||safeUrl(v.finalLink));
+  async function send(v){if(!can(v))return;
+    const again=!!v.toPrime,what=isCar(v)?"carousel":"video";
+    if(!await ask(again?"Send it to Milele Prime again?":"Send to Milele Prime?",`A copy of the ${isCar(v)?"photos":"video"} goes to SharePoint › Milele Prime › Videos › From PB, and “${v.title||"Untitled"}” shows up on Dorota and Waleed’s board as ready to post. They get a notification.`,again?"Send again":"Send",true))return;
+    toast(`Sending “${v.title||"Untitled"}” to Milele Prime…`);
+    try{let link=safeUrl(v.finalLink)||"";const drive=await spDrive();
+      const folder=PRIME_BASE+"/"+spName(v.title||"Untitled");await spEnsure(drive,folder);
+      const dest=await gjson(`/drives/${drive}/root:/${encP(folder)}?$select=id,webUrl`);
+      let ids=[];
+      if(v.car&&v.car.folderId){const r=await gjson(`/drives/${drive}/items/${v.car.folderId}/children?$select=id,name,file&$top=200`);ids=(r.value||[]).filter(x=>x.file).map(x=>x.id)}
+      else if(v.final&&v.final.itemId)ids=[v.final.itemId];
+      else if(v.draft&&v.draft.itemId)ids=[v.draft.itemId];
+      for(const id of ids)await gjson(`/drives/${drive}/items/${id}/copy?@microsoft.graph.conflictBehavior=replace`,{method:"POST",body:{parentReference:{driveId:drive,id:dest.id}}});
+      if(ids.length)link=dest.webUrl||link;
+      if(!link)throw new Error("This one has no uploaded files yet");
+      const now=Date.now(),pid="pb-"+v.id;
+      const rec={title:v.title||"Untitled",format:isCar(v)?"Carousel":"Reel",pillar:"",status:"Ready",postDate:"",postTime:"",notes:`From the PB board, sent by ${nameOf(S.me)}`,
+        finalLink:link,approvedAt:now,createdAt:now,editedOn:today(),sharedFrom:{id:v.id,by:S.me||"",at:now}};
+      const F=fbBoot();await F.db.collection("p_videos").doc(pid).set({j:JSON.stringify(rec),u:now,x:false,by:S.me||""});
+      putVideo({...v,toPrime:{at:now,by:S.me||"",link}});
+      toast(`Sent to Milele Prime. Dorota and Waleed can post “${v.title||"Untitled"}” now`)}
+    catch(e){const m=String(e&&(e.code||e.message)||"");toast(/permission/i.test(m)?"Milele Prime didn’t accept it yet. The Firebase rules need the update from Claude":`Couldn’t send it: ${e.message||m}`)}}
+  const tag=v=>!PRIME&&v&&v.toPrime?`<span class="tag prime-tag" title="Sent to Milele Prime ${esc(niceW(new Date(v.toPrime.at).toISOString().slice(0,10)))}">Prime</span>`:"";
+  return {can,send,tag};
 })();
 
 })();
