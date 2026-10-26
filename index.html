@@ -2322,6 +2322,8 @@ body.prime [data-tab="raw"],body.prime [data-tab-go="raw"],body.prime #rwCard{di
 .rw-wait.busy{border-color:rgba(123,209,0,.5);background:rgba(170,255,0,.08)}
 .rw-wait.busy::after{content:"";position:absolute;left:0;bottom:0;height:3px;width:calc(var(--p)*100%);background:var(--lime-deep,#7BD100);transition:width .3s}
 .rw-wm{min-width:0;display:grid;gap:2px}.rw-wm b{font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rw-wm small{font-size:12.5px;color:var(--muted)}
+.asg-self{margin-left:6px;white-space:nowrap}
+body.viewonly #main .asg-self{display:inline-flex!important;pointer-events:auto!important;visibility:visible!important}
 .rw-dt{display:none}
 .rw-wa{display:flex;align-items:center;gap:6px}.rw-who{font-size:12.5px;font-weight:600;color:var(--muted)}
 .rw-to{font-size:13px;color:var(--muted);margin:0 0 12px;padding:10px 12px;border-radius:12px;background:rgba(12,14,8,.04);overflow-wrap:anywhere}.rw-to b{color:var(--ink)}
@@ -4022,12 +4024,22 @@ function isEdAcct(u){if(PRIME)return false;u=String(u==null?S.me:u||"").toLowerC
 function helperAcct(u){return isMember(u)||isEdAcct(u)}   // Waleed and Hamza: the editing team besides Shibli
 function viewOnly(){if(PRIME)return !PRIME_TEAM.includes(S.me||"");return VIEW_ONLY.includes(S.me||"")||isMember()||isEdAcct()}
 function canAssign(){return isAdm()||isReviewer()}
+function canSelfAsg(){return !PRIME&&isEdAcct()}   // Hamza picks his own edits
+const SELF_OK=v=>!!v&&!["Posted","Scheduled","Ready","Approved","In review"].includes(v.status);
 function editorsList(){return PRIME?[...PRIME_TEAM]:[ADMIN,...EDITORS,...MEMBERS]}
 function asgOf(v){const a=String(v&&v.assignee||"").toLowerCase();return a&&a!==ADMIN?a:""}
 function nameOf(u){const n=dispName(u)||u;return n.charAt(0).toUpperCase()+n.slice(1)}
 function asgCtl(v){const a=asgOf(v);
   if(canAssign())return `<select class="asg${a?" set":""}" data-asg="${v.id}" aria-label="Who edits this">${editorsList().map(u=>`<option value="${u===ADMIN?"":esc(u)}"${(u===ADMIN?!a:a===u)?" selected":""}>${u===ADMIN?"✎ "+esc(nameOf(u)):"→ "+esc(nameOf(u))}</option>`).join("")}</select>`;
+  if(canSelfAsg()){
+    if(a===S.me)return `<span class="tag asg-tag me">Assigned to you</span>${SELF_OK(v)&&v.status!=="Editing"?`<button class="btn small ghost asg-self" data-act="asgDrop" data-id="${v.id}" title="Give it back so someone else can edit it">Give back</button>`:""}`;
+    if(!a&&SELF_OK(v))return `<button class="btn small asg-self" data-act="asgSelf" data-id="${v.id}" title="Put your name on it and edit it">＋ I’ll edit this</button>`}
   return a?`<span class="tag asg-tag${a===S.me?" me":""}">${a===S.me?"Assigned to you":"→ "+esc(nameOf(a))}</span>`:""}
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest('[data-act="asgSelf"],[data-act="asgDrop"]');if(!b||!canSelfAsg())return;e.preventDefault();
+  const v=S.videos[b.dataset.id];if(!v)return;const a=asgOf(v);
+  if(b.dataset.act==="asgSelf"){if(a&&a!==S.me){toast(`${nameOf(a)} already has this one`);return}if(!SELF_OK(v))return;
+    putVideo({...v,assignee:S.me,assignedBy:S.me,assignedAt:Date.now()});toast(`“${v.title||"Untitled"}” is yours. It’s in Your edits`)}
+  else{if(a!==S.me)return;putVideo({...v,assignee:"",assignedBy:S.me,assignedAt:Date.now()});toast(`Given back to ${nameOf(ADMIN)}`)}});
 function asgTag(v){const a=asgOf(v);return a?`<span class="tag asg-tag${a===S.me?" me":""}" title="Edited by ${esc(nameOf(a))}">${a===S.me?"You":esc(nameOf(a))}</span>`:""}
 function roleName(u){return u===ADMIN?"Admin":reviewers().includes(u)?"Reviewer":isEdAcct(u)?"Editor":isMember(u)?"Member":VIEW_ONLY.includes(u)?"View only":"Member"}
 // the name this member goes by in the Away plan team list
@@ -4045,7 +4057,7 @@ function mayWrite(id){return isEdAcct()||(isMember()&&myVideos().has(id))}
 function timerMine(o){if(isMember())return myVideos().has(o.id);if(isEdAcct())return o.editBy===S.me||myVideos().has(o.id);
   return !teamOwned().has(o.id)&&!(o.editBy&&o.editBy!==S.me&&helperAcct(o.editBy))&&!(asgOf(o)&&helperAcct(asgOf(o)))}
 let voT=0;function voNote(){if(Date.now()-voT<2500)return;voT=Date.now();toast(isEdAcct()?"You can change the video status on Edit order and Posting schedule":isMember()?"You can change the status of the videos assigned to you":PRIME?"View only. Ask Waleed or Dorota to make changes":"View only. Ask Shibli or Zain to make changes")}
-const VIEW_OK=new Set(["rawUp","rawSkip","rawDay","rawBack","rawRefresh","rawSignin","rawZip","rawEach","asCat","asOpenSet","asBack","asRefresh","asSignin","asUpload","asView","asPlay","asDl","asDel","asDlAll","asDelSet","wsSwitch","musListen","musLink","musClear","musJob","edWho","viewDraft","viewCar","tripGo","tripOpen","tripWho","tripCopy","copy","days","dialBack","dialTry","dialType","dlBackup","fclear","ffmt","fnolink","fnopil","fsched","fst","goShoots","goTab","grpToggle","histView","hrange","ideaArch","ideaCopy","ideaPil","ideaType","mExport","mOut","mday","mnav","more","newWin","openCmd","osnOn","osnTest","ovGo","ovMode","ovStatus","plByDay","plMode","playWrapped","printSum","rowMore","schedToday","shView","sumMode","sview","testAlert","vaultLock","vaultOpen","vcopy","viewScript","vshow","clearSel","chpw","freshLoad"]);
+const VIEW_OK=new Set(["asgSelf","asgDrop","rawUp","rawSkip","rawDay","rawBack","rawRefresh","rawSignin","rawZip","rawEach","asCat","asOpenSet","asBack","asRefresh","asSignin","asUpload","asView","asPlay","asDl","asDel","asDlAll","asDelSet","wsSwitch","musListen","musLink","musClear","musJob","edWho","viewDraft","viewCar","tripGo","tripOpen","tripWho","tripCopy","copy","days","dialBack","dialTry","dialType","dlBackup","fclear","ffmt","fnolink","fnopil","fsched","fst","goShoots","goTab","grpToggle","histView","hrange","ideaArch","ideaCopy","ideaPil","ideaType","mExport","mOut","mday","mnav","more","newWin","openCmd","osnOn","osnTest","ovGo","ovMode","ovStatus","plByDay","plMode","playWrapped","printSum","rowMore","schedToday","shView","sumMode","sview","testAlert","vaultLock","vaultOpen","vcopy","viewScript","vshow","clearSel","chpw","freshLoad"]);
 const VIEW_FIELDS=["live","plr","sumr","ovr","opt"];
 // Waleed and Hamza also use PB Downloader and the editing timer
 const HELPER_OK=new Set(["startEdit","dlAdd","dlDo","dlQ","dlCk","dlClear","dlRetry","dlVideo","pauseEdit","resumeEdit","pauseAll","resumeAll","upDraft"]);
