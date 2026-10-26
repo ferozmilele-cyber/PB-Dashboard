@@ -2333,6 +2333,16 @@ body.prime [data-tab="raw"],body.prime [data-tab-go="raw"],body.prime #rwCard{di
 .rw-set .as-cover{aspect-ratio:16/9}
 @media (max-width:600px){.rw-wait{grid-template-columns:minmax(0,1fr) auto}.rw-wait .slate{display:none}.rw-dt{display:inline}.rw-dh>b{width:100%;order:-1}}
 
+/* ===== v133: Community tab ===== */
+body.prime [data-tab="community"],body.prime [data-tab-go="community"]{display:none!important}
+.comm-plan{margin:0 0 16px;padding:12px 16px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.55)}
+.comm-plan summary{cursor:pointer;font-weight:700;font-size:14px;list-style-position:inside}
+.comm-plan[open] summary{margin-bottom:10px}
+.comm-plan .btn{margin-top:10px}
+#commDlg textarea{width:100%;box-sizing:border-box;min-height:120px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;font:inherit;font-size:14px;background:rgba(255,255,255,.9);color:var(--ink)}
+#commDlg select{height:40px}
+#commDlg .field{display:grid;gap:6px;margin-bottom:12px}
+
 /* ===== v129: Asset library ===== */
 .as-cats{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin:4px 0 14px}
 .as-cat{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:9px;padding:12px 14px;border-radius:18px;border:1px solid var(--glass-border,rgba(255,255,255,.95));background:rgba(255,255,255,.7);box-shadow:0 1px 2px rgba(20,24,10,.05),inset 0 1px 0 #fff;cursor:pointer;min-width:0;transition:transform .25s var(--spring,ease),background .25s,box-shadow .25s}
@@ -3088,6 +3098,8 @@ dialog.ig-dlg{width:min(860px,96vw)}
 :root[data-theme="dark"] .rw-wait{background:rgba(208,105,74,.1)!important;border-color:rgba(208,105,74,.4)!important}
 :root[data-theme="dark"] .rw-wait.busy,:root[data-theme="dark"] .rw-zip{background:rgba(170,255,0,.07)!important;border-color:rgba(170,255,0,.35)!important}
 :root[data-theme="dark"] .rw-to{background:rgba(255,255,255,.05)!important}
+:root[data-theme="dark"] .comm-plan{background:rgba(255,255,255,.04)!important;border-color:var(--line)!important}
+:root[data-theme="dark"] #commDlg textarea{background:var(--d-field)!important;border-color:var(--d-line2)!important;color:var(--ink)!important}
 
 /* ================================================================
    iPHONE — minimal layer (v82)
@@ -3323,7 +3335,7 @@ dialog.ig-dlg{width:min(860px,96vw)}
       <button class="btn" id="logoutBtn">Sign out</button>
       <button class="btn primary" data-act="openAdd">Log a shoot</button>
       <button class="morebtn" id="moreBtn" data-act="more" aria-label="More" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="5" cy="12" r="1.8" fill="currentColor"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/><circle cx="19" cy="12" r="1.8" fill="currentColor"/></svg></button>
-      <div class="moremenu" id="moreMenu" hidden><button data-act="wsSwitch" id="wsMore" hidden></button><button data-act="goTab" data-tab-go="raw">Raw footage</button><button data-act="goTab" data-tab-go="assets">Asset library</button><button data-act="goTab" data-tab-go="downloader">Downloader</button><button data-act="mImport">Import CSV</button><button data-act="mExport">Export CSV</button><button data-act="mOut" class="danger">Sign out</button></div>
+      <div class="moremenu" id="moreMenu" hidden><button data-act="wsSwitch" id="wsMore" hidden></button><button data-act="goTab" data-tab-go="community">Community</button><button data-act="goTab" data-tab-go="raw">Raw footage</button><button data-act="goTab" data-tab-go="assets">Asset library</button><button data-act="goTab" data-tab-go="downloader">Downloader</button><button data-act="mImport">Import CSV</button><button data-act="mExport">Export CSV</button><button data-act="mOut" class="danger">Sign out</button></div>
     </div>
   </header>
 
@@ -3332,6 +3344,7 @@ dialog.ig-dlg{width:min(860px,96vw)}
     <button role="tab" data-tab="videos">All videos</button>
     <button role="tab" data-tab="order">Edit order</button>
     <button role="tab" data-tab="schedule">Posting schedule</button>
+    <button role="tab" data-tab="community">Community</button>
     <button role="tab" data-tab="shoots">Shoot plan</button>
     <button role="tab" data-tab="raw">Raw footage</button>
     <button role="tab" data-tab="ideas">Content bank</button>
@@ -3636,7 +3649,11 @@ function uid(){return "v"+Date.now().toString(36)+Math.random().toString(36).sli
 function fmtT(t){if(!t)return "";const [h,m]=t.split(":").map(Number);const ap=h>=12?"PM":"AM";const hh=h%12||12;return hh+":"+pad(m)+" "+ap}
 function parseT(s){const m=String(s).trim().match(/^(\d{1,2})(?:[:.](\d{2}))?\s*([ap])?\.?m?\.?$/i);if(!m)return null;let h=+m[1],mi=+(m[2]||0);const ap=(m[3]||"").toLowerCase();if(ap==="p"&&h<12)h+=12;if(ap==="a"&&h===12)h=0;if(h>23||mi>59)return null;return pad(h)+":"+pad(mi)}
 function parseTimes(str){const out=[];String(str).split(/[,;\n]+/).forEach(p=>{const t=parseT(p);if(t&&!out.includes(t))out.push(t)});return out.sort()}
-function plans(){return [...(S.settings.plans||[])].filter(p=>p.from).sort((a,b)=>a.from.localeCompare(b.from))}
+function inComm(){return S.tab==="community"&&!PRIME}
+function isComm(v){return !!v&&v.format==="Community"}
+function PK(){return inComm()?"mplans":"plans"}
+function schedOk(v){return inComm()?isComm(v):!isComm(v)}
+function plans(){return [...(S.settings[PK()]||[])].filter(p=>p.from).sort((a,b)=>a.from.localeCompare(b.from))}
 function planFor(d){const P=plans();const act=P.filter(p=>p.from<=d&&(!p.to||d<=p.to));const temp=act.filter(p=>p.to);const pool=temp.length?temp:act;
   let cur=null;pool.forEach(p=>{if(!cur||p.from>=cur.from)cur=p});return cur||P[0]||{times:[]}}
 function slotsFor(d){return planFor(d).times||[]}
@@ -3645,9 +3662,9 @@ function cplans(){return [...(S.settings.cplans||[])].filter(p=>p.from).sort((a,
 // carousel rows that share a start date run together; rows with an end date override the regular rows between their dates
 function cplanFor(d){const act=cplans().filter(p=>p.from<=d&&(!p.to||d<=p.to));const temp=act.filter(p=>p.to);const pool=temp.length?temp:act;
   let f=null;pool.forEach(p=>{if(!f||p.from>f)f=p.from});return f?pool.filter(p=>p.from===f):[]}
-function cslotsFor(d){const wd=new Date(d+"T00:00:00").getDay();const s=new Set();cplanFor(d).forEach(p=>{if((p.days||[]).includes(wd))(p.times||[]).forEach(t=>s.add(t))});return [...s].sort()}
-function isCar(v){return v.format==="Carousel"}
-function kindName(v){return isCar(v)?"Carousel":"Reel"}
+function cslotsFor(d){if(inComm())return [];const wd=new Date(d+"T00:00:00").getDay();const s=new Set();cplanFor(d).forEach(p=>{if((p.days||[]).includes(wd))(p.times||[]).forEach(t=>s.add(t))});return [...s].sort()}
+function isCar(v){return v.format==="Carousel"||v.format==="Community"}   // community posts use the photo/video upload and gallery review of carousels
+function kindName(v){return isComm(v)?"Community post":isCar(v)?"Carousel":"Reel"}
 /* content pillars: each reel slot of the day gets a pillar from the daily order in Settings */
 const PCOL=["#5B7FD1","#D07A52","#3E9C7A","#8B72CF","#C39A2E","#3C98AE"];
 function pillars(){return (S.settings.pillars||[]).filter(Boolean)}
@@ -3661,7 +3678,7 @@ function pillarBlockMsg(v,req){return `That’s a ${req} slot and “${v.title||
 function pillarColor(p){const i=pillars().indexOf(p);return i<0?"#8A939B":PCOL[i%PCOL.length]}
 function pillarTag(v){return v&&v.pillar?`<span class="ptag" style="--pc:${pillarColor(v.pillar)}">${esc(v.pillar)}</span>`:""}
 function pillarSelect(attrs,val,withNone){return `<select ${attrs}>${withNone!==false?`<option value="">No pillar</option>`:""}${pillars().map(p=>`<option${p===val?" selected":""}>${esc(p)}</option>`).join("")}${val&&!pillars().includes(val)?`<option selected>${esc(val)}</option>`:""}</select>`}
-function kindOf(v){return isCar(v)?"C":"R"}
+function kindOf(v){return inComm()&&isComm(v)?"R":isCar(v)?"C":"R"}
 function slotsK(d,k){return k==="C"?cslotsFor(d):slotsFor(d)}
 function allTimes(){const set=new Set();plans().forEach(p=>(p.times||[]).forEach(t=>set.add(t)));cplans().forEach(p=>(p.times||[]).forEach(t=>set.add(t)));vids().forEach(v=>v.postTime&&set.add(v.postTime));return [...set].sort()}
 function folder(s){
@@ -3761,8 +3778,8 @@ function timeSelect(v){
 const ICO_F='<svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M3 7.5A2.5 2.5 0 0 1 5.5 5h4l2 2h7A2.5 2.5 0 0 1 21 9.5v7a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 16.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>';
 const ICO_P='<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg>';
 const ICO_E='<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path d="M4 20l4-1 10.5-10.5a2 2 0 0 0-3-3L5 16z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>';
-function folderChip(s){
-  if(!s)return `<span class="muted-chip">No shot date</span>`;
+function folderChip(s,v){
+  if(!s)return `<span class="muted-chip">${isComm(v)?"Community post":"No shot date"}</span>`;
   const f=folder(s),rl=rawLinkFor(s),own=rawPathFor(s);
   return `<span class="chipset"><button class="gchip" data-act="copy" data-text="${esc(f)}" title="${esc(f)}">${ICO_F}<span>Copy path</span></button>${rl?`<a class="gchip ic" href="${esc(rl)}" target="_blank" rel="noopener noreferrer" title="Open folder">${ICO_P}</a>`:""}<button class="gchip ic" data-act="addRaw" data-d="${s}" title="${own?"Change this day’s folder":"Set this day’s folder"}">${ICO_E}</button></span>`;
 }
@@ -4021,7 +4038,7 @@ function myVideos(){const out=new Set();if(!helperAcct())return out;vids().forEa
   awayList().filter(a=>a.to>=addDays(today(),-1)).forEach(a=>tripRows(a).forEach(r=>{if(r.v&&r.who===nm)out.add(r.v.id)}));return out}
 // videos a teammate edits during a trip (so your own timer never pauses theirs)
 function teamOwned(){const out=new Set();vids().forEach(v=>{const a=asgOf(v);if(a&&helperAcct(a))out.add(v.id)});awayList().filter(a=>a.to>=addDays(today(),-1)).forEach(a=>tripRows(a).forEach(r=>{if(r.v&&!["me","before","open"].includes(r.who))out.add(r.v.id)}));return out}
-function mayEdit(id){return isEdAcct()?["order","schedule"].includes(S.tab):isMember()&&myVideos().has(id)}
+function mayEdit(id){return isEdAcct()?["order","schedule","community"].includes(S.tab):isMember()&&myVideos().has(id)}
 // may this account save changes to a video (status, timer, uploads)
 function mayWrite(id){return isEdAcct()||(isMember()&&myVideos().has(id))}
 // whose editing timer is it: so pausing yours never pauses a teammate's
@@ -4134,7 +4151,7 @@ function emptySlots(days){let c=0;for(let i=0;i<days;i++){const d=addDays(today(
 /* ---------- posting reshuffle ---------- */
 const TIER={Ready:0,Approved:1,"In review":1,Edited:1,"Re-edit":2,Editing:2,Pending:3,Shot:4};
 function nowHM(){const d=new Date();return pad(d.getHours())+":"+pad(d.getMinutes())}
-function isReel(v){return (v.format||"Reel")==="Reel"}
+function isReel(v){return inComm()?isComm(v):(v.format||"Reel")==="Reel"}
 // Ready or Posted videos that already have a slot, and anything you lock, never move
 function isLocked(v){return v.pinned||v.status==="Posted"||v.status==="Scheduled"||(v.status==="Ready"&&!!v.postDate)}
 // people in a video: names after the last " - " in a title, plus known cast names found anywhere in it
@@ -4153,7 +4170,7 @@ function planKind(isK,slotsF){
   const reelKind=isK===isReel;
   const t=today(),hm=nowHM();
   const future=(d,tm)=>d>t||(d===t&&tm>hm);
-  const items=vids().filter(isK);
+  const items=vids().filter(v=>schedOk(v)&&isK(v));
   const movable=items.filter(v=>!isLocked(v)&&v.status in TIER);
   const cands=movable.filter(v=>!S.opts.readyOnly||v.status==="Ready"||v.status==="Approved")
     .sort((a,b)=>TIER[a.status]-TIER[b.status]||(a.shotDate||"~").localeCompare(b.shotDate||"~")||((a.createdAt||0)-(b.createdAt||0)));
@@ -4195,7 +4212,7 @@ function planKind(isK,slotsF){
 }
 function planReshuffle(){
   refreshCast();
-  const a=planKind(isReel,slotsFor),b=planKind(isCar,cslotsFor);
+  const a=planKind(isReel,slotsFor),b=inComm()?{changes:[],placed:0,unplaced:0}:planKind(isCar,cslotsFor);
   return {changes:[...a.changes,...b.changes],placed:a.placed+b.placed,unplaced:a.unplaced+b.unplaced};
 }
 function applyReshuffle(r){
@@ -4501,7 +4518,7 @@ function todayPosts(){
       const cls=late?"now":soon?"soon":"";
       clockHtml=`<span class="post-clock${cls?" "+cls:""}" data-due="${due}"><i class="post-clock-dot"></i><span class="post-clock-val">${diff<0?str+" ago":str}</span></span>`}
     return `<div class="tp${v.status==="Posted"?" done":""}${late?" late":""}"><span class="tp-t">${v.postTime?fmtT(v.postTime):"No time"}</span>
-      <span class="tp-n"><b>${esc(v.title||"Untitled")}</b><small><i style="background:${SC[v.status]}"></i>${esc(v.status)}${isCar(v)?", carousel":""}${rvTimer(v,true)}${clockHtml}${late?` <span class="tag warn">Overdue</span>`:soon?` <span class="tag new">${now>=due?"Now":"Soon"}</span>`:""}</small></span>
+      <span class="tp-n"><b>${esc(v.title||"Untitled")}</b><small><i style="background:${SC[v.status]}"></i>${esc(v.status)}${isCar(v)?", "+kindName(v).toLowerCase():""}${rvTimer(v,true)}${clockHtml}${late?` <span class="tag warn">Overdue</span>`:soon?` <span class="tag new">${now>=due?"Now":"Soon"}</span>`:""}</small></span>
       <span class="tp-a">${v.status==="Posted"?`<span class="tp-ok">✓ Posted</span>`:v.status==="Scheduled"?`<span class="tp-ok sched">✓ Scheduled</span>`:`${lnk?`<a class="iconbtn" href="${esc(lnk)}" data-prev="${v.id}" target="_blank" rel="noopener noreferrer">Open</a>${dlBtn(v,"iconbtn")}`:""}${v.status==="Ready"?`<button class="iconbtn" data-act="markScheduled" data-id="${v.id}">Scheduled</button>${slideHTML(v.id,"Slide to post","tp")}`:""}`}</span></div>`}).join("");
   const open=slots.filter(s=>!L.some(v=>v.postTime===s.tm&&kindOf(v)===s.k)).length;
   return `<section class="panel"><div class="phead"><h2>Today’s posts</h2><span class="stat">${posted} of ${L.length} posted${open?`, ${open} empty slot${open>1?"s":""}`:""}</span></div>
@@ -4529,7 +4546,7 @@ function pillarStats(){
     if(day.need)days.push(day)}
   reels.filter(live).forEach(v=>{const r=by[v.pillar];if(!r)return;r.hand++;if(!v.postDate)r.free++});
   const rows=P.map(p=>{const r=by[p];return {...r,shoot:Math.max(0,r.need-r.filled-r.free)}});
-  const cars=vids().filter(isCar);let cNeed=0,cFilled=0;
+  const cars=vids().filter(v=>isCar(v)&&!isComm(v));let cNeed=0,cFilled=0;
   for(let d=from>t?from:t,g=0;d<=to&&g<400;d=addDays(d,1),g++){cslotsFor(d).forEach(tm=>{if(d===t&&tm<=hm)return;cNeed++;
     if(cars.some(x=>x.postDate===d&&x.postTime===tm))cFilled++;else{let day=days.find(x=>x.d===d);if(!day){day={d,open:{},need:0};days.push(day)}day.open.Carousel=(day.open.Carousel||0)+1}})}
   days.sort((a,b)=>a.d.localeCompare(b.d));
@@ -4648,7 +4665,7 @@ function vVideos(){
   const chips=`<div class="filters">
     <div class="fgroup" role="group" aria-label="Status">${STATUSES.filter(s=>ST_MAIN.includes(s.k)||all.some(v=>v.status===s.k)||f.st.includes(s.k)).map(s=>`<button class="fchip" data-act="fst" data-s="${s.k}" aria-pressed="${f.st.includes(s.k)}"><i style="background:${s.c}"></i>${s.k}<em>${all.filter(v=>v.status===s.k).length}</em></button>`).join("")}</div>
     <div class="fgroup">
-      <div class="seg" role="group" aria-label="Format">${[["all","All formats"],["Reel","Reels"],["Carousel","Carousels"]].map(([k,l])=>`<button data-act="ffmt" data-v="${k}" aria-pressed="${f.fmt===k}">${l}</button>`).join("")}</div>
+      <div class="seg" role="group" aria-label="Format">${[["all","All formats"],["Reel","Reels"],["Carousel","Carousels"],["Community","Community"]].map(([k,l])=>`<button data-act="ffmt" data-v="${k}" aria-pressed="${f.fmt===k}">${l}</button>`).join("")}</div>
       <div class="seg" role="group" aria-label="Scheduling">${[["any","Any"],["yes","Scheduled"],["no","Unscheduled"]].map(([k,l])=>`<button data-act="fsched" data-v="${k}" aria-pressed="${f.sched===k}">${l}</button>`).join("")}</div>
       <button class="fchip" data-act="fnolink" aria-pressed="${f.noLink}">No final link</button>
       <button class="fchip" data-act="fnopil" aria-pressed="${!!f.noPil}">No pillar <em>${vids().filter(v=>isReel(v)&&!v.pillar&&v.status!=="Posted").length}</em></button>
@@ -4666,10 +4683,10 @@ function vVideos(){
   const rowOf=v=>`<tr class="${S.sel.has(v.id)?"sel":""}${(S.moreRows||{})[v.id]?" open":""}" data-k="v-${v.id}">
     <td class="ck"><input type="checkbox" data-act-ck="${v.id}"${S.sel.has(v.id)?" checked":""} aria-label="Select ${esc(v.title)}"></td>
     <td class="title"><input type="text" value="${esc(v.title)}" data-f="title" data-id="${v.id}" aria-label="Title">${asgTag(v)}${MUS.musicTag(v)}<button class="mob-more" data-act="rowMore" data-id="${v.id}">${(S.moreRows||{})[v.id]?"Less":"Details"}</button>${(v.status==="Re-edit"||EDIT_POOL.includes(v.status))&&v.reviewNote?`<small class="rnote">Changes: ${esc(v.reviewNote)}</small>`:""}${v.status==="In review"&&v.round>1?`<small class="rnote rv">Review round ${v.round}</small>`:""}</td>
-    <td class="c-fmt" data-l="Format"><select data-f="format" data-id="${v.id}" aria-label="Format"><option${v.format!=="Carousel"?" selected":""}>Reel</option><option${v.format==="Carousel"?" selected":""}>Carousel</option></select></td>
-    <td class="c-pil" data-l="Pillar">${isCar(v)?`<span class="stat">Carousel</span>`:pillarSelect(`data-f="pillar" data-id="${v.id}" aria-label="Pillar" class="psel" style="--pc:${pillarColor(v.pillar)}"`,v.pillar||"")}</td>
+    <td class="c-fmt" data-l="Format"><select data-f="format" data-id="${v.id}" aria-label="Format"><option${!["Carousel","Community"].includes(v.format)?" selected":""}>Reel</option><option${v.format==="Carousel"?" selected":""}>Carousel</option><option${v.format==="Community"?" selected":""}>Community</option></select></td>
+    <td class="c-pil" data-l="Pillar">${isCar(v)?`<span class="stat">${kindName(v)}</span>`:pillarSelect(`data-f="pillar" data-id="${v.id}" aria-label="Pillar" class="psel" style="--pc:${pillarColor(v.pillar)}"`,v.pillar||"")}</td>
     <td class="c-shot" data-l="Shot on"><input type="date" value="${esc(v.shotDate||"")}" data-f="shotDate" data-id="${v.id}" aria-label="Shot date" class="dt-in" style="--dc:${hue(v.shotDate)}"></td>
-    <td class="c-fold" data-l="Raw folder">${folderChip(v.shotDate)}</td>
+    <td class="c-fold" data-l="Raw folder">${folderChip(v.shotDate,v)}</td>
     <td class="c-st" data-l="Status">${statusSelect(v)}</td>
     <td class="c-post" data-l="Post on"><input type="date" value="${esc(v.postDate||"")}" data-f="postDate" data-id="${v.id}" aria-label="Post date"></td>
     <td class="c-time" data-l="Time">${timeSelect(v)}</td>
@@ -4749,9 +4766,9 @@ function vSchedule(){
   refreshCast();
   const t=today();
   const ord={Ready:0,Approved:1,"In review":2,"Re-edit":3,Editing:3,Pending:4,Shot:5,"Not started":6};
-  const freeOf=k=>vids().filter(v=>kindOf(v)===k&&!v.postDate&&v.status!=="Posted").sort((a,b)=>(ord[a.status]??9)-(ord[b.status]??9)||(a.shotDate||"~").localeCompare(b.shotDate||"~"));
+  const freeOf=k=>vids().filter(v=>schedOk(v)&&kindOf(v)===k&&!v.postDate&&v.status!=="Posted").sort((a,b)=>(ord[a.status]??9)-(ord[b.status]??9)||(a.shotDate||"~").localeCompare(b.shotDate||"~"));
   const freeR=freeOf("R"),freeC=freeOf("C");
-  const optsOf=(L,k)=>`<option value="">${k==="C"?"Add a carousel…":"Add a reel…"}</option>`+L.map(v=>`<option value="${v.id}">${esc(v.title||"Untitled")} (${v.status})</option>`).join("");
+  const optsOf=(L,k)=>`<option value="">${k==="C"?"Add a carousel…":inComm()?"Add a post…":"Add a reel…"}</option>`+L.map(v=>`<option value="${v.id}">${esc(v.title||"Untitled")} (${v.status})</option>`).join("");
   const optsR=optsOf(freeR,"R"),optsC=optsOf(freeC,"C");
   const row=(v,d,tm,label,k,extraTags)=>{
     const isReady=v.status==="Ready";
@@ -4762,7 +4779,7 @@ function vSchedule(){
       `${openLink(v,"Open")}${dlBtn(v)}`:
       (isCar(v)&&v.car&&v.car.folderId?carView(v):draftBtn(v));
     const sl=d?`${d}|${tm}|${k}`:"";
-    return `<div class="slot filled${k==="C"?" car":""}"${d?` data-slot="${sl}"`:""} data-drag-id="${v.id}"><div class="grip" title="Drag to move">⋮⋮</div><div class="tm">${label}${k==="C"?`<span class="kind">Carousel</span>`:v.pillar?`<span class="kind pk" style="--pc:${pillarColor(v.pillar)}">${esc(v.pillar)}</span>`:`<span class="kind pk none">No pillar</span>`}</div><div class="ttl"><b>${esc(v.title||"Untitled")}</b>${asgTag(v)}${MUS.musicTag(v)}<small>${v.shotDate?"Shot "+esc(nice(v.shotDate)):"No shot date"}${tags}</small></div><div class="stc">${linkArea?`<span class="stl">${linkArea}</span>`:""}${statusSelect(v)}</div><div>${lockCtl(v)}</div><div class="mv2"></div><div><button class="xbtn" data-act="unassign" data-id="${v.id}" aria-label="Remove from schedule" title="Remove">×</button></div></div>`;
+    return `<div class="slot filled${k==="C"?" car":""}"${d?` data-slot="${sl}"`:""} data-drag-id="${v.id}"><div class="grip" title="Drag to move">⋮⋮</div><div class="tm">${label}${k==="C"?`<span class="kind">Carousel</span>`:v.pillar?`<span class="kind pk" style="--pc:${pillarColor(v.pillar)}">${esc(v.pillar)}</span>`:`<span class="kind pk none">No pillar</span>`}</div><div class="ttl"><b>${esc(v.title||"Untitled")}</b>${asgTag(v)}${MUS.musicTag(v)}<small>${v.shotDate?"Shot "+esc(nice(v.shotDate)):isComm(v)?"Community post":"No shot date"}${tags}</small></div><div class="stc">${linkArea?`<span class="stl">${linkArea}</span>`:""}${statusSelect(v)}</div><div>${lockCtl(v)}</div><div class="mv2"></div><div><button class="xbtn" data-act="unassign" data-id="${v.id}" aria-label="Remove from schedule" title="Remove">×</button></div></div>`;
   };
   const optsP=req=>{const a=freeR.filter(v=>v.pillar===req),b=freeR.filter(v=>v.pillar!==req);
     return `<option value="">Add ${esc(req)}…</option>`+a.map(v=>`<option value="${v.id}">${esc(v.title||"Untitled")} (${v.status})</option>`).join("")+(b.length&&S.settings.pillarForce?`<optgroup label="Other pillars">${b.map(v=>`<option value="${v.id}">${esc(v.title||"Untitled")} · ${esc(v.pillar||"no pillar")}</option>`).join("")}</optgroup>`:"")};
@@ -4773,8 +4790,8 @@ function vSchedule(){
   const from=schedFrom();
   for(let i=0;i<S.schedDays;i++){
     const d=addDays(from,i),TR=slotsFor(d),TC=cslotsFor(d);
-    const items=vids().filter(v=>v.postDate===d);
-    const reels=items.filter(isReel),cars=items.filter(isCar);
+    const items=vids().filter(v=>v.postDate===d&&schedOk(v));
+    const reels=items.filter(isReel),cars=items.filter(v=>isCar(v)&&!isReel(v));
     const all=[...TR.map(tm=>({tm,k:"R"})),...TC.map(tm=>({tm,k:"C"}))].sort((a,b)=>a.tm.localeCompare(b.tm)||(a.k<b.k?1:-1));
     const parts=all.map(({tm,k})=>{
       const pool=k==="C"?cars:reels;const here=pool.filter(v=>v.postTime===tm);
@@ -4797,22 +4814,22 @@ function vSchedule(){
 function schedShell(free,body){
   const month=S.schedView==="month";
   return `<section class="panel">
-    <div class="phead"><h2>Posting schedule</h2>
-      <div class="pactions">
+    <div class="phead"><h2>${inComm()?"Community":"Posting schedule"}</h2>
+      <div class="pactions">${inComm()&&!viewOnly()?`<button class="btn small primary" data-act="commNew">＋ New post</button>`:""}
         <div class="seg" role="group" aria-label="View"><button data-act="sview" data-v="list" aria-pressed="${!month}">List</button><button data-act="sview" data-v="month" aria-pressed="${month}">Month</button></div>
         ${month?"":`<div class="seg" role="group" aria-label="Days shown">${[7,14,30].map(n=>`<button data-act="days" data-n="${n}" aria-pressed="${S.schedDays===n}">${n} days</button>`).join("")}</div>`}
         ${S.lastAuto&&S.lastAuto.length?`<button class="btn" data-act="undoAuto">Undo</button>`:""}
         <button class="shuffle" data-act="reshuffle">Reshuffle</button>
       </div></div>
     <div class="switches">
-      ${toggle("data-sset","autoOnLog",S.settings.autoOnLog,"Auto-reshuffle on new shoot")}
-      ${toggle("data-sset","allowSame",S.settings.allowSame,"Fill gaps with same shoot day")}
-      ${toggle("data-opt","readyOnly",S.opts.readyOnly,"Only finished videos")}
+      ${inComm()?"":toggle("data-sset","autoOnLog",S.settings.autoOnLog,"Auto-reshuffle on new shoot")}
+      ${inComm()?"":toggle("data-sset","allowSame",S.settings.allowSame,"Fill gaps with same shoot day")}
+      ${toggle("data-opt","readyOnly",S.opts.readyOnly,inComm()?"Only finished posts":"Only finished videos")}
       ${toggle("data-sset","autoPostScheduled",S.settings.autoPostScheduled===true,"Scheduled posts become Posted at their time")}
 
       ${free.length?`<span class="stat">${free.length} unscheduled</span>`:""}
     </div>
-    ${pillarHint()}${body}
+    ${inComm()?rawSafe(()=>COMM.planBlock()):pillarHint()}${body}
   </section>`;
 }
 // slots only know their pillar once the daily reel order is set in Settings
@@ -4826,12 +4843,12 @@ function monthView(){
   const lead=(first.getDay()+6)%7;
   const start=iso(new Date(Y,M-1,1-lead));
   const weeks=Math.ceil((lead+days)/7);
-  const all=vids();
+  const all=vids().filter(schedOk);
   let cells="";
   for(let i=0;i<weeks*7;i++){
     const d=addDays(start,i),inM=d.slice(0,7)===cur,T=slotsFor(d);
     const reels=all.filter(v=>v.postDate===d&&isReel(v)).sort((a,b)=>(a.postTime||"").localeCompare(b.postTime||""));
-    const car=all.filter(v=>v.postDate===d&&isCar(v)),TC=cslotsFor(d);
+    const car=all.filter(v=>v.postDate===d&&isCar(v)&&!isReel(v)),TC=cslotsFor(d);
     const filled=T.filter(tm=>reels.some(v=>v.postTime===tm)).length;
     const pills=T.map(tm=>{const v=reels.find(x=>x.postTime===tm);if(!v&&d<t)return "";
       return v?`<div class="mp" title="${esc(fmtT(tm)+", "+(v.title||"Untitled")+" ("+v.status+")")}"><i style="background:${SC[v.status]}"></i><span class="mt">${fmtT(tm).replace(":00","").replace(" ","").toLowerCase()}</span><span class="mn">${esc(v.title||"Untitled")}</span>${rvTimer(v,true)}</div>`
@@ -5003,18 +5020,18 @@ function addExtraSlot(d,kind,tm){
   if(kind==="C"){const P=cplans();let ex=P.find(p=>p.from===d&&p.to===d);const times=[...new Set([...cslotsFor(d),tm])].sort();
     if(ex){ex.days=[0,1,2,3,4,5,6];ex.times=times}else P.push({from:d,to:d,days:[0,1,2,3,4,5,6],times});S.settings.cplans=P}
   else{const P=plans();let ex=P.find(p=>p.from===d&&p.to===d);const times=[...new Set([...slotsFor(d),tm])].sort();
-    if(ex)ex.times=times;else P.push({from:d,to:d,times});S.settings.plans=P}
+    if(ex)ex.times=times;else P.push({from:d,to:d,times});S.settings[PK()]=P}
   putSettings();render();toast(`Extra ${kind==="C"?"carousel":"reel"} slot added: ${niceW(d)}, ${fmtT(tm)}`);
 }
 // removes one empty slot on one day only (a one-day plan, like Extra slot); the regular plan doesn’t change
 function removeSlot(d,kind,tm){
-  const undo={plans:JSON.parse(JSON.stringify(S.settings.plans||[])),cplans:JSON.parse(JSON.stringify(S.settings.cplans||[]))};
+  const undo={plans:JSON.parse(JSON.stringify(S.settings[PK()]||[])),cplans:JSON.parse(JSON.stringify(S.settings.cplans||[]))};
   if(kind==="C"){const P=cplans();let ex=P.find(p=>p.from===d&&p.to===d);const times=cslotsFor(d).filter(x=>x!==tm);
     if(ex){ex.days=[0,1,2,3,4,5,6];ex.times=times}else P.push({from:d,to:d,days:[0,1,2,3,4,5,6],times});S.settings.cplans=P}
   else{const P=plans();let ex=P.find(p=>p.from===d&&p.to===d);const times=slotsFor(d).filter(x=>x!==tm);
-    if(ex)ex.times=times;else P.push({from:d,to:d,times});S.settings.plans=P}
+    if(ex)ex.times=times;else P.push({from:d,to:d,times});S.settings[PK()]=P}
   putSettings();render();
-  toast(`${kind==="C"?"Carousel":"Reel"} slot removed: ${niceW(d)}, ${fmtT(tm)}`,"Undo",()=>{S.settings.plans=undo.plans;S.settings.cplans=undo.cplans;putSettings();render()});
+  toast(`${kind==="C"?"Carousel":"Reel"} slot removed: ${niceW(d)}, ${fmtT(tm)}`,"Undo",()=>{S.settings[PK()]=undo.plans;S.settings.cplans=undo.cplans;putSettings();render()});
 }
 function askSlot(d){
   const dl=$("#slotDlg");dl.dataset.d=d;slotMode("add");dl.returnValue="";
@@ -5038,14 +5055,14 @@ function slotMode(m){const dl=$("#slotDlg"),d=dl.dataset.d,move=m==="move";dl.da
 function changeSlotTime(d,k,old,nw){
   if(old===nw)return;
   const cur=k==="C"?cslotsFor(d):slotsFor(d);if(cur.includes(nw)){toast(`There’s already a ${k==="C"?"carousel":"reel"} slot at ${fmtT(nw)}`);return}
-  const undo={plans:JSON.parse(JSON.stringify(S.settings.plans||[])),cplans:JSON.parse(JSON.stringify(S.settings.cplans||[]))};
+  const undo={plans:JSON.parse(JSON.stringify(S.settings[PK()]||[])),cplans:JSON.parse(JSON.stringify(S.settings.cplans||[]))};
   const times=[...cur.filter(x=>x!==old),nw].sort();
   if(k==="C"){const P=cplans();let ex=P.find(p=>p.from===d&&p.to===d);if(ex){ex.days=[0,1,2,3,4,5,6];ex.times=times}else P.push({from:d,to:d,days:[0,1,2,3,4,5,6],times});S.settings.cplans=P}
-  else{const P=plans();let ex=P.find(p=>p.from===d&&p.to===d);if(ex)ex.times=times;else P.push({from:d,to:d,times});S.settings.plans=P}
+  else{const P=plans();let ex=P.find(p=>p.from===d&&p.to===d);if(ex)ex.times=times;else P.push({from:d,to:d,times});S.settings[PK()]=P}
   const moved=vids().filter(v=>kindOf(v)===k&&v.postDate===d&&v.postTime===old);
   moved.forEach(v=>putVideo({...v,postTime:nw},true));
   putSettings();render();
-  toast(`${fmtT(old)} moved to ${fmtT(nw)} on ${niceW(d)}`,"Undo",()=>{S.settings.plans=undo.plans;S.settings.cplans=undo.cplans;moved.forEach(v=>{const c=S.videos[v.id];if(c)putVideo({...c,postTime:old},true)});putSettings();render()});
+  toast(`${fmtT(old)} moved to ${fmtT(nw)} on ${niceW(d)}`,"Undo",()=>{S.settings[PK()]=undo.plans;S.settings.cplans=undo.cplans;moved.forEach(v=>{const c=S.videos[v.id];if(c)putVideo({...c,postTime:old},true)});putSettings();render()});
 }
 // the move from the Google Sheet is done; only the "load fresh" button stays
 function importPanel(){return `<section class="panel"><div class="phead"><h2>Data</h2><span class="stat">Saved in Firebase · syncs instantly</span></div>
@@ -5935,7 +5952,7 @@ function render(){
   const autoFlip=!S.animate&&!RM&&m.firstElementChild&&m.dataset.tab===S.tab;
   const before=autoFlip?keyRects(m):null;
   m.dataset.tab=S.tab;
-  m.innerHTML=S.tab==="overview"?vOverview():S.tab==="videos"?vVideos():S.tab==="order"?vOrder():S.tab==="schedule"?vSchedule():S.tab==="history"?vHistory():S.tab==="shoots"?vShoots():S.tab==="ideas"?vIdeas():S.tab==="downloader"?vDownloader():S.tab==="assets"?AS.panel():S.tab==="raw"?rawSafe(()=>RAW.panel()):vSettings();
+  m.innerHTML=S.tab==="overview"?vOverview():S.tab==="videos"?vVideos():S.tab==="order"?vOrder():S.tab==="schedule"||S.tab==="community"?vSchedule():S.tab==="history"?vHistory():S.tab==="shoots"?vShoots():S.tab==="ideas"?vIdeas():S.tab==="downloader"?vDownloader():S.tab==="assets"?AS.panel():S.tab==="raw"?rawSafe(()=>RAW.panel()):vSettings();
   if(S.animate){const mode=S.animate;S.animate=false;if(mode==="m")setTimeout(()=>countUp(m),80);else enterMotion(m,mode==="vt")}
   else if(before)autoFlipRun(m,before);
   segInds(m);
@@ -5999,10 +6016,10 @@ const CMD={items:[],idx:0};
 function cmdSources(){
   const items=[];
   vids().forEach(v=>items.push({type:"video",id:v.id,title:v.title||"Untitled",hay:((v.title||"")+" "+(v.notes||"")).toLowerCase(),
-    sub:`${v.status}${v.shotDate?", shot "+nice(v.shotDate):""}${v.postDate?", posts "+niceW(v.postDate)+(v.postTime?" "+fmtT(v.postTime):""):""}${isCar(v)?", carousel":""}`,dot:SC[v.status],v}));
+    sub:`${v.status}${v.shotDate?", shot "+nice(v.shotDate):""}${v.postDate?", posts "+niceW(v.postDate)+(v.postTime?" "+fmtT(v.postTime):""):""}${isCar(v)?", "+kindName(v).toLowerCase():""}`,dot:SC[v.status],v}));
   shoots().forEach(s=>items.push({type:"shoot",id:s.id,title:s.title||"Untitled shoot",hay:((s.title||"")+" "+(s.location||"")+" "+(s.cast||"")+" "+(s.videos||[]).join(" ")).toLowerCase(),
     sub:`Shoot, ${niceW(s.date)}${s.time?" "+fmtT(s.time):""}${s.location?", "+s.location:""}`,dot:hue(s.date),s}));
-  [["overview","Go to Overview"],["videos","Go to All videos"],["order","Go to Edit order"],["schedule","Go to Posting schedule"],["shoots","Go to Shoot plan"],["raw","Go to Raw footage"],["ideas","Go to Content bank"],["history","Go to History"],["downloader","Go to Downloader"],["assets","Go to Asset library"],["settings","Go to Settings"]]
+  [["overview","Go to Overview"],["videos","Go to All videos"],["order","Go to Edit order"],["schedule","Go to Posting schedule"],["community","Go to Community"],["shoots","Go to Shoot plan"],["raw","Go to Raw footage"],["ideas","Go to Content bank"],["history","Go to History"],["downloader","Go to Downloader"],["assets","Go to Asset library"],["settings","Go to Settings"]]
     .forEach(([k,l])=>items.push({type:"tab",id:k,title:l,hay:l.toLowerCase(),sub:"Page"}));
   items.push({type:"act",id:"log",title:"Log a shoot",hay:"log a shoot add videos new",sub:"Action"});
   items.push({type:"act",id:"plan",title:"Plan a shoot",hay:"plan a shoot schedule shoot script",sub:"Action"});
@@ -6985,7 +7002,7 @@ function showAlert(v,kind){
   let body="";
   if(kind==="assigned")body=`<div class="al-top"><span class="al-pill">Assigned to you</span>${x}</div>${title}<small>${esc(nameOf(v.assignedBy||ADMIN))} gave you this edit. ${v.postDate?"Posts "+when:"Not scheduled yet"}.</small>
     <div class="al-btns"><button class="al-done" data-al="x">Later</button><button class="al-open" data-al="startedit">Start editing</button></div>`;
-  else if(kind==="review")body=`<div class="al-top"><span class="al-pill">Review</span>${x}</div>${title}<small>${isCar(v)?"Carousel":"Reel"}, round ${v.round||1}${v.shotDate?", shot "+esc(nice(v.shotDate)):""}</small>
+  else if(kind==="review")body=`<div class="al-top"><span class="al-pill">Review</span>${x}</div>${title}<small>${kindName(v)}, round ${v.round||1}${v.shotDate?", shot "+esc(nice(v.shotDate)):""}</small>
     ${hasReview(v)&&spOn()?`<div class="al-btns"><button class="al-open al-watch" data-al="watch">${isCar(v)&&v.car?`▶ View ${v.car.count} photos`:"▶ Watch draft"}</button></div>`:""}
     <div class="al-btns"><button class="al-done" data-al="reedit">Re-edit</button><button class="al-open" data-al="approve">Approve</button></div>`;
   else if(kind==="approved"&&spOn())body=`<div class="al-top"><span class="al-pill">Approved</span>${x}</div>${title}<small>${esc(reviewerName())} approved it. ${isCar(v)?"Upload the photos":"Upload the final version"} and it becomes ready to post.</small>
@@ -6995,7 +7012,7 @@ function showAlert(v,kind){
   else if(kind==="reedit")body=`<div class="al-top"><span class="al-pill warn">Re-edit</span>${x}</div>${title}<small>${esc(reviewerName())} asked for changes${v.round>1?`, round ${v.round}`:""}:</small>
     <p class="al-note">${esc(v.reviewNote||"No notes added.")}</p><div class="al-btns"><button class="al-done" data-al="x">Later</button><button class="al-open" data-al="startedit">Start re-edit</button></div>`;
   else if(kind==="soon"||kind==="now"||(kind==="late"&&isPoster())){const lnk=safeUrl(v.finalLink);
-    body=`<div class="al-top"><span class="al-pill${kind==="late"?" warn":kind==="now"?" pulse":""}">${kind==="soon"?"Posting in 15 min":kind==="now"?"Post now":"Not posted yet"}</span>${x}</div>${title}<small>${isCar(v)?"Carousel":"Reel"}, ${kind==="late"?"was due ":""}${when}</small>
+    body=`<div class="al-top"><span class="al-pill${kind==="late"?" warn":kind==="now"?" pulse":""}">${kind==="soon"?"Posting in 15 min":kind==="now"?"Post now":"Not posted yet"}</span>${x}</div>${title}<small>${kindName(v)}, ${kind==="late"?"was due ":""}${when}</small>
     <div class="al-btns">${lnk?`<a class="al-done" href="${esc(lnk)}" data-prev="${v.id}" target="_blank" rel="noopener noreferrer">${isCar(v)?"Open post":"Open video"}</a>`:""}${slideHTML(v.id,"Slide to post")}</div>`}
   else if(kind==="late")body=`<div class="al-top"><span class="al-pill warn">Not posted yet</span>${x}</div>${title}<small>Was due ${when}. ${esc(posterName())} hasn’t marked it posted.</small>
     <div class="al-btns"><button class="al-done" data-al="x">OK</button><button class="al-open" data-al="posted">It’s posted</button></div>`;
@@ -7004,7 +7021,7 @@ function showAlert(v,kind){
     <div class="al-btns">${lnk?`<a class="al-done" href="${esc(lnk)}" data-prev="${v.id}" target="_blank" rel="noopener noreferrer">${isCar(v)?"Open post":"Open video"}</a>`:""}<button class="al-open" data-al="x">OK</button></div>`}
   else if(kind==="notready")body=`<div class="al-top"><span class="al-pill warn">Due soon, not ready</span>${x}</div>${title}<small>Posts ${when}, still ${esc(v.status)}.</small>
     <div class="al-btns"><button class="al-done" data-al="x">OK</button></div>`;
-  else body=`<div class="al-top"><span class="al-pill">Ready to post</span>${x}</div>${title}<small>${isCar(v)?"Carousel":"Reel"}, ${when}</small>
+  else body=`<div class="al-top"><span class="al-pill">Ready to post</span>${x}</div>${title}<small>${kindName(v)}, ${when}</small>
     <div class="al-btns"><a class="al-open" href="${esc(safeUrl(v.finalLink))}" data-prev="${v.id}" target="_blank" rel="noopener noreferrer" data-al="open">${isCar(v)?"Open post":"Open video"}</a><button class="al-done" data-al="scheduled">Scheduled</button></div><div class="al-slide">${slideHTML(v.id,"Slide to post")}</div>`;
   el.innerHTML=body;el.dataset.id=v.id;el.dataset.key=alertKey(v,kind);const bar=box.querySelector(".al-bar");if(bar)bar.after(el);else box.prepend(el);box.scrollTop=0;alertsLayout();
   if(RM||!el.animate)return;
@@ -7472,13 +7489,13 @@ document.addEventListener("click",async e=>{
   }
   else if(act==="reshuffle"){
     const r=planReshuffle();
-    const untagged=pillars().length&&!S.settings.pillarLoose?vids().filter(v=>isReel(v)&&!v.pillar&&!v.postDate&&v.status!=="Posted"&&v.status!=="Not started").length:0;
+    const untagged=!inComm()&&pillars().length&&!S.settings.pillarLoose?vids().filter(v=>isReel(v)&&!v.pillar&&!v.postDate&&v.status!=="Posted"&&v.status!=="Not started").length:0;
     const openP=(()=>{let n=0;for(let i=0;i<30;i++){const d=addDays(today(),i);if(!pillarOn(d))continue;slotsFor(d).forEach(tm=>{if(!vids().some(v=>isReel(v)&&v.postDate===d&&v.postTime===tm))n++})}return n})();
     const loose=async()=>{if(!await ask("Use reels without a pillar?",`${untagged} reel${untagged>1?"s":""} have no pillar. They’ll fill the pillar slots that are still empty. You can switch this off in Settings, Content pillars.`,"Use them"))return;
       S.settings.pillarLoose=true;putSettings();const r2=planReshuffle();if(r2.changes.length){deckShuffle(".sday [data-drag-id]",()=>{const before=rectsOf(".sday [data-drag-id]","dragId");applyReshuffle(r2);flipAll(".sday [data-drag-id]","dragId",before,true)});toast(`Placed ${r2.changes.length} more post${r2.changes.length>1?"s":""}`,"Undo",undoReshuffle)}else toast("Nothing more could be placed")};
     if(!r.changes.length){if(untagged&&openP){toast(`${untagged} reel${untagged>1?"s have":" has"} no pillar, so ${untagged>1?"they weren’t":"it wasn’t"} scheduled`,"Use anyway",loose);return}toast("Schedule is already mixed, nothing to change");return}
     const msg=`${r.changes.length} post${r.changes.length>1?"s":""} will move or be added. Locked and Ready slots stay where they are.`+(r.unplaced?` ${r.unplaced} video${r.unplaced>1?"s":""} can’t be placed without two from one shoot day on the same posting day, so they stay unscheduled.`:"");
-    if(!await ask("Reshuffle the posting schedule?",msg,"Reshuffle",true))return;
+    if(!await ask(inComm()?"Reshuffle the community posts?":"Reshuffle the posting schedule?",msg,"Reshuffle",true))return;
     deckShuffle(".sday [data-drag-id]",()=>{const before=rectsOf(".sday [data-drag-id]","dragId");applyReshuffle(r);flipAll(".sday [data-drag-id]","dragId",before,true)});
     if(untagged&&openP)setTimeout(()=>toast(`Reshuffled. ${untagged} reel${untagged>1?"s":""} without a pillar ${untagged>1?"were":"was"} left out`,"Use anyway",loose),900);
     else toast(`Reshuffled ${r.changes.length} post${r.changes.length>1?"s":""}`,"Undo",undoReshuffle);
@@ -7656,13 +7673,13 @@ document.addEventListener("click",async e=>{
   else if(act==="addPlan"){
     const P=plans();const last=P[P.length-1]||{from:today(),times:["15:00","18:00"]};
     const d=new Date();const nm=iso(new Date(d.getFullYear(),d.getMonth()+1,1));
-    S.settings.plans=[...P,{from:last.from>=nm?addDays(last.from,30):nm,times:[...last.times]}];putSettings();render();
+    S.settings[PK()]=[...P,P.length?{from:last.from>=nm?addDays(last.from,30):nm,times:[...last.times]}:{from:today(),times:inComm()?["12:00"]:[...last.times]}];putSettings();render();
   }
   else if(act==="cday"){const P=cplans();const p={...P[+b.dataset.i]};const w=+b.dataset.w;const D=p.days||[];p.days=D.includes(w)?D.filter(x=>x!==w):[...D,w].sort();P[+b.dataset.i]=p;S.settings.cplans=P;putSettings();render()}
   else if(act==="addCPlan"){const P=cplans();const last=P[P.length-1]||{from:today(),days:[1,3,5],times:["21:00"]};const d=new Date();const nm=iso(new Date(d.getFullYear(),d.getMonth()+1,1));
     S.settings.cplans=[...P,{from:P.length?last.from:today(),days:[],times:["19:00"]}];putSettings();render()}
   else if(act==="rmCPlan"){const P=cplans();P.splice(+b.dataset.i,1);S.settings.cplans=P;putSettings();render()}
-  else if(act==="rmPlan"){const P=plans();P.splice(+b.dataset.i,1);S.settings.plans=P;putSettings();render()}
+  else if(act==="rmPlan"){const P=plans();P.splice(+b.dataset.i,1);S.settings[PK()]=P;putSettings();render()}
 });
 
 document.addEventListener("change",e=>{
@@ -7700,7 +7717,7 @@ document.addEventListener("change",e=>{
     if(t.dataset.pf==="from"){if(!t.value)return;p.from=t.value}
     else if(t.dataset.pf==="to"){if(t.value&&t.value<p.from){toast("The end date can’t be before the start");render();return}p.to=t.value}
     else{const T=parseTimes(t.value);if(!T.length){toast("Add times like 3:00 PM, 6:00 PM");render();return}p.times=T}
-    P[+t.dataset.plan]=p;S.settings.plans=P;putSettings();render();return;
+    P[+t.dataset.plan]=p;S.settings[PK()]=P;putSettings();render();return;
   }
   if(t.dataset.set){
     const k=t.dataset.set;
@@ -7921,7 +7938,7 @@ if(!GAS){
   const go=()=>{if(started)return;started=true;const t=lsGet("seb-token");
     if(t)startSession(t,lsGet("seb-user")||"");else if(QKEY)keyLogin(QKEY);else showLogin()};
   const qs=new URLSearchParams(location.search);const v=qs.get("view");
-  if(v&&["overview","videos","order","schedule","shoots","raw","ideas","history","downloader","assets","settings"].includes(v)){S.tab=v;render()}
+  if(v&&["overview","videos","order","schedule","community","shoots","raw","ideas","history","downloader","assets","settings"].includes(v)){S.tab=v;render()}
   QKEY=null;   // old quick-login links: Firebase keeps you signed in, so the key is simply ignored
   if(qs.get("key")){qs.delete("key");try{history.replaceState(null,"",location.pathname+(qs.toString()?"?"+qs:""))}catch(e){}}
   go();
@@ -9164,6 +9181,40 @@ const RAW=(()=>{
     else if(a==="rawZip")dlZip(d);else if(a==="rawEach")dlAll(d);else return;
     e.preventDefault()});
   return {on,canUp,need,tick,card,panel,pending,openUp,root,st};
+})();
+
+/* ================= v133: Community tab — separate community posts with their own posting plan, same review flow ================= */
+const COMM=(()=>{
+  let dl=null;
+  function dlg(){if(dl)return dl;dl=document.createElement("dialog");dl.id="commDlg";dl.className="wide";
+    dl.innerHTML=`<form method="dialog"><h2>New community posts</h2><p class="sub">One post per line. They go through the same steps: make it, upload the draft, ${esc(reviewerName())} approves, then post.</p>
+      <label class="field"><span class="as-lbl">Posts</span><textarea id="commTitles" rows="5" placeholder="iPhone giveaway week 3 story&#10;Winner announcement&#10;Market update"></textarea></label>
+      <label class="field"><span class="as-lbl">Pillar (optional)</span><select id="commPil"></select></label>
+      <div class="foot"><button class="btn" type="button" data-cm="x">Cancel</button><span style="flex:1"></span><button class="btn primary" type="button" data-cm="go" id="commGo">Add</button></div></form>`;
+    document.body.appendChild(dl);
+    dl.addEventListener("click",e=>{const b=e.target.closest("[data-cm]");if(!b)return;e.preventDefault();if(b.dataset.cm==="x"){dl.close();return}add()});
+    dl.addEventListener("input",e=>{if(e.target.id==="commTitles")lbl()});
+    return dl}
+  const lines=()=>String(document.getElementById("commTitles").value||"").split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+  function lbl(){const n=lines().length;const g=document.getElementById("commGo");g.disabled=!n;g.textContent=n?`Add ${n} post${n===1?"":"s"}`:"Add"}
+  function open(){if(viewOnly())return;const d=dlg();document.getElementById("commTitles").value="";
+    document.getElementById("commPil").innerHTML=`<option value="">No pillar</option>`+pillars().map(p=>`<option>${esc(p)}</option>`).join("");lbl();openDlg(d);setTimeout(()=>document.getElementById("commTitles").focus(),60)}
+  function add(){const L=lines();if(!L.length)return;const pil=document.getElementById("commPil").value,now=Date.now();
+    L.forEach((title,i)=>putVideo({id:uid(),title,format:"Community",pillar:pil,shotDate:"",status:"Shot",postDate:"",postTime:"",notes:"",editedOn:"",createdAt:now+i,rawLink:"",rawPath:"",by:S.me||""},true));
+    dl.close();render();toast(`Added ${L.length} community post${L.length===1?"":"s"}`)}
+  function planBlock(){const P=plans(),t=today(),cur=planFor(t);
+    const rows=P.length?`<div class="plan head"><span>Starts</span><span>Ends (optional)</span><span>Times</span><span></span><span></span></div>`+P.map((p,i)=>`<div class="plan">
+      <input type="date" value="${p.from}" data-plan="${i}" data-pf="from" aria-label="Starts on" title="Starts on">
+      <input type="date" value="${p.to||""}" data-plan="${i}" data-pf="to" aria-label="Ends on" title="Ends on (leave empty for no end)">
+      <input type="text" value="${esc((p.times||[]).map(fmtT).join(", "))}" data-plan="${i}" data-pf="times" aria-label="Posting times" placeholder="12:00 PM, 8:00 PM">
+      <span class="cnt">${(p.times||[]).length} a day${p===cur?` <span class="tag">now</span>`:""}${p.to?` <span class="tag${p.to<t?"":" tmp"}">${p.to<t?"Ended":p.from===p.to?"One day":"Until "+esc(nice(p.to))}</span>`:""}</span>
+      ${viewOnly()?"<span></span>":`<button class="btn small ghost" data-act="rmPlan" data-i="${i}">Remove</button>`}</div>`).join(""):`<p class="sub">No community plan yet. Add one to get daily slots, or use “+ Extra slot” on a day.</p>`;
+    return `<details class="comm-plan"${P.length&&!S.commPlanOpen?"":" open"}><summary>Community plan${P.length?` · ${esc((cur.times||[]).map(fmtT).join(", ")||"no posts")} a day`:""}</summary>
+      <p class="sub">Community post times per day, separated by commas. Add an end date for a one-off change.</p>${rows}
+      ${viewOnly()?"":`<button class="btn small" data-act="addPlan">${P.length?"Add a plan change":"Add a plan"}</button>`}</details>`}
+  document.addEventListener("toggle",e=>{if(e.target&&e.target.classList&&e.target.classList.contains("comm-plan"))S.commPlanOpen=e.target.open},true);
+  document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest('[data-act="commNew"]');if(!b)return;e.preventDefault();open()});
+  return {open,planBlock};
 })();
 
 })();
