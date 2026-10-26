@@ -4027,10 +4027,10 @@ function canAssign(){return isAdm()||isReviewer()}
 function canSelfAsg(){return !PRIME&&isEdAcct()}   // Hamza picks his own edits
 const SELF_OK=v=>!!v&&!["Posted","Scheduled","Ready","Approved","In review"].includes(v.status);
 function editorsList(){return PRIME?[...PRIME_TEAM]:[ADMIN,...EDITORS,...MEMBERS]}
-function asgOf(v){const a=String(v&&v.assignee||"").toLowerCase();return a&&a!==ADMIN?a:""}
+function asgOf(v){return String(v&&(v.assignee||(v.status==="Editing"&&v.editBy)||"")||"").toLowerCase()}   // "" = nobody yet; whoever started editing counts as on it   // "" = not assigned to anyone yet
 function nameOf(u){const n=dispName(u)||u;return n.charAt(0).toUpperCase()+n.slice(1)}
 function asgCtl(v){const a=asgOf(v);
-  if(canAssign())return `<select class="asg${a?" set":""}" data-asg="${v.id}" aria-label="Who edits this">${editorsList().map(u=>`<option value="${u===ADMIN?"":esc(u)}"${(u===ADMIN?!a:a===u)?" selected":""}>${u===ADMIN?"✎ "+esc(nameOf(u)):"→ "+esc(nameOf(u))}</option>`).join("")}</select>`;
+  if(canAssign())return `<select class="asg${a?" set":""}" data-asg="${v.id}" aria-label="Who edits this"><option value=""${a?"":" selected"}>Not assigned</option>${editorsList().map(u=>`<option value="${esc(u)}"${a===u?" selected":""}>→ ${u===S.me?"Me":esc(nameOf(u))}</option>`).join("")}</select>`;
   if(canSelfAsg()){
     if(a===S.me)return `<span class="tag asg-tag me">Assigned to you</span>${SELF_OK(v)&&v.status!=="Editing"?`<button class="btn small ghost asg-self" data-act="asgDrop" data-id="${v.id}" title="Give it back so someone else can edit it">Give back</button>`:""}`;
     if(!a&&SELF_OK(v))return `<button class="btn small asg-self" data-act="asgSelf" data-id="${v.id}" title="Put your name on it and edit it">＋ I’ll edit this</button>`}
@@ -4039,7 +4039,7 @@ document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest
   const v=S.videos[b.dataset.id];if(!v)return;const a=asgOf(v);
   if(b.dataset.act==="asgSelf"){if(a&&a!==S.me){toast(`${nameOf(a)} already has this one`);return}if(!SELF_OK(v))return;
     putVideo({...v,assignee:S.me,assignedBy:S.me,assignedAt:Date.now()});toast(`“${v.title||"Untitled"}” is yours. It’s in Your edits`)}
-  else{if(a!==S.me)return;putVideo({...v,assignee:"",assignedBy:S.me,assignedAt:Date.now()});toast(`Given back to ${nameOf(ADMIN)}`)}});
+  else{if(a!==S.me)return;putVideo({...v,assignee:"",assignedBy:S.me,assignedAt:Date.now()});toast("Given back. It’s not assigned to anyone now")}});
 function asgTag(v){const a=asgOf(v);return a?`<span class="tag asg-tag${a===S.me?" me":""}" title="Edited by ${esc(nameOf(a))}">${a===S.me?"You":esc(nameOf(a))}</span>`:""}
 function roleName(u){return u===ADMIN?"Admin":reviewers().includes(u)?"Reviewer":isEdAcct(u)?"Editor":isMember(u)?"Member":VIEW_ONLY.includes(u)?"View only":"Member"}
 // the name this member goes by in the Away plan team list
@@ -6644,23 +6644,24 @@ function myEditsPanel(){if(!helperAcct())return "";const L=vids().filter(v=>asgO
 function teamWorkCard(){if(!canAssign())return "";
   const live=v=>EDIT_POOL.includes(v.status)||v.status==="In review"||v.status==="Approved"||(v.status==="Ready"&&v.approvedAt&&!safeUrl(v.finalLink));
   const owner=vOwner;
-  const people=editorsList().map(u=>{const mine=v=>PRIME?owner(v)===u:(u===ADMIN?!asgOf(v):asgOf(v)===u);
-    const L=vids().filter(v=>mine(v)&&(u===ADMIN?["Editing","In review","Re-edit","Approved"].includes(v.status):live(v)))
+  const people=editorsList().map(u=>{const mine=v=>PRIME?owner(v)===u:asgOf(v)===u;
+    const L=vids().filter(v=>mine(v)&&live(v))
       .sort((a,b)=>({Editing:0,"Re-edit":1,Shot:2,Pending:2,"Not started":2,"In review":3,Approved:4,Ready:4}[a.status]??5)-({Editing:0,"Re-edit":1,Shot:2,Pending:2,"Not started":2,"In review":3,Approved:4,Ready:4}[b.status]??5));
     return {u,L}});
-  if(!people.some(p=>p.L.length)&&!people.slice(1).some(p=>vids().some(v=>asgOf(v)===p.u)))return "";
+  const open=PRIME?0:vids().filter(v=>!asgOf(v)&&EDIT_POOL.includes(v.status)).length;
+  if(!people.some(p=>p.L.length)&&!open)return "";
   const col=({u,L})=>{const ed=L.filter(v=>v.status==="Editing"),wait=L.filter(v=>["Shot","Pending","Not started","Re-edit"].includes(v.status)),rv=L.filter(v=>v.status==="In review");
     return `<div class="tw-col"><div class="tw-h">${avatar(u,30)}<b>${esc(nameOf(u))}</b><span>${ed.length?`<em class="on">Editing</em>`:L.length?"":`<em>Free</em>`}</span></div>
       <div class="tw-n"><span><b>${ed.length}</b>editing</span><span><b>${wait.length}</b>to start</span><span><b>${rv.length}</b>in review</span></div>
       ${L.slice(0,6).map(v=>`<div class="tw-v"><i style="background:${SC[v.status]||"#888"}"></i><span><b>${esc(v.title||"Untitled")}</b><small>${esc(v.status)}${v.postDate?" · posts "+esc(niceW(v.postDate)):""}</small></span>${v.status==="Editing"?editTimer(v):""}</div>`).join("")}
       ${L.length>6?`<p class="tw-more">and ${L.length-6} more</p>`:""}</div>`};
-  return `<section class="panel tw"><div class="phead"><h2>Who’s editing what</h2><div class="pactions"><button class="btn small ghost" data-act="goTab" data-tab-go="order">Edit order</button></div></div><div class="tw-grid">${people.map(col).join("")}</div></section>`}
+  return `<section class="panel tw"><div class="phead"><h2>Who’s editing what</h2><div class="pactions"><button class="btn small ghost" data-act="goTab" data-tab-go="order">Edit order</button></div></div><div class="tw-grid">${people.map(col).join("")}</div>${open?`<p class="tw-more">${open} video${open===1?"":"s"} not assigned to anyone yet</p>`:""}</section>`}
 // Edit order filter: everyone, or one editor's videos (yours shows as "Mine")
 // who is on a video: the assignment first; in Prime also whoever is editing it or sent the draft
 function vOwner(v){return asgOf(v)||(PRIME?(v.editedBy||v.editBy||(v.draft&&v.draft.by)||""):"")||ADMIN}
-function edShow(v){const f=S.edWho||"all";if(f==="all")return true;if(PRIME)return vOwner(v)===f;return f===ADMIN?!asgOf(v):asgOf(v)===f}
-function edWhoChips(list){const f=S.edWho||"all",n=u=>list.filter(x=>PRIME?vOwner(x.v)===u:(u===ADMIN?!asgOf(x.v):asgOf(x.v)===u)).length;
-  return `<div class="ed-who" role="group" aria-label="Show"><button class="fchip" data-act="edWho" data-w="all" aria-pressed="${f==="all"}">All <em>${list.length}</em></button>${editorsList().map(u=>`<button class="fchip" data-act="edWho" data-w="${esc(u)}" aria-pressed="${f===u}">${u===S.me?"Mine":esc(nameOf(u))} <em>${n(u)}</em></button>`).join("")}</div>`}
+function edShow(v){const f=S.edWho||"all";if(f==="all")return true;if(PRIME)return vOwner(v)===f;return f==="none"?!asgOf(v):asgOf(v)===f}
+function edWhoChips(list){const f=S.edWho||"all",n=u=>list.filter(x=>PRIME?vOwner(x.v)===u:asgOf(x.v)===u).length,none=PRIME?0:list.filter(x=>!asgOf(x.v)).length;
+  return `<div class="ed-who" role="group" aria-label="Show"><button class="fchip" data-act="edWho" data-w="all" aria-pressed="${f==="all"}">All <em>${list.length}</em></button>${editorsList().map(u=>`<button class="fchip" data-act="edWho" data-w="${esc(u)}" aria-pressed="${f===u}">${u===S.me?"Mine":esc(nameOf(u))} <em>${n(u)}</em></button>`).join("")}${PRIME?"":`<button class="fchip" data-act="edWho" data-w="none" aria-pressed="${f==="none"}">Not assigned <em>${none}</em></button>`}</div>`}
 function tripShown(){const a=editTrip();if(S.tripOpen!=null)return !!S.tripOpen;return !!a&&roleOf(a)==="edit"&&a.from<=addDays(today(),1)&&a.to>=today()}
 function tripPanel(){
   const a=editTrip();if(!a)return "";
@@ -6700,7 +6701,7 @@ function tripDays(a){const ro=viewOnly(),P=a.perDays||{},out=[];
     out.push(`<label class="tp-dn${n?"":" zero"}${set?" set":""}${d===today()?" now":""}" title="${esc(niceW(d))}"><small>${WD[dt.getDay()]}</small><span>${dt.getDate()} ${MON[dt.getMonth()]}</span>${ro?`<b>${n}</b>`:`<input type="number" min="0" max="20" inputmode="numeric" value="${n}" data-tripday="${d}" data-trip="${a.id}" aria-label="${esc(editorName())} edits on ${esc(niceW(d))}">`}</label>`)}
   return `<div class="tp-days"><p class="tp-dl"><b>${esc(editorName())} edits each day</b><span>${ro?"Set by "+esc(editorName())+".":"Change any day. 0 means no editing that day; the team takes the rest."}</span></p><div class="tp-dgrid">${out.join("")}</div></div>`}
 document.addEventListener("change",e=>{const t=e.target;if(!t||!t.dataset||!t.dataset.asg||!canAssign())return;const v=S.videos[t.dataset.asg];if(!v)return;const a=t.value||"";if(asgOf(v)===a)return;
-  putVideo({...v,assignee:a,assignedBy:S.me||"",assignedAt:Date.now()});toast(a?`Assigned to ${nameOf(a)}. They get a notification`:`Back with ${nameOf(ADMIN)}`)},true);
+  putVideo({...v,assignee:a,assignedBy:S.me||"",assignedAt:Date.now()});toast(!a?"Not assigned to anyone":a===S.me?"Assigned to you":`Assigned to ${nameOf(a)}. They get a notification`)},true);
 document.addEventListener("change",e=>{const t=e.target;if(!t||!t.dataset||!t.dataset.tripday||viewOnly())return;const id=t.dataset.trip,d=t.dataset.tripday,n=Math.max(0,Math.min(20,Math.round(+t.value||0)));
   S.settings.away=(S.settings.away||[]).map(x=>x.id===id?{...x,perDays:{...(x.perDays||{}),[d]:n}}:x);putSettings();render();toast(n?`${editorName()} edits ${n} on ${niceW(d)}`:`No editing by ${editorName()} on ${niceW(d)}`)},true);
 // today's and tomorrow's edits during the trip, on the Overview for everyone
@@ -6945,7 +6946,7 @@ function alertKind(v){
   // a scheduled post that went live on its own in the last 12 hours: tell everyone once
   if(v.status==="Posted"&&v.autoPosted&&v.autoPostedAt&&Date.now()-v.autoPostedAt<12*3600e3)return "posted";
   if(v.status==="In review"&&isReviewer()&&!(PRIME&&v.editedBy===S.me))return "review";
-  if(asgOf(v)===S.me&&["Shot","Pending","Not started"].includes(v.status))return "assigned";
+  if(asgOf(v)===S.me&&v.assignedBy!==S.me&&["Shot","Pending","Not started"].includes(v.status))return "assigned";
   if(["Approved","Ready","Re-edit"].includes(v.status)&&!editsMine(v))return isReadyPost(v)&&isPoster()?"ready":null;
   if((v.status==="Approved"||(v.status==="Ready"&&v.approvedAt))&&!safeUrl(v.finalLink)&&isEditor()&&!(v.finalPending&&Date.now()-v.finalPending<180000))return "approved";
   if(v.status==="Re-edit"&&isEditor())return "reedit";
@@ -7127,7 +7128,7 @@ function setStatusFlow(v,st){
     openUp(v.id,"final");return}
   if(PRIME&&isReviewer()&&["Shot","Editing","Pending","Posted","Scheduled"].includes(st)&&v.status!=="In review"){
     if(st==="Editing"&&v.status!=="Editing"){const others=vids().filter(o=>o.id!==v.id&&o.status==="Editing"&&!isPausedV(o)&&timerMine(o));others.forEach(o=>pauseVideo(o,true))}
-    putVideo(st==="Editing"?{...withStatus(v,st),editBy:S.me||""}:withStatus(v,st));celebrate(v.id,st);return}
+    putVideo(st==="Editing"?{...withStatus(v,st),editBy:S.me||"",...(v.assignee?{}:{assignee:S.me||"",assignedBy:S.me||""})}:withStatus(v,st));celebrate(v.id,st);return}
   if(st==="Editing"&&v.status!=="Editing"){const mine=timerMine;const others=vids().filter(o=>o.id!==v.id&&o.status==="Editing"&&!isPausedV(o)&&mine(o));if(others.length){others.forEach(o=>pauseVideo(o,true));setTimeout(()=>toast(`Paused the timer on “${others[0].title||"Untitled"}”${others.length>1?` and ${others.length-1} more`:""} while you work on this one`),600)}}
   if(!isReviewer()&&["Ready","Scheduled","Approved","In review"].includes(v.status)&&["Editing","Shot","Pending"].includes(st)){askEditorReedit(v,st);return}
   const wantsDone=["Ready","In review","Edited"].includes(st);
@@ -7136,7 +7137,7 @@ function setStatusFlow(v,st){
   if(wantsDone&&isReviewer()&&v.status==="In review"){approveVideo(v);return}
   if(st==="Ready"&&(v.status==="Approved"||v.status==="Ready")){if(safeUrl(v.finalLink)){putVideo(withStatus(v,"Ready"));celebrate(v.id,"Ready")}else askLink(v.id);return}
   if(wantsDone&&v.status!=="Approved"&&v.status!=="Ready"&&v.status!=="Scheduled"&&v.status!=="Posted"){sendForReview(v);return}
-  putVideo(st==="Editing"?{...withStatus(v,st),editBy:S.me||""}:withStatus(v,st));celebrate(v.id,st);
+  putVideo(st==="Editing"?{...withStatus(v,st),editBy:S.me||"",...(v.assignee?{}:{assignee:S.me||"",assignedBy:S.me||""})}:withStatus(v,st));celebrate(v.id,st);
 }
 function bulkStatus(v,st){
   if(["Ready","In review","Edited"].includes(st)&&!["Approved","Ready","Posted"].includes(v.status))return {...withStatus(v,"In review"),round:nextRound(v),submittedAt:Date.now(),editedBy:S.me||""};
