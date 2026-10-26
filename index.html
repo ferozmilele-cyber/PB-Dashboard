@@ -7429,6 +7429,9 @@ function moveInd(){
 }
 window.addEventListener("resize",moveInd);
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(moveInd);
+// re-measure whenever a tab changes size (badges like the Raw footage count appear after the first paint)
+if(window.ResizeObserver){let rT=0;const ro=new ResizeObserver(()=>{cancelAnimationFrame(rT);rT=requestAnimationFrame(()=>{const i=document.querySelector("nav.tabs .tab-ind");if(i)i.dataset.t=Date.now();moveInd()})});
+  const nav=document.querySelector("nav.tabs");if(nav){ro.observe(nav);nav.querySelectorAll("button").forEach(b=>ro.observe(b))}}
 
 /* ---------- glass hover previews on the menu ---------- */
 function popContent(tab){
