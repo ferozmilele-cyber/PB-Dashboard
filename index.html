@@ -2361,6 +2361,7 @@ dialog.shr-dlg{width:min(560px,calc(100vw - 32px))}
 .shr-msg{margin:2px 0 0;font-size:13px;color:var(--ink);font-style:italic}
 .shr-a{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
 .shr-grid{margin-top:12px}
+.shr-b span{margin-left:4px}.openlink.shr-b{display:inline-flex;align-items:center}
 @media (max-width:600px){.shr-top{grid-template-columns:52px minmax(0,1fr)}.shr-th{width:52px;height:52px}.shr-a{grid-column:1/-1;justify-content:flex-start}}
 
 /* ===== v129: Asset library ===== */
@@ -3812,7 +3813,8 @@ function folderChip(s,v){
 }
 function carMix(c){const vids=(c&&c.items||[]).filter(x=>/\.(mp4|mov|m4v|webm|avi|mkv)$/i.test(x.name||"")).length,n=(c&&c.count)||0,ph=Math.max(0,n-vids);
   return [ph?`${ph} ${ph===1?"photo":"photos"}`:"",vids?`${vids} ${vids===1?"video":"videos"}`:""].filter(Boolean).join(" + ")||`${n} files`}
-function carView(v,cls){return isCar(v)&&v.car&&v.car.folderId?`<button type="button" class="${cls||"openlink"} car-view" data-act="viewCar" data-id="${v.id}" title="See ${esc(carMix(v.car))}">View ${esc(carMix(v.car))}</button>`:""}
+function carView(v,cls){const h=carView0(v,cls);return h?h+(safeUrl(v.finalLink)?"":shrBtn(v,cls)):h}
+function carView0(v,cls){return isCar(v)&&v.car&&v.car.folderId?`<button type="button" class="${cls||"openlink"} car-view" data-act="viewCar" data-id="${v.id}" title="See ${esc(carMix(v.car))}">View ${esc(carMix(v.car))}</button>`:""}
 // with SharePoint uploads, links aren't typed by hand any more: the final opens, or the draft until the final is saved
 function draftBtn(v,cls,lbl){return !isCar(v)&&v.draft&&spOn()?`<button type="button" class="${cls||"openlink"}" data-act="viewDraft" data-id="${v.id}" title="Watch the uploaded draft${v.draft.round>1?", round "+v.draft.round:""}">${lbl||"Open draft"}</button>`:""}
 function linkChip(v){
@@ -3856,7 +3858,9 @@ function safeUrl(u){u=String(u||"").trim();return /^https?:\/\//i.test(u)?u:""}
 function openLink(v,label){const u=safeUrl(v.finalLink);return u?`<a class="openlink" href="${esc(u)}" data-prev="${v.id}" target="_blank" rel="noopener noreferrer">${label||"Open final video"}</a>`:""}
 /* ---------- PB Downloader: sends a video's link to the downloader app running on this PC ---------- */
 const PBD="http://localhost:8765";
-function dlBtn(v,cls){return safeUrl(v.finalLink)?`<button class="${cls||"openlink"} dl-lnk" data-act="dlVideo" data-id="${v.id}" title="Download to this PC with PB Downloader" aria-label="Download"><svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10.5l5 5 5-5M5 20h14"/></svg></button>`:""}
+function shrBtn(v,cls){return rawSafe(()=>SHR.can(v))?`<button class="${cls||"openlink"} shr-b" data-act="shrOpen" data-id="${v.id}" title="Send the final ${isCar(v)?"photos":"video"} to a teammate" aria-label="Share"><svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 3 10 14M21 3l-7 18-4-7-7-4z"/></svg><span>Share</span></button>`:""}
+function dlBtn(v,cls){return dlBtn0(v,cls)+shrBtn(v,cls)}
+function dlBtn0(v,cls){return safeUrl(v.finalLink)?`<button class="${cls||"openlink"} dl-lnk" data-act="dlVideo" data-id="${v.id}" title="Download to this PC with PB Downloader" aria-label="Download"><svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10.5l5 5 5-5M5 20h14"/></svg></button>`:""}
 async function sendToDownloader(v,btn){
   const u=safeUrl(v.finalLink);if(!u)return;
   if(isSpUrl(u)){if(btn){btn.disabled=true;btn.classList.add("busy")}const ok=await spDownload(u,v.title,v.final||v.car||null);if(btn){btn.disabled=false;btn.classList.remove("busy");if(ok){btn.classList.add("sent");setTimeout(()=>btn.classList.remove("sent"),1800)}}return}
@@ -4082,7 +4086,7 @@ function mayWrite(id){return isEdAcct()||(isMember()&&myVideos().has(id))}
 function timerMine(o){if(isMember())return myVideos().has(o.id);if(isEdAcct())return o.editBy===S.me||myVideos().has(o.id);
   return !teamOwned().has(o.id)&&!(o.editBy&&o.editBy!==S.me&&helperAcct(o.editBy))&&!(asgOf(o)&&helperAcct(asgOf(o)))}
 let voT=0;function voNote(){if(Date.now()-voT<2500)return;voT=Date.now();toast(isEdAcct()?"You can change the video status on Edit order and Posting schedule":isMember()?"You can change the status of the videos assigned to you":PRIME?"View only. Ask Waleed or Dorota to make changes":"View only. Ask Shibli or Zain to make changes")}
-const VIEW_OK=new Set(["shrView","shrDl","shrHide","shrSignin","asgSelf","asgDrop","rawUp","rawSkip","rawDay","rawBack","rawRefresh","rawSignin","rawZip","rawEach","asCat","asOpenSet","asBack","asRefresh","asSignin","asUpload","asView","asPlay","asDl","asDel","asDlAll","asDelSet","wsSwitch","musListen","musLink","musClear","musJob","edWho","viewDraft","viewCar","tripGo","tripOpen","tripWho","tripCopy","copy","days","dialBack","dialTry","dialType","dlBackup","fclear","ffmt","fnolink","fnopil","fsched","fst","goShoots","goTab","grpToggle","histView","hrange","ideaArch","ideaCopy","ideaPil","ideaType","mExport","mOut","mday","mnav","more","newWin","openCmd","osnOn","osnTest","ovGo","ovMode","ovStatus","plByDay","plMode","playWrapped","printSum","rowMore","schedToday","shView","sumMode","sview","testAlert","vaultLock","vaultOpen","vcopy","viewScript","vshow","clearSel","chpw","freshLoad"]);
+const VIEW_OK=new Set(["shrOpen","shrView","shrDl","shrHide","shrSignin","asgSelf","asgDrop","rawUp","rawSkip","rawDay","rawBack","rawRefresh","rawSignin","rawZip","rawEach","asCat","asOpenSet","asBack","asRefresh","asSignin","asUpload","asView","asPlay","asDl","asDel","asDlAll","asDelSet","wsSwitch","musListen","musLink","musClear","musJob","edWho","viewDraft","viewCar","tripGo","tripOpen","tripWho","tripCopy","copy","days","dialBack","dialTry","dialType","dlBackup","fclear","ffmt","fnolink","fnopil","fsched","fst","goShoots","goTab","grpToggle","histView","hrange","ideaArch","ideaCopy","ideaPil","ideaType","mExport","mOut","mday","mnav","more","newWin","openCmd","osnOn","osnTest","ovGo","ovMode","ovStatus","plByDay","plMode","playWrapped","printSum","rowMore","schedToday","shView","sumMode","sview","testAlert","vaultLock","vaultOpen","vcopy","viewScript","vshow","clearSel","chpw","freshLoad"]);
 const VIEW_FIELDS=["live","plr","sumr","ovr","opt"];
 // Waleed and Hamza also use PB Downloader and the editing timer
 const HELPER_OK=new Set(["startEdit","dlAdd","dlDo","dlQ","dlCk","dlClear","dlRetry","dlVideo","pauseEdit","resumeEdit","pauseAll","resumeAll","upDraft"]);
@@ -9345,6 +9349,7 @@ const SHR=(()=>{
   function paint(){const c=document.getElementById("shrCard");if(c&&S.tab==="overview")c.outerHTML=card();
     mine().forEach(s=>{if(msAccount()&&!AS.st.cache["share:"+s.id]&&!s._loading){s._loading=1;load(s).then(()=>{const c2=document.getElementById("shrCard");if(c2&&S.tab==="overview")c2.outerHTML=card()}).catch(()=>{})}})}
   document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-act^='shr']");if(!b)return;e.preventDefault();const a=b.dataset.act,sid=b.dataset.sid;
+    if(a==="shrOpen"){const v=S.videos[b.dataset.id];if(v)open(v);return}
     if(a==="shrView"){const s=st.list.find(x=>x.id===sid);if(s&&s.kind==="carousel"&&st.open[sid]){st.open[sid]=false;paint()}else view(sid)}
     else if(a==="shrDl")dlAll(sid);
     else if(a==="shrHide"){const h=rd(HIDE_K);h.add(sid);wr(HIDE_K,h);paint()}
