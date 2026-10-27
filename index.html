@@ -2324,6 +2324,9 @@ body.prime [data-tab="raw"],body.prime [data-tab-go="raw"],body.prime #rwCard{di
 .rw-wm{min-width:0;display:grid;gap:2px}.rw-wm b{font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rw-wm small{font-size:12.5px;color:var(--muted)}
 .asg-self{margin-left:6px;white-space:nowrap}
 body.viewonly #main .asg-self{display:inline-flex!important;pointer-events:auto!important;visibility:visible!important}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.sched-go{display:flex;align-items:center;gap:6px}.sched-date input{height:34px;border:1px solid var(--line);border-radius:999px;padding:0 12px;font:inherit;font-size:13px;background:rgba(255,255,255,.75);color:var(--ink)}
+.sday.past .slot.empty{opacity:.75}
 .rw-dt{display:none}
 .rw-wa{display:flex;align-items:center;gap:6px}.rw-who{font-size:12.5px;font-weight:600;color:var(--muted)}
 .rw-to{font-size:13px;color:var(--muted);margin:0 0 12px;padding:10px 12px;border-radius:12px;background:rgba(12,14,8,.04);overflow-wrap:anywhere}.rw-to b{color:var(--ink)}
@@ -3124,6 +3127,7 @@ dialog.ig-dlg{width:min(860px,96vw)}
 :root[data-theme="dark"] .shr-row,:root[data-theme="dark"] .shr-p{background:rgba(255,255,255,.04)!important;border-color:var(--line)!important}
 :root[data-theme="dark"] .shr-p.on{background:var(--lime)!important;color:#0B0B0C!important}
 :root[data-theme="dark"] .shr-note textarea{background:var(--d-field)!important;border-color:var(--d-line2)!important;color:var(--ink)!important}
+:root[data-theme="dark"] .sched-date input{background:var(--d-field)!important;border-color:var(--d-line2)!important;color:var(--ink)!important}
 
 /* ================================================================
    iPHONE — minimal layer (v82)
@@ -4086,8 +4090,8 @@ function mayWrite(id){return isEdAcct()||(isMember()&&myVideos().has(id))}
 function timerMine(o){if(isMember())return myVideos().has(o.id);if(isEdAcct())return o.editBy===S.me||myVideos().has(o.id);
   return !teamOwned().has(o.id)&&!(o.editBy&&o.editBy!==S.me&&helperAcct(o.editBy))&&!(asgOf(o)&&helperAcct(asgOf(o)))}
 let voT=0;function voNote(){if(Date.now()-voT<2500)return;voT=Date.now();toast(isEdAcct()?"You can change the video status on Edit order and Posting schedule":isMember()?"You can change the status of the videos assigned to you":PRIME?"View only. Ask Waleed or Dorota to make changes":"View only. Ask Shibli or Zain to make changes")}
-const VIEW_OK=new Set(["shrOpen","shrView","shrDl","shrHide","shrSignin","asgSelf","asgDrop","rawUp","rawSkip","rawDay","rawBack","rawRefresh","rawSignin","rawZip","rawEach","asCat","asOpenSet","asBack","asRefresh","asSignin","asUpload","asView","asPlay","asDl","asDel","asDlAll","asDelSet","wsSwitch","musListen","musLink","musClear","musJob","edWho","viewDraft","viewCar","tripGo","tripOpen","tripWho","tripCopy","copy","days","dialBack","dialTry","dialType","dlBackup","fclear","ffmt","fnolink","fnopil","fsched","fst","goShoots","goTab","grpToggle","histView","hrange","ideaArch","ideaCopy","ideaPil","ideaType","mExport","mOut","mday","mnav","more","newWin","openCmd","osnOn","osnTest","ovGo","ovMode","ovStatus","plByDay","plMode","playWrapped","printSum","rowMore","schedToday","shView","sumMode","sview","testAlert","vaultLock","vaultOpen","vcopy","viewScript","vshow","clearSel","chpw","freshLoad"]);
-const VIEW_FIELDS=["live","plr","sumr","ovr","opt"];
+const VIEW_OK=new Set(["schedPrev","shrOpen","shrView","shrDl","shrHide","shrSignin","asgSelf","asgDrop","rawUp","rawSkip","rawDay","rawBack","rawRefresh","rawSignin","rawZip","rawEach","asCat","asOpenSet","asBack","asRefresh","asSignin","asUpload","asView","asPlay","asDl","asDel","asDlAll","asDelSet","wsSwitch","musListen","musLink","musClear","musJob","edWho","viewDraft","viewCar","tripGo","tripOpen","tripWho","tripCopy","copy","days","dialBack","dialTry","dialType","dlBackup","fclear","ffmt","fnolink","fnopil","fsched","fst","goShoots","goTab","grpToggle","histView","hrange","ideaArch","ideaCopy","ideaPil","ideaType","mExport","mOut","mday","mnav","more","newWin","openCmd","osnOn","osnTest","ovGo","ovMode","ovStatus","plByDay","plMode","playWrapped","printSum","rowMore","schedToday","shView","sumMode","sview","testAlert","vaultLock","vaultOpen","vcopy","viewScript","vshow","clearSel","chpw","freshLoad"]);
+const VIEW_FIELDS=["live","plr","sumr","ovr","opt","schedgo"];
 // Waleed and Hamza also use PB Downloader and the editing timer
 const HELPER_OK=new Set(["startEdit","dlAdd","dlDo","dlQ","dlCk","dlClear","dlRetry","dlVideo","pauseEdit","resumeEdit","pauseAll","resumeAll","upDraft"]);
 function isViewField(el){const d=el&&el.dataset||{};return VIEW_FIELDS.some(k=>k in d)||el.type==="search"||!!(el.closest&&el.closest("#login,#cmd,.tpw,.vault-form"))||!!(helperAcct()&&el.closest&&el.closest(".dl-panel"))||!!(el.closest&&el.closest(".mus-panel,#musDlg"))}
@@ -4836,7 +4840,7 @@ function vSchedule(){
     const all=[...TR.map(tm=>({tm,k:"R"})),...TC.map(tm=>({tm,k:"C"}))].sort((a,b)=>a.tm.localeCompare(b.tm)||(a.k<b.k?1:-1));
     const parts=all.map(({tm,k})=>{
       const pool=k==="C"?cars:reels;const here=pool.filter(v=>v.postTime===tm);
-      if(!here.length)return {tm,k,html:d<t?"":emptyRow(d,tm,k)};
+      if(!here.length)return {tm,k,html:emptyRow(d,tm,k)};   // past days can be filled in too
       return here.map(v=>{const same=castOf(v).filter(n=>items.some(o=>o!==v&&castOf(o).includes(n)));
         const req=k==="R"?slotPillar(d,tm):null;
         return row(v,d,tm,fmtT(tm),k,(v.shotDate&&pool.some(o=>o!==v&&o.shotDate===v.shotDate)?`<span class="tag warn">Same shoot day</span>`:"")+(same.length?`<span class="tag warn">${esc(same.map(n=>n.charAt(0).toUpperCase()+n.slice(1)).join(", "))} twice today</span>`:""))}).join("");
@@ -4848,7 +4852,7 @@ function vSchedule(){
     const fR=TR.filter(tm=>reels.some(v=>v.postTime===tm)).length,fC=TC.filter(tm=>cars.some(v=>v.postTime===tm)).length;
     html+=`<div class="card sday${d<t?" past":""}" id="day-${d}"><header><h3>${d===t?"Today":d===addDays(t,1)?"Tomorrow":d===addDays(t,-1)?"Yesterday":esc(niceW(d))}</h3>
       ${TR.length?`<span class="count${fR<TR.length&&d>=t?" low":""}" title="Reels">${fR}/${TR.length}</span>`:""}
-      ${TC.length?`<span class="count car${fC<TC.length&&d>=t?" low":""}" title="Carousels">${fC}/${TC.length} carousel</span>`:""}${d>=t?`<button class="btn small ghost addslot" data-act="addSlot" data-d="${d}">+ Extra slot</button>`:""}</header>${slots||(d<t?`<div class="carou">Nothing posted</div>`:"")}${extra}</div>`;
+      ${TC.length?`<span class="count car${fC<TC.length&&d>=t?" low":""}" title="Carousels">${fC}/${TC.length} carousel</span>`:""}${true?`<button class="btn small ghost addslot" data-act="addSlot" data-d="${d}">+ Extra slot</button>`:""}</header>${slots||(d<t?`<div class="carou">Nothing posted</div>`:"")}${extra}</div>`;
   }
   return schedShell(free,(from!==t?`<div class="backbar"><span>From ${esc(niceW(from))}</span><button class="btn small" data-act="schedToday">Back to today</button></div>`:"")+html);
 }
@@ -4858,6 +4862,7 @@ function schedShell(free,body){
     <div class="phead"><h2>${inComm()?"Community":"Posting schedule"}</h2>
       <div class="pactions">${inComm()&&!viewOnly()?`<button class="btn small primary" data-act="commNew">＋ New post</button>`:""}
         <div class="seg" role="group" aria-label="View"><button data-act="sview" data-v="list" aria-pressed="${!month}">List</button><button data-act="sview" data-v="month" aria-pressed="${month}">Month</button></div>
+        ${month?"":`<div class="sched-go"><button class="btn small ghost" data-act="schedPrev" title="Show the week before">‹ Earlier</button><label class="sched-date" title="Jump to a date"><span class="sr-only">Go to date</span><input type="date" data-schedgo="1" value="${esc(schedFrom())}" aria-label="Go to date"></label></div>`}
         ${month?"":`<div class="seg" role="group" aria-label="Days shown">${[7,14,30].map(n=>`<button data-act="days" data-n="${n}" aria-pressed="${S.schedDays===n}">${n} days</button>`).join("")}</div>`}
         ${S.lastAuto&&S.lastAuto.length?`<button class="btn" data-act="undoAuto">Undo</button>`:""}
         <button class="shuffle" data-act="reshuffle">Reshuffle</button>
@@ -7552,6 +7557,7 @@ document.addEventListener("click",async e=>{
   else if(act==="repMode"){const m=b.dataset.m,cur=S.monthCursor||today().slice(0,7);if(m==="custom"&&!(S.repRange&&S.repRange.from)){const [a,z]=repRange(cur);S.repRange={mode:"custom",from:a,to:z}}else S.repRange={...(S.repRange||{}),mode:m};render()}
   else if(act==="mday"){const d=b.dataset.d;S.schedView="list";S.schedStart=d===today()?null:d;S.animate=true;render();window.scrollTo({top:0,behavior:"smooth"})}
   else if(act==="schedToday"){S.schedStart=null;render()}
+  else if(act==="schedPrev"){const d=addDays(schedFrom(),-7);S.schedStart=d;render()}
   else if(act==="newWin"){window.open(location.origin+location.pathname+"?view="+b.dataset.view,"_blank")}
   else if(act==="testNotify"){b.disabled=true;flush().then(()=>call("testNotify",token)).then(n=>toast(`Test email sent to ${n} address${n>1?"es":""}`)).catch(e=>toast(String(e&&e.message||"Couldn’t send").replace(/^Error: /,""))).finally(()=>{b.disabled=false})}
   else if(act==="testAlert"){const v={id:"demo",title:"Example: He sold 70 cars",format:"Reel",status:"Ready",finalLink:"https:\/\/example.com",postDate:today(),postTime:"18:00"};const old=document.getElementById("al-demo");if(old)old.remove();showAlert(v);chime()}
@@ -7747,6 +7753,7 @@ document.addEventListener("change",e=>{
   if(t.dataset.porder!=null){const O=[...(S.settings.pillarOrder||[])];O[+t.dataset.porder]=t.value;S.settings.pillarOrder=O;putSettings();render();return}
   if(t.dataset.plr){S.plRange={...(S.plRange||{mode:"custom"}),mode:"custom",[t.dataset.plr]:t.value};render();return}
   if(t.dataset.repr){S.repRange={...(S.repRange||{}),mode:"custom",[t.dataset.repr]:t.value};render();return}
+  if(t.dataset.schedgo){const d=t.value;if(!d)return;S.schedStart=d===today()?null:d;render();return}
   if(t.dataset.sumr){S.sumRange={...(S.sumRange||{}),mode:"custom",[t.dataset.sumr]:t.value};render();return}
   if(t.dataset.ovr){S.ovRange={...(S.ovRange||{}),mode:"custom",[t.dataset.ovr]:t.value};render();return}
   if(t.dataset.sset){S.settings[t.dataset.sset]=t.checked;putSettings();render();return}
