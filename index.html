@@ -2327,6 +2327,10 @@ body.viewonly #main .asg-self{display:inline-flex!important;pointer-events:auto!
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .sched-go{display:flex;align-items:center;gap:6px}.sched-date input{height:34px;border:1px solid var(--line);border-radius:999px;padding:0 12px;font:inherit;font-size:13px;background:rgba(255,255,255,.75);color:var(--ink)}
 .sday.past .slot.empty{opacity:.75}
+/* v143: Downloader-only account */
+body.dlonly nav.tabs,body.dlonly .mbar,body.dlonly #bellBtn,body.dlonly #searchBtn,body.dlonly #tasksBtn,body.dlonly #importBtn,body.dlonly #exportBtn,body.dlonly #wsBtn,body.dlonly [data-act="openAdd"],body.dlonly .od-pill,body.dlonly #alerts,body.dlonly #moreMenu [data-tab-go]{display:none!important}
+body.dlonly #meBtn{pointer-events:none}
+body.dlonly header.top h1::after{content:"Downloader"!important}
 .rw-dt{display:none}
 .rw-wa{display:flex;align-items:center;gap:6px}.rw-who{font-size:12.5px;font-weight:600;color:var(--muted)}
 .rw-to{font-size:13px;color:var(--muted);margin:0 0 12px;padding:10px 12px;border-radius:12px;background:rgba(12,14,8,.04);overflow-wrap:anywhere}.rw-to b{color:var(--ink)}
@@ -3941,7 +3945,9 @@ let token=null,since=0,pending=new Map(),inflight=new Map(),flushT=null,pollT=nu
 const FB_CONFIG={apiKey:"AIzaSyAb6oX0GBaUyMrOg4gktH3bOxrCYXupMrs",authDomain:"shoot-edit-board.firebaseapp.com",projectId:"shoot-edit-board",
   storageBucket:"shoot-edit-board.firebasestorage.app",messagingSenderId:"527953591815",appId:"1:527953591815:web:1bc8669fc95f109d7f34a2"};
 // sign-in email -> board username (keeps photos, reviewer, poster and all settings linked to the right person)
-const FB_TEAM={"muhammed.shibili@milele.com":"shibili","zain.ulabdin@milele.com":"zain","zain.nawaz@milele.com":"nawaz","waleed.farid@milele.com":"waleed","hamza.rajpoot@milele.com":"hamza","dorota.zeleszkiewicz@milele.com":"dorota"};
+const FB_TEAM={"muhammed.shibili@milele.com":"shibili","zain.ulabdin@milele.com":"zain","zain.nawaz@milele.com":"nawaz","waleed.farid@milele.com":"waleed","hamza.rajpoot@milele.com":"hamza","dorota.zeleszkiewicz@milele.com":"dorota","aman.danif@milele.com":"aman"};
+const DL_ONLY=["aman"];      // PB Downloader only: no board, no data, just the Downloader tab
+function dlOnly(u){return DL_ONLY.includes(u||S.me||"")}
 const VIEW_ONLY=["nawaz"];   // the manager: can see everything, can't change anything
 const MEMBERS=["waleed"];    // editors helping out: see everything, change only the videos assigned to them in the Away plan
 const EDITORS=["hamza"];     // editors: see everything, change video status on Edit order and Posting schedule, run the editing timer
@@ -4092,7 +4098,7 @@ function loadLocal(){try{const r=JSON.parse(localStorage.getItem("seb-free-demo"
 function isMember(u){if(PRIME)return false;u=String(u==null?S.me:u||"").toLowerCase();return !!u&&MEMBERS.some(n=>u===n||u.includes(n))}
 function isEdAcct(u){if(PRIME)return false;u=String(u==null?S.me:u||"").toLowerCase();return !!u&&EDITORS.some(n=>u===n||u.includes(n))}
 function helperAcct(u){return isMember(u)||isEdAcct(u)}   // Waleed and Hamza: the editing team besides Shibli
-function viewOnly(){if(PRIME)return !PRIME_TEAM.includes(S.me||"");return VIEW_ONLY.includes(S.me||"")||isMember()||isEdAcct()}
+function viewOnly(){if(dlOnly())return true;if(PRIME)return !PRIME_TEAM.includes(S.me||"");return VIEW_ONLY.includes(S.me||"")||isMember()||isEdAcct()}
 function canAssign(){return isAdm()||isReviewer()}
 function canSelfAsg(){return !PRIME&&isEdAcct()}   // Hamza picks his own edits
 const SELF_OK=v=>!!v&&!["Posted","Scheduled","Ready","Approved","In review"].includes(v.status);
@@ -4111,7 +4117,7 @@ document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest
     putVideo({...v,assignee:S.me,assignedBy:S.me,assignedAt:Date.now()});toast(`“${v.title||"Untitled"}” is yours. It’s in Your edits`)}
   else{if(a!==S.me)return;putVideo({...v,assignee:"",assignedBy:S.me,assignedAt:Date.now()});toast("Given back. It’s not assigned to anyone now")}});
 function asgTag(v){const a=asgOf(v);return a?`<span class="tag asg-tag${a===S.me?" me":""}" title="Edited by ${esc(nameOf(a))}">${a===S.me?"You":esc(nameOf(a))}</span>`:""}
-function roleName(u){return u===ADMIN?"Admin":reviewers().includes(u)?"Reviewer":isEdAcct(u)?"Editor":isMember(u)?"Member":VIEW_ONLY.includes(u)?"View only":"Member"}
+function roleName(u){return u===ADMIN?"Admin":reviewers().includes(u)?"Reviewer":isEdAcct(u)?"Editor":isMember(u)?"Member":VIEW_ONLY.includes(u)?"View only":DL_ONLY.includes(u)?"Downloader only":"Member"}
 // the name this member goes by in the Away plan team list
 function memberName(){const T=new Set();awayList().forEach(a=>tripTeam(a).forEach(n=>T.add(n)));const me=String(S.me||"").toLowerCase(),dn=String(dispName(S.me)||"").toLowerCase();
   return [...T].find(n=>{const l=n.toLowerCase();return l===dn||l===me||me.includes(l)||[...MEMBERS,...EDITORS].some(m=>me.includes(m)&&l.includes(m))})||""}
@@ -6024,6 +6030,7 @@ function rawSafe(f){try{return f()}catch(_){return ""}}
 function isTyping(){const a=document.activeElement;return a&&a.closest&&a.closest("#main")&&!a.dataset.live&&(a.tagName==="TEXTAREA"||(a.tagName==="INPUT"&&/^(text|number)$/.test(a.type)))}
 let VT_ON=false;
 function render(){
+  if(dlOnly()&&S.tab!=="downloader")S.tab="downloader";document.body.classList.toggle("dlonly",dlOnly());
   document.body.classList.toggle("viewonly",viewOnly());document.body.classList.toggle("member",isMember());document.body.classList.toggle("editor",isEdAcct());document.body.classList.toggle("helper",helperAcct());
   if(isTyping()||DIAL.busy||DIAL.trying||VT_ON||(typeof GX!=="undefined"&&GX.btn)||(typeof STM!=="undefined"&&STM.btn)){pendingRender=true;return}
   pendingRender=false;
@@ -7941,6 +7948,9 @@ async function startSession(t,user){
   if(helperAcct()&&!S.memberStart){S.memberStart=1;S.tab="order";S.tripOpen=true;setTimeout(()=>{const nm=memberName();if(nm){S.tripWho=nm;render()}},1500)}$("#sync").textContent="Loading…";
   S.me=String(user||"").toLowerCase();
 
+  if(dlOnly()){ // Downloader-only account: never loads the board
+    S.videos={};S.shoots={};S.scripts={};S.profiles={};S.ideas={};S.tab="downloader";loaded=true;document.body.classList.remove("fbloading");clearTimeout(window.__slowT);render();
+    $("#sync").textContent="Connected. You can use the PB Downloader here.";return}
   const fresh=cached&&cached.user===S.me&&cached.since&&Date.now()-(cached.savedAt||0)<5*86400e3;
   if(cached&&cached.user===S.me&&!loaded){S.videos={};S.shoots={};S.scripts={};S.profiles={};S.ideas={};CROWS.clear();cached.rows.forEach(applyDoc);restorePendingLocal();render();$("#sync").textContent="Updating…"}
   try{
