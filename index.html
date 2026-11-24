@@ -9693,8 +9693,25 @@ const KK=(()=>{
       <div id="kkBody">${body()}</div></section>`}
   function paint(){badge();const el=document.getElementById("kkPanel");if(el&&S.tab==="karak")el.outerHTML=panel(true)}
   function badge(){const b=document.querySelector('nav.tabs [data-tab="karak"]');if(!b)return;const n=canTake()&&AS.st.cache[root()]?filesOf(root()).length:0;let e=b.querySelector(".tab-n");if(!n){e&&e.remove();return}if(!e){e=document.createElement("em");e.className="tab-n";b.appendChild(e)}e.textContent=n}
-  // count new clips for Zain in the background every few minutes
-  setInterval(()=>{if(on()&&canTake()&&loaded&&spOn()&&MS.app&&msAccount()&&!document.hidden)AS.list(root(),true).then(()=>{badge();if(S.tab==="karak"&&st.view==="new")paint()}).catch(()=>{})},5*60000);
+  // Zain (and Shibli) get a pop-up when new clips land: checks on open and every 2 minutes
+  const SEEN_K="pb-kk-seen";
+  function seenSet(){try{return new Set(JSON.parse(localStorage.getItem(SEEN_K)||"null")||[])}catch(_){return new Set()}}
+  function check(){if(!(on()&&canTake()&&loaded&&spOn()))return;
+    msApp().then(()=>{if(!msAccount())return;return AS.list(root(),true).then(items=>{badge();if(S.tab==="karak"&&st.view==="new")paint();
+      const files=items.filter(x=>!x.folder),had=localStorage.getItem(SEEN_K)!=null,seen=seenSet(),fresh=files.filter(x=>!seen.has(x.id));
+      try{localStorage.setItem(SEEN_K,JSON.stringify(files.map(x=>x.id).concat([...seen]).slice(0,800)))}catch(_){}
+      if(!had||!fresh.length)return;notify(fresh)})}).catch(()=>{})}
+  function notify(L){const box=$("#alerts");if(!box)return;const by=[...new Set(L.map(x=>x.createdBy&&x.createdBy.user&&String(x.createdBy.user.displayName||"").split(" ")[0]).filter(Boolean))];
+    const old=document.getElementById("al-kk-new");if(old)old.remove();
+    const el=document.createElement("div");el.className="alert al-review al-shr";el.id="al-kk-new";el.setAttribute("role","alert");
+    el.innerHTML=`<div class="al-top"><span class="al-pill">Karak Collection</span><button class="al-x" data-kka="x" aria-label="Dismiss">×</button></div><b class="al-t">${L.length} new clip${L.length===1?"":"s"}</b>
+      <small>${by.length?esc(by.join(", "))+" uploaded":"Uploaded"} ${L.length===1?esc(L[0].name):"new car B-roll"}.</small>
+      <div class="al-btns"><button class="al-done" data-kka="x">Later</button><button class="al-open" data-kka="open">View clips</button></div>`;
+    const bar=box.querySelector(".al-bar");if(bar)bar.after(el);else box.prepend(el);try{alertsLayout()}catch(_){}try{chime()}catch(_){}
+    try{if(osOn()&&document.hidden)new Notification("Karak Collection",{body:`${L.length} new clip${L.length===1?"":"s"}${by.length?" from "+by.join(", "):""}`,icon:"icon-192.png",tag:"kk-new"})}catch(_){}}
+  document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-kka]");if(!b)return;const el=b.closest(".alert");if(b.dataset.kka==="open"){st.view="new";goTab("karak")}if(el)try{closeAlert(el)}catch(_){el.remove()}});
+  setTimeout(check,8000);setInterval(()=>{if(!document.hidden)check()},2*60000);
+  document.addEventListener("visibilitychange",()=>{if(!document.hidden)check()});
   document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-act^='kk']");if(!b)return;e.preventDefault();const a=b.dataset.act,id=b.dataset.id;
     if(a==="kkUp")openUp();else if(a==="kkTake")take(id);else if(a==="kkBack")putBack(id);
     else if(a==="kkSel"){st.sel.has(id)?st.sel.delete(id):st.sel.add(id);paint()}
