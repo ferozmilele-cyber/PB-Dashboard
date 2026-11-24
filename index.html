@@ -2351,8 +2351,17 @@ body.prime [data-tab="dubs"],body.prime [data-tab-go="dubs"]{display:none!import
 @media (max-width:600px){.dub-form{grid-template-columns:1fr}.dub-go .btn{width:100%}}
 dialog.dub-dlg{width:min(560px,calc(100vw - 32px))}
 body.dlonly nav.tabs{display:inline-flex!important}
-body.dlonly nav.tabs button:not([data-tab="dubs"]):not([data-tab="downloader"]){display:none!important}
+body.dlonly nav.tabs button:not([data-tab="dubs"]):not([data-tab="karak"]):not([data-tab="downloader"]){display:none!important}
 @media (max-width:600px){.dub-row{grid-template-columns:minmax(0,1fr) auto}.dub-a{grid-column:1/-1;justify-content:flex-start}body.dlonly nav.tabs{display:flex!important}}
+
+/* ===== v146: Karak Collection ===== */
+body.prime [data-tab="karak"],body.prime [data-tab-go="karak"]{display:none!important}
+.kk-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px}.kk-bar .seg em{font-style:normal;opacity:.6;margin-left:4px}
+.kk-tile{position:relative}.kk-tile.sel{outline:2px solid var(--lime-deep,#7BD100);outline-offset:2px;border-radius:16px}
+.kk-ck{all:unset;box-sizing:border-box;position:absolute;top:8px;left:8px;z-index:2;width:24px;height:24px;border-radius:50%;border:2px solid #fff;background:rgba(0,0,0,.35);color:transparent;display:grid;place-items:center;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.3)}
+.kk-ck[aria-pressed="true"]{background:var(--lime);border-color:var(--lime);color:#0B0B0C}
+.kk-mv{font-size:12px;color:var(--muted)}
+.kk-tile .as-tm{display:grid!important;gap:2px;min-width:0}.kk-tile .as-tm b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 /* v143: Downloader-only account */
 body.dlonly .mbar,body.dlonly #bellBtn,body.dlonly #searchBtn,body.dlonly #tasksBtn,body.dlonly #importBtn,body.dlonly #exportBtn,body.dlonly #wsBtn,body.dlonly [data-act="openAdd"],body.dlonly .od-pill,body.dlonly #alerts,body.dlonly #moreMenu [data-tab-go]{display:none!important}
@@ -3436,7 +3445,7 @@ dialog.ig-dlg{width:min(860px,96vw)}
       <button class="btn" id="logoutBtn">Sign out</button>
       <button class="btn primary" data-act="openAdd">Log a shoot</button>
       <button class="morebtn" id="moreBtn" data-act="more" aria-label="More" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="5" cy="12" r="1.8" fill="currentColor"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/><circle cx="19" cy="12" r="1.8" fill="currentColor"/></svg></button>
-      <div class="moremenu" id="moreMenu" hidden><button data-act="wsSwitch" id="wsMore" hidden></button><button data-act="goTab" data-tab-go="community">Community</button><button data-act="goTab" data-tab-go="dubs">Hindi dubs</button><button data-act="goTab" data-tab-go="raw">Raw footage</button><button data-act="goTab" data-tab-go="assets">Asset library</button><button data-act="goTab" data-tab-go="downloader">Downloader</button><button data-act="mImport">Import CSV</button><button data-act="mExport">Export CSV</button><button data-act="mOut" class="danger">Sign out</button></div>
+      <div class="moremenu" id="moreMenu" hidden><button data-act="wsSwitch" id="wsMore" hidden></button><button data-act="goTab" data-tab-go="community">Community</button><button data-act="goTab" data-tab-go="dubs">Hindi dubs</button><button data-act="goTab" data-tab-go="raw">Raw footage</button><button data-act="goTab" data-tab-go="karak">Karak Collection</button><button data-act="goTab" data-tab-go="assets">Asset library</button><button data-act="goTab" data-tab-go="downloader">Downloader</button><button data-act="mImport">Import CSV</button><button data-act="mExport">Export CSV</button><button data-act="mOut" class="danger">Sign out</button></div>
     </div>
   </header>
 
@@ -3449,6 +3458,7 @@ dialog.ig-dlg{width:min(860px,96vw)}
     <button role="tab" data-tab="dubs">Hindi dubs</button>
     <button role="tab" data-tab="shoots">Shoot plan</button>
     <button role="tab" data-tab="raw">Raw footage</button>
+    <button role="tab" data-tab="karak">Karak Collection</button>
     <button role="tab" data-tab="ideas">Content bank</button>
     <button role="tab" data-tab="history">History</button>
     <button role="tab" data-tab="downloader">Downloader</button>
@@ -4166,7 +4176,7 @@ function mayWrite(id){return isEdAcct()||(isMember()&&myVideos().has(id))}
 function timerMine(o){if(isMember())return myVideos().has(o.id);if(isEdAcct())return o.editBy===S.me||myVideos().has(o.id);
   return !teamOwned().has(o.id)&&!(o.editBy&&o.editBy!==S.me&&helperAcct(o.editBy))&&!(asgOf(o)&&helperAcct(asgOf(o)))}
 let voT=0;function voNote(){if(Date.now()-voT<2500)return;voT=Date.now();toast(isEdAcct()?"You can change the video status on Edit order and Posting schedule":isMember()?"You can change the status of the videos assigned to you":PRIME?"View only. Ask Waleed or Dorota to make changes":"View only. Ask Shibli or Zain to make changes")}
-const VIEW_OK=new Set(["dubGo","dubWatch","dubDl","dubMore","tdToggle","tdDel","tdUp","tdClear","tdFilter","tdEdit","schedPrev","shrOpen","shrView","shrDl","shrHide","shrSignin","asgSelf","asgDrop","rawUp","rawSkip","rawDay","rawBack","rawRefresh","rawSignin","rawZip","rawEach","asCat","asOpenSet","asBack","asRefresh","asSignin","asUpload","asView","asPlay","asDl","asDel","asDlAll","asDelSet","wsSwitch","musListen","musLink","musClear","musJob","edWho","viewDraft","viewCar","tripGo","tripOpen","tripWho","tripCopy","copy","days","dialBack","dialTry","dialType","dlBackup","fclear","ffmt","fnolink","fnopil","fsched","fst","goShoots","goTab","grpToggle","histView","hrange","ideaArch","ideaCopy","ideaPil","ideaType","mExport","mOut","mday","mnav","more","newWin","openCmd","osnOn","osnTest","ovGo","ovMode","ovStatus","plByDay","plMode","playWrapped","printSum","rowMore","schedToday","shView","sumMode","sview","testAlert","vaultLock","vaultOpen","vcopy","viewScript","vshow","clearSel","chpw","freshLoad"]);
+const VIEW_OK=new Set(["kkUp","kkTake","kkBack","kkSel","kkTakeSel","kkTakeAll","kkView","kkRefresh","kkSignin","dubGo","dubWatch","dubDl","dubMore","tdToggle","tdDel","tdUp","tdClear","tdFilter","tdEdit","schedPrev","shrOpen","shrView","shrDl","shrHide","shrSignin","asgSelf","asgDrop","rawUp","rawSkip","rawDay","rawBack","rawRefresh","rawSignin","rawZip","rawEach","asCat","asOpenSet","asBack","asRefresh","asSignin","asUpload","asView","asPlay","asDl","asDel","asDlAll","asDelSet","wsSwitch","musListen","musLink","musClear","musJob","edWho","viewDraft","viewCar","tripGo","tripOpen","tripWho","tripCopy","copy","days","dialBack","dialTry","dialType","dlBackup","fclear","ffmt","fnolink","fnopil","fsched","fst","goShoots","goTab","grpToggle","histView","hrange","ideaArch","ideaCopy","ideaPil","ideaType","mExport","mOut","mday","mnav","more","newWin","openCmd","osnOn","osnTest","ovGo","ovMode","ovStatus","plByDay","plMode","playWrapped","printSum","rowMore","schedToday","shView","sumMode","sview","testAlert","vaultLock","vaultOpen","vcopy","viewScript","vshow","clearSel","chpw","freshLoad"]);
 const VIEW_FIELDS=["live","plr","sumr","ovr","opt","schedgo","todo","dubq","dubf"];
 // Waleed and Hamza also use PB Downloader and the editing timer
 const HELPER_OK=new Set(["startEdit","dlAdd","dlDo","dlQ","dlCk","dlClear","dlRetry","dlVideo","pauseEdit","resumeEdit","pauseAll","resumeAll","upDraft"]);
@@ -5503,7 +5513,7 @@ function upPaint(){let el=document.getElementById("upPill");
     const total=j.file&&j.file.size,p=total?Math.min(100,Math.floor(100*j.sent/total)):100,busy=["Starting","Uploading","Saving"].includes(j.state);
     const cls="up-j "+j.state.toLowerCase();if(c.className!==cls)c.className=cls;
     const set=(sel,prop,val)=>{const x=c.querySelector(sel);if(x[prop]!==val)x[prop]=val;return x};
-    set(".up-h b","textContent",j.title);set(".up-h span","textContent",j.kind==="asset"?"assets":j.kind==="raw"?"raw footage":j.kind==="dub"?"Hindi dub":j.kind==="final"?"final":j.kind==="carousel"?"photos":"draft");
+    set(".up-h b","textContent",j.title);set(".up-h span","textContent",j.kind==="asset"?"assets":j.kind==="raw"?"raw footage":j.kind==="dub"?"Hindi dub":j.kind==="karak"?"Karak clips":j.kind==="final"?"final":j.kind==="carousel"?"photos":"draft");
     set(".up-l","innerHTML",j.state==="Failed"?`<span class="up-bad">${esc(j.error)}</span>`:j.state==="Sent"?`<span class="up-ok">✓ ${esc(j.msg||"Uploaded")}</span>`:j.state==="Uploading"?`<b class="up-p">${p}%</b> · ${fmtMB(j.sent)} of ${fmtMB(total)}`:j.state==="Saving"?(j.file?"Finishing…":"Saving the approved draft as the final…"):"Starting…");
     const bar=c.querySelector(".up-bar");bar.hidden=!busy;bar.classList.toggle("busy",busy&&!j.file);const w=(j.state==="Starting"?3:j.state==="Saving"?100:p)+"%";if(bar.firstChild.style.width!==w)bar.firstChild.style.width=w;
     c.querySelector(".up-x").hidden=busy;
@@ -6064,7 +6074,7 @@ function rawSafe(f){try{return f()}catch(_){return ""}}
 function isTyping(){const a=document.activeElement;return a&&a.closest&&a.closest("#main")&&!a.dataset.live&&(a.tagName==="TEXTAREA"||(a.tagName==="INPUT"&&/^(text|number)$/.test(a.type)))}
 let VT_ON=false;
 function render(){
-  if(dlOnly()&&!["downloader","dubs"].includes(S.tab))S.tab="dubs";document.body.classList.toggle("dlonly",dlOnly());
+  if(dlOnly()&&!["downloader","dubs","karak"].includes(S.tab))S.tab="dubs";document.body.classList.toggle("dlonly",dlOnly());
   document.body.classList.toggle("viewonly",viewOnly());document.body.classList.toggle("member",isMember());document.body.classList.toggle("editor",isEdAcct());document.body.classList.toggle("helper",helperAcct());
   if(isTyping()||DIAL.busy||DIAL.trying||VT_ON||(typeof GX!=="undefined"&&GX.btn)||(typeof STM!=="undefined"&&STM.btn)){pendingRender=true;return}
   pendingRender=false;
@@ -6076,7 +6086,7 @@ function render(){
   const autoFlip=!S.animate&&!RM&&m.firstElementChild&&m.dataset.tab===S.tab;
   const before=autoFlip?keyRects(m):null;
   m.dataset.tab=S.tab;
-  m.innerHTML=S.tab==="overview"?vOverview():S.tab==="videos"?vVideos():S.tab==="order"?vOrder():S.tab==="schedule"||S.tab==="community"?vSchedule():S.tab==="history"?vHistory():S.tab==="shoots"?vShoots():S.tab==="ideas"?vIdeas():S.tab==="downloader"?vDownloader():S.tab==="assets"?AS.panel():S.tab==="raw"?rawSafe(()=>RAW.panel()):S.tab==="tasks"?rawSafe(()=>TODO.panel()):S.tab==="dubs"?rawSafe(()=>DUB.panel()):vSettings();
+  m.innerHTML=S.tab==="overview"?vOverview():S.tab==="videos"?vVideos():S.tab==="order"?vOrder():S.tab==="schedule"||S.tab==="community"?vSchedule():S.tab==="history"?vHistory():S.tab==="shoots"?vShoots():S.tab==="ideas"?vIdeas():S.tab==="downloader"?vDownloader():S.tab==="assets"?AS.panel():S.tab==="raw"?rawSafe(()=>RAW.panel()):S.tab==="tasks"?rawSafe(()=>TODO.panel()):S.tab==="dubs"?rawSafe(()=>DUB.panel()):S.tab==="karak"?rawSafe(()=>KK.panel()):vSettings();
   if(S.animate){const mode=S.animate;S.animate=false;if(mode==="m")setTimeout(()=>countUp(m),80);else enterMotion(m,mode==="vt")}
   else if(before)autoFlipRun(m,before);
   segInds(m);
@@ -8072,7 +8082,7 @@ if(!GAS){
   const go=()=>{if(started)return;started=true;const t=lsGet("seb-token");
     if(t)startSession(t,lsGet("seb-user")||"");else if(QKEY)keyLogin(QKEY);else showLogin()};
   const qs=new URLSearchParams(location.search);const v=qs.get("view");
-  if(v&&["overview","videos","order","schedule","community","shoots","raw","ideas","history","tasks","dubs","downloader","assets","settings"].includes(v)){S.tab=v;render()}
+  if(v&&["overview","videos","order","schedule","community","shoots","raw","ideas","history","tasks","dubs","karak","downloader","assets","settings"].includes(v)){S.tab=v;render()}
   QKEY=null;   // old quick-login links: Firebase keeps you signed in, so the key is simply ignored
   if(qs.get("key")){qs.delete("key");try{history.replaceState(null,"",location.pathname+(qs.toString()?"?"+qs:""))}catch(e){}}
   go();
@@ -9597,6 +9607,103 @@ const DUB=(()=>{
   document.addEventListener("input",e=>{const t=e.target;if(!t||!t.dataset)return;if(t.dataset.dubq){st.q=t.value;paint()}else if(t.dataset.dubf)refreshForm()},true);
   new MutationObserver(()=>{if(S.tab==="dubs"){bindDrop();refreshForm()}}).observe(document.getElementById("main")||document.body,{childList:true});
   return {panel,start,badge,st,isDubber};
+})();
+
+/* ================= v146: Karak Collection — the team uploads car B-roll; Zain downloads it, and each downloaded clip moves to “Downloaded” so the main folder only shows new ones ================= */
+const KK=(()=>{
+  const UPL=["shibili","waleed","hamza","aman"],TAKERS=["zain","shibili"];
+  const st={view:"new",err:"",busy:null,sel:new Set(),moving:{}};
+  const on=()=>!PRIME;
+  const canUp=()=>UPL.includes(S.me||"");
+  const canTake=()=>TAKERS.includes(S.me||"");
+  const root=()=>String(S.settings.spKarak||"").trim().replace(/^\/+|\/+$/g,"")||spRoot()+"/Karak Collection";
+  const done=()=>root()+"/Downloaded";
+  const cur=()=>st.view==="done"?done():root();
+  const filesOf=p=>((AS.st.cache[p]||{}).items||[]).filter(x=>!x.folder);
+  async function load(force){if(!on()||!spOn())return;try{await msApp()}catch(e){st.err=e.message;paint();return}if(!msAccount()){paint();return}
+    st.err="";try{await AS.list(root(),force);if(st.view==="done")await AS.list(done(),force)}catch(e){st.err=e.signin?"":(e.message||"Couldn’t open the Karak Collection")}paint()}
+  // ---------- Zain downloads: the file is saved, then moved to Downloaded ----------
+  let doneId=null;
+  async function doneFolderId(drive){if(doneId)return doneId;await spEnsure(drive,done());const it=await gjson(`/drives/${drive}/root:/${encP(done())}?$select=id`);return doneId=it.id}
+  async function take(id,quiet){const it0=AS.find(id);if(!it0||st.moving[id])return false;st.moving[id]=1;paint();
+    try{const it=await AS.fresh(it0);const u=it["@microsoft.graph.downloadUrl"];if(!u)throw new Error("SharePoint didn’t give a download link");saveUrl(u,it.name);
+      if(st.view!=="done"){const drive=await spDrive(),fid=await doneFolderId(drive);
+        await gjson(`/drives/${drive}/items/${it.id}?@microsoft.graph.conflictBehavior=rename`,{method:"PATCH",body:{parentReference:{id:fid}}});
+        const c=AS.st.cache[root()];if(c)c.items=c.items.filter(x=>x.id!==it.id);delete AS.st.cache[done()]}
+      if(!quiet)toast(st.view==="done"?`Downloading “${it.name}”`:`Downloading “${it.name}”. Moved to Downloaded`);return true}
+    catch(e){toast(e.message||"Couldn’t download it");return false}
+    finally{delete st.moving[id];st.sel.delete(id);paint()}}
+  async function takeMany(ids){if(!ids.length)return;toast(`Downloading ${ids.length} clip${ids.length===1?"":"s"}. Allow multiple downloads if the browser asks`);let n=0;
+    for(const id of ids){if(await take(id,true))n++;await new Promise(r=>setTimeout(r,900))}toast(`${n} clip${n===1?"":"s"} downloaded${st.view==="done"?"":" and moved to Downloaded"}`)}
+  async function putBack(id){const it=AS.find(id);if(!it)return;try{const drive=await spDrive(),r=await gjson(`/drives/${drive}/root:/${encP(root())}?$select=id`);
+      await gjson(`/drives/${drive}/items/${it.id}?@microsoft.graph.conflictBehavior=rename`,{method:"PATCH",body:{parentReference:{id:r.id}}});
+      const c=AS.st.cache[done()];if(c)c.items=c.items.filter(x=>x.id!==it.id);delete AS.st.cache[root()];toast(`“${it.name}” is back in New`);load()}catch(e){toast(e.message||"Couldn’t move it")}}
+  // ---------- uploading ----------
+  let ud=null;const U={files:[]};
+  function dlg(){if(ud)return ud;ud=document.createElement("dialog");ud.id="kkDlg";ud.className="wide";
+    ud.innerHTML=`<form method="dialog"><h2>Upload car B-roll</h2><p class="sub">Clips go into the Karak Collection. Zain sees them as new until he downloads them.</p>
+      <label class="up-drop as-drop" id="kkDrop"><input type="file" id="kkFiles" multiple accept="video/*,image/*,.mov,.mp4,.m4v,.mxf" hidden><span class="up-ic"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V5M7 9.5l5-5 5 5M5 19h14"/></svg></span><b>Drop the clips here</b><span>or click to choose. You can pick several at once.</span></label>
+      <div class="as-picked" id="kkPicked"></div>
+      <p class="rw-to">Saves to SharePoint › Fahad’s Personal Branding › <b>Karak Collection</b></p>
+      <div class="foot"><button class="btn" type="button" data-kku="x">Cancel</button><span style="flex:1"></span><button class="btn primary" type="button" data-kku="go" id="kkGo" disabled>Upload</button></div></form>`;
+    document.body.appendChild(ud);
+    ud.addEventListener("click",e=>{const b=e.target.closest("[data-kku]");if(!b)return;e.preventDefault();if(b.dataset.kku==="x")ud.close();else if(b.dataset.kku==="go")start();else if(b.dataset.kku==="rm"){U.files.splice(+b.dataset.i,1);picked()}});
+    ud.addEventListener("change",e=>{if(e.target.id==="kkFiles"){U.files.push(...e.target.files);e.target.value="";picked()}});
+    const dz=ud.querySelector("#kkDrop");["dragenter","dragover"].forEach(t=>dz.addEventListener(t,e=>{e.preventDefault();dz.classList.add("over")}));
+    ["dragleave","drop"].forEach(t=>dz.addEventListener(t,e=>{e.preventDefault();dz.classList.remove("over")}));
+    dz.addEventListener("drop",e=>{U.files.push(...((e.dataTransfer&&e.dataTransfer.files)||[]));picked()});return ud}
+  function picked(){const d=dlg(),tot=U.files.reduce((a,f)=>a+f.size,0);
+    d.querySelector("#kkPicked").innerHTML=U.files.length?`<div class="asp-h">${U.files.length} ${U.files.length===1?"clip":"clips"} · ${AS.sizeTx(tot)}</div>`+U.files.map((f,i)=>`<div class="asp-r"><span class="asp-i">▶</span><b>${esc(f.name)}</b><small>${AS.sizeTx(f.size)}</small><button type="button" class="iconbtn" data-kku="rm" data-i="${i}" aria-label="Remove">×</button></div>`).join(""):"";
+    const g=d.querySelector("#kkGo");g.disabled=!U.files.length;g.textContent=U.files.length?`Upload ${U.files.length} ${U.files.length===1?"clip":"clips"} · ${AS.sizeTx(tot)}`:"Upload"}
+  function openUp(){if(!canUp())return;if(!spOn()){toast("SharePoint isn’t set up yet");return}U.files=[];picked();openDlg(dlg())}
+  async function start(){const files=U.files.slice();if(!files.length)return;ud.close();if(!msAccount()){try{await msApp()}catch(_){}if(!msAccount()){msSignIn(()=>{});return}}
+    const tot=files.reduce((a,f)=>a+f.size,0),job={id:"k"+Date.now(),kind:"karak",title:`Karak Collection · ${files.length} clip${files.length===1?"":"s"}`,file:{size:tot},sent:0,state:"Starting"};
+    job.retry=()=>run(job,files);UP.list.push(job);run(job,files)}
+  async function run(job,files){Object.assign(job,{sent:0,state:"Starting",error:""});st.busy=job;upPaint();
+    try{const drive=await spDrive();await spEnsure(drive,root());job.state="Uploading";upPaint();let sent=0;
+      for(const f of files){const ses=await gjson(`/drives/${drive}/root:/${encP(root()+"/"+spName(f.name))}:/createUploadSession`,{method:"POST",body:{item:{"@microsoft.graph.conflictBehavior":"rename"}}});let item=null;
+        for(let a=0;a<f.size;a+=SP_CHUNK){const b=Math.min(f.size,a+SP_CHUNK);let tries=0;
+          for(;;){try{const j=await putChunk(ses.uploadUrl,f,a,b,n=>{job.sent=sent+n;upPaintSoon()});if(j&&j.id)item=j;break}
+            catch(err){if(++tries>4||(err.status&&err.status<500&&err.status!==429))throw err;await new Promise(r=>setTimeout(r,2000*tries))}}}
+        if(!item)throw new Error(`SharePoint didn’t confirm “${f.name}”`);sent+=f.size;job.sent=sent;upPaintSoon()}
+      job.state="Sent";job.msg=`${files.length} clip${files.length===1?"":"s"} saved to the Karak Collection`;st.busy=null;upPaint();delete AS.st.cache[root()];load(true);
+      toast(`Uploaded ${files.length} clip${files.length===1?"":"s"} to the Karak Collection`);setTimeout(()=>{UP.list=UP.list.filter(j=>j!==job);upPaint()},7000)}
+    catch(e){st.busy=null;job.state="Failed";job.error=e.message||"Upload failed";job.signin=!!e.signin;upPaint();toast(`Upload failed: ${job.error}`)}}
+  // ---------- the tab ----------
+  function tile(x){const k=AS.kindOf(x),th=AS.thumbOf(x),mv=st.moving[x.id],sel=st.sel.has(x.id);
+    return `<div class="as-tile kk-tile${sel?" sel":""}" data-id="${x.id}">${canTake()?`<button type="button" class="kk-ck" data-act="kkSel" data-id="${x.id}" aria-pressed="${sel}" aria-label="Select"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`:""}
+      <button type="button" class="as-th${th?"":" none"}" data-act="asView" data-id="${x.id}"${th?` style="background-image:url('${esc(th).replace(/'/g,"%27")}')"`:""} aria-label="View ${esc(x.name)}">${k==="video"?`<span class="as-play">▶</span>`:th?"":"<i>🎞</i>"}</button>
+      <div class="as-tm"><b title="${esc(x.name)}">${esc(x.name)}</b><small>${esc(AS.sizeTx(x.size))} · ${esc(AS.dateTx(x.createdDateTime||x.lastModifiedDateTime))}${x.createdBy&&x.createdBy.user?` · ${esc(String(x.createdBy.user.displayName||"").split(" ")[0])}`:""}</small></div>
+      <div class="as-ta">${canTake()?(mv?`<span class="kk-mv">Moving…</span>`:`<button class="iconbtn" data-act="kkTake" data-id="${x.id}" title="${st.view==="done"?"Download again":"Download and move to Downloaded"}">⬇</button>`):`<button class="iconbtn" data-act="asDl" data-id="${x.id}" title="Download">⬇</button>`}${canTake()&&st.view==="done"?`<button class="iconbtn" data-act="kkBack" data-id="${x.id}" title="Move back to New">↩</button>`:""}</div></div>`}
+  function body(){if(!spOn())return `<div class="empty"><b>SharePoint isn’t set up yet</b>Set it up in Settings › SharePoint.</div>`;
+    if(!MS.app)return `<div class="as-load">${"<i></i>".repeat(6)}</div>`;
+    if(!msAccount())return `<div class="as-sign"><b>Sign in with your Milele Microsoft account to see the clips</b><span>The Karak Collection is in the Marketing SharePoint.</span><button class="btn primary" data-act="kkSignin">Sign in with Microsoft</button></div>`;
+    if(st.err)return `<div class="empty"><b>Couldn’t open the Karak Collection</b>${esc(st.err)}<div style="margin-top:12px"><button class="btn small" data-act="kkRefresh">Try again</button></div></div>`;
+    const c=AS.st.cache[cur()];if(!c)return `<div class="as-load">${"<i></i>".repeat(6)}</div>`;
+    const L=filesOf(cur());
+    if(!L.length)return `<div class="empty"><b>${st.view==="done"?"Nothing downloaded yet":"No new clips"}</b>${st.view==="done"?"Clips Zain downloads from New end up here.":canTake()?"You’re all caught up. New clips show up here as soon as someone uploads them.":"Upload clips and they show up here for Zain."}</div>`;
+    return `<div class="as-grid">${L.map(tile).join("")}</div>`}
+  function panel(painting){if(!on())return `<section class="panel"><div class="empty"><b>The Karak Collection is on the Personal Branding board</b></div></section>`;
+    if(!painting)setTimeout(()=>{if(!spOn())return;if(!MS.app){msApp().then(()=>{msAccount()?load():paint()},e=>{st.err=e.message;paint()});return}if(msAccount()&&!AS.st.cache[cur()]&&!st.err)load()},0);
+    const nNew=filesOf(root()).length,L=filesOf(cur()),selN=[...st.sel].filter(id=>L.some(x=>x.id===id)).length;
+    return `<section class="panel as-panel kk-panel" id="kkPanel"><div class="phead"><h2>Karak Collection</h2><span class="sub">${canTake()?"Car B-roll from the team. Downloading a clip moves it to Downloaded, so New only shows what you haven’t taken yet.":"Car B-roll for Zain. Upload clips here and he sees them as new."}</span>
+      <div class="pactions">${msAccount()?`<button class="btn small ghost" data-act="kkRefresh" title="Check for new clips">↻ Refresh</button>`:""}${canUp()?`<button class="btn small primary" data-act="kkUp">＋ Upload clips</button>`:""}</div></div>
+      <div class="kk-bar"><div class="seg" role="group" aria-label="Show"><button data-act="kkView" data-v="new" aria-pressed="${st.view==="new"}">New <em>${AS.st.cache[root()]?nNew:"…"}</em></button><button data-act="kkView" data-v="done" aria-pressed="${st.view==="done"}">Downloaded</button></div>
+        ${canTake()&&L.length?`<span style="flex:1"></span>${selN?`<button class="btn small primary" data-act="kkTakeSel">⬇ Download ${selN} selected</button>`:""}${st.view==="new"?`<button class="btn small${selN?" ghost":" primary"}" data-act="kkTakeAll">⬇ Download all new (${L.length})</button>`:""}`:""}</div>
+      <div id="kkBody">${body()}</div></section>`}
+  function paint(){badge();const el=document.getElementById("kkPanel");if(el&&S.tab==="karak")el.outerHTML=panel(true)}
+  function badge(){const b=document.querySelector('nav.tabs [data-tab="karak"]');if(!b)return;const n=canTake()&&AS.st.cache[root()]?filesOf(root()).length:0;let e=b.querySelector(".tab-n");if(!n){e&&e.remove();return}if(!e){e=document.createElement("em");e.className="tab-n";b.appendChild(e)}e.textContent=n}
+  // count new clips for Zain in the background every few minutes
+  setInterval(()=>{if(on()&&canTake()&&loaded&&spOn()&&MS.app&&msAccount()&&!document.hidden)AS.list(root(),true).then(()=>{badge();if(S.tab==="karak"&&st.view==="new")paint()}).catch(()=>{})},5*60000);
+  document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-act^='kk']");if(!b)return;e.preventDefault();const a=b.dataset.act,id=b.dataset.id;
+    if(a==="kkUp")openUp();else if(a==="kkTake")take(id);else if(a==="kkBack")putBack(id);
+    else if(a==="kkSel"){st.sel.has(id)?st.sel.delete(id):st.sel.add(id);paint()}
+    else if(a==="kkTakeSel")takeMany([...st.sel].filter(i=>filesOf(cur()).some(x=>x.id===i)));
+    else if(a==="kkTakeAll")takeMany(filesOf(cur()).map(x=>x.id));
+    else if(a==="kkView"){st.view=b.dataset.v;st.sel.clear();paint();load()}
+    else if(a==="kkRefresh"){delete AS.st.cache[root()];delete AS.st.cache[done()];st.err="";paint();load(true)}
+    else if(a==="kkSignin")msSignIn(()=>{paint();load(true)})});
+  return {panel,badge,st};
 })();
 
 })();
