@@ -2341,6 +2341,14 @@ body.prime [data-tab="dubs"],body.prime [data-tab-go="dubs"]{display:none!import
 .tag.dub-new{background:#D0694A!important;color:#fff!important;border-color:transparent!important}
 .tag.dub-up{background:rgba(139,114,207,.18)!important;color:#5b45a8!important}
 .dub-more{margin-top:12px}
+.dub-up-card{padding:18px 20px;border-radius:22px;border:1px solid rgba(123,209,0,.45);background:rgba(170,255,0,.07);margin-bottom:22px}
+.dub-up-card h3,.dub-head h3{margin:0 0 12px;font-size:16px}.dub-head h3 em{font-style:normal;color:var(--muted);font-weight:600;margin-left:4px}
+.dub-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:12px}.dub-form .field{display:grid;gap:6px}
+.dub-form input{height:42px;border:1px solid var(--line);border-radius:12px;padding:0 12px;font:inherit;font-size:14px;background:rgba(255,255,255,.9);color:var(--ink)}
+.dub-go{display:flex;justify-content:flex-end}.dub-go .btn{min-width:160px}
+.dub-head{display:flex;align-items:center;gap:12px;justify-content:space-between;flex-wrap:wrap;margin-bottom:10px}.dub-head .dub-q{max-width:280px}
+.dub-row.new{border-color:rgba(208,105,74,.45)}
+@media (max-width:600px){.dub-form{grid-template-columns:1fr}.dub-go .btn{width:100%}}
 dialog.dub-dlg{width:min(560px,calc(100vw - 32px))}
 body.dlonly nav.tabs{display:inline-flex!important}
 body.dlonly nav.tabs button:not([data-tab="dubs"]):not([data-tab="downloader"]){display:none!important}
@@ -3184,6 +3192,8 @@ dialog.ig-dlg{width:min(860px,96vw)}
 :root[data-theme="dark"] .sched-date input{background:var(--d-field)!important;border-color:var(--d-line2)!important;color:var(--ink)!important}
 :root[data-theme="dark"] .td-row{background:rgba(255,255,255,.04)!important;border-color:var(--line)!important}
 :root[data-theme="dark"] .dub-row{background:rgba(255,255,255,.04)!important;border-color:var(--line)!important}
+:root[data-theme="dark"] .dub-form input{background:var(--d-field)!important;border-color:var(--d-line2)!important;color:var(--ink)!important}
+:root[data-theme="dark"] .dub-up-card{background:rgba(170,255,0,.05)!important}
 :root[data-theme="dark"] .dub-q{background:var(--d-field)!important;border-color:var(--d-line2)!important;color:var(--ink)!important}
 :root[data-theme="dark"] .tag.dub-ok{color:#fff!important;background:rgba(170,255,0,.22)!important}
 :root[data-theme="dark"] .td-add #tdNew,:root[data-theme="dark"] .td-add #tdNewDue,:root[data-theme="dark"] .td-in{background:var(--d-field)!important;border-color:var(--d-line2)!important;color:var(--ink)!important}
@@ -4156,14 +4166,15 @@ function mayWrite(id){return isEdAcct()||(isMember()&&myVideos().has(id))}
 function timerMine(o){if(isMember())return myVideos().has(o.id);if(isEdAcct())return o.editBy===S.me||myVideos().has(o.id);
   return !teamOwned().has(o.id)&&!(o.editBy&&o.editBy!==S.me&&helperAcct(o.editBy))&&!(asgOf(o)&&helperAcct(asgOf(o)))}
 let voT=0;function voNote(){if(Date.now()-voT<2500)return;voT=Date.now();toast(isEdAcct()?"You can change the video status on Edit order and Posting schedule":isMember()?"You can change the status of the videos assigned to you":PRIME?"View only. Ask Waleed or Dorota to make changes":"View only. Ask Shibli or Zain to make changes")}
-const VIEW_OK=new Set(["dubUp","dubWatch","dubDl","dubOrig","dubFilter","dubMore","tdToggle","tdDel","tdUp","tdClear","tdFilter","tdEdit","schedPrev","shrOpen","shrView","shrDl","shrHide","shrSignin","asgSelf","asgDrop","rawUp","rawSkip","rawDay","rawBack","rawRefresh","rawSignin","rawZip","rawEach","asCat","asOpenSet","asBack","asRefresh","asSignin","asUpload","asView","asPlay","asDl","asDel","asDlAll","asDelSet","wsSwitch","musListen","musLink","musClear","musJob","edWho","viewDraft","viewCar","tripGo","tripOpen","tripWho","tripCopy","copy","days","dialBack","dialTry","dialType","dlBackup","fclear","ffmt","fnolink","fnopil","fsched","fst","goShoots","goTab","grpToggle","histView","hrange","ideaArch","ideaCopy","ideaPil","ideaType","mExport","mOut","mday","mnav","more","newWin","openCmd","osnOn","osnTest","ovGo","ovMode","ovStatus","plByDay","plMode","playWrapped","printSum","rowMore","schedToday","shView","sumMode","sview","testAlert","vaultLock","vaultOpen","vcopy","viewScript","vshow","clearSel","chpw","freshLoad"]);
-const VIEW_FIELDS=["live","plr","sumr","ovr","opt","schedgo","todo","dubq"];
+const VIEW_OK=new Set(["dubGo","dubWatch","dubDl","dubMore","tdToggle","tdDel","tdUp","tdClear","tdFilter","tdEdit","schedPrev","shrOpen","shrView","shrDl","shrHide","shrSignin","asgSelf","asgDrop","rawUp","rawSkip","rawDay","rawBack","rawRefresh","rawSignin","rawZip","rawEach","asCat","asOpenSet","asBack","asRefresh","asSignin","asUpload","asView","asPlay","asDl","asDel","asDlAll","asDelSet","wsSwitch","musListen","musLink","musClear","musJob","edWho","viewDraft","viewCar","tripGo","tripOpen","tripWho","tripCopy","copy","days","dialBack","dialTry","dialType","dlBackup","fclear","ffmt","fnolink","fnopil","fsched","fst","goShoots","goTab","grpToggle","histView","hrange","ideaArch","ideaCopy","ideaPil","ideaType","mExport","mOut","mday","mnav","more","newWin","openCmd","osnOn","osnTest","ovGo","ovMode","ovStatus","plByDay","plMode","playWrapped","printSum","rowMore","schedToday","shView","sumMode","sview","testAlert","vaultLock","vaultOpen","vcopy","viewScript","vshow","clearSel","chpw","freshLoad"]);
+const VIEW_FIELDS=["live","plr","sumr","ovr","opt","schedgo","todo","dubq","dubf"];
 // Waleed and Hamza also use PB Downloader and the editing timer
 const HELPER_OK=new Set(["startEdit","dlAdd","dlDo","dlQ","dlCk","dlClear","dlRetry","dlVideo","pauseEdit","resumeEdit","pauseAll","resumeAll","upDraft"]);
-function isViewField(el){const d=el&&el.dataset||{};return VIEW_FIELDS.some(k=>k in d)||el.type==="search"||!!(el.closest&&el.closest("#login,#cmd,.tpw,.vault-form"))||!!(helperAcct()&&el.closest&&el.closest(".dl-panel"))||!!(el.closest&&el.closest(".mus-panel,#musDlg"))}
+function isViewField(el){const d=el&&el.dataset||{};return VIEW_FIELDS.some(k=>k in d)||el.type==="search"||!!(el.closest&&el.closest("#login,#cmd,.tpw,.vault-form"))||!!((helperAcct()||dlOnly())&&el.closest&&el.closest(".dl-panel"))||!!(el.closest&&el.closest(".mus-panel,#musDlg"))}
 document.addEventListener("click",e=>{if(!viewOnly())return;const t=e.target;if(!t.closest)return;
   const g=t.closest(".gsel");if(g&&g._sel&&!isViewField(g._sel)){e.preventDefault();e.stopPropagation();voNote();return}
   const b=t.closest("[data-act]");if(b&&b.dataset.act==="stMenu"&&mayEdit(b.dataset.id))return;
+  if(b&&dlOnly()&&(/^dl/.test(b.dataset.act)||(b.closest&&b.closest(".dl-panel,.mus-panel,#musDlg"))))return;
   if(b&&helperAcct()&&HELPER_OK.has(b.dataset.act)){const v=b.dataset.id&&S.videos[b.dataset.id];if(!v||(b.dataset.act==="upDraft"?mayWrite(v.id):timerMine(v)))return}
   if(b&&!VIEW_OK.has(b.dataset.act)){e.preventDefault();e.stopPropagation();voNote()}},true);
 ["change","input"].forEach(ev=>document.addEventListener(ev,e=>{if(!viewOnly())return;const t=e.target;if(!t||!t.closest||!t.closest("#main,#addDlg,#shootDlg"))return;if(isViewField(t))return;
@@ -7077,7 +7088,7 @@ function markSeen(v){const k=alertKind(v);if(k&&k!=="posted")seeKey(alertKey(v,k
 function alertsForMe(){return true}
 function readyList(){return myAlerts().map(x=>x.v)}
 // an alert card that no longer applies (approved from the draft window, posted from the schedule, …) closes by itself
-function pruneAlerts(){const box=$("#alerts");if(!box)return;box.querySelectorAll(".alert:not([data-closing])").forEach(el=>{const v=S.videos[el.dataset.id],k=(el.id.match(/-([a-z]+)$/)||[])[1];
+function pruneAlerts(){const box=$("#alerts");if(!box)return;box.querySelectorAll(".alert:not([data-closing]):not(.al-dub):not(.al-shr)").forEach(el=>{const v=S.videos[el.dataset.id],k=(el.id.match(/-([a-z]+)$/)||[])[1];
   if(!k||k==="posted"||el.id==="al-rvremind")return;if(!v||(alertKind(v)!==k&&timeKind(v)!==k))closeAlert(el)})}
 function updateBell(){try{pruneAlerts()}catch(_){}const L=myAlerts().filter(x=>x.k!=="posted"),n=L.length,e=$("#bellN");if(!e)return;e.hidden=!n;e.textContent=n;const b=$("#bellBtn");b.classList.toggle("has",!!n);
   const kinds=[...new Set(L.map(x=>x.k))];b.title=n?({assigned:"Assigned to you",review:"Waiting for your review",approved:"Approved, add final link",reedit:"Re-edit requested",ready:"Ready to post",soon:"Posting soon",now:"Post now",late:"Not posted yet",notready:"Due soon, not ready"}[kinds[0]]+(kinds.length>1?" and more":"")):"Nothing waiting"}
@@ -9490,119 +9501,101 @@ const TODO=(()=>{
   return {panel,load,badge,count,st};
 })();
 
-/* ================= v144: Hindi dubs — Aman uploads the Hindi version of each finished video; Zain gets a notification and can watch or download it ================= */
+/* ================= v145: Hindi dubs — Aman uploads Hindi versions of older videos; Zain gets a notification and can watch or download them ================= */
 const DUB=(()=>{
   const DUBBERS=["aman"],WATCH=["zain","shibili"];
   const FOLDER_URL="https://milelemotors.sharepoint.com/:f:/r/sites/milelecentralhub-Milele-MarketingDepartment/Shared%20Documents/Milele%20-%20Marketing%20Department/Fahad%27s%20Personal%20Branding/Hindi%20Dubbed";
-  const st={map:{},on:false,filter:null,q:"",vidsLoaded:false,busy:{}};
-  const SEEN_K="pb-dub-seen";
+  const st={list:[],on:false,q:"",busy:null,more:40};
+  const SEEN_K="pb-dub-seen2";
   const on=()=>!PRIME;
   const isDubber=()=>DUBBERS.includes(S.me||"");
   const folder=()=>String(S.settings.spDubs||"").trim().replace(/^\/+|\/+$/g,"")||spRoot()+"/Hindi Dubbed";
   const rd=()=>{try{return JSON.parse(localStorage.getItem(SEEN_K)||"{}")}catch(_){return {}}};
   const wr=o=>{try{localStorage.setItem(SEEN_K,JSON.stringify(o))}catch(_){}};
-  const hasFinal=v=>!!((v.final&&v.final.itemId)||(isSpUrl(safeUrl(v.finalLink)||"")&&safeUrl(v.finalLink)));
-  const DONE=["Ready","Scheduled","Posted","Approved"];
-  const pool=()=>vids().filter(v=>!isCar(v)&&DONE.includes(v.status)&&hasFinal(v)).sort((a,b)=>String(b.postDate||b.editedOn||"").localeCompare(String(a.postDate||a.editedOn||"")));
-  const dubOf=v=>st.map[v.id]||null;
-  const isNew=d=>d&&!isDubber()&&!(rd()[d.vid]>=d.at);
+  const isNew=d=>!isDubber()&&d.by!==S.me&&!rd()[d.id];
+  const ago=t=>{const m=Math.round((Date.now()-t)/60000);return m<1?"just now":m<60?m+" min ago":m<1440?Math.round(m/60)+" h ago":niceW(new Date(t).toISOString().slice(0,10))};
   // ---------- data ----------
   function start(){if(st.on||!on())return;let F;try{F=fbBoot()}catch(_){return}if(!F||!F.db)return;st.on=true;let first=true;
-    try{F.db.collection("dubs").onSnapshot(snap=>{(snap.docs||[]).forEach(d=>{try{const x=d.data();if(x.x){delete st.map[d.id];return}st.map[d.id]={...JSON.parse(x.j),vid:d.id}}catch(_){}});
-      if(!first)notify();else{first=false;notify(true)}paint()},err=>{console.warn("dubs",err);st.on=false})}catch(_){st.on=false}}
-  async function loadVids(){if(st.vidsLoaded)return;st.vidsLoaded=true;
-    try{const snap=await fbBoot().db.collection("videos").get();snap.docs.forEach(d=>{try{applyDoc(fbRow("videos",d))}catch(_){}});paint()}
-    catch(e){st.err="Your account can’t see the video list yet. Ask Shibili to update the Firebase rules.";paint()}}
+    try{F.db.collection("dubs").onSnapshot(snap=>{const L=[];(snap.docs||[]).forEach(d=>{try{const x=d.data();if(x.x)return;const r={...JSON.parse(x.j),id:d.id};if(r.itemId)L.push(r)}catch(_){}});
+      st.list=L.sort((a,b)=>b.at-a.at);notify(first);first=false;paint()},err=>{console.warn("dubs",err);st.on=false;st.err=true;paint()})}catch(_){st.on=false}}
   // ---------- notifications for Zain and Shibli ----------
-  function notify(firstLoad){if(!WATCH.includes(S.me||"")||isDubber())return;const box=$("#alerts");if(!box)return;const seen=rd();
-    Object.values(st.map).filter(d=>!(seen[d.vid]>=d.at)&&d.by!==S.me&&Date.now()-d.at<(firstLoad?3:14)*86400000).slice(0,3).forEach(d=>{
-      if(document.getElementById("al-dub-"+d.vid))return;
-      const el=document.createElement("div");el.className="alert al-review al-dub";el.id="al-dub-"+d.vid;el.setAttribute("role","alert");
+  function notify(firstLoad){if(!WATCH.includes(S.me||"")||isDubber())return;const box=$("#alerts");if(!box)return;
+    st.list.filter(d=>isNew(d)&&Date.now()-d.at<(firstLoad?3:14)*86400000).slice(0,3).forEach(d=>{
+      if(document.getElementById("al-dub-"+d.id))return;
+      const el=document.createElement("div");el.className="alert al-review al-dub";el.id="al-dub-"+d.id;el.setAttribute("role","alert");
       el.innerHTML=`<div class="al-top"><span class="al-pill">Hindi dub ready</span><button class="al-x" data-duba="x" aria-label="Dismiss">×</button></div><b class="al-t">${esc(d.title||"Untitled")}</b>
-        <small>${esc(nameOf(d.by||"aman"))} uploaded the Hindi version.</small>
-        <div class="al-btns"><button class="al-done" data-duba="x">Later</button><button class="al-open" data-duba="watch" data-vid="${esc(d.vid)}">▶ Watch</button></div>`;
+        <small>${esc(nameOf(d.by||"aman"))} uploaded the Hindi version.${d.note?` “${esc(d.note)}”`:""}</small>
+        <div class="al-btns"><button class="al-done" data-duba="x">Later</button><button class="al-open" data-duba="watch" data-did="${esc(d.id)}">▶ Watch</button></div>`;
       const bar=box.querySelector(".al-bar");if(bar)bar.after(el);else box.prepend(el);try{alertsLayout()}catch(_){}try{chime()}catch(_){}
-      try{if(osOn()&&document.hidden)new Notification("Hindi dub ready",{body:`${nameOf(d.by||"aman")} uploaded the Hindi version of ${d.title}`,icon:"icon-192.png",tag:"dub-"+d.vid})}catch(_){}})}
-  function markSeen(vid){const d=st.map[vid];if(!d)return;const s=rd();s[vid]=d.at;wr(s);const el=document.getElementById("al-dub-"+vid);if(el)try{closeAlert(el)}catch(_){el.remove()}badge()}
+      try{if(osOn()&&document.hidden)new Notification("Hindi dub ready",{body:`${nameOf(d.by||"aman")} uploaded the Hindi version of ${d.title}`,icon:"icon-192.png",tag:"dub-"+d.id})}catch(_){}})}
+  function markSeen(id){const s=rd();s[id]=1;wr(s);const el=document.getElementById("al-dub-"+id);if(el)try{closeAlert(el)}catch(_){el.remove()}paint()}
   document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-duba]");if(!b)return;const el=b.closest(".alert");
-    if(b.dataset.duba==="watch"){watch(b.dataset.vid)}if(el)try{closeAlert(el)}catch(_){el.remove()}});
+    if(b.dataset.duba==="watch")watch(b.dataset.did);if(el)try{closeAlert(el)}catch(_){el.remove()}});
   // ---------- files ----------
-  async function itemOfDub(d){const drive=d.drive||await spDrive();return gjson(`/drives/${drive}/items/${d.itemId}?$expand=thumbnails`)}
-  async function itemOfFinal(v){const drive=await spDrive();
-    if(v.final&&v.final.itemId)return gjson(`/drives/${drive}/items/${v.final.itemId}`);
-    const link=safeUrl(v.finalLink);const b64=btoa(unescape(encodeURIComponent(link))).replace(/=+$/,"").replace(/\//g,"_").replace(/\+/g,"-");
-    return gjson(`/shares/u!${b64}/driveItem`)}
   async function needMs(){if(!spOn()){toast("SharePoint isn’t set up yet");return false}try{await msApp()}catch(e){toast(e.message);return false}if(!msAccount()){msSignIn(()=>paint());return false}return true}
-  async function watch(vid){const d=st.map[vid];if(!d||!await needMs())return;
-    try{const it=await itemOfDub(d);AS.st.cache["dub:"+vid]={at:Date.now(),items:[it]};AS.view(it.id);markSeen(vid)}catch(e){toast(e.status===404?"The dubbed file was moved or deleted in SharePoint":(e.message||"Couldn’t open it"))}}
-  async function dlDub(vid){const d=st.map[vid];if(!d||!await needMs())return;
-    try{const it=await itemOfDub(d);const u=it["@microsoft.graph.downloadUrl"];if(!u)throw new Error("No download link");saveUrl(u,it.name);markSeen(vid)}catch(e){toast(e.message||"Couldn’t download it")}}
-  async function dlOrig(vid){const v=S.videos[vid];if(!v||!await needMs())return;toast("Getting the original…");
-    try{const it=await itemOfFinal(v);let u=it["@microsoft.graph.downloadUrl"];if(!u&&it.parentReference){const f=await gjson(`/drives/${it.parentReference.driveId}/items/${it.id}`);u=f["@microsoft.graph.downloadUrl"]}
-      if(!u)throw new Error("No download link");saveUrl(u,it.name)}catch(e){toast(e.status===403||e.status===404?"You don’t have access to the original in SharePoint. Ask Shibili to share it":(e.message||"Couldn’t download it"))}}
+  async function itemOf(d){const drive=d.drive||await spDrive();return gjson(`/drives/${drive}/items/${d.itemId}?$expand=thumbnails`)}
+  async function watch(id){const d=st.list.find(x=>x.id===id);if(!d||!await needMs())return;
+    try{const it=await itemOf(d);AS.st.cache["dub:"+id]={at:Date.now(),items:[it]};AS.view(it.id);markSeen(id)}catch(e){toast(e.status===404?"The file was moved or deleted in SharePoint":(e.message||"Couldn’t open it"))}}
+  async function dl(id){const d=st.list.find(x=>x.id===id);if(!d||!await needMs())return;
+    try{const it=await itemOf(d);const u=it["@microsoft.graph.downloadUrl"];if(!u)throw new Error("No download link");saveUrl(u,it.name);markSeen(id)}catch(e){toast(e.message||"Couldn’t download it")}}
   // ---------- uploading ----------
-  let ud=null;const U={vid:null,file:null};
-  function dlg(){if(ud)return ud;ud=document.createElement("dialog");ud.id="dubDlg";ud.className="dub-dlg";
-    ud.innerHTML=`<form method="dialog"><h2 id="dubT">Upload the Hindi dub</h2><p class="sub" id="dubSub"></p>
-      <label class="up-drop as-drop" id="dubDrop"><input type="file" id="dubFile" accept="video/*,.mov,.mp4,.m4v" hidden><span class="up-ic"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V5M7 9.5l5-5 5 5M5 19h14"/></svg></span><b id="dubPick">Drop the dubbed video here</b><span>or click to choose the file</span></label>
-      <p class="rw-to" id="dubTo"></p>
-      <div class="foot"><button class="btn" type="button" data-dbu="x">Cancel</button><span style="flex:1"></span><button class="btn primary" type="button" data-dbu="go" id="dubGo" disabled>Upload</button></div></form>`;
-    document.body.appendChild(ud);
-    ud.addEventListener("click",e=>{const b=e.target.closest("[data-dbu]");if(!b)return;e.preventDefault();if(b.dataset.dbu==="x")ud.close();else go()});
-    ud.addEventListener("change",e=>{if(e.target.id==="dubFile"&&e.target.files[0]){U.file=e.target.files[0];e.target.value="";pick()}});
-    const dz=ud.querySelector("#dubDrop");["dragenter","dragover"].forEach(t=>dz.addEventListener(t,e=>{e.preventDefault();dz.classList.add("over")}));
-    ["dragleave","drop"].forEach(t=>dz.addEventListener(t,e=>{e.preventDefault();dz.classList.remove("over")}));
-    dz.addEventListener("drop",e=>{const f=e.dataTransfer&&e.dataTransfer.files[0];if(f){U.file=f;pick()}});
-    return ud}
-  const nameFor=(v,f)=>spName(`${v.title||"Untitled"} (Hindi)`).slice(0,120)+((/\.[a-z0-9]{2,4}$/i.exec(f.name)||[".mp4"])[0].toLowerCase());
-  function pick(){const v=S.videos[U.vid],d=dlg();d.querySelector("#dubPick").textContent=U.file?`${U.file.name} · ${AS.sizeTx(U.file.size)}`:"Drop the dubbed video here";
-    d.querySelector("#dubTo").innerHTML=U.file&&v?`Saves to SharePoint › Hindi Dubbed › <b>${esc(nameFor(v,U.file))}</b>`:`Saves to SharePoint › Fahad’s Personal Branding › Hindi Dubbed`;
-    d.querySelector("#dubGo").disabled=!U.file}
-  function openUp(vid){if(!isDubber()&&!["shibili","zain"].includes(S.me||""))return;const v=S.videos[vid];if(!v)return;U.vid=vid;U.file=null;const d=dlg();
-    d.querySelector("#dubT").textContent=dubOf(v)?"Replace the Hindi dub":"Upload the Hindi dub";d.querySelector("#dubSub").textContent=`For “${v.title||"Untitled"}”. ${esc(nameOf("zain"))} gets a notification when it’s uploaded.`;pick();openDlg(d)}
-  async function go(){const v=S.videos[U.vid],f=U.file;if(!v||!f)return;ud.close();if(!await needMs())return;
-    const vid=v.id,job={id:"d"+Date.now(),kind:"dub",title:`Hindi · ${v.title||"Untitled"}`,file:{size:f.size},sent:0,state:"Starting"};
-    job.retry=()=>run(job,v,f);UP.list.push(job);st.busy[vid]=job;run(job,v,f)}
-  async function run(job,v,f){Object.assign(job,{sent:0,state:"Starting",error:""});st.busy[v.id]=job;upPaint();paint();
+  const F={file:null};
+  const nameFor=(t,f)=>spName(`${t} (Hindi)`).slice(0,120)+((/\.[a-z0-9]{2,4}$/i.exec(f.name)||[".mp4"])[0].toLowerCase());
+  function canGo(){const t=($("#dubTitle")||{}).value||"";return !!(F.file&&t.trim()&&!st.busy)}
+  function refreshForm(){const g=$("#dubGo");if(g)g.disabled=!canGo();const p=$("#dubPick");if(p)p.textContent=F.file?`${F.file.name} · ${AS.sizeTx(F.file.size)}`:"Drop the dubbed video here";
+    const to=$("#dubTo"),t=(($("#dubTitle")||{}).value||"").trim();if(to)to.innerHTML=F.file&&t?`Saves to SharePoint › Hindi Dubbed › <b>${esc(nameFor(t,F.file))}</b>`:`Saves to SharePoint › Fahad’s Personal Branding › Hindi Dubbed`}
+  async function go(){if(!canGo())return;const title=$("#dubTitle").value.trim(),note=(($("#dubNote")||{}).value||"").trim(),f=F.file;if(!await needMs())return;
+    const job={id:"d"+Date.now(),kind:"dub",title:`Hindi · ${title}`,file:{size:f.size},sent:0,state:"Starting"};job.retry=()=>run(job,title,note,f);UP.list.push(job);run(job,title,note,f)}
+  async function run(job,title,note,f){Object.assign(job,{sent:0,state:"Starting",error:""});st.busy=job;upPaint();paint();
     try{const drive=await spDrive(),fo=folder();await spEnsure(drive,fo);job.state="Uploading";upPaint();
-      const name=nameFor(v,f);
-      const ses=await gjson(`/drives/${drive}/root:/${encP(fo+"/"+name)}:/createUploadSession`,{method:"POST",body:{item:{"@microsoft.graph.conflictBehavior":"replace"}}});
+      const name=nameFor(title,f);
+      const ses=await gjson(`/drives/${drive}/root:/${encP(fo+"/"+name)}:/createUploadSession`,{method:"POST",body:{item:{"@microsoft.graph.conflictBehavior":"rename"}}});
       let item=null;
       for(let a=0;a<f.size;a+=SP_CHUNK){const b=Math.min(f.size,a+SP_CHUNK);let tries=0;
-        for(;;){try{const j=await putChunk(ses.uploadUrl,f,a,b,n=>{job.sent=n;upPaintSoon()});if(j&&j.id)item=j;break}
+        for(;;){try{const j=await putChunk(ses.uploadUrl,f,a,b,n=>{job.sent=n;upPaintSoon();busySoon()});if(j&&j.id)item=j;break}
           catch(err){if(++tries>4||(err.status&&err.status<500&&err.status!==429))throw err;await new Promise(r=>setTimeout(r,2000*tries))}}}
       if(!item)throw new Error("SharePoint didn’t confirm the file");
-      const now=Date.now(),rec={title:v.title||"Untitled",itemId:item.id,drive,name:item.name||name,size:f.size,webUrl:item.webUrl||"",by:S.me||"",at:now};
-      await fbBoot().db.collection("dubs").doc(v.id).set({j:JSON.stringify(rec),u:now,x:false,by:S.me||""});
-      st.map[v.id]={...rec,vid:v.id};job.state="Sent";job.msg=`Saved to Hindi Dubbed › ${rec.name}`;delete st.busy[v.id];upPaint();paint();
-      toast(`Hindi dub uploaded. ${nameOf("zain")} gets a notification`);setTimeout(()=>{UP.list=UP.list.filter(j=>j!==job);upPaint()},7000)}
-    catch(e){delete st.busy[v.id];const m=String(e&&(e.code||e.message)||"");job.state="Failed";job.error=/permission/i.test(m)?"Firebase rules need the update from Claude":(e.message||"Upload failed");job.signin=!!e.signin;upPaint();paint();toast(`Dub upload failed: ${job.error}`)}}
+      const now=Date.now(),id="d"+now.toString(36),rec={title,note,itemId:item.id,drive,name:item.name||name,size:f.size,webUrl:item.webUrl||"",by:S.me||"",at:now};
+      await fbBoot().db.collection("dubs").doc(id).set({j:JSON.stringify(rec),u:now,x:false,by:S.me||""});
+      if(!st.list.some(x=>x.id===id))st.list.unshift({...rec,id});
+      F.file=null;st.busy=null;job.state="Sent";job.msg=`Saved to Hindi Dubbed › ${rec.name}`;upPaint();
+      const ti=$("#dubTitle"),no=$("#dubNote");if(ti)ti.value="";if(no)no.value="";paint();
+      toast(`Uploaded. ${nameOf("zain")} gets a notification`);setTimeout(()=>{UP.list=UP.list.filter(j=>j!==job);upPaint()},7000)}
+    catch(e){st.busy=null;const m=String(e&&(e.code||e.message)||"");job.state="Failed";job.error=/permission/i.test(m)?"Firebase rules need the update from Claude":(e.message||"Upload failed");job.signin=!!e.signin;upPaint();paint();toast(`Upload failed: ${job.error}`)}}
+  let bT=0;function busySoon(){if(bT)return;bT=setTimeout(()=>{bT=0;const el=$("#dubProg"),j=st.busy;if(el&&j){const p=j.file.size?j.sent/j.file.size:0;el.style.setProperty("--p",p);el.querySelector("small").textContent=`Uploading ${Math.round(p*100)}% · ${AS.sizeTx(j.sent)} of ${AS.sizeTx(j.file.size)}`}},250)}
   // ---------- the tab ----------
-  const fmtD=v=>{const d=v.postDate||v.editedOn;return d?niceW(d):""};
-  function row(v){const d=dubOf(v),j=st.busy[v.id],nw=isNew(d);
-    return `<div class="dub-row${d?" done":""}">
-      <div class="dub-m"><b>${esc(v.title||"Untitled")}</b><small>${[v.status==="Posted"?"Posted "+fmtD(v):fmtD(v)?v.status+" · "+fmtD(v):v.status,v.pillar?esc(v.pillar):""].filter(Boolean).join(" · ")}</small></div>
-      <span class="dub-st">${j?`<span class="tag dub-up">Uploading ${Math.round(100*(j.file.size?j.sent/j.file.size:0))}%</span>`:d?`<span class="tag dub-ok">Hindi ✓ ${esc(niceW(new Date(d.at).toISOString().slice(0,10)))}</span>${nw?`<span class="tag dub-new">New</span>`:""}`:`<span class="tag dub-no">Not dubbed</span>`}</span>
-      <div class="dub-a">${isDubber()?`<button class="btn small ghost" data-act="dubOrig" data-vid="${v.id}" title="Download the original edit">⬇ Original</button>`:""}
-        ${d?`<button class="btn small${isDubber()?" ghost":" primary"}" data-act="dubWatch" data-vid="${v.id}">▶ Watch</button><button class="btn small ghost" data-act="dubDl" data-vid="${v.id}">⬇ Hindi</button>`:""}
-        ${isDubber()&&!j?`<button class="btn small${d?" ghost":" primary"}" data-act="dubUp" data-vid="${v.id}">${d?"Replace":"⬆ Upload dub"}</button>`:""}</div></div>`}
+  function upCard(){const j=st.busy;
+    return `<div class="dub-up-card"><h3>Upload a Hindi dub</h3>
+      <div class="dub-form"><label class="field"><span class="as-lbl">Video title</span><input type="text" id="dubTitle" data-dubf="1" placeholder="e.g. Why buy a Nissan Patrol" maxlength="140" autocomplete="off"${j?" disabled":""}></label>
+        <label class="field"><span class="as-lbl">Note for Zain (optional)</span><input type="text" id="dubNote" data-dubf="1" placeholder="e.g. Posted on 12 March" maxlength="200" autocomplete="off"${j?" disabled":""}></label></div>
+      ${j?`<div class="rw-zip" id="dubProg" style="--p:${j.file.size?j.sent/j.file.size:0}"><small>Uploading ${Math.round(100*(j.file.size?j.sent/j.file.size:0))}% · ${AS.sizeTx(j.sent)} of ${AS.sizeTx(j.file.size)}</small><span>Keep this tab open until it finishes</span></div>`:
+      `<label class="up-drop as-drop" id="dubDrop"><input type="file" id="dubFile" data-dubf="1" accept="video/*,.mov,.mp4,.m4v" hidden><span class="up-ic"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V5M7 9.5l5-5 5 5M5 19h14"/></svg></span><b id="dubPick">Drop the dubbed video here</b><span>or click to choose the file</span></label>
+      <p class="rw-to" id="dubTo">Saves to SharePoint › Fahad’s Personal Branding › Hindi Dubbed</p>
+      <div class="dub-go"><button class="btn primary" data-act="dubGo" id="dubGo" disabled>⬆ Upload</button></div>`}</div>`}
+  function row(d){const nw=isNew(d);
+    return `<div class="dub-row${nw?" new":""}"><div class="dub-m"><b>${esc(d.title||"Untitled")}</b><small>${esc(nameOf(d.by||"aman"))} · ${esc(ago(d.at))}${d.size?" · "+AS.sizeTx(d.size):""}${d.note?` · “${esc(d.note)}”`:""}</small></div>
+      <span class="dub-st">${nw?`<span class="tag dub-new">New</span>`:""}</span>
+      <div class="dub-a"><button class="btn small${nw?" primary":""}" data-act="dubWatch" data-did="${esc(d.id)}">▶ Watch</button><button class="btn small ghost" data-act="dubDl" data-did="${esc(d.id)}">⬇ Download</button></div></div>`}
   function panel(){if(!on())return `<section class="panel"><div class="empty"><b>Hindi dubs are on the Personal Branding board</b></div></section>`;
-    setTimeout(()=>{start();if(isDubber())loadVids()},0);
-    const P=pool(),done=P.filter(v=>dubOf(v)),todo=P.filter(v=>!dubOf(v)),f=st.filter||(isDubber()?"todo":"done"),q=st.q.trim().toLowerCase();
-    let L=f==="done"?done.slice().sort((a,b)=>dubOf(b).at-dubOf(a).at):f==="all"?P:todo;if(q)L=L.filter(v=>String(v.title||"").toLowerCase().includes(q));
-    const newN=done.filter(v=>isNew(dubOf(v))).length;
-    return `<section class="panel dub-panel" id="dubPanel"><div class="phead"><h2>Hindi dubs</h2><span class="sub">${isDubber()?"Download the original, re-edit it with the Hindi dub, then upload it here. Zain gets a notification.":"Hindi versions of our finished videos, uploaded by Aman."}</span>
+    setTimeout(start,0);
+    const q=st.q.trim().toLowerCase(),L=q?st.list.filter(d=>String(d.title+" "+(d.note||"")).toLowerCase().includes(q)):st.list,newN=st.list.filter(isNew).length;
+    return `<section class="panel dub-panel" id="dubPanel"><div class="phead"><h2>Hindi dubs</h2><span class="sub">${isDubber()?"Upload each Hindi version here. Zain gets a notification and can watch it straight away.":"Hindi versions of Fahad’s older videos, uploaded by Aman."}</span>
       <div class="pactions"><a class="btn small ghost" href="${FOLDER_URL}" target="_blank" rel="noopener noreferrer">Open folder in SharePoint</a></div></div>
-      <div class="dub-stats"><span><b>${done.length}</b> dubbed</span><span><b>${todo.length}</b> to go</span>${newN?`<span class="dub-newn"><b>${newN}</b> new</span>`:""}</div>
-      <div class="dub-bar"><div class="seg" role="group" aria-label="Show">${[["todo",`To dub <em>${todo.length}</em>`],["done",`Dubbed <em>${done.length}</em>`],["all","All"]].map(([k,l])=>`<button data-act="dubFilter" data-v="${k}" aria-pressed="${f===k}">${l}</button>`).join("")}</div>
-        <input type="search" class="dub-q" data-dubq="1" placeholder="Search videos" value="${esc(st.q)}" aria-label="Search videos"></div>
-      ${st.err?`<div class="empty"><b>Can’t load the videos</b>${esc(st.err)}</div>`:isDubber()&&!st.vidsLoaded?`<div class="as-load">${"<i></i>".repeat(4)}</div>`:L.length?`<div class="dub-list">${L.slice(0,st.more||60).map(row).join("")}</div>${L.length>(st.more||60)?`<button class="btn small ghost dub-more" data-act="dubMore">Show more (${L.length-(st.more||60)})</button>`:""}`:`<div class="empty"><b>${f==="done"?"No Hindi dubs yet":f==="todo"?"Everything is dubbed 🎉":"No finished videos yet"}</b>${f==="done"?(isDubber()?"Upload your first one from To dub.":"They show up here as soon as Aman uploads them."):""}</div>`}</section>`}
-  let pT=0;function paint(){badge();if(S.tab!=="dubs")return;clearTimeout(pT);pT=setTimeout(()=>{const el=document.getElementById("dubPanel");if(!el)return;const a=document.activeElement,typing=a&&a.dataset&&a.dataset.dubq,pos=typing&&a.selectionStart;el.outerHTML=panel();if(typing){const i=document.querySelector("[data-dubq]");if(i){i.focus();try{i.setSelectionRange(pos,pos)}catch(_){}}}},60)}
-  function badge(){const b=document.querySelector('nav.tabs [data-tab="dubs"]');if(!b)return;const n=isDubber()?0:pool().filter(v=>isNew(dubOf(v))).length;let e=b.querySelector(".tab-n");if(!n){e&&e.remove();return}if(!e){e=document.createElement("em");e.className="tab-n";b.appendChild(e)}e.textContent=n}
-  document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-act^='dub']");if(!b)return;e.preventDefault();const a=b.dataset.act,vid=b.dataset.vid;
-    if(a==="dubUp")openUp(vid);else if(a==="dubWatch")watch(vid);else if(a==="dubDl")dlDub(vid);else if(a==="dubOrig")dlOrig(vid);
-    else if(a==="dubFilter"){st.filter=b.dataset.v;st.more=0;paint()}else if(a==="dubMore"){st.more=(st.more||60)+60;paint()}});
-  document.addEventListener("input",e=>{const t=e.target;if(t&&t.dataset&&t.dataset.dubq){st.q=t.value;paint()}},true);
+      ${isDubber()?upCard():""}
+      <div class="dub-head"><h3>${isDubber()?"Uploaded":"Uploads"} <em>${st.list.length}</em>${newN?` <span class="tag dub-new">${newN} new</span>`:""}</h3>${st.list.length>6?`<input type="search" class="dub-q" data-dubq="1" placeholder="Search" value="${esc(st.q)}" aria-label="Search dubs">`:""}</div>
+      ${st.err?`<div class="empty"><b>Can’t load the dubs yet</b>The Firebase rules need the update from Claude.</div>`:L.length?`<div class="dub-list">${L.slice(0,st.more).map(row).join("")}</div>${L.length>st.more?`<button class="btn small ghost dub-more" data-act="dubMore">Show more (${L.length-st.more})</button>`:""}`:`<div class="empty"><b>${q?"Nothing matches":"No dubs uploaded yet"}</b>${q?"":isDubber()?"Your uploads show up here.":"They show up here as soon as Aman uploads them, and you get a notification."}</div>`}</section>`}
+  let pT=0;function paint(){badge();if(S.tab!=="dubs")return;clearTimeout(pT);pT=setTimeout(()=>{const el=document.getElementById("dubPanel");if(!el)return;
+    const keep={t:($("#dubTitle")||{}).value,n:($("#dubNote")||{}).value},a=document.activeElement,fid=a&&a.id,pos=a&&a.selectionStart;
+    el.outerHTML=panel();const t=$("#dubTitle"),n=$("#dubNote");if(t&&keep.t!=null)t.value=keep.t;if(n&&keep.n!=null)n.value=keep.n;
+    if(fid){const f=document.getElementById(fid)||(a.dataset&&a.dataset.dubq&&document.querySelector("[data-dubq]"));if(f&&f.focus){f.focus();try{f.setSelectionRange(pos,pos)}catch(_){}}}refreshForm();bindDrop()},60)}
+  function bindDrop(){const dz=$("#dubDrop");if(!dz||dz._b)return;dz._b=1;["dragenter","dragover"].forEach(t=>dz.addEventListener(t,e=>{e.preventDefault();dz.classList.add("over")}));
+    ["dragleave","drop"].forEach(t=>dz.addEventListener(t,e=>{e.preventDefault();dz.classList.remove("over")}));dz.addEventListener("drop",e=>{const f=e.dataTransfer&&e.dataTransfer.files[0];if(f){F.file=f;refreshForm()}})}
+  function badge(){const b=document.querySelector('nav.tabs [data-tab="dubs"]');if(!b)return;const n=st.list.filter(isNew).length;let e=b.querySelector(".tab-n");if(!n){e&&e.remove();return}if(!e){e=document.createElement("em");e.className="tab-n";b.appendChild(e)}e.textContent=n}
+  document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-act^='dub']");if(!b)return;e.preventDefault();const a=b.dataset.act,id=b.dataset.did;
+    if(a==="dubWatch")watch(id);else if(a==="dubDl")dl(id);else if(a==="dubGo")go();else if(a==="dubMore"){st.more+=40;paint()}});
+  document.addEventListener("change",e=>{if(e.target&&e.target.id==="dubFile"&&e.target.files[0]){F.file=e.target.files[0];e.target.value="";refreshForm()}},true);
+  document.addEventListener("input",e=>{const t=e.target;if(!t||!t.dataset)return;if(t.dataset.dubq){st.q=t.value;paint()}else if(t.dataset.dubf)refreshForm()},true);
+  new MutationObserver(()=>{if(S.tab==="dubs"){bindDrop();refreshForm()}}).observe(document.getElementById("main")||document.body,{childList:true});
   return {panel,start,badge,st,isDubber};
 })();
 
